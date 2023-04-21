@@ -8,6 +8,9 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+  schedule:
+		- cron: '0 9 * * *'
+	workflow_dispatch: {}
 
 permissions:
   contents: read
