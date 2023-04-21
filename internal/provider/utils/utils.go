@@ -1,4 +1,4 @@
-package provider
+package utils
 
 import (
 	"encoding/json"
@@ -9,10 +9,12 @@ import (
 	apiserver "github.com/smallstep/terraform-provider-smallstep/internal/apiserver/v20230301"
 )
 
-func apiErrorMsg(r io.Reader) string {
+// APIErrorMsg attempts to parse .Message from the API JSON response.
+// Otherwise it returns the full response body.
+func APIErrorMsg(r io.Reader) string {
 	body, err := io.ReadAll(r)
 	if err != nil {
-		return "Failed to read response body"
+		return "Failed to read Smallstep API response"
 	}
 	e := &v20230301.Error{}
 	if err := json.Unmarshal(body, e); err != nil {
@@ -28,14 +30,19 @@ type dereferencable interface {
 		[]string
 }
 
-func deref[T dereferencable](v *T) (r T) {
+// Deref gets the default value for a pointer type. This makes it easier to work
+// with the generated API client code, which uses pointers for optional fields.
+func Deref[T dereferencable](v *T) (r T) {
 	if v != nil {
 		r = *v
 	}
 	return
 }
 
-func describe(component string) (string, map[string]string, error) {
+// Describe parses descriptions for a component from its schema in Smallstep's
+// OpenAPI spec. This ensures the terraform attribute documentation is kept in
+// sync the the API spec.
+func Describe(component string) (string, map[string]string, error) {
 	spec, err := apiserver.GetSwagger()
 
 	if err != nil {

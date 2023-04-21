@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -93,13 +94,13 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 
 func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewAuthorityResource,
+		authority.NewResource,
 	}
 }
 
 func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewAuthorityDataSource,
+		authority.NewDataSource,
 	}
 }
 

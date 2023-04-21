@@ -1,4 +1,4 @@
-package provider
+package authority
 
 import (
 	"context"
@@ -12,25 +12,26 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-var _ datasource.DataSourceWithConfigure = (*AuthorityDataSource)(nil)
+var _ datasource.DataSourceWithConfigure = (*DataSource)(nil)
 
-func NewAuthorityDataSource() datasource.DataSource {
-	return &AuthorityDataSource{}
+func NewDataSource() datasource.DataSource {
+	return &DataSource{}
 }
 
-// AuthorityDataSource implements data.smallstep_authority
-type AuthorityDataSource struct {
+// DataSource implements data.smallstep_authority
+type DataSource struct {
 	client *v20230301.Client
 }
 
-func (a *AuthorityDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = authorityTypeName
 }
 
 // Configure adds the Smallstep API client to the data source.
-func (a *AuthorityDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -49,8 +50,8 @@ func (a *AuthorityDataSource) Configure(ctx context.Context, req datasource.Conf
 	a.client = client
 }
 
-func (a *AuthorityDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data AuthorityDataModel
+func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var data DataModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
@@ -72,7 +73,7 @@ func (a *AuthorityDataSource) Read(ctx context.Context, req datasource.ReadReque
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading authority %s: %s", httpResp.StatusCode, data.ID.String(), apiErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d reading authority %s: %s", httpResp.StatusCode, data.ID.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -89,17 +90,17 @@ func (a *AuthorityDataSource) Read(ctx context.Context, req datasource.ReadReque
 	data.Name = types.StringValue(authority.Name)
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
-	data.Fingerprint = types.StringValue(deref(authority.Fingerprint))
+	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
-	data.ActiveRevocation = types.BoolValue(deref(authority.ActiveRevocation))
+	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
 
 	tflog.Trace(ctx, fmt.Sprintf("read authority %q resource", data.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (d *AuthorityDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	component, properties, err := describe("authority")
+func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	component, properties, err := utils.Describe("authority")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",

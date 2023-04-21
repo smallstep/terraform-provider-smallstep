@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
 func init() {
@@ -23,7 +24,7 @@ func init() {
 		F: func(region string) error {
 			ctx := context.Background()
 
-			client, err := newClient()
+			client, err := utils.SmallstepAPIClientFromEnv()
 			if err != nil {
 				return err
 			}

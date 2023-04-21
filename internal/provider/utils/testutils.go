@@ -1,4 +1,4 @@
-package provider
+package utils
 
 import (
 	"context"
@@ -11,15 +11,10 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 )
 
-func TestMain(m *testing.M) {
-	resource.TestMain(m)
-}
-
-func newClient() (*v20230301.Client, error) {
+func SmallstepAPIClientFromEnv() (*v20230301.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
 	if token == "" {
 		return nil, errors.New("Missing environment variable SMALLSTEP_API_TOKEN")
@@ -39,8 +34,8 @@ func newClient() (*v20230301.Client, error) {
 	return client, nil
 }
 
-func newAuthority(t *testing.T) *v20230301.Authority {
-	client, err := newClient()
+func NewAuthority(t *testing.T) *v20230301.Authority {
+	client, err := SmallstepAPIClientFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}

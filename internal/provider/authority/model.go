@@ -1,4 +1,4 @@
-package provider
+package authority
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 // type name for both resources and data sources
 const authorityTypeName = "smallstep_authority"
 
-type AuthorityDataModel struct {
+type DataModel struct {
 	ID               types.String `tfsdk:"id"`
 	Name             types.String `tfsdk:"name"`
 	Type             types.String `tfsdk:"type"`
@@ -21,7 +21,7 @@ type AuthorityDataModel struct {
 	ActiveRevocation types.Bool   `tfsdk:"active_revocation"`
 }
 
-type AuthorityResourceModel struct {
+type ResourceModel struct {
 	ID                 types.String     `tfsdk:"id"`
 	Name               types.String     `tfsdk:"name"`
 	Type               types.String     `tfsdk:"type"`

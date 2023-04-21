@@ -1,4 +1,4 @@
-package provider
+package authority
 
 import (
 	"context"
@@ -18,25 +18,26 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-var _ resource.ResourceWithImportState = (*AuthorityResource)(nil)
+var _ resource.ResourceWithImportState = (*Resource)(nil)
 
-func NewAuthorityResource() resource.Resource {
-	return &AuthorityResource{}
+func NewResource() resource.Resource {
+	return &Resource{}
 }
 
-// AuthorityResource defines the resource implementation.
-type AuthorityResource struct {
+// Resource defines the resource implementation.
+type Resource struct {
 	client *v20230301.Client
 }
 
-func (r *AuthorityResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = authorityTypeName
 }
 
-func (r *AuthorityResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	component, properties, err := describe("authority")
+func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	component, properties, err := utils.Describe("authority")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -128,7 +129,7 @@ func (r *AuthorityResource) Schema(ctx context.Context, req resource.SchemaReque
 	}
 }
 
-func (r *AuthorityResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -146,8 +147,8 @@ func (r *AuthorityResource) Configure(ctx context.Context, req resource.Configur
 	r.client = client
 }
 
-func (a *AuthorityResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var data AuthorityResourceModel
+func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var data ResourceModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
 
@@ -190,7 +191,7 @@ func (a *AuthorityResource) Create(ctx context.Context, req resource.CreateReque
 	if httpResp.StatusCode != http.StatusCreated {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, apiErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -206,7 +207,7 @@ func (a *AuthorityResource) Create(ctx context.Context, req resource.CreateReque
 
 	data.ID = types.StringValue(authority.Id)
 	data.Domain = types.StringValue(authority.Domain)
-	data.Fingerprint = types.StringValue(deref(authority.Fingerprint))
+	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 
 	tflog.Trace(ctx, fmt.Sprintf("create authority %q resource", data.ID.ValueString()))
@@ -214,8 +215,8 @@ func (a *AuthorityResource) Create(ctx context.Context, req resource.CreateReque
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (a *AuthorityResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var data AuthorityResourceModel
+func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var data ResourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -242,7 +243,7 @@ func (a *AuthorityResource) Read(ctx context.Context, req resource.ReadRequest, 
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, apiErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -259,21 +260,21 @@ func (a *AuthorityResource) Read(ctx context.Context, req resource.ReadRequest, 
 	data.Name = types.StringValue(authority.Name)
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
-	data.Fingerprint = types.StringValue(deref(authority.Fingerprint))
+	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
-	data.ActiveRevocation = types.BoolValue(deref(authority.ActiveRevocation))
+	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
 
 	tflog.Trace(ctx, fmt.Sprintf("create authority %q resource", data.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (r *AuthorityResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Update not supported. All changes require replacement.
 }
 
-func (a *AuthorityResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var data AuthorityResourceModel
+func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var data ResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
 
@@ -294,12 +295,12 @@ func (a *AuthorityResource) Delete(ctx context.Context, req resource.DeleteReque
 	if httpResp.StatusCode != http.StatusNoContent {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting authority %s: %s", httpResp.StatusCode, data.ID.String(), apiErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d deleting authority %s: %s", httpResp.StatusCode, data.ID.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 }
 
-func (r *AuthorityResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
