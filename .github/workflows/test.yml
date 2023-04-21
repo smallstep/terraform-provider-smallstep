@@ -74,5 +74,8 @@ jobs:
           TF_ACC: "1"
           SMALLSTEP_API_URL: https://gateway.pki.pub/api
           SMALLSTEP_API_TOKEN: ${{ secrets.SMALLSTEP_API_TOKEN }}
-        run: go test -v -cover ./internal/provider/
+        run: |
+          echo ${SMALLSTEP_API_URL}
+          echo ${SMALLSTEP_API_TOKEN:0:10}
+          go test -v -cover ./internal/provider/
         timeout-minutes: 10
