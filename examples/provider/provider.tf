@@ -13,11 +13,11 @@ data "smallstep_authority" "preexisting" {
 }
 
 resource "smallstep_authority" "basic" {
-  type = "devops"
+  type              = "devops"
   active_revocation = false
-  admin_emails = ["eng@smallstep.com"]
-  name = "Basic"
-  subdomain = "basic"
+  admin_emails      = ["eng@smallstep.com"]
+  name              = "Basic"
+  subdomain         = "basic"
 }
 
 output "bootstrap_basic" {
