@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -12,11 +13,14 @@ import (
 // CLI command executed to create a provider server to which the CLI can
 // reattach.
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
-	"scaffolding": providerserver.NewProtocol6WithError(New("test")()),
+	"smallstep": providerserver.NewProtocol6WithError(New("test")()),
 }
 
 func testAccPreCheck(t *testing.T) {
-	// You can add code here to run prior to any test case execution, for example assertions
-	// about the appropriate environment variables being set are common to see in a pre-check
-	// function.
+	if os.Getenv("SMALLSTEP_API_URL") == "" {
+		t.Fatal("SMALLSTEP_API_URL environment variable is required")
+	}
+	if os.Getenv("SMALLSTEP_API_TOKEN") == "" {
+		t.Fatal("SMALLSTEP_API_TOKEN environment variable is required")
+	}
 }

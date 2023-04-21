@@ -8,6 +8,7 @@ import (
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 )
 
+// type name for both resources and data sources
 const authorityTypeName = "smallstep_authority"
 
 type AuthorityDataModel struct {
