@@ -19,6 +19,7 @@ type DataModel struct {
 	Fingerprint      types.String `tfsdk:"fingerprint"`
 	CreatedAt        types.String `tfsdk:"created_at"`
 	ActiveRevocation types.Bool   `tfsdk:"active_revocation"`
+	AdminEmails      types.List   `tfsdk:"admin_emails"`
 }
 
 type ResourceModel struct {

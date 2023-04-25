@@ -13,8 +13,12 @@ An X509 authority hosted by Smallstep
 ## Example Usage
 
 ```terraform
-data "smallstep_authority" "authority" {
+data "smallstep_authority" "preexisting" {
   id = "34bd2a7f-68e5-4f5e-81a5-531a4c3b5d99"
+}
+
+output "bootstrap_preexisting" {
+  value = "step ca bootstrap --ca-url https://${data.smallstep_authority.preexisting.domain} --fingerprint ${data.smallstep_authority.preexisting.fingerprint} --context preexisting"
 }
 ```
 
@@ -28,10 +32,12 @@ data "smallstep_authority" "authority" {
 ### Read-Only
 
 - `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only)
+- `admin_emails` (List of String) Users that have admin access to manage the authority
 - `created_at` (String) Timestamp when the authority was created
 - `domain` (String) The domain where the authority can be reached
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format
 - `name` (String) The name of the authority
 - `type` (String) One of the available authority types
+Allowed values: `devops` `advanced`
 
 

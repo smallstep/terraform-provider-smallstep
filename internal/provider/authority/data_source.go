@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -93,8 +94,20 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
+	var adminEmails []attr.Value
+	if authority.AdminEmails != nil {
+		for _, email := range *authority.AdminEmails {
+			adminEmails = append(adminEmails, types.StringValue(email))
+		}
+	}
+	adminEmailsList, diags := types.ListValue(types.StringType, adminEmails)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	data.AdminEmails = adminEmailsList
 
-	tflog.Trace(ctx, fmt.Sprintf("read authority %q resource", data.ID.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("read authority %q data source", data.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
@@ -140,6 +153,11 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			"active_revocation": schema.BoolAttribute{
 				MarkdownDescription: properties["activeRevocation"],
 				Computed:            true,
+			},
+			"admin_emails": schema.ListAttribute{
+				MarkdownDescription: properties["adminEmails"],
+				Computed:            true,
+				ElementType:         types.StringType,
 			},
 		},
 	}

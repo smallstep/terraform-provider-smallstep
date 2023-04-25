@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -87,6 +88,11 @@ resource "smallstep_authority" "devops" {
 }
 `, devopsSlug, devopsSlug)
 
+	caDomain := os.Getenv("SMALLSTEP_CA_DOMAIN")
+	if caDomain == "" {
+		caDomain = ".testacc.ca.pki.pub"
+	}
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -95,11 +101,18 @@ resource "smallstep_authority" "devops" {
 				Config: devopsConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("smallstep_authority.devops", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					resource.TestCheckResourceAttr("smallstep_authority.devops", "domain", devopsSlug+".testacc.ca.pki.pub"),
+					resource.TestCheckResourceAttr("smallstep_authority.devops", "domain", devopsSlug+caDomain),
 					resource.TestMatchResourceAttr("smallstep_authority.devops", "fingerprint", regexp.MustCompile(`^[0-9a-z]{64}$`)),
 					resource.TestMatchResourceAttr("smallstep_authority.devops", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
+			/*
+				{
+					ResourceName:      "smallstep_authority.devops",
+					ImportState:       true,
+					ImportStateVerify: true,
+				},
+			*/
 		},
 	})
 
@@ -159,11 +172,22 @@ resource "smallstep_authority" "advanced" {
 				Config: advancedConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("smallstep_authority.advanced", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					resource.TestCheckResourceAttr("smallstep_authority.advanced", "domain", advancedSlug+".testacc.ca.pki.pub"),
+					resource.TestCheckResourceAttr("smallstep_authority.advanced", "domain", advancedSlug+caDomain),
 					resource.TestMatchResourceAttr("smallstep_authority.advanced", "fingerprint", regexp.MustCompile(`^[0-9a-z]{64}$`)),
 					resource.TestMatchResourceAttr("smallstep_authority.advanced", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
 		},
 	})
+
+	/*
+		authority := utils.NewAuthority(t)
+		resource.Test(t, resource.TestCase{
+			PreCheck: func() { testAccPreCheck(t) },
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					ResourceName: "smallstep_authority.importee",
+					ImportState: true,
+					ImportStateVerify: true,
+	*/
 }

@@ -31,6 +31,7 @@ data "smallstep_authority" "test" {
 					resource.TestCheckResourceAttr("data.smallstep_authority.test", "domain", authority.Domain),
 					resource.TestCheckResourceAttr("data.smallstep_authority.test", "created_at", authority.CreatedAt.Format(time.RFC3339)),
 					resource.TestCheckResourceAttr("data.smallstep_authority.test", "fingerprint", *authority.Fingerprint),
+					resource.TestCheckResourceAttr("data.smallstep_authority.test", "admin_emails.0", (*authority.AdminEmails)[0]),
 				),
 			},
 		},

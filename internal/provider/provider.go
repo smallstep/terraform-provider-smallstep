@@ -48,16 +48,13 @@ func (p *SmallstepProvider) Schema(ctx context.Context, req provider.SchemaReque
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"bearer_token": schema.StringAttribute{
-				MarkdownDescription: `
-Credential used to authenticate to the Smallstep API.
-May also be provided via the SMALLSTEP_API_TOKEN environment variable.
-`,
-				Optional:  true,
-				Sensitive: true,
+				MarkdownDescription: "Credential used to authenticate to the Smallstep API. May also be provided via the SMALLSTEP_API_TOKEN environment variable. Use the Smallstep dashboard to manage API tokens. Ignored if a client certificate is set.",
+				Optional:            true,
+				Sensitive:           true,
 			},
 			"client_certificate": schema.SingleNestedAttribute{
 				Optional:            true,
-				MarkdownDescription: "Get an API token with a client certificate key pair signed by your trusted root.",
+				MarkdownDescription: "Get an API token with a client certificate key pair signed by your trusted root. Use the Smallstep dashboard to manage trusted roots.",
 				Attributes: map[string]schema.Attribute{
 					"certificate": schema.StringAttribute{
 						MarkdownDescription: "The PEM encoded certificate signed by your trusted root.",

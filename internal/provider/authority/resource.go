@@ -407,16 +407,20 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
-
-	// Add required fields if this was an import
-	if data.AdminEmails.IsNull() {
-		adminEmails, diags := types.ListValue(
-			types.StringType,
-			[]attr.Value{},
-		)
-		resp.Diagnostics.Append(diags...)
-		data.AdminEmails = adminEmails
+	var adminEmails []attr.Value
+	if authority.AdminEmails != nil {
+		for _, email := range *authority.AdminEmails {
+			adminEmails = append(adminEmails, types.StringValue(email))
+		}
 	}
+	adminEmailsList, diags := types.ListValue(types.StringType, adminEmails)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	data.AdminEmails = adminEmailsList
+
+	// Subdomain will be missing if this was an import but is required
 	if data.Subdomain.IsNull() {
 		parts := strings.Split(data.Domain.ValueString(), ".")
 		data.Subdomain = types.StringValue(parts[0])

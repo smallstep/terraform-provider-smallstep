@@ -41,7 +41,7 @@ func Deref[T dereferencable](v *T) (r T) {
 
 // Describe parses descriptions for a component from its schema in Smallstep's
 // OpenAPI spec. This ensures the terraform attribute documentation is kept in
-// sync the the API spec.
+// sync with the API spec.
 func Describe(component string) (string, map[string]string, error) {
 	spec, err := apiserver.GetSwagger()
 
@@ -63,7 +63,7 @@ func Describe(component string) (string, map[string]string, error) {
 		if len(schema.Value.Enum) > 0 {
 			d += "Allowed values:"
 			for _, enum := range schema.Value.Enum {
-				d += fmt.Sprintf("\n- %s", enum)
+				d += fmt.Sprintf(" `%s`", enum)
 			}
 		}
 		propertyDescriptions[prop] = d

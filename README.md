@@ -31,3 +31,7 @@ make testacc
 ```
 
 A sweeper is defined to clean up all authorities older than 1 day unless the authority domain begins with `keep-`.
+
+```shell
+make sweep
+```
