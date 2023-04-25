@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
@@ -25,7 +24,6 @@ func init() {
 		Name: "smallstep_authority",
 		F: func(region string) error {
 			ctx := context.Background()
-			tflog.Info(ctx, "HELLO")
 
 			client, err := utils.SmallstepAPIClientFromEnv()
 			if err != nil {
@@ -47,14 +45,11 @@ func init() {
 			}
 
 			for _, authority := range list {
-				tflog.Info(ctx, fmt.Sprintf("SWEEP AUTHORITY %q", authority.Domain))
 				if strings.HasPrefix(authority.Domain, "keep-") {
-					tflog.Info(ctx, "NOT")
 					continue
 				}
 				// Keep authorities for 24 hours for debugging
 				if authority.CreatedAt.After(time.Now().Add(time.Hour * -24)) {
-					tflog.Info(ctx, "TOO NEW")
 					continue
 				}
 				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20230301.DeleteAuthorityParams{})
@@ -106,13 +101,11 @@ resource "smallstep_authority" "devops" {
 					resource.TestMatchResourceAttr("smallstep_authority.devops", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
-			/*
-				{
-					ResourceName:      "smallstep_authority.devops",
-					ImportState:       true,
-					ImportStateVerify: true,
-				},
-			*/
+			{
+				ResourceName:      "smallstep_authority.devops",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 
@@ -179,15 +172,4 @@ resource "smallstep_authority" "advanced" {
 			},
 		},
 	})
-
-	/*
-		authority := utils.NewAuthority(t)
-		resource.Test(t, resource.TestCase{
-			PreCheck: func() { testAccPreCheck(t) },
-				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-				Steps: []resource.TestStep{
-					ResourceName: "smallstep_authority.importee",
-					ImportState: true,
-					ImportStateVerify: true,
-	*/
 }

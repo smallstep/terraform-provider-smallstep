@@ -62,8 +62,8 @@ func (r *Resource) x509IssuerSchema() (map[string]schema.Attribute, error) {
 			MarkdownDescription: properties["keyVersion"],
 		},
 		"duration": schema.StringAttribute{
-			Required:            true,
-			MarkdownDescription: properties["name"],
+			Optional:            true,
+			MarkdownDescription: properties["duration"],
 		},
 		"max_path_length": schema.Int64Attribute{
 			Optional:            true,

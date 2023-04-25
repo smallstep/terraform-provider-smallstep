@@ -5,7 +5,7 @@ First ensure your $HOME/.terraformrc has a dev_override for this provider:
 provider_installation {
 
   dev_overrides {
-      "smallstep/smallstep" = "/home/areed/go/bin/"
+      "smallstep/smallstep" = "/home/<USER>/go/bin/"
   }
 
   # For all other providers, install them directly from their origin provider
