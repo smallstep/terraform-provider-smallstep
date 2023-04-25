@@ -85,7 +85,7 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 
 	server := os.Getenv("SMALLSTEP_API_URL")
 	if server == "" {
-		server = "https://smallstep.com"
+		server = "https://gateway.smallstep.com/api"
 	}
 
 	if data.ClientCertificate != nil {
