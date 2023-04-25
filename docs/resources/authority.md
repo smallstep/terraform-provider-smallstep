@@ -101,13 +101,13 @@ Allowed values: `devops` `advanced`
 
 Required:
 
-- `duration` (String) The name of the issuer
 - `key_version` (String) The signature algorithm
 Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
 - `name` (String) The name of the issuer
 
 Optional:
 
+- `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
 - `name_constraints` (Attributes) (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--intermediate_issuer--subject))
@@ -151,13 +151,13 @@ Optional:
 
 Required:
 
-- `duration` (String) The name of the issuer
 - `key_version` (String) The signature algorithm
 Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
 - `name` (String) The name of the issuer
 
 Optional:
 
+- `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
 - `name_constraints` (Attributes) (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--root_issuer--subject))
