@@ -85,14 +85,14 @@ func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20230301.NameConst
 		return nil, d
 	}
 
-	var excludedDNSDomains []string
-	var excludedEmailAddresses []string
-	var excludedIPRanges []string
-	var excludedURIDomains []string
-	var permittedDNSDomains []string
-	var permittedEmailAddresses []string
-	var permittedIPRanges []string
-	var permittedURIDomains []string
+	var excludedDNSDomains *[]string
+	var excludedEmailAddresses *[]string
+	var excludedIPRanges *[]string
+	var excludedURIDomains *[]string
+	var permittedDNSDomains *[]string
+	var permittedEmailAddresses *[]string
+	var permittedIPRanges *[]string
+	var permittedURIDomains *[]string
 
 	d.Append(nc.ExcludedDNSDomains.ElementsAs(ctx, &excludedDNSDomains, false)...)
 	d.Append(nc.ExcludedEmailAddresses.ElementsAs(ctx, &excludedEmailAddresses, false)...)
@@ -102,17 +102,20 @@ func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20230301.NameConst
 	d.Append(nc.PermittedEmailAddresses.ElementsAs(ctx, &permittedEmailAddresses, false)...)
 	d.Append(nc.PermittedIPRanges.ElementsAs(ctx, &permittedIPRanges, false)...)
 	d.Append(nc.PermittedURIDomains.ElementsAs(ctx, &permittedURIDomains, false)...)
+	if d.HasError() {
+		return nil, d
+	}
 
 	return &v20230301.NameConstraints{
 		Critical:                nc.Critical.ValueBoolPointer(),
-		ExcludedDNSDomains:      &excludedDNSDomains,
-		ExcludedEmailAddresses:  &excludedEmailAddresses,
-		ExcludedIPRanges:        &excludedIPRanges,
-		ExcludedURIDomains:      &excludedURIDomains,
-		PermittedDNSDomains:     &permittedDNSDomains,
-		PermittedEmailAddresses: &permittedEmailAddresses,
-		PermittedIPRanges:       &permittedIPRanges,
-		PermittedURIDomains:     &permittedURIDomains,
+		ExcludedDNSDomains:      excludedDNSDomains,
+		ExcludedEmailAddresses:  excludedEmailAddresses,
+		ExcludedIPRanges:        excludedIPRanges,
+		ExcludedURIDomains:      excludedURIDomains,
+		PermittedDNSDomains:     permittedDNSDomains,
+		PermittedEmailAddresses: permittedEmailAddresses,
+		PermittedIPRanges:       permittedIPRanges,
+		PermittedURIDomains:     permittedURIDomains,
 	}, d
 }
 

@@ -59,7 +59,14 @@ func Describe(component string) (string, map[string]string, error) {
 	propertyDescriptions := make(map[string]string, len(componentSchema.Value.Properties))
 
 	for prop, schema := range componentSchema.Value.Properties {
-		propertyDescriptions[prop] = schema.Value.Description
+		d := schema.Value.Description
+		if len(schema.Value.Enum) > 0 {
+			d += "Allowed values:"
+			for _, enum := range schema.Value.Enum {
+				d += fmt.Sprintf("\n- %s", enum)
+			}
+		}
+		propertyDescriptions[prop] = d
 	}
 
 	return description, propertyDescriptions, nil

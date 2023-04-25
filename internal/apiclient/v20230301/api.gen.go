@@ -54,6 +54,9 @@ type Authority struct {
 	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only)
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
+	// AdminEmails Users that have admin access to manage the authority
+	AdminEmails *[]string `json:"adminEmails,omitempty"`
+
 	// CreatedAt Timestamp when the authority was created
 	CreatedAt time.Time `json:"createdAt"`
 
@@ -3490,7 +3493,6 @@ type DeleteAuthorityResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Error
 	JSON401      *Error
-	JSON404      *Error
 	JSON500      *Error
 }
 
@@ -4701,13 +4703,6 @@ func ParseDeleteAuthorityResponse(rsp *http.Response) (*DeleteAuthorityResponse,
 			return nil, err
 		}
 		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error

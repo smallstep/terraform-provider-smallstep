@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -36,11 +38,149 @@ func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, r
 	resp.TypeName = authorityTypeName
 }
 
+func (r *Resource) x509IssuerSchema() (map[string]schema.Attribute, error) {
+	_, properties, err := utils.Describe("x509-issuer")
+	if err != nil {
+		return nil, err
+	}
+	_, nameConstraints, err := utils.Describe("name-constraints")
+	if err != nil {
+		return nil, err
+	}
+	_, subject, err := utils.Describe("distinguished-name")
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]schema.Attribute{
+		"name": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: properties["name"],
+		},
+		"key_version": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: properties["keyVersion"],
+		},
+		"duration": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: properties["name"],
+		},
+		"max_path_length": schema.Int64Attribute{
+			Optional:            true,
+			MarkdownDescription: properties["maxPathLength"],
+		},
+		"name_constraints": schema.SingleNestedAttribute{
+			Optional:            true,
+			MarkdownDescription: properties["nameConstraints"],
+			Attributes: map[string]schema.Attribute{
+				"critical": schema.BoolAttribute{
+					Optional:            true,
+					MarkdownDescription: nameConstraints["critical"],
+				},
+				"permitted_dns_domains": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["permittedDNSDomains"],
+				},
+				"excluded_dns_domains": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["excludedDNSDomains"],
+				},
+				"permitted_ip_ranges": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["permittedIPRanges"],
+				},
+				"excluded_ip_ranges": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["excludedIPRanges"],
+				},
+				"permitted_email_addresses": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["permittedEmailAddresses"],
+				},
+				"excluded_email_addresses": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["excludedEmailAddresses"],
+				},
+				"permitted_uri_domains": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["permittedURIDomains"],
+				},
+				"excluded_uri_domains": schema.ListAttribute{
+					Optional:            true,
+					ElementType:         types.StringType,
+					MarkdownDescription: nameConstraints["excludedURIDomains"],
+				},
+			},
+		},
+		"subject": schema.SingleNestedAttribute{
+			Optional:            true,
+			MarkdownDescription: properties["subject"],
+			Attributes: map[string]schema.Attribute{
+				"common_name": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["commonName"],
+				},
+				"country": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["country"],
+				},
+				"organization": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["organization"],
+				},
+				"organizational_unit": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["organizationalUnit"],
+				},
+				"locality": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["locality"],
+				},
+				"province": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["province"],
+				},
+				"street_address": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["streetAddress"],
+				},
+				"email_address": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["emailAddress"],
+				},
+				"postal_code": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["postalCode"],
+				},
+				"serial_number": schema.StringAttribute{
+					Optional:            true,
+					MarkdownDescription: subject["serialNumber"],
+				},
+			},
+		},
+	}, nil
+}
+
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	component, properties, err := utils.Describe("authority")
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI spec",
+			"Parse Smallstep OpenAPI authority schema",
+			err.Error(),
+		)
+		return
+	}
+	x509Issuer, err := r.x509IssuerSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI x509-issuer schema",
 			err.Error(),
 		)
 		return
@@ -109,17 +249,19 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					listplanmodifier.RequiresReplace(),
 				},
 			},
-			"intermediate_issuer": schema.ObjectAttribute{
+			"intermediate_issuer": schema.SingleNestedAttribute{
 				MarkdownDescription: properties["intermediateIssuer"],
 				Optional:            true,
+				Attributes:          x509Issuer,
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
 					objectplanmodifier.RequiresReplace(),
 				},
 			},
-			"root_issuer": schema.ObjectAttribute{
+			"root_issuer": schema.SingleNestedAttribute{
 				MarkdownDescription: properties["rootIssuer"],
 				Optional:            true,
+				Attributes:          x509Issuer,
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.UseStateForUnknown(),
 					objectplanmodifier.RequiresReplace(),
@@ -178,6 +320,8 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		Subdomain:          data.Subdomain.ValueString(),
 		Type:               v20230301.NewAuthorityType(data.Type.ValueString()),
 	}
+	b, _ := json.Marshal(reqBody)
+	tflog.Debug(ctx, string(b))
 	httpResp, err := a.client.PostAuthorities(ctx, &v20230301.PostAuthoritiesParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -264,7 +408,21 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
 
-	tflog.Trace(ctx, fmt.Sprintf("create authority %q resource", data.ID.ValueString()))
+	// Add required fields if this was an import
+	if data.AdminEmails.IsNull() {
+		adminEmails, diags := types.ListValue(
+			types.StringType,
+			[]attr.Value{},
+		)
+		resp.Diagnostics.Append(diags...)
+		data.AdminEmails = adminEmails
+	}
+	if data.Subdomain.IsNull() {
+		parts := strings.Split(data.Domain.ValueString(), ".")
+		data.Subdomain = types.StringValue(parts[0])
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("read authority %q resource", data.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

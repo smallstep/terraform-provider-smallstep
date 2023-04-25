@@ -27,9 +27,16 @@ type SmallstepProvider struct {
 	version string
 }
 
+type ClientCertificateModel struct {
+	Certificate types.String `tfsdk:"certificate"`
+	PrivateKey  types.String `tfsdk:"private_key"`
+	TeamID      types.String `tfsdk:"team_id"`
+}
+
 // SmallstepProviderModel describes the provider data model.
 type SmallstepProviderModel struct {
-	BearerToken types.String `tfsdk:"bearer_token"`
+	BearerToken       types.String            `tfsdk:"bearer_token"`
+	ClientCertificate *ClientCertificateModel `tfsdk:"client_certificate"`
 }
 
 func (p *SmallstepProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -48,6 +55,24 @@ May also be provided via the SMALLSTEP_API_TOKEN environment variable.
 				Optional:  true,
 				Sensitive: true,
 			},
+			"client_certificate": schema.SingleNestedAttribute{
+				Optional:            true,
+				MarkdownDescription: "Get an API token with a client certificate key pair signed by your trusted root.",
+				Attributes: map[string]schema.Attribute{
+					"certificate": schema.StringAttribute{
+						MarkdownDescription: "The PEM encoded certificate signed by your trusted root.",
+						Required:            true,
+					},
+					"private_key": schema.StringAttribute{
+						MarkdownDescription: "The PEM encoded private key",
+						Required:            true,
+					},
+					"team_id": schema.StringAttribute{
+						MarkdownDescription: "Your team's UUID",
+						Required:            true,
+					},
+				},
+			},
 		},
 	}
 }
@@ -58,6 +83,55 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	server := os.Getenv("SMALLSTEP_API_URL")
+	if server == "" {
+		server = "https://smallstep.com"
+	}
+
+	if data.ClientCertificate != nil {
+		if data.ClientCertificate.Certificate.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("client_certificate.certificate"),
+				"Unknown Smallstep client certificate",
+				"The provider cannot connect to the Smallstep API since the client_certificate certificate is unknown",
+			)
+			return
+		}
+		if data.ClientCertificate.PrivateKey.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("client_certificate.private_key"),
+				"Unknown Smallstep client certificate private key",
+				"The provider cannot connect to the Smallstep API since the client_certificate private key is unknown",
+			)
+			return
+		}
+		if data.BearerToken.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("client_certificate.team_id"),
+				"Unknown Smallstep client certificate",
+				"The provider cannot connect to the Smallstep API with a client certificate since the team ID is unknown",
+			)
+			return
+		}
+		client, err := apiClientWithClientCert(
+			ctx,
+			server,
+			data.ClientCertificate.TeamID.ValueString(),
+			data.ClientCertificate.Certificate.ValueString(),
+			data.ClientCertificate.PrivateKey.ValueString(),
+		)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Get API token with client certificate",
+				err.Error(),
+			)
+			return
+		}
+		resp.DataSourceData = client
+		resp.ResourceData = client
 		return
 	}
 
@@ -75,10 +149,6 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 		token = data.BearerToken.ValueString()
 	}
 
-	server := os.Getenv("SMALLSTEP_API_URL")
-	if server == "" {
-		server = "https://smallstep.com"
-	}
 	client, err := v20230301.NewClient(server, v20230301.WithRequestEditorFn(v20230301.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
