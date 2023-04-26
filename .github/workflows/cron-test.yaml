@@ -1,0 +1,38 @@
+# Terraform Provider testing workflow.
+name: Cron Tests
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  # Run acceptance tests in a matrix with Terraform CLI versions
+  test:
+    name: Terraform Provider Acceptance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.4.*'
+          terraform_wrapper: false
+      - run: go mod download
+      - env:
+          TF_ACC: "1"
+          SMALLSTEP_API_URL: https://gateway.pki.pub/api
+          SMALLSTEP_API_TOKEN: ${{ secrets.SMALLSTEP_API_TOKEN }}
+        run: |
+          go test -v -cover ./internal/provider/
+          make sweep
+        timeout-minutes: 10
