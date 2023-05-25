@@ -81,7 +81,7 @@ resource "smallstep_authority" "advanced" {
 - `name` (String) The name of the authority
 - `subdomain` (String) The domain where the authority can be reached
 - `type` (String) One of the available authority types
-Allowed values: `devops` `advanced`
+ Allowed values: `devops` `advanced`
 
 ### Optional
 
@@ -102,7 +102,7 @@ Allowed values: `devops` `advanced`
 Required:
 
 - `key_version` (String) The signature algorithm
-Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
+ Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
 - `name` (String) The name of the issuer
 
 Optional:
@@ -152,7 +152,7 @@ Optional:
 Required:
 
 - `key_version` (String) The signature algorithm
-Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
+ Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
 - `name` (String) The name of the issuer
 
 Optional:

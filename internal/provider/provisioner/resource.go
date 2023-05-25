@@ -92,6 +92,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		)
 		return
 	}
+	// TODO Remove when description is added to OpenAPI spec
+	if jwk == "" {
+		jwk = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT)."
+	}
+	jwk += " This object is required when type is `JWK` and is otherwise ignored."
 
 	oidc, oidcProps, err := utils.Describe("oidcProvisioner")
 	if err != nil {
@@ -101,6 +106,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		)
 		return
 	}
+	// TODO Remove when description is added to OpenAPI spec
+	if oidc == "" {
+		oidc = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication."
+	}
+	oidc += " This object is required when type is `OIDC` and is otherwise ignored."
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
@@ -114,6 +124,8 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				},
 			},
 			"authority_id": schema.StringAttribute{
+				// authority_id is a path parameter - it doesn't exist on the
+				// provisioner schema in the openAPI spec
 				MarkdownDescription: "The UUID of the authority this provisioner is attached to",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
@@ -241,7 +253,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Attributes: map[string]schema.Attribute{
 							"template": schema.StringAttribute{
 								MarkdownDescription: x509Props["template"],
-								Required:            true,
+								Optional:            true,
 								PlanModifiers: []planmodifier.String{
 									stringplanmodifier.RequiresReplace(),
 								},
@@ -261,7 +273,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Attributes: map[string]schema.Attribute{
 							"template": schema.StringAttribute{
 								MarkdownDescription: sshProps["template"],
-								Required:            true,
+								Optional:            true,
 								PlanModifiers: []planmodifier.String{
 									stringplanmodifier.RequiresReplace(),
 								},
@@ -289,7 +301,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						},
 					},
 					"encrypted_key": schema.StringAttribute{
-						MarkdownDescription: jwkProps["encrypted_key"],
+						MarkdownDescription: jwkProps["encryptedKey"],
 						Optional:            true,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),

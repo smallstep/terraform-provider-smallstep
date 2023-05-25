@@ -153,6 +153,11 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		)
 		return
 	}
+	// TODO Remove when description is added to OpenAPI spec
+	if jwk == "" {
+		jwk = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT)."
+	}
+	jwk += " This object is populated when type is `JWK`."
 
 	oidc, oidcProps, err := utils.Describe("oidcProvisioner")
 	if err != nil {
@@ -162,21 +167,28 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		)
 		return
 	}
+	// TODO Remove when description is added to OpenAPI spec
+	if oidc == "" {
+		oidc = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication."
+	}
+	oidc += " This object is populated when type is `OIDC`."
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: provProps["id"],
+				MarkdownDescription: provProps["id"] + " Either id or name must be set.",
 				Optional:            true,
 			},
 			"authority_id": schema.StringAttribute{
+				// authority_id is a path parameter - it doesn't exist on the
+				// provisioner schema in the openAPI spec
 				MarkdownDescription: "The UUID of the authority this provisioner is attached to",
 				Required:            true,
 			},
 			"name": schema.StringAttribute{
-				MarkdownDescription: provProps["name"],
+				MarkdownDescription: provProps["name"] + " Either id or name must be set.",
 				Optional:            true,
 			},
 			"type": schema.StringAttribute{
@@ -277,14 +289,14 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			},
 			"jwk": schema.SingleNestedAttribute{
 				MarkdownDescription: jwk,
-				Optional:            true,
+				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"key": schema.StringAttribute{
 						MarkdownDescription: jwkProps["key"],
 						Computed:            true,
 					},
 					"encrypted_key": schema.StringAttribute{
-						MarkdownDescription: jwkProps["encrypted_key"],
+						MarkdownDescription: jwkProps["encryptedKey"],
 						Computed:            true,
 					},
 				},

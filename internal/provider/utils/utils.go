@@ -76,7 +76,7 @@ func Describe(component string) (string, map[string]string, error) {
 	for prop, schema := range props {
 		d := schema.Value.Description
 		if len(schema.Value.Enum) > 0 {
-			d += "Allowed values:"
+			d += " Allowed values:"
 			for _, enum := range schema.Value.Enum {
 				d += fmt.Sprintf(" `%s`", enum)
 			}
