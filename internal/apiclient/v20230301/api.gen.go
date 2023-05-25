@@ -462,8 +462,8 @@ type ProvisionerOptions struct {
 
 // SshOptions Options that apply when issuing SSH certificates
 type SshOptions struct {
-	// Template A JSON representation of the SSH certificate to created. [More info](https://smallstep.com/docs/step-ca/templates/#ssh-templates).
-	Template string `json:"template"`
+	// Template A JSON representation of the SSH certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#ssh-templates).
+	Template *string `json:"template,omitempty"`
 
 	// TemplateData A map of data that can be used by the certificate template.
 	TemplateData *interface{} `json:"templateData,omitempty"`
@@ -546,8 +546,8 @@ type X509IssuerKeyVersion string
 
 // X509Options Options that apply when issuing x509 certificates
 type X509Options struct {
-	// Template A JSON representation of the x509 certificate to created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
-	Template string `json:"template"`
+	// Template A JSON representation of the x509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
+	Template *string `json:"template,omitempty"`
 
 	// TemplateData A map of data that can be used by the certificate template.
 	TemplateData *interface{} `json:"templateData,omitempty"`
@@ -585,8 +585,8 @@ type Pagination struct {
 	First *int `json:"first"`
 }
 
-// ProvisionerID defines model for provisionerID.
-type ProvisionerID = string
+// ProvisionerNameOrID defines model for provisionerNameOrID.
+type ProvisionerNameOrID = string
 
 // RequestID defines model for requestID.
 type RequestID = string
@@ -1259,10 +1259,10 @@ type ClientInterface interface {
 	PostAuthorityProvisioners(ctx context.Context, authorityID AuthorityID, params *PostAuthorityProvisionersParams, body PostAuthorityProvisionersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteProvisioner request
-	DeleteProvisioner(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetProvisioner request
-	GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBody(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1490,8 +1490,8 @@ func (c *Client) PostAuthorityProvisioners(ctx context.Context, authorityID Auth
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteProvisioner(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteProvisionerRequest(c.Server, authorityID, provisionerID, params)
+func (c *Client) DeleteProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteProvisionerRequest(c.Server, authorityID, provisionerNameOrID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1502,8 +1502,8 @@ func (c *Client) DeleteProvisioner(ctx context.Context, authorityID AuthorityID,
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetProvisionerRequest(c.Server, authorityID, provisionerID, params)
+func (c *Client) GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProvisionerRequest(c.Server, authorityID, provisionerNameOrID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2313,7 +2313,7 @@ func NewPostAuthorityProvisionersRequestWithBody(server string, authorityID Auth
 }
 
 // NewDeleteProvisionerRequest generates requests for DeleteProvisioner
-func NewDeleteProvisionerRequest(server string, authorityID AuthorityID, provisionerID ProvisionerID, params *DeleteProvisionerParams) (*http.Request, error) {
+func NewDeleteProvisionerRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *DeleteProvisionerParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -2325,7 +2325,7 @@ func NewDeleteProvisionerRequest(server string, authorityID AuthorityID, provisi
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerID", runtime.ParamLocationPath, provisionerID)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
 	if err != nil {
 		return nil, err
 	}
@@ -2376,7 +2376,7 @@ func NewDeleteProvisionerRequest(server string, authorityID AuthorityID, provisi
 }
 
 // NewGetProvisionerRequest generates requests for GetProvisioner
-func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisionerID ProvisionerID, params *GetProvisionerParams) (*http.Request, error) {
+func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -2388,7 +2388,7 @@ func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisione
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerID", runtime.ParamLocationPath, provisionerID)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
 	if err != nil {
 		return nil, err
 	}
@@ -4011,10 +4011,10 @@ type ClientWithResponsesInterface interface {
 	PostAuthorityProvisionersWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityProvisionersParams, body PostAuthorityProvisionersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAuthorityProvisionersResponse, error)
 
 	// DeleteProvisioner request
-	DeleteProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*DeleteProvisionerResponse, error)
+	DeleteProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*DeleteProvisionerResponse, error)
 
 	// GetProvisioner request
-	GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error)
+	GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error)
 
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error)
@@ -5043,8 +5043,8 @@ func (c *ClientWithResponses) PostAuthorityProvisionersWithResponse(ctx context.
 }
 
 // DeleteProvisionerWithResponse request returning *DeleteProvisionerResponse
-func (c *ClientWithResponses) DeleteProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*DeleteProvisionerResponse, error) {
-	rsp, err := c.DeleteProvisioner(ctx, authorityID, provisionerID, params, reqEditors...)
+func (c *ClientWithResponses) DeleteProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *DeleteProvisionerParams, reqEditors ...RequestEditorFn) (*DeleteProvisionerResponse, error) {
+	rsp, err := c.DeleteProvisioner(ctx, authorityID, provisionerNameOrID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -5052,8 +5052,8 @@ func (c *ClientWithResponses) DeleteProvisionerWithResponse(ctx context.Context,
 }
 
 // GetProvisionerWithResponse request returning *GetProvisionerResponse
-func (c *ClientWithResponses) GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerID ProvisionerID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error) {
-	rsp, err := c.GetProvisioner(ctx, authorityID, provisionerID, params, reqEditors...)
+func (c *ClientWithResponses) GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error) {
+	rsp, err := c.GetProvisioner(ctx, authorityID, provisionerNameOrID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}

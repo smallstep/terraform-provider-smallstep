@@ -29,10 +29,14 @@ To generate or update documentation, run `go generate`.
 In order to run the full suite of Acceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
-
 ```shell
 make testacc
 ```
+
+Use these environment variables to configure the account the tests run against:
+* SMALLSTEP_API_TOKEN
+* SMALLSTEP_API_URL
+* SMALLSTEP_CA_DOMAIN
 
 A sweeper is defined to clean up all authorities older than 1 day unless the authority domain begins with `keep-`.
 

@@ -12,6 +12,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	"github.com/stretchr/testify/require"
+	"go.step.sm/crypto/jose"
 )
 
 func SmallstepAPIClientFromEnv() (*v20230301.Client, error) {
@@ -63,4 +65,52 @@ func NewAuthority(t *testing.T) *v20230301.Authority {
 	}
 
 	return authority
+}
+
+func NewOIDCProvisioner(t *testing.T, authorityID string) (*v20230301.Provisioner, *v20230301.OidcProvisioner) {
+	client, err := SmallstepAPIClientFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := v20230301.Provisioner{
+		Name: acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
+		Type: "OIDC",
+	}
+	oidc := v20230301.OidcProvisioner{
+		ClientID:              acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
+		ClientSecret:          acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
+		ConfigurationEndpoint: "https://accounts.google.com/.well-known/openid-configuration",
+	}
+	if err := req.FromOidcProvisioner(oidc); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := client.PostAuthorityProvisioners(context.Background(), authorityID, &v20230301.PostAuthorityProvisionersParams{}, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		t.Fatalf("Failed to create provisioner: %d: %s", resp.StatusCode, body)
+	}
+
+	provisioner := &v20230301.Provisioner{}
+	if err := json.NewDecoder(resp.Body).Decode(&provisioner); err != nil {
+		t.Fatal(err)
+	}
+
+	return provisioner, &oidc
+}
+
+func NewJWK(t *testing.T, pass string) (string, string) {
+	jwk, jwe, err := jose.GenerateDefaultKeyPair([]byte(pass))
+	require.NoError(t, err)
+
+	pubJSON, err := jwk.MarshalJSON()
+	require.NoError(t, err)
+
+	priv, err := jwe.CompactSerialize()
+	require.NoError(t, err)
+
+	return string(pubJSON), priv
 }
