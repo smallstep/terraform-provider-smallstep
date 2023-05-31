@@ -45,11 +45,11 @@ func init() {
 			}
 
 			for _, authority := range list {
-				if strings.HasPrefix(authority.Domain, "keep-") {
+				if !strings.HasPrefix(authority.Domain, "tfprovider-") {
 					continue
 				}
-				// Keep authorities for 24 hours for debugging
-				if authority.CreatedAt.After(time.Now().Add(time.Hour * -24)) {
+				// Don't delete authorities that may be used by running tests
+				if authority.CreatedAt.After(time.Now().Add(time.Minute * -1)) {
 					continue
 				}
 				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20230301.DeleteAuthorityParams{})
@@ -72,7 +72,7 @@ func init() {
 func TestAccAuthorityResource(t *testing.T) {
 	t.Parallel()
 
-	devopsSlug := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	devopsSlug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 	devopsConfig := fmt.Sprintf(`
 resource "smallstep_authority" "devops" {
 	subdomain = "%s"
@@ -85,7 +85,7 @@ resource "smallstep_authority" "devops" {
 
 	caDomain := os.Getenv("SMALLSTEP_CA_DOMAIN")
 	if caDomain == "" {
-		caDomain = ".testacc.ca.pki.pub"
+		caDomain = ".step-e2e.ca.smallstep.com"
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -109,7 +109,7 @@ resource "smallstep_authority" "devops" {
 		},
 	})
 
-	advancedSlug := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	advancedSlug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 	advancedConfig := fmt.Sprintf(`
 resource "smallstep_authority" "advanced" {
 	subdomain = "%s"

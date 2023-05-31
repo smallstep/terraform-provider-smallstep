@@ -41,7 +41,7 @@ func NewAuthority(t *testing.T) *v20230301.Authority {
 	if err != nil {
 		t.Fatal(err)
 	}
-	slug := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	slug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 	reqBody := v20230301.PostAuthoritiesJSONRequestBody{
 		Name:        slug + " Authority",
 		AdminEmails: []string{"eng@smallstep.com"},
