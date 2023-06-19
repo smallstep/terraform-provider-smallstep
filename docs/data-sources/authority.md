@@ -38,6 +38,6 @@ output "bootstrap_preexisting" {
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format
 - `name` (String) The name of the authority
 - `type` (String) One of the available authority types
-Allowed values: `devops` `advanced`
+ Allowed values: `devops` `advanced`
 
 

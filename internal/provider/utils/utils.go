@@ -56,12 +56,27 @@ func Describe(component string) (string, map[string]string, error) {
 
 	description := componentSchema.Value.Description
 
-	propertyDescriptions := make(map[string]string, len(componentSchema.Value.Properties))
+	props := componentSchema.Value.Properties
+	// provisioner schema uses AllOf
+	for _, s := range componentSchema.Value.AllOf {
+		if s == nil || s.Value == nil {
+			continue
+		}
+		if len(s.Value.Properties) > 0 {
+			props = s.Value.Properties
+			continue
+		}
+		for k, p := range s.Value.Properties {
+			props[k] = p
+		}
+	}
 
-	for prop, schema := range componentSchema.Value.Properties {
+	propertyDescriptions := make(map[string]string, len(props))
+
+	for prop, schema := range props {
 		d := schema.Value.Description
 		if len(schema.Value.Enum) > 0 {
-			d += "Allowed values:"
+			d += " Allowed values:"
 			for _, enum := range schema.Value.Enum {
 				d += fmt.Sprintf(" `%s`", enum)
 			}
