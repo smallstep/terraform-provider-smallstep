@@ -421,6 +421,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				Attributes: map[string]schema.Attribute{
 					"roots": schema.ListAttribute{
 						MarkdownDescription: x5cProps["roots"],
+						ElementType:         types.StringType,
 						Computed:            true,
 					},
 				},

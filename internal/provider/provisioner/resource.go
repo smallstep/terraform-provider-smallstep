@@ -475,6 +475,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"roots": schema.ListAttribute{
 						MarkdownDescription: x5cProps["roots"],
 						Computed:            true,
+						ElementType:         types.StringType,
 						PlanModifiers: []planmodifier.List{
 							listplanmodifier.RequiresReplace(),
 						},

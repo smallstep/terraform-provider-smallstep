@@ -38,12 +38,36 @@ data "smallstep_provisioner" "by_id" {
 
 ### Read-Only
 
+- `acme` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [ACME protocol](https://smallstep.com/docs/step-ca/acme-basics/#acme-challenges). This object is populated when type is `ACME`. (see [below for nested schema](#nestedatt--acme))
+- `acme_attestation` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/). This object is populated when type is `ACME_ATTESTATION`. (see [below for nested schema](#nestedatt--acme_attestation))
 - `claims` (Attributes) A set of constraints configuring how this provisioner can be used to issue certificates. (see [below for nested schema](#nestedatt--claims))
 - `created_at` (String) Timestamp of when the provisioner was created in RFC 3339 format. Generated server-side.
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is populated when type is `JWK`. (see [below for nested schema](#nestedatt--jwk))
 - `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
 - `options` (Attributes) Options that apply when issuing certificates with this provisioner (see [below for nested schema](#nestedatt--options))
-- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK`
+- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C`
+- `x5c` (Attributes) Authenticate a certificate request with an existing x509 certificate. This object is populated when type is `X5C`. (see [below for nested schema](#nestedatt--x5c))
+
+<a id="nestedatt--acme"></a>
+### Nested Schema for `acme`
+
+Read-Only:
+
+- `challenges` (List of String) Which ACME challenge types are allowed.
+- `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
+- `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
+
+
+<a id="nestedatt--acme_attestation"></a>
+### Nested Schema for `acme_attestation`
+
+Read-Only:
+
+- `attestation_formats` (List of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
+- `attestation_roots` (List of String) A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
+- `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
+- `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
+
 
 <a id="nestedatt--claims"></a>
 ### Nested Schema for `claims`
@@ -112,5 +136,14 @@ Read-Only:
 
 - `template` (String) A JSON representation of the x509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
 - `template_data` (String) A map of data that can be used by the certificate template.
+
+
+
+<a id="nestedatt--x5c"></a>
+### Nested Schema for `x5c`
+
+Read-Only:
+
+- `roots` (List of String) A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
 
 
