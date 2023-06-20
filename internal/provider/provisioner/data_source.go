@@ -173,6 +173,36 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 	}
 	oidc += " This object is populated when type is `OIDC`."
 
+	acme, acmeProps, err := utils.Describe("acmeProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	acme += " This object is populated when type is `ACME`."
+
+	attest, attestProps, err := utils.Describe("acmeAttestationProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	attest += " This object is populated when type is `ACME_ATTESTATION`."
+
+	x5c, x5cProps, err := utils.Describe("x5cProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	x5c += " This object is populated when type is `X5C`."
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
 
@@ -338,6 +368,59 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 					},
 					"tenant_id": schema.StringAttribute{
 						MarkdownDescription: oidcProps["tenantID"],
+						Computed:            true,
+					},
+				},
+			},
+			"acme": schema.SingleNestedAttribute{
+				MarkdownDescription: acme,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"challenges": schema.ListAttribute{
+						MarkdownDescription: acmeProps["challenges"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["requireEAB"],
+						Computed:            true,
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["forceCN"],
+						Computed:            true,
+					},
+				},
+			},
+			"acme_attestation": schema.SingleNestedAttribute{
+				MarkdownDescription: attest,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"attestation_formats": schema.ListAttribute{
+						MarkdownDescription: attestProps["attestationFormats"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"attestation_roots": schema.ListAttribute{
+						MarkdownDescription: attestProps["attestationRoots"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: attestProps["requireEAB"],
+						Computed:            true,
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: attestProps["forceCN"],
+						Computed:            true,
+					},
+				},
+			},
+			"x5c": schema.SingleNestedAttribute{
+				MarkdownDescription: x5c,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"roots": schema.ListAttribute{
+						MarkdownDescription: x5cProps["roots"],
 						Computed:            true,
 					},
 				},

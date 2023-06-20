@@ -18,15 +18,18 @@ import (
 const provisionerTypeName = "smallstep_provisioner"
 
 type Model struct {
-	ID          types.String  `tfsdk:"id"`
-	AuthorityID types.String  `tfsdk:"authority_id"`
-	Name        types.String  `tfsdk:"name"`
-	Type        types.String  `tfsdk:"type"`
-	CreatedAt   types.String  `tfsdk:"created_at"`
-	Claims      *ClaimsModel  `tfsdk:"claims"`
-	Options     *OptionsModel `tfsdk:"options"`
-	JWK         *JWKModel     `tfsdk:"jwk"`
-	OIDC        *OIDCModel    `tfsdk:"oidc"`
+	ID              types.String          `tfsdk:"id"`
+	AuthorityID     types.String          `tfsdk:"authority_id"`
+	Name            types.String          `tfsdk:"name"`
+	Type            types.String          `tfsdk:"type"`
+	CreatedAt       types.String          `tfsdk:"created_at"`
+	Claims          *ClaimsModel          `tfsdk:"claims"`
+	Options         *OptionsModel         `tfsdk:"options"`
+	JWK             *JWKModel             `tfsdk:"jwk"`
+	OIDC            *OIDCModel            `tfsdk:"oidc"`
+	ACME            *ACMEModel            `tfsdk:"acme"`
+	ACMEAttestation *ACMEAttestationModel `tfsdk:"acme_attestation"`
+	X5C             *X5CModel             `tfsdk:"x5c"`
 }
 
 type OptionsModel struct {
@@ -99,6 +102,23 @@ type OIDCModel struct {
 	Groups                types.List   `tfsdk:"groups"`
 	ListenAddress         types.String `tfsdk:"listen_address"`
 	TenantID              types.String `tfsdk:"tenant_id"`
+}
+
+type ACMEModel struct {
+	Challenges types.List `tfsdk:"challenges"`
+	ForceCN    types.Bool `tfsdk:"force_cn"`
+	RequireEAB types.Bool `tfsdk:"require_eab"`
+}
+
+type ACMEAttestationModel struct {
+	AttestationFormats types.List `tfsdk:"attestation_formats"`
+	AttestationRoots   types.List `tfsdk:"attestation_roots"`
+	ForceCN            types.Bool `tfsdk:"force_cn"`
+	RequireEAB         types.Bool `tfsdk:"require_eab"`
+}
+
+type X5CModel struct {
+	Roots types.List `tfsdk:"roots"`
 }
 
 func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
@@ -206,6 +226,49 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			oidc.TenantID = m.OIDC.TenantID.ValueStringPointer()
 		}
 		if err := p.FromOidcProvisioner(oidc); err != nil {
+			return nil, err
+		}
+	case m.ACME != nil:
+		acme := v20230301.AcmeProvisioner{
+			ForceCN:    m.ACME.ForceCN.ValueBoolPointer(),
+			RequireEAB: m.ACME.RequireEAB.ValueBool(),
+		}
+
+		diagnostics := m.ACME.Challenges.ElementsAs(ctx, &acme.Challenges, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromAcmeProvisioner(acme); err != nil {
+			return nil, err
+		}
+	case m.ACMEAttestation != nil:
+		attest := v20230301.AcmeAttestationProvisioner{
+			ForceCN:    m.ACME.ForceCN.ValueBoolPointer(),
+			RequireEAB: m.ACME.RequireEAB.ValueBoolPointer(),
+		}
+
+		diagnostics := m.ACMEAttestation.AttestationFormats.ElementsAs(ctx, &attest.AttestationFormats, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		diagnostics = m.ACMEAttestation.AttestationRoots.ElementsAs(ctx, attest.AttestationRoots, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromAcmeAttestationProvisioner(attest); err != nil {
+			return nil, err
+		}
+	case m.X5C != nil:
+		x5c := v20230301.X5cProvisioner{}
+		diagnostics := m.X5C.Roots.ElementsAs(ctx, &x5c.Roots, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromX5cProvisioner(x5c); err != nil {
 			return nil, err
 		}
 	}
@@ -367,6 +430,88 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 		if oidc.TenantID != nil {
 			data.OIDC.TenantID = types.StringValue(*oidc.TenantID)
 		}
+
+	case v20230301.ACME:
+		acme, err := provisioner.AsAcmeProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse ACME Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+		data.ACME = &ACMEModel{
+			RequireEAB: types.BoolValue(acme.RequireEAB),
+			ForceCN:    types.BoolPointerValue(acme.ForceCN),
+		}
+
+		var challenges []attr.Value
+		for _, challenge := range acme.Challenges {
+			challenges = append(challenges, types.StringValue(string(challenge)))
+		}
+		challengesList, diags := types.ListValue(types.StringType, challenges)
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACME.Challenges = challengesList
+
+	case v20230301.ACMEATTESTATION:
+		attest, err := provisioner.AsAcmeAttestationProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse ACME Attestation Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+		data.ACMEAttestation = &ACMEAttestationModel{
+			RequireEAB: types.BoolPointerValue(attest.RequireEAB),
+			ForceCN:    types.BoolPointerValue(attest.ForceCN),
+		}
+
+		var attestationFormats []attr.Value
+		for _, format := range attest.AttestationFormats {
+			attestationFormats = append(attestationFormats, types.StringValue(string(format)))
+		}
+		formatsList, diags := types.ListValue(types.StringType, attestationFormats)
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACMEAttestation.AttestationFormats = formatsList
+
+		if attest.AttestationRoots != nil {
+			var roots []attr.Value
+			for _, root := range *attest.AttestationRoots {
+				roots = append(roots, types.StringValue(root))
+			}
+			rootsList, diags := types.ListValue(types.StringType, roots)
+			if diags.HasError() {
+				return nil, diags
+			}
+			data.ACMEAttestation.AttestationRoots = rootsList
+		} else {
+			data.ACMEAttestation.AttestationRoots = types.ListNull(types.StringType)
+		}
+
+	case v20230301.X5C:
+		x5c, err := provisioner.AsX5cProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse X5C Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+
+		var roots []attr.Value
+		for _, root := range x5c.Roots {
+			roots = append(roots, types.StringValue(root))
+		}
+		rootsList, diags := types.ListValue(types.StringType, roots)
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.X5C.Roots = rootsList
 
 	default:
 		diags.AddError(

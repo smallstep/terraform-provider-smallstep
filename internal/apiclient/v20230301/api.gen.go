@@ -23,6 +23,20 @@ const (
 	MtlsScopes = "mtls.Scopes"
 )
 
+// Defines values for AcmeAttestationProvisionerAttestationFormats.
+const (
+	Apple AcmeAttestationProvisionerAttestationFormats = "apple"
+	Step  AcmeAttestationProvisionerAttestationFormats = "step"
+	Tpm   AcmeAttestationProvisionerAttestationFormats = "tpm"
+)
+
+// Defines values for AcmeProvisionerChallenges.
+const (
+	Dns01     AcmeProvisionerChallenges = "dns-01"
+	Http01    AcmeProvisionerChallenges = "http-01"
+	TlsAlpn01 AcmeProvisionerChallenges = "tls-alpn-01"
+)
+
 // Defines values for AuthorityType.
 const (
 	AuthorityTypeAdvanced AuthorityType = "advanced"
@@ -37,8 +51,11 @@ const (
 
 // Defines values for ProvisionerType.
 const (
-	JWK  ProvisionerType = "JWK"
-	OIDC ProvisionerType = "OIDC"
+	ACME            ProvisionerType = "ACME"
+	ACMEATTESTATION ProvisionerType = "ACME_ATTESTATION"
+	JWK             ProvisionerType = "JWK"
+	OIDC            ProvisionerType = "OIDC"
+	X5C             ProvisionerType = "X5C"
 )
 
 // Defines values for WebhookCertType.
@@ -66,6 +83,66 @@ const (
 const (
 	StepAgent PostAuthJSONBodyAudience = "step-agent"
 )
+
+// AcmeAttestationProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/).
+type AcmeAttestationProvisioner struct {
+	// AttestationFormats The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
+	AttestationFormats []AcmeAttestationProvisionerAttestationFormats `json:"attestationFormats"`
+
+	// AttestationRoots A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
+	AttestationRoots *[]string `json:"attestationRoots,omitempty"`
+
+	// ForceCN Force one of the SANs to become the Common Name, if a Common Name is not provided.
+	ForceCN *bool `json:"forceCN,omitempty"`
+
+	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
+	RequireEAB *bool `json:"requireEAB,omitempty"`
+}
+
+// AcmeAttestationProvisionerAttestationFormats defines model for AcmeAttestationProvisioner.AttestationFormats.
+type AcmeAttestationProvisionerAttestationFormats string
+
+// AcmeProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [ACME protocol](https://smallstep.com/docs/step-ca/acme-basics/#acme-challenges).
+type AcmeProvisioner struct {
+	// Challenges Which ACME challenge types are allowed.
+	Challenges []AcmeProvisionerChallenges `json:"challenges"`
+
+	// ForceCN Force one of the SANs to become the Common Name, if a Common Name is not provided.
+	ForceCN *bool `json:"forceCN,omitempty"`
+
+	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
+	RequireEAB bool `json:"requireEAB"`
+}
+
+// AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
+type AcmeProvisionerChallenges string
+
+// AttestationAuthority An attestation authority used with the device-attest-01 ACME challenge to verify a device's hardware identity. This object is experimental and subject to change.
+type AttestationAuthority struct {
+	// AttestorIntermediates The pem-encoded list of intermediate certificates used to build a chain of trust to verify the attestation certificates submitted by devices.
+	AttestorIntermediates *string `json:"attestorIntermediates,omitempty"`
+
+	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
+	AttestorRoots string `json:"attestorRoots"`
+
+	// Catalog The slug of an inventory that holds the list of devices belonging to the team
+	Catalog string `json:"catalog"`
+
+	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+
+	// Id A UUID identifying this attestation authority. Generated server-side.
+	Id *string `json:"id,omitempty"`
+
+	// Name The name of the attestation authority
+	Name string `json:"name"`
+
+	// Root The pem-encoded root certificate of this attestation authority. This is generated server-side when the attestation authority is created. This certificate should be used in the `attestationRoots` field of an ACME_ATTESTATION provisioner with the `tpm` format.
+	Root *string `json:"root,omitempty"`
+
+	// Slug A short name for this attestation authority. Read only.
+	Slug *string `json:"slug,omitempty"`
+}
 
 // Authority An X509 authority hosted by Smallstep
 type Authority struct {
@@ -553,8 +630,17 @@ type X509Options struct {
 	TemplateData *interface{} `json:"templateData,omitempty"`
 }
 
+// X5cProvisioner Authenticate a certificate request with an existing x509 certificate.
+type X5cProvisioner struct {
+	// Roots A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
+	Roots []string `json:"roots"`
+}
+
 // Accept defines model for accept.
 type Accept = string
+
+// AttestationAuthorityID defines model for attestationAuthorityID.
+type AttestationAuthorityID = string
 
 // AuthorityID defines model for authorityID.
 type AuthorityID = string
@@ -611,6 +697,42 @@ type N412 = Error
 
 // N500 defines model for 500.
 type N500 = Error
+
+// GetAttestationAuthoritiesParams defines parameters for GetAttestationAuthorities.
+type GetAttestationAuthoritiesParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostAttestationAuthoritiesParams defines parameters for PostAttestationAuthorities.
+type PostAttestationAuthoritiesParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteAttestationAuthorityParams defines parameters for DeleteAttestationAuthority.
+type DeleteAttestationAuthorityParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetAttestationAuthorityParams defines parameters for GetAttestationAuthority.
+type GetAttestationAuthorityParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
 
 // PostAuthJSONBody defines parameters for PostAuth.
 type PostAuthJSONBody struct {
@@ -960,6 +1082,9 @@ type GetSshUsersParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
+type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
+
 // PostAuthJSONRequestBody defines body for PostAuth for application/json ContentType.
 type PostAuthJSONRequestBody PostAuthJSONBody
 
@@ -1032,6 +1157,84 @@ func (t *Provisioner) FromJwkProvisioner(v JwkProvisioner) error {
 
 // MergeJwkProvisioner performs a merge with any union data inside the Provisioner, using the provided JwkProvisioner
 func (t *Provisioner) MergeJwkProvisioner(v JwkProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsAcmeProvisioner returns the union data inside the Provisioner as a AcmeProvisioner
+func (t Provisioner) AsAcmeProvisioner() (AcmeProvisioner, error) {
+	var body AcmeProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAcmeProvisioner overwrites any union data inside the Provisioner as the provided AcmeProvisioner
+func (t *Provisioner) FromAcmeProvisioner(v AcmeProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAcmeProvisioner performs a merge with any union data inside the Provisioner, using the provided AcmeProvisioner
+func (t *Provisioner) MergeAcmeProvisioner(v AcmeProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsAcmeAttestationProvisioner returns the union data inside the Provisioner as a AcmeAttestationProvisioner
+func (t Provisioner) AsAcmeAttestationProvisioner() (AcmeAttestationProvisioner, error) {
+	var body AcmeAttestationProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAcmeAttestationProvisioner overwrites any union data inside the Provisioner as the provided AcmeAttestationProvisioner
+func (t *Provisioner) FromAcmeAttestationProvisioner(v AcmeAttestationProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAcmeAttestationProvisioner performs a merge with any union data inside the Provisioner, using the provided AcmeAttestationProvisioner
+func (t *Provisioner) MergeAcmeAttestationProvisioner(v AcmeAttestationProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsX5cProvisioner returns the union data inside the Provisioner as a X5cProvisioner
+func (t Provisioner) AsX5cProvisioner() (X5cProvisioner, error) {
+	var body X5cProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromX5cProvisioner overwrites any union data inside the Provisioner as the provided X5cProvisioner
+func (t *Provisioner) FromX5cProvisioner(v X5cProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeX5cProvisioner performs a merge with any union data inside the Provisioner, using the provided X5cProvisioner
+func (t *Provisioner) MergeX5cProvisioner(v X5cProvisioner) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -1226,6 +1429,20 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetAttestationAuthorities request
+	GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostAttestationAuthorities request with any body
+	PostAttestationAuthoritiesWithBody(ctx context.Context, params *PostAttestationAuthoritiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostAttestationAuthorities(ctx context.Context, params *PostAttestationAuthoritiesParams, body PostAttestationAuthoritiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAttestationAuthority request
+	DeleteAttestationAuthority(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *DeleteAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAttestationAuthority request
+	GetAttestationAuthority(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *GetAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostAuth request with any body
 	PostAuthWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1344,6 +1561,66 @@ type ClientInterface interface {
 
 	// GetSshUsers request
 	GetSshUsers(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAttestationAuthoritiesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostAttestationAuthoritiesWithBody(ctx context.Context, params *PostAttestationAuthoritiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAttestationAuthoritiesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostAttestationAuthorities(ctx context.Context, params *PostAttestationAuthoritiesParams, body PostAttestationAuthoritiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAttestationAuthoritiesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteAttestationAuthority(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *DeleteAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAttestationAuthorityRequest(c.Server, attestationAuthorityID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAttestationAuthority(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *GetAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAttestationAuthorityRequest(c.Server, attestationAuthorityID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) PostAuthWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1860,6 +2137,229 @@ func (c *Client) GetSshUsers(ctx context.Context, params *GetSshUsersParams, req
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewGetAttestationAuthoritiesRequest generates requests for GetAttestationAuthorities
+func NewGetAttestationAuthoritiesRequest(server string, params *GetAttestationAuthoritiesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/attestation-authorities")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPostAttestationAuthoritiesRequest calls the generic PostAttestationAuthorities builder with application/json body
+func NewPostAttestationAuthoritiesRequest(server string, params *PostAttestationAuthoritiesParams, body PostAttestationAuthoritiesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostAttestationAuthoritiesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostAttestationAuthoritiesRequestWithBody generates requests for PostAttestationAuthorities with any type of body
+func NewPostAttestationAuthoritiesRequestWithBody(server string, params *PostAttestationAuthoritiesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/attestation-authorities")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteAttestationAuthorityRequest generates requests for DeleteAttestationAuthority
+func NewDeleteAttestationAuthorityRequest(server string, attestationAuthorityID AttestationAuthorityID, params *DeleteAttestationAuthorityParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "attestationAuthorityID", runtime.ParamLocationPath, attestationAuthorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/attestation-authorities/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetAttestationAuthorityRequest generates requests for GetAttestationAuthority
+func NewGetAttestationAuthorityRequest(server string, attestationAuthorityID AttestationAuthorityID, params *GetAttestationAuthorityParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "attestationAuthorityID", runtime.ParamLocationPath, attestationAuthorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/attestation-authorities/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
 }
 
 // NewPostAuthRequest calls the generic PostAuth builder with application/json body
@@ -3978,6 +4478,20 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetAttestationAuthorities request
+	GetAttestationAuthoritiesWithResponse(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthoritiesResponse, error)
+
+	// PostAttestationAuthorities request with any body
+	PostAttestationAuthoritiesWithBodyWithResponse(ctx context.Context, params *PostAttestationAuthoritiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAttestationAuthoritiesResponse, error)
+
+	PostAttestationAuthoritiesWithResponse(ctx context.Context, params *PostAttestationAuthoritiesParams, body PostAttestationAuthoritiesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAttestationAuthoritiesResponse, error)
+
+	// DeleteAttestationAuthority request
+	DeleteAttestationAuthorityWithResponse(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *DeleteAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*DeleteAttestationAuthorityResponse, error)
+
+	// GetAttestationAuthority request
+	GetAttestationAuthorityWithResponse(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *GetAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthorityResponse, error)
+
 	// PostAuth request with any body
 	PostAuthWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthResponse, error)
 
@@ -4096,6 +4610,108 @@ type ClientWithResponsesInterface interface {
 
 	// GetSshUsers request
 	GetSshUsersWithResponse(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*GetSshUsersResponse, error)
+}
+
+type GetAttestationAuthoritiesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]AttestationAuthority
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAttestationAuthoritiesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAttestationAuthoritiesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostAttestationAuthoritiesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *AttestationAuthority
+	JSON400      *Error
+	JSON401      *Error
+	JSON409      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostAttestationAuthoritiesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostAttestationAuthoritiesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteAttestationAuthorityResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAttestationAuthorityResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAttestationAuthorityResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetAttestationAuthorityResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AttestationAuthority
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAttestationAuthorityResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAttestationAuthorityResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type PostAuthResponse struct {
@@ -4938,6 +5554,50 @@ func (r GetSshUsersResponse) StatusCode() int {
 	return 0
 }
 
+// GetAttestationAuthoritiesWithResponse request returning *GetAttestationAuthoritiesResponse
+func (c *ClientWithResponses) GetAttestationAuthoritiesWithResponse(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthoritiesResponse, error) {
+	rsp, err := c.GetAttestationAuthorities(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAttestationAuthoritiesResponse(rsp)
+}
+
+// PostAttestationAuthoritiesWithBodyWithResponse request with arbitrary body returning *PostAttestationAuthoritiesResponse
+func (c *ClientWithResponses) PostAttestationAuthoritiesWithBodyWithResponse(ctx context.Context, params *PostAttestationAuthoritiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAttestationAuthoritiesResponse, error) {
+	rsp, err := c.PostAttestationAuthoritiesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAttestationAuthoritiesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostAttestationAuthoritiesWithResponse(ctx context.Context, params *PostAttestationAuthoritiesParams, body PostAttestationAuthoritiesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAttestationAuthoritiesResponse, error) {
+	rsp, err := c.PostAttestationAuthorities(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAttestationAuthoritiesResponse(rsp)
+}
+
+// DeleteAttestationAuthorityWithResponse request returning *DeleteAttestationAuthorityResponse
+func (c *ClientWithResponses) DeleteAttestationAuthorityWithResponse(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *DeleteAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*DeleteAttestationAuthorityResponse, error) {
+	rsp, err := c.DeleteAttestationAuthority(ctx, attestationAuthorityID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAttestationAuthorityResponse(rsp)
+}
+
+// GetAttestationAuthorityWithResponse request returning *GetAttestationAuthorityResponse
+func (c *ClientWithResponses) GetAttestationAuthorityWithResponse(ctx context.Context, attestationAuthorityID AttestationAuthorityID, params *GetAttestationAuthorityParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthorityResponse, error) {
+	rsp, err := c.GetAttestationAuthority(ctx, attestationAuthorityID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAttestationAuthorityResponse(rsp)
+}
+
 // PostAuthWithBodyWithResponse request with arbitrary body returning *PostAuthResponse
 func (c *ClientWithResponses) PostAuthWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthResponse, error) {
 	rsp, err := c.PostAuthWithBody(ctx, contentType, body, reqEditors...)
@@ -5313,6 +5973,208 @@ func (c *ClientWithResponses) GetSshUsersWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetSshUsersResponse(rsp)
+}
+
+// ParseGetAttestationAuthoritiesResponse parses an HTTP response from a GetAttestationAuthoritiesWithResponse call
+func ParseGetAttestationAuthoritiesResponse(rsp *http.Response) (*GetAttestationAuthoritiesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAttestationAuthoritiesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []AttestationAuthority
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostAttestationAuthoritiesResponse parses an HTTP response from a PostAttestationAuthoritiesWithResponse call
+func ParsePostAttestationAuthoritiesResponse(rsp *http.Response) (*PostAttestationAuthoritiesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostAttestationAuthoritiesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AttestationAuthority
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAttestationAuthorityResponse parses an HTTP response from a DeleteAttestationAuthorityWithResponse call
+func ParseDeleteAttestationAuthorityResponse(rsp *http.Response) (*DeleteAttestationAuthorityResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAttestationAuthorityResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAttestationAuthorityResponse parses an HTTP response from a GetAttestationAuthorityWithResponse call
+func ParseGetAttestationAuthorityResponse(rsp *http.Response) (*GetAttestationAuthorityResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAttestationAuthorityResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AttestationAuthority
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParsePostAuthResponse parses an HTTP response from a PostAuthWithResponse call
