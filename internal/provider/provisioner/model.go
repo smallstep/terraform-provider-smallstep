@@ -97,28 +97,28 @@ type OIDCModel struct {
 	ClientID              types.String `tfsdk:"client_id"`
 	ClientSecret          types.String `tfsdk:"client_secret"`
 	ConfigurationEndpoint types.String `tfsdk:"configuration_endpoint"`
-	Admins                types.List   `tfsdk:"admins"`
-	Domains               types.List   `tfsdk:"domains"`
-	Groups                types.List   `tfsdk:"groups"`
+	Admins                types.Set    `tfsdk:"admins"`
+	Domains               types.Set    `tfsdk:"domains"`
+	Groups                types.Set    `tfsdk:"groups"`
 	ListenAddress         types.String `tfsdk:"listen_address"`
 	TenantID              types.String `tfsdk:"tenant_id"`
 }
 
 type ACMEModel struct {
-	Challenges types.List `tfsdk:"challenges"`
+	Challenges types.Set  `tfsdk:"challenges"`
 	ForceCN    types.Bool `tfsdk:"force_cn"`
 	RequireEAB types.Bool `tfsdk:"require_eab"`
 }
 
 type ACMEAttestationModel struct {
-	AttestationFormats types.List `tfsdk:"attestation_formats"`
-	AttestationRoots   types.List `tfsdk:"attestation_roots"`
+	AttestationFormats types.Set  `tfsdk:"attestation_formats"`
+	AttestationRoots   types.Set  `tfsdk:"attestation_roots"`
 	ForceCN            types.Bool `tfsdk:"force_cn"`
 	RequireEAB         types.Bool `tfsdk:"require_eab"`
 }
 
 type X5CModel struct {
-	Roots types.List `tfsdk:"roots"`
+	Roots types.Set `tfsdk:"roots"`
 }
 
 func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
@@ -386,13 +386,13 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 			for _, admin := range *oidc.Admins {
 				admins = append(admins, types.StringValue(admin))
 			}
-			adminsList, listDiags := types.ListValue(types.StringType, admins)
-			if listDiags.HasError() {
-				return nil, listDiags
+			adminsSet, diags := types.SetValue(types.StringType, admins)
+			if diags.HasError() {
+				return nil, diags
 			}
-			data.OIDC.Admins = adminsList
+			data.OIDC.Admins = adminsSet
 		} else {
-			data.OIDC.Admins = types.ListNull(types.StringType)
+			data.OIDC.Admins = types.SetNull(types.StringType)
 		}
 
 		if oidc.Domains != nil {
@@ -400,13 +400,13 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 			for _, domain := range *oidc.Domains {
 				domains = append(domains, types.StringValue(domain))
 			}
-			domainsList, listDiags := types.ListValue(types.StringType, domains)
-			if listDiags.HasError() {
-				return nil, listDiags
+			domainsSet, diags := types.SetValue(types.StringType, domains)
+			if diags.HasError() {
+				return nil, diags
 			}
-			data.OIDC.Domains = domainsList
+			data.OIDC.Domains = domainsSet
 		} else {
-			data.OIDC.Domains = types.ListNull(types.StringType)
+			data.OIDC.Domains = types.SetNull(types.StringType)
 		}
 
 		if oidc.Groups != nil {
@@ -414,13 +414,13 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 			for _, group := range *oidc.Groups {
 				groups = append(groups, types.StringValue(group))
 			}
-			groupsList, listDiags := types.ListValue(types.StringType, groups)
-			if listDiags.HasError() {
-				return nil, listDiags
+			groupsSet, diags := types.SetValue(types.StringType, groups)
+			if diags.HasError() {
+				return nil, diags
 			}
-			data.OIDC.Groups = groupsList
+			data.OIDC.Groups = groupsSet
 		} else {
-			data.OIDC.Groups = types.ListNull(types.StringType)
+			data.OIDC.Groups = types.SetNull(types.StringType)
 		}
 
 		if oidc.ListenAddress != nil {
@@ -449,11 +449,11 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 		for _, challenge := range acme.Challenges {
 			challenges = append(challenges, types.StringValue(string(challenge)))
 		}
-		challengesList, diags := types.ListValue(types.StringType, challenges)
+		challengesSet, diags := types.SetValue(types.StringType, challenges)
 		if diags.HasError() {
 			return nil, diags
 		}
-		data.ACME.Challenges = challengesList
+		data.ACME.Challenges = challengesSet
 
 	case v20230301.ACMEATTESTATION:
 		attest, err := provisioner.AsAcmeAttestationProvisioner()
@@ -473,24 +473,24 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 		for _, format := range attest.AttestationFormats {
 			attestationFormats = append(attestationFormats, types.StringValue(string(format)))
 		}
-		formatsList, diags := types.ListValue(types.StringType, attestationFormats)
+		formatsSet, diags := types.SetValue(types.StringType, attestationFormats)
 		if diags.HasError() {
 			return nil, diags
 		}
-		data.ACMEAttestation.AttestationFormats = formatsList
+		data.ACMEAttestation.AttestationFormats = formatsSet
 
 		if attest.AttestationRoots != nil {
 			var roots []attr.Value
 			for _, root := range *attest.AttestationRoots {
 				roots = append(roots, types.StringValue(root))
 			}
-			rootsList, diags := types.ListValue(types.StringType, roots)
+			rootsSet, diags := types.SetValue(types.StringType, roots)
 			if diags.HasError() {
 				return nil, diags
 			}
-			data.ACMEAttestation.AttestationRoots = rootsList
+			data.ACMEAttestation.AttestationRoots = rootsSet
 		} else {
-			data.ACMEAttestation.AttestationRoots = types.ListNull(types.StringType)
+			data.ACMEAttestation.AttestationRoots = types.SetNull(types.StringType)
 		}
 
 	case v20230301.X5C:
@@ -507,11 +507,11 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 		for _, root := range x5c.Roots {
 			roots = append(roots, types.StringValue(root))
 		}
-		rootsList, diags := types.ListValue(types.StringType, roots)
+		rootsSet, diags := types.SetValue(types.StringType, roots)
 		if diags.HasError() {
 			return nil, diags
 		}
-		data.X5C.Roots = rootsList
+		data.X5C.Roots = rootsSet
 
 	default:
 		diags.AddError(

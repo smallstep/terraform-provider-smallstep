@@ -19,7 +19,7 @@ type DataModel struct {
 	Fingerprint      types.String `tfsdk:"fingerprint"`
 	CreatedAt        types.String `tfsdk:"created_at"`
 	ActiveRevocation types.Bool   `tfsdk:"active_revocation"`
-	AdminEmails      types.List   `tfsdk:"admin_emails"`
+	AdminEmails      types.Set    `tfsdk:"admin_emails"`
 }
 
 type ResourceModel struct {
@@ -31,7 +31,7 @@ type ResourceModel struct {
 	Fingerprint        types.String     `tfsdk:"fingerprint"`
 	CreatedAt          types.String     `tfsdk:"created_at"`
 	ActiveRevocation   types.Bool       `tfsdk:"active_revocation"`
-	AdminEmails        types.List       `tfsdk:"admin_emails"`
+	AdminEmails        types.Set        `tfsdk:"admin_emails"`
 	IntermediateIssuer *X509IssuerModel `tfsdk:"intermediate_issuer"`
 	RootIssuer         *X509IssuerModel `tfsdk:"root_issuer"`
 }
@@ -69,14 +69,14 @@ func (issuer *X509IssuerModel) AsAPI(ctx context.Context) (*v20230301.X509Issuer
 
 type NameConstraintsModel struct {
 	Critical                types.Bool `tfsdk:"critical"`
-	ExcludedDNSDomains      types.List `tfsdk:"excluded_dns_domains"`
-	ExcludedEmailAddresses  types.List `tfsdk:"excluded_email_addresses"`
-	ExcludedIPRanges        types.List `tfsdk:"excluded_ip_ranges"`
-	ExcludedURIDomains      types.List `tfsdk:"excluded_uri_domains"`
-	PermittedDNSDomains     types.List `tfsdk:"permitted_dns_domains"`
-	PermittedEmailAddresses types.List `tfsdk:"permitted_email_addresses"`
-	PermittedIPRanges       types.List `tfsdk:"permitted_ip_ranges"`
-	PermittedURIDomains     types.List `tfsdk:"permitted_uri_domains"`
+	ExcludedDNSDomains      types.Set  `tfsdk:"excluded_dns_domains"`
+	ExcludedEmailAddresses  types.Set  `tfsdk:"excluded_email_addresses"`
+	ExcludedIPRanges        types.Set  `tfsdk:"excluded_ip_ranges"`
+	ExcludedURIDomains      types.Set  `tfsdk:"excluded_uri_domains"`
+	PermittedDNSDomains     types.Set  `tfsdk:"permitted_dns_domains"`
+	PermittedEmailAddresses types.Set  `tfsdk:"permitted_email_addresses"`
+	PermittedIPRanges       types.Set  `tfsdk:"permitted_ip_ranges"`
+	PermittedURIDomains     types.Set  `tfsdk:"permitted_uri_domains"`
 }
 
 func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20230301.NameConstraints, diag.Diagnostics) {

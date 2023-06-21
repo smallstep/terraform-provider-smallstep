@@ -13,9 +13,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -77,42 +77,42 @@ func (r *Resource) x509IssuerSchema() (map[string]schema.Attribute, error) {
 					Optional:            true,
 					MarkdownDescription: nameConstraints["critical"],
 				},
-				"permitted_dns_domains": schema.ListAttribute{
+				"permitted_dns_domains": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["permittedDNSDomains"],
 				},
-				"excluded_dns_domains": schema.ListAttribute{
+				"excluded_dns_domains": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["excludedDNSDomains"],
 				},
-				"permitted_ip_ranges": schema.ListAttribute{
+				"permitted_ip_ranges": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["permittedIPRanges"],
 				},
-				"excluded_ip_ranges": schema.ListAttribute{
+				"excluded_ip_ranges": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["excludedIPRanges"],
 				},
-				"permitted_email_addresses": schema.ListAttribute{
+				"permitted_email_addresses": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["permittedEmailAddresses"],
 				},
-				"excluded_email_addresses": schema.ListAttribute{
+				"excluded_email_addresses": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["excludedEmailAddresses"],
 				},
-				"permitted_uri_domains": schema.ListAttribute{
+				"permitted_uri_domains": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["permittedURIDomains"],
 				},
-				"excluded_uri_domains": schema.ListAttribute{
+				"excluded_uri_domains": schema.SetAttribute{
 					Optional:            true,
 					ElementType:         types.StringType,
 					MarkdownDescription: nameConstraints["excludedURIDomains"],
@@ -241,12 +241,12 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					boolplanmodifier.RequiresReplace(),
 				},
 			},
-			"admin_emails": schema.ListAttribute{
+			"admin_emails": schema.SetAttribute{
 				ElementType: types.StringType,
 				Required:    true,
-				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
-					listplanmodifier.RequiresReplace(),
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.RequiresReplace(),
 				},
 			},
 			"intermediate_issuer": schema.SingleNestedAttribute{
@@ -413,12 +413,12 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 			adminEmails = append(adminEmails, types.StringValue(email))
 		}
 	}
-	adminEmailsList, diags := types.ListValue(types.StringType, adminEmails)
+	adminEmailsSet, diags := types.SetValue(types.StringType, adminEmails)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	data.AdminEmails = adminEmailsList
+	data.AdminEmails = adminEmailsSet
 
 	// Subdomain will be missing if this was an import but is required
 	if data.Subdomain.IsNull() {

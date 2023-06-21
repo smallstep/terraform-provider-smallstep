@@ -100,12 +100,12 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 			adminEmails = append(adminEmails, types.StringValue(email))
 		}
 	}
-	adminEmailsList, diags := types.ListValue(types.StringType, adminEmails)
+	adminEmailsSet, diags := types.SetValue(types.StringType, adminEmails)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	data.AdminEmails = adminEmailsList
+	data.AdminEmails = adminEmailsSet
 
 	tflog.Trace(ctx, fmt.Sprintf("read authority %q data source", data.ID.ValueString()))
 
@@ -154,7 +154,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: properties["activeRevocation"],
 				Computed:            true,
 			},
-			"admin_emails": schema.ListAttribute{
+			"admin_emails": schema.SetAttribute{
 				MarkdownDescription: properties["adminEmails"],
 				Computed:            true,
 				ElementType:         types.StringType,

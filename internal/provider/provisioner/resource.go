@@ -14,8 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -364,28 +364,28 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
-					"admins": schema.ListAttribute{
+					"admins": schema.SetAttribute{
 						MarkdownDescription: oidcProps["admins"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
-					"domains": schema.ListAttribute{
+					"domains": schema.SetAttribute{
 						MarkdownDescription: oidcProps["domains"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
-					"groups": schema.ListAttribute{
+					"groups": schema.SetAttribute{
 						MarkdownDescription: oidcProps["groups"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 					"listen_address": schema.StringAttribute{
@@ -406,26 +406,26 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"acme": schema.SingleNestedAttribute{
 				MarkdownDescription: acme,
-				Computed:            true,
+				Optional:            true,
 				Attributes: map[string]schema.Attribute{
-					"challenges": schema.ListAttribute{
+					"challenges": schema.SetAttribute{
 						MarkdownDescription: acmeProps["challenges"],
 						ElementType:         types.StringType,
-						Computed:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 					"require_eab": schema.BoolAttribute{
 						MarkdownDescription: acmeProps["requireEAB"],
-						Computed:            true,
+						Required:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
 					},
 					"force_cn": schema.BoolAttribute{
 						MarkdownDescription: acmeProps["forceCN"],
-						Computed:            true,
+						Optional:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
@@ -434,34 +434,34 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"acme_attestation": schema.SingleNestedAttribute{
 				MarkdownDescription: attest,
-				Computed:            true,
+				Optional:            true,
 				Attributes: map[string]schema.Attribute{
-					"attestation_formats": schema.ListAttribute{
+					"attestation_formats": schema.SetAttribute{
 						MarkdownDescription: attestProps["attestationFormats"],
 						ElementType:         types.StringType,
-						Computed:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
-					"attestation_roots": schema.ListAttribute{
+					"attestation_roots": schema.SetAttribute{
 						MarkdownDescription: attestProps["attestationRoots"],
 						ElementType:         types.StringType,
-						Computed:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						Optional:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 					"require_eab": schema.BoolAttribute{
 						MarkdownDescription: attestProps["requireEAB"],
-						Computed:            true,
+						Optional:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
 					},
 					"force_cn": schema.BoolAttribute{
 						MarkdownDescription: attestProps["forceCN"],
-						Computed:            true,
+						Optional:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
@@ -470,14 +470,14 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"x5c": schema.SingleNestedAttribute{
 				MarkdownDescription: x5c,
-				Computed:            true,
+				Optional:            true,
 				Attributes: map[string]schema.Attribute{
-					"roots": schema.ListAttribute{
+					"roots": schema.SetAttribute{
 						MarkdownDescription: x5cProps["roots"],
-						Computed:            true,
+						Optional:            true,
 						ElementType:         types.StringType,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 				},

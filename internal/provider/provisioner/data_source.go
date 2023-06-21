@@ -347,17 +347,17 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 						MarkdownDescription: oidcProps["configurationEndpoint"],
 						Computed:            true,
 					},
-					"admins": schema.ListAttribute{
+					"admins": schema.SetAttribute{
 						MarkdownDescription: oidcProps["admins"],
 						ElementType:         types.StringType,
 						Computed:            true,
 					},
-					"domains": schema.ListAttribute{
+					"domains": schema.SetAttribute{
 						MarkdownDescription: oidcProps["domains"],
 						ElementType:         types.StringType,
 						Computed:            true,
 					},
-					"groups": schema.ListAttribute{
+					"groups": schema.SetAttribute{
 						MarkdownDescription: oidcProps["groups"],
 						ElementType:         types.StringType,
 						Computed:            true,
@@ -376,7 +376,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: acme,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
-					"challenges": schema.ListAttribute{
+					"challenges": schema.SetAttribute{
 						MarkdownDescription: acmeProps["challenges"],
 						ElementType:         types.StringType,
 						Computed:            true,
@@ -395,12 +395,12 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: attest,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
-					"attestation_formats": schema.ListAttribute{
+					"attestation_formats": schema.SetAttribute{
 						MarkdownDescription: attestProps["attestationFormats"],
 						ElementType:         types.StringType,
 						Computed:            true,
 					},
-					"attestation_roots": schema.ListAttribute{
+					"attestation_roots": schema.SetAttribute{
 						MarkdownDescription: attestProps["attestationRoots"],
 						ElementType:         types.StringType,
 						Computed:            true,
@@ -419,7 +419,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: x5c,
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
-					"roots": schema.ListAttribute{
+					"roots": schema.SetAttribute{
 						MarkdownDescription: x5cProps["roots"],
 						ElementType:         types.StringType,
 						Computed:            true,
