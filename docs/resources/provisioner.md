@@ -142,7 +142,7 @@ Optional:
 
 Read-Only:
 
-- `challenges` (List of String) Which ACME challenge types are allowed.
+- `challenges` (List of String) Which ACME challenge types are allowed. Allowed values: `http-01` `dns-01` `tls-alpn-01`
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
 
@@ -152,7 +152,7 @@ Read-Only:
 
 Read-Only:
 
-- `attestation_formats` (List of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
+- `attestation_formats` (List of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default. Allowed values: `apple` `step` `tpm`
 - `attestation_roots` (List of String) A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.

@@ -244,8 +244,8 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 		}
 	case m.ACMEAttestation != nil:
 		attest := v20230301.AcmeAttestationProvisioner{
-			ForceCN:    m.ACME.ForceCN.ValueBoolPointer(),
-			RequireEAB: m.ACME.RequireEAB.ValueBoolPointer(),
+			ForceCN:    m.ACMEAttestation.ForceCN.ValueBoolPointer(),
+			RequireEAB: m.ACMEAttestation.RequireEAB.ValueBoolPointer(),
 		}
 
 		diagnostics := m.ACMEAttestation.AttestationFormats.ElementsAs(ctx, &attest.AttestationFormats, false)

@@ -80,6 +80,11 @@ func Describe(component string) (string, map[string]string, error) {
 			for _, enum := range schema.Value.Enum {
 				d += fmt.Sprintf(" `%s`", enum)
 			}
+		} else if schema.Value.Items != nil && schema.Value.Items.Value != nil && len(schema.Value.Items.Value.Enum) > 0 {
+			d += " Allowed values:"
+			for _, enum := range schema.Value.Items.Value.Enum {
+				d += fmt.Sprintf(" `%s`", enum)
+			}
 		}
 		propertyDescriptions[prop] = d
 	}
