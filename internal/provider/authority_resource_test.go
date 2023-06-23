@@ -49,7 +49,14 @@ func init() {
 					continue
 				}
 				// Don't delete authorities that may be used by running tests
-				if authority.CreatedAt.After(time.Now().Add(time.Minute * -1)) {
+				age := time.Minute
+				if sweepAge := os.Getenv("SWEEP_AGE"); sweepAge != "" {
+					d, err : time.ParseDuration(sweepAge)
+					if err != nil {
+						return err
+					}
+					age = d
+				if authority.CreatedAt.After(time.Now().Add(age) {
 					continue
 				}
 				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20230301.DeleteAuthorityParams{})
