@@ -32,7 +32,7 @@ output "bootstrap_preexisting" {
 ### Read-Only
 
 - `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only)
-- `admin_emails` (List of String) Users that have admin access to manage the authority
+- `admin_emails` (Set of String) Users that have admin access to manage the authority
 - `created_at` (String) Timestamp when the authority was created
 - `domain` (String) The domain where the authority can be reached
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -406,19 +405,20 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	data.Domain = types.StringValue(authority.Domain)
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
-	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
-	var adminEmails []attr.Value
-	if authority.AdminEmails != nil {
-		for _, email := range *authority.AdminEmails {
-			adminEmails = append(adminEmails, types.StringValue(email))
-		}
-	}
-	adminEmailsSet, diags := types.SetValue(types.StringType, adminEmails)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
+
+	activeRevocation, diags := utils.ToOptionalBool(ctx, authority.ActiveRevocation, req.State, path.Root("active_revocation"))
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 		return
 	}
-	data.AdminEmails = adminEmailsSet
+	data.ActiveRevocation = activeRevocation
+
+	adminEmails, diags := utils.ToOptionalSet(ctx, authority.AdminEmails, req.State, path.Root("admin_emails"))
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+	data.AdminEmails = adminEmails
 
 	// Subdomain will be missing if this was an import but is required
 	if data.Subdomain.IsNull() {

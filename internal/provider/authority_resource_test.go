@@ -79,7 +79,6 @@ resource "smallstep_authority" "devops" {
 	name = "%s Authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
-	active_revocation = false
 }
 `, devopsSlug, devopsSlug)
 

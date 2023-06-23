@@ -77,7 +77,7 @@ resource "smallstep_authority" "advanced" {
 
 ### Required
 
-- `admin_emails` (List of String)
+- `admin_emails` (Set of String)
 - `name` (String) The name of the authority
 - `subdomain` (String) The domain where the authority can be reached
 - `type` (String) One of the available authority types
@@ -118,14 +118,14 @@ Optional:
 Optional:
 
 - `critical` (Boolean) Whether or not name constraints are marked critical
-- `excluded_dns_domains` (List of String)
-- `excluded_email_addresses` (List of String)
-- `excluded_ip_ranges` (List of String)
-- `excluded_uri_domains` (List of String)
-- `permitted_dns_domains` (List of String)
-- `permitted_email_addresses` (List of String)
-- `permitted_ip_ranges` (List of String)
-- `permitted_uri_domains` (List of String)
+- `excluded_dns_domains` (Set of String)
+- `excluded_email_addresses` (Set of String)
+- `excluded_ip_ranges` (Set of String)
+- `excluded_uri_domains` (Set of String)
+- `permitted_dns_domains` (Set of String)
+- `permitted_email_addresses` (Set of String)
+- `permitted_ip_ranges` (Set of String)
+- `permitted_uri_domains` (Set of String)
 
 
 <a id="nestedatt--intermediate_issuer--subject"></a>
@@ -168,14 +168,14 @@ Optional:
 Optional:
 
 - `critical` (Boolean) Whether or not name constraints are marked critical
-- `excluded_dns_domains` (List of String)
-- `excluded_email_addresses` (List of String)
-- `excluded_ip_ranges` (List of String)
-- `excluded_uri_domains` (List of String)
-- `permitted_dns_domains` (List of String)
-- `permitted_email_addresses` (List of String)
-- `permitted_ip_ranges` (List of String)
-- `permitted_uri_domains` (List of String)
+- `excluded_dns_domains` (Set of String)
+- `excluded_email_addresses` (Set of String)
+- `excluded_ip_ranges` (Set of String)
+- `excluded_uri_domains` (Set of String)
+- `permitted_dns_domains` (Set of String)
+- `permitted_email_addresses` (Set of String)
+- `permitted_ip_ranges` (Set of String)
+- `permitted_uri_domains` (Set of String)
 
 
 <a id="nestedatt--root_issuer--subject"></a>

@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
@@ -363,9 +364,13 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			)
 		}
 		data.JWK = &JWKModel{
-			Key:          types.StringValue(string(pubKeyJSON)),
-			EncryptedKey: types.StringValue(utils.Deref(jwk.EncryptedKey)),
+			Key: types.StringValue(string(pubKeyJSON)),
 		}
+		encryptedKey, diags := utils.ToOptionalString(ctx, jwk.EncryptedKey, state, path.Root("jwk").AtName("encrypted_key"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.JWK.EncryptedKey = encryptedKey
 
 	case v20230301.OIDC:
 		oidc, err := provisioner.AsOidcProvisioner()
@@ -379,59 +384,44 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 
 		data.OIDC = &OIDCModel{
 			ClientID:              types.StringValue(oidc.ClientID),
-			ClientSecret:          types.StringValue(oidc.ClientSecret),
 			ConfigurationEndpoint: types.StringValue(oidc.ConfigurationEndpoint),
 		}
 
-		if oidc.Admins != nil {
-			var admins []attr.Value
-			for _, admin := range *oidc.Admins {
-				admins = append(admins, types.StringValue(admin))
-			}
-			adminsSet, diags := types.SetValue(types.StringType, admins)
-			if diags.HasError() {
-				return nil, diags
-			}
-			data.OIDC.Admins = adminsSet
-		} else {
-			data.OIDC.Admins = types.SetNull(types.StringType)
+		secret, diags := utils.ToOptionalString(ctx, &oidc.ClientSecret, state, path.Root("oidc").AtName("client_secret"))
+		if diags.HasError() {
+			return nil, diags
 		}
+		data.OIDC.ClientSecret = secret
 
-		if oidc.Domains != nil {
-			var domains []attr.Value
-			for _, domain := range *oidc.Domains {
-				domains = append(domains, types.StringValue(domain))
-			}
-			domainsSet, diags := types.SetValue(types.StringType, domains)
-			if diags.HasError() {
-				return nil, diags
-			}
-			data.OIDC.Domains = domainsSet
-		} else {
-			data.OIDC.Domains = types.SetNull(types.StringType)
+		admins, diags := utils.ToOptionalSet(ctx, oidc.Admins, state, path.Root("oidc").AtName("admins"))
+		if diags.HasError() {
+			return nil, diags
 		}
+		data.OIDC.Admins = admins
 
-		if oidc.Groups != nil {
-			var groups []attr.Value
-			for _, group := range *oidc.Groups {
-				groups = append(groups, types.StringValue(group))
-			}
-			groupsSet, diags := types.SetValue(types.StringType, groups)
-			if diags.HasError() {
-				return nil, diags
-			}
-			data.OIDC.Groups = groupsSet
-		} else {
-			data.OIDC.Groups = types.SetNull(types.StringType)
+		domains, diags := utils.ToOptionalSet(ctx, oidc.Domains, state, path.Root("oidc").AtName("domains"))
+		if diags.HasError() {
+			return nil, diags
 		}
+		data.OIDC.Domains = domains
 
-		if oidc.ListenAddress != nil {
-			data.OIDC.ListenAddress = types.StringValue(*oidc.ListenAddress)
+		groups, diags := utils.ToOptionalSet(ctx, oidc.Groups, state, path.Root("oidc").AtName("groups"))
+		if diags.HasError() {
+			return nil, diags
 		}
+		data.OIDC.Groups = groups
 
-		if oidc.TenantID != nil {
-			data.OIDC.TenantID = types.StringValue(*oidc.TenantID)
+		listen, diags := utils.ToOptionalString(ctx, oidc.ListenAddress, state, path.Root("oidc").AtName("listen_address"))
+		if diags.HasError() {
+			return nil, diags
 		}
+		data.OIDC.ListenAddress = listen
+
+		tenantID, diags := utils.ToOptionalString(ctx, oidc.TenantID, state, path.Root("oidc").AtName("tenant_id"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.TenantID = tenantID
 
 	case v20230301.ACME:
 		acme, err := provisioner.AsAcmeProvisioner()
@@ -495,6 +485,12 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			data.ACMEAttestation.AttestationRoots = types.SetNull(types.StringType)
 		}
 
+		attestationRoots, diags := utils.ToOptionalSet(ctx, attest.AttestationRoots, state, path.Root("acme_attestation").AtName("attestation_roots"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACMEAttestation.AttestationRoots = attestationRoots
+
 	case v20230301.X5C:
 		x5c, err := provisioner.AsX5cProvisioner()
 		if err != nil {
@@ -513,7 +509,9 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		if diags.HasError() {
 			return nil, diags
 		}
-		data.X5C.Roots = rootsSet
+		data.X5C = &X5CModel{
+			Roots: rootsSet,
+		}
 
 	default:
 		diags.AddError(

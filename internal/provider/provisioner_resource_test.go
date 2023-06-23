@@ -51,6 +51,62 @@ resource "smallstep_provisioner" "jwk" {
 		},
 	})
 
+	jwkEmptyConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "jwk_empty" {
+	authority_id = %q
+	name = "jwk empty"
+	type = "JWK"
+	jwk = {
+		key = %q
+		encrypted_key = ""
+	}
+}`, authority.Id, pubJSON)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: jwkEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.jwk_empty", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_empty", "type", "JWK"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_empty", "name", "jwk empty"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.jwk_empty", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_empty", "jwk.key", pubJSON),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_empty", "jwk.encrypted_key", ""),
+				),
+			},
+		},
+	})
+
+	jwkOnlyRequiredConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "jwk_only_required" {
+	authority_id = %q
+	name = "jwk only required"
+	type = "JWK"
+	jwk = {
+		key = %q
+	}
+}`, authority.Id, pubJSON)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: jwkOnlyRequiredConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.jwk_only_required", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_only_required", "type", "JWK"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_only_required", "name", "jwk only required"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.jwk_only_required", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.jwk_only_required", "jwk.key", pubJSON),
+				),
+			},
+		},
+	})
+
 	oidcConfig := fmt.Sprintf(`
 resource "smallstep_provisioner" "oidc" {
 	authority_id = %q
@@ -102,6 +158,54 @@ resource "smallstep_provisioner" "oidc" {
 		},
 	})
 
+	oidcEmptyConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "oidc_empty" {
+	authority_id = %q
+	name = "empty oidc"
+	type = "OIDC"
+	oidc = {
+		client_id = "abc"
+		client_secret = ""
+		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+		domains = []
+		groups = []
+		admins = []
+		listen_address = ""
+		tenant_id = ""
+	}
+}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: oidcEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.oidc_empty", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "type", "OIDC"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "name", "empty oidc"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.oidc_empty", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.client_id", "abc"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.client_secret", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.configuration_endpoint", "https://accounts.google.com/.well-known/openid-configuration"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.admins.#", "0"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.domains.#", "0"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.groups.#", "0"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.listen_address", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.oidc_empty", "oidc.tenant_id", ""),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.oidc_empty",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "empty oidc"),
+				ImportStateVerify: false,
+			},
+		},
+	})
+
+	// Also tests OIDC with no optional values set
 	claimsConfig := fmt.Sprintf(`
 resource "smallstep_provisioner" "claims" {
 	authority_id = %q
@@ -122,7 +226,6 @@ resource "smallstep_provisioner" "claims" {
 	}
 	oidc = {
 		client_id = "abc"
-		client_secret = "123"
 		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
 	}
 }`, authority.Id)
@@ -220,6 +323,69 @@ resource "smallstep_provisioner" "acme" {
 					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "name", "acme foo"),
 					resource.TestMatchResourceAttr("smallstep_provisioner.acme", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "acme.require_eab", "true"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "acme.require_eab", "true"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.acme",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "acme foo"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	acmeEmptyConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "acme_empty" {
+	authority_id = %q
+	name = "acme empty"
+	type = "ACME"
+	acme = {
+		challenges = ["http-01"]
+		require_eab = true
+		force_cn = false
+	}
+}`, authority.Id)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: acmeEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme_empty", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_empty", "type", "ACME"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_empty", "name", "acme empty"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme_empty", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_empty", "acme.require_eab", "true"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_empty", "acme.force_cn", "false"),
+				),
+			},
+		},
+	})
+
+	acmeRequiredOnlyConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "acme_required_only" {
+	authority_id = %q
+	name = "acme required only"
+	type = "ACME"
+	acme = {
+		challenges = ["tls-alpn-01", "dns-01", "http-01"]
+		require_eab = true
+	}
+}`, authority.Id)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: acmeRequiredOnlyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme_required_only", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_required_only", "type", "ACME"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_required_only", "name", "acme required only"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme_required_only", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme_required_only", "acme.require_eab", "true"),
 				),
 			},
 		},
@@ -249,8 +415,107 @@ resource "smallstep_provisioner" "acme" {
 					resource.TestMatchResourceAttr("smallstep_provisioner.attest", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.require_eab", "false"),
 					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.force_cn", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.attestation_formats.#", "3"),
 					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.attestation_roots.0", root),
 				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.attest",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "attest foo"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	attestEmptyConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "attest_empty" {
+			authority_id = %q
+			name = "attest empty"
+			type = "ACME_ATTESTATION"
+			acme_attestation = {
+				attestation_formats = ["step"]
+				attestation_roots = []
+			}
+		}`, authority.Id)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: attestEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest_empty", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_empty", "type", "ACME_ATTESTATION"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_empty", "name", "attest empty"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest_empty", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_empty", "acme_attestation.require_eab", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_empty", "acme_attestation.force_cn", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_empty", "acme_attestation.attestation_roots.#", "0"),
+				),
+			},
+		},
+	})
+
+	attestOnlyRequiredConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "attest_only_required" {
+			authority_id = %q
+			name = "attest only required"
+			type = "ACME_ATTESTATION"
+			acme_attestation = {
+				attestation_formats = ["step", "apple"]
+			}
+		}`, authority.Id)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: attestOnlyRequiredConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest_only_required", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "type", "ACME_ATTESTATION"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "name", "attest only required"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest_only_required", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "acme_attestation.require_eab", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "acme_attestation.force_cn", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "acme_attestation.attestation_formats.#", "2"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest_only_required", "acme_attestation.attestation_roots.#", "0"),
+				),
+			},
+		},
+	})
+
+	x5cConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "x5c" {
+	authority_id = %q
+	name = "x5c foo"
+	type = "X5C"
+	x5c = {
+		roots = [%q]
+	}
+}`, authority.Id, root)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: x5cConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.x5c", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.x5c", "type", "X5C"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.x5c", "name", "x5c foo"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.x5c", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.x5c", "x5c.roots.#", "1"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.x5c", "x5c.roots.0", root),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.x5c",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "x5c foo"),
+				ImportStateVerify: true,
 			},
 		},
 	})

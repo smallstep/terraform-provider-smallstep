@@ -53,7 +53,7 @@ data "smallstep_provisioner" "by_id" {
 
 Read-Only:
 
-- `challenges` (List of String) Which ACME challenge types are allowed. Allowed values: `http-01` `dns-01` `tls-alpn-01`
+- `challenges` (Set of String) Which ACME challenge types are allowed. Allowed values: `http-01` `dns-01` `tls-alpn-01`
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
 
@@ -63,8 +63,8 @@ Read-Only:
 
 Read-Only:
 
-- `attestation_formats` (List of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default. Allowed values: `apple` `step` `tpm`
-- `attestation_roots` (List of String) A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
+- `attestation_formats` (Set of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default. Allowed values: `apple` `step` `tpm`
+- `attestation_roots` (Set of String) A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
 
@@ -102,12 +102,12 @@ Read-Only:
 
 Read-Only:
 
-- `admins` (List of String) The emails of admin users in an OpenID Connect provisioner. These users will not have restrictions in the certificates to sign.
+- `admins` (Set of String) The emails of admin users in an OpenID Connect provisioner. These users will not have restrictions in the certificates to sign.
 - `client_id` (String) The id used to validate the audience in an OpenID Connect token.
 - `client_secret` (String) The secret used to obtain the OpenID Connect tokens.
 - `configuration_endpoint` (String) OpenID Connect configuration URL.
-- `domains` (List of String) The domains used to validate the email claim in an OpenID Connect provisioner.
-- `groups` (List of String) The group list used to validate the groups extension in an OpenID Connect token.
+- `domains` (Set of String) The domains used to validate the email claim in an OpenID Connect provisioner.
+- `groups` (Set of String) The group list used to validate the groups extension in an OpenID Connect token.
 - `listen_address` (String) The callback address used in the OpenID Connect flow.
 - `tenant_id` (String) The tenant-id used to replace the templatized tenantid value in the OpenID Configuration.
 
@@ -144,6 +144,6 @@ Read-Only:
 
 Read-Only:
 
-- `roots` (List of String) A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
+- `roots` (Set of String) A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
 
 
