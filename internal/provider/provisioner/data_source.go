@@ -89,7 +89,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		)
 		return
 	}
-	state, diags := fromAPI(provisioner, config.AuthorityID.ValueString())
+	state, diags := fromAPI(ctx, provisioner, config.AuthorityID.ValueString(), req.Config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

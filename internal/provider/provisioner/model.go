@@ -253,9 +253,11 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 
-		diagnostics = m.ACMEAttestation.AttestationRoots.ElementsAs(ctx, attest.AttestationRoots, false)
-		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
-			return nil, err
+		if !m.ACMEAttestation.AttestationRoots.IsNull() {
+			diagnostics = m.ACMEAttestation.AttestationRoots.ElementsAs(ctx, &attest.AttestationRoots, false)
+			if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+				return nil, err
+			}
 		}
 
 		if err := p.FromAcmeAttestationProvisioner(attest); err != nil {
@@ -276,7 +278,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 	return p, nil
 }
 
-func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityID string, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	data := &Model{

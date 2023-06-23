@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -14,6 +15,8 @@ import (
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/stretchr/testify/require"
 	"go.step.sm/crypto/jose"
+	"go.step.sm/crypto/minica"
+	"go.step.sm/crypto/pemutil"
 )
 
 func SmallstepAPIClientFromEnv() (*v20230301.Client, error) {
@@ -113,4 +116,18 @@ func NewJWK(t *testing.T, pass string) (string, string) {
 	require.NoError(t, err)
 
 	return string(pubJSON), priv
+}
+
+// CACerts returns a new root and intermediate pem-encoded certificate
+func CACerts(t *testing.T) (string, string) {
+	ca, err := minica.New()
+	require.NoError(t, err)
+
+	root, err := pemutil.Serialize(ca.Root)
+	require.NoError(t, err)
+
+	intermediate, err := pemutil.Serialize(ca.Intermediate)
+	require.NoError(t, err)
+
+	return string(pem.EncodeToMemory(root)), string(pem.EncodeToMemory(intermediate))
 }

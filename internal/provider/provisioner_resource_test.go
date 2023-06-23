@@ -14,34 +14,6 @@ func TestAccProvisionerResource(t *testing.T) {
 
 	authority := utils.NewAuthority(t)
 
-	acmeConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "acme" {
-	authority_id = %q
-	name = "acme foo"
-	type = "ACME"
-	acme = {
-		challenges = ["http-01", "dns-01", "tls-alpn-01"]
-		require_eab = true
-		force_cn = true
-	}
-}`, authority.Id)
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config: acmeConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestMatchResourceAttr("smallstep_provisioner.acme", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "type", "ACME"),
-					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "name", "acme foo"),
-					resource.TestMatchResourceAttr("smallstep_provisioner.acme", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "acme.require_eab", "true"),
-				),
-			},
-		},
-	})
-
 	pubJSON, priv := utils.NewJWK(t, "pass")
 
 	jwkConfig := fmt.Sprintf(`
@@ -224,4 +196,64 @@ resource "smallstep_provisioner" "options" {
 			},
 		},
 	})
+
+	acmeConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "acme" {
+	authority_id = %q
+	name = "acme foo"
+	type = "ACME"
+	acme = {
+		challenges = ["http-01", "dns-01", "tls-alpn-01"]
+		require_eab = true
+		force_cn = true
+	}
+}`, authority.Id)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: acmeConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "type", "ACME"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "name", "acme foo"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.acme", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.acme", "acme.require_eab", "true"),
+				),
+			},
+		},
+	})
+
+	/*
+			root, _ := utils.CACerts(t)
+			attestConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "attest" {
+			authority_id = %q
+			name = "attest foo"
+			type = "ACME_ATTESTATION"
+			acme_attestation = {
+				attestation_formats = ["apple", "step", "tpm"]
+				attestation_roots = [%q]
+			}
+		}`, authority.Id, root)
+			resource.Test(t, resource.TestCase{
+				PreCheck:                 func() { testAccPreCheck(t) },
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config: attestConfig,
+						Check: resource.ComposeAggregateTestCheckFunc(
+							resource.TestMatchResourceAttr("smallstep_provisioner.attest", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "type", "ACME_ATTESTATION"),
+							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "name", "attest foo"),
+							resource.TestMatchResourceAttr("smallstep_provisioner.attest", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.require_eab", "false"),
+							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.force_cn", "false"),
+							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.attestation_roots.0", root),
+						),
+					},
+				},
+			})
+	*/
 }

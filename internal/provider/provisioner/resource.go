@@ -474,7 +474,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Attributes: map[string]schema.Attribute{
 					"roots": schema.SetAttribute{
 						MarkdownDescription: x5cProps["roots"],
-						Optional:            true,
+						Required:            true,
 						ElementType:         types.StringType,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.RequiresReplace(),
@@ -552,7 +552,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	state, diags := fromAPI(provisioner, plan.AuthorityID.ValueString())
+	state, diags := fromAPI(ctx, provisioner, plan.AuthorityID.ValueString(), req.Plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -622,7 +622,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	actual, diags := fromAPI(provisioner, state.AuthorityID.ValueString())
+	actual, diags := fromAPI(ctx, provisioner, state.AuthorityID.ValueString(), req.State)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
