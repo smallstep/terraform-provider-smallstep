@@ -293,19 +293,55 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 	}
 
 	if provisioner.Claims != nil {
+		disableRenewal, d := utils.ToOptionalBool(ctx, provisioner.Claims.DisableRenewal, state, path.Root("claims").AtName("disable_renewal"))
+		diags = append(diags, d...)
+
+		allowRenewalAfterExpiry, d := utils.ToOptionalBool(ctx, provisioner.Claims.AllowRenewalAfterExpiry, state, path.Root("claims").AtName("allow_renewal_after_expiry"))
+		diags = append(diags, d...)
+
+		enableSSHCA, d := utils.ToOptionalBool(ctx, provisioner.Claims.EnableSSHCA, state, path.Root("claims").AtName("enable_ssh_ca"))
+		diags = append(diags, d...)
+
+		minTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinTLSCertDuration, state, path.Root("claims").AtName("min_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		maxTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxTLSCertDuration, state, path.Root("claims").AtName("max_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultTLSCertDuration, state, path.Root("claims").AtName("default_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		minUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinUserSSHCertDuration, state, path.Root("claims").AtName("min_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		maxUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxUserSSHCertDuration, state, path.Root("claims").AtName("max_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultUserSSHCertDuration, state, path.Root("claims").AtName("default_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		minHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinHostSSHCertDuration, state, path.Root("claims").AtName("min_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		maxHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxHostSSHCertDuration, state, path.Root("claims").AtName("max_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultHostSSHCertDuration, state, path.Root("claims").AtName("default_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
 		data.Claims = &ClaimsModel{
-			DisableRenewal:             types.BoolPointerValue(provisioner.Claims.DisableRenewal),
-			AllowRenewalAfterExpiry:    types.BoolPointerValue(provisioner.Claims.AllowRenewalAfterExpiry),
-			EnableSSHCA:                types.BoolPointerValue(provisioner.Claims.EnableSSHCA),
-			MinTLSCertDuration:         types.StringPointerValue(provisioner.Claims.MinTLSCertDuration),
-			MaxTLSCertDuration:         types.StringPointerValue(provisioner.Claims.MaxTLSCertDuration),
-			DefaultTLSCertDuration:     types.StringPointerValue(provisioner.Claims.DefaultTLSCertDuration),
-			MinUserSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MinUserSSHCertDuration),
-			MaxUserSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MaxUserSSHCertDuration),
-			DefaultUserSSHCertDuration: types.StringPointerValue(provisioner.Claims.DefaultUserSSHCertDuration),
-			MinHostSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MinHostSSHCertDuration),
-			MaxHostSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MaxHostSSHCertDuration),
-			DefaultHostSSHCertDuration: types.StringPointerValue(provisioner.Claims.DefaultHostSSHCertDuration),
+			DisableRenewal:             disableRenewal,
+			AllowRenewalAfterExpiry:    allowRenewalAfterExpiry,
+			EnableSSHCA:                enableSSHCA,
+			MinTLSCertDuration:         minTLSCertDuration,
+			MaxTLSCertDuration:         maxTLSCertDuration,
+			DefaultTLSCertDuration:     defaultTLSCertDuration,
+			MinUserSSHCertDuration:     minUserSSHCertDuration,
+			MaxUserSSHCertDuration:     maxUserSSHCertDuration,
+			DefaultUserSSHCertDuration: defaultUserSSHCertDuration,
+			MinHostSSHCertDuration:     minHostSSHCertDuration,
+			MaxHostSSHCertDuration:     maxHostSSHCertDuration,
+			DefaultHostSSHCertDuration: defaultHostSSHCertDuration,
 		}
 	}
 

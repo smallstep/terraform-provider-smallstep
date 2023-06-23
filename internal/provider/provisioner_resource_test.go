@@ -259,6 +259,55 @@ resource "smallstep_provisioner" "claims" {
 		},
 	})
 
+	claimsEmptyConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "claims_empty" {
+	authority_id = %q
+	name = "claims empty"
+	type = "OIDC"
+	claims = {
+		allow_renewal_after_expiry = false
+		enable_ssh_ca = false
+		disable_renewal = false
+		min_tls_cert_duration = ""
+		max_tls_cert_duration = ""
+		default_tls_cert_duration = ""
+		min_user_ssh_cert_duration = ""
+		max_user_ssh_cert_duration = ""
+		default_user_ssh_cert_duration = ""
+		min_host_ssh_cert_duration = ""
+		max_host_ssh_cert_duration = ""
+		default_host_ssh_cert_duration = ""
+	}
+	oidc = {
+		client_id = "abc"
+		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+	}
+}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: claimsEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.allow_renewal_after_expiry", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.enable_ssh_ca", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.disable_renewal", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.min_tls_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.max_tls_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.default_tls_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.min_user_ssh_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.max_user_ssh_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.default_user_ssh_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.min_host_ssh_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.max_host_ssh_cert_duration", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.claims_empty", "claims.default_host_ssh_cert_duration", ""),
+				),
+			},
+		},
+	})
+
 	optionsConfig := fmt.Sprintf(`
 resource "smallstep_provisioner" "options" {
 	authority_id = %q
