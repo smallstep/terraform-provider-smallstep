@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
@@ -426,9 +427,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"force_cn": schema.BoolAttribute{
 						MarkdownDescription: acmeProps["forceCN"],
 						Optional:            true,
+						Computed:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
+						Default: booldefault.StaticBool(false),
 					},
 				},
 			},
@@ -455,16 +458,20 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"require_eab": schema.BoolAttribute{
 						MarkdownDescription: attestProps["requireEAB"],
 						Optional:            true,
+						Computed:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
+						Default: booldefault.StaticBool(false),
 					},
 					"force_cn": schema.BoolAttribute{
 						MarkdownDescription: attestProps["forceCN"],
 						Optional:            true,
+						Computed:            true,
 						PlanModifiers: []planmodifier.Bool{
 							boolplanmodifier.RequiresReplace(),
 						},
+						Default: booldefault.StaticBool(false),
 					},
 				},
 			},

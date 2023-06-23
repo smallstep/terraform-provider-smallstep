@@ -225,9 +225,8 @@ resource "smallstep_provisioner" "acme" {
 		},
 	})
 
-	/*
-			root, _ := utils.CACerts(t)
-			attestConfig := fmt.Sprintf(`
+	root, _ := utils.CACerts(t)
+	attestConfig := fmt.Sprintf(`
 		resource "smallstep_provisioner" "attest" {
 			authority_id = %q
 			name = "attest foo"
@@ -237,23 +236,22 @@ resource "smallstep_provisioner" "acme" {
 				attestation_roots = [%q]
 			}
 		}`, authority.Id, root)
-			resource.Test(t, resource.TestCase{
-				PreCheck:                 func() { testAccPreCheck(t) },
-				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-				Steps: []resource.TestStep{
-					{
-						Config: attestConfig,
-						Check: resource.ComposeAggregateTestCheckFunc(
-							resource.TestMatchResourceAttr("smallstep_provisioner.attest", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "type", "ACME_ATTESTATION"),
-							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "name", "attest foo"),
-							resource.TestMatchResourceAttr("smallstep_provisioner.attest", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.require_eab", "false"),
-							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.force_cn", "false"),
-							resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.attestation_roots.0", root),
-						),
-					},
-				},
-			})
-	*/
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: attestConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "type", "ACME_ATTESTATION"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "name", "attest foo"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.attest", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.require_eab", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.force_cn", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.attest", "acme_attestation.attestation_roots.0", root),
+				),
+			},
+		},
+	})
 }
