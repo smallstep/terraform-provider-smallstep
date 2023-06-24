@@ -87,3 +87,6 @@ jobs:
       - run: make sweep
         env:
           SWEEP_AGE: 1s
+          TF_ACC: "1"
+          SMALLSTEP_API_URL: https://gateway.smallstep.com/api
+          SMALLSTEP_API_TOKEN: ${{ secrets.SMALLSTEP_API_TOKEN }}
