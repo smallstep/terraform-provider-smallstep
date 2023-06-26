@@ -15,6 +15,7 @@ import (
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -164,6 +165,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 	return []func() resource.Resource{
 		authority.NewResource,
 		provisioner.NewResource,
+		webhook.NewResource,
 	}
 }
 
@@ -171,6 +173,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 	return []func() datasource.DataSource{
 		authority.NewDataSource,
 		provisioner.NewDataSource,
+		webhook.NewDataSource,
 	}
 }
 

@@ -43,6 +43,47 @@ const (
 	AuthorityTypeDevops   AuthorityType = "devops"
 )
 
+// Defines values for EndpointCertificateInfoType.
+const (
+	EndpointCertificateInfoTypeSSHHOST EndpointCertificateInfoType = "SSH_HOST"
+	EndpointCertificateInfoTypeSSHUSER EndpointCertificateInfoType = "SSH_USER"
+	EndpointCertificateInfoTypeX509    EndpointCertificateInfoType = "X509"
+)
+
+// Defines values for EndpointConfigurationKind.
+const (
+	DEVICE   EndpointConfigurationKind = "DEVICE"
+	USER     EndpointConfigurationKind = "USER"
+	WORKLOAD EndpointConfigurationKind = "WORKLOAD"
+)
+
+// Defines values for EndpointKeyInfoFormat.
+const (
+	EndpointKeyInfoFormatDEFAULT EndpointKeyInfoFormat = "DEFAULT"
+	EndpointKeyInfoFormatDER     EndpointKeyInfoFormat = "DER"
+	EndpointKeyInfoFormatOPENSSH EndpointKeyInfoFormat = "OPENSSH"
+	EndpointKeyInfoFormatPKCS8   EndpointKeyInfoFormat = "PKCS8"
+)
+
+// Defines values for EndpointKeyInfoType.
+const (
+	EndpointKeyInfoTypeDEFAULT   EndpointKeyInfoType = "DEFAULT"
+	EndpointKeyInfoTypeECDSAP256 EndpointKeyInfoType = "ECDSA_P256"
+	EndpointKeyInfoTypeECDSAP384 EndpointKeyInfoType = "ECDSA_P384"
+	EndpointKeyInfoTypeECDSAP521 EndpointKeyInfoType = "ECDSA_P521"
+	EndpointKeyInfoTypeED25519   EndpointKeyInfoType = "ED25519"
+	EndpointKeyInfoTypeRSA2048   EndpointKeyInfoType = "RSA_2048"
+	EndpointKeyInfoTypeRSA3072   EndpointKeyInfoType = "RSA_3072"
+	EndpointKeyInfoTypeRSA4096   EndpointKeyInfoType = "RSA_4096"
+)
+
+// Defines values for EndpointReloadInfoMethod.
+const (
+	AUTOMATIC EndpointReloadInfoMethod = "AUTOMATIC"
+	CUSTOM    EndpointReloadInfoMethod = "CUSTOM"
+	SIGNAL    EndpointReloadInfoMethod = "SIGNAL"
+)
+
 // Defines values for NewAuthorityType.
 const (
 	NewAuthorityTypeAdvanced NewAuthorityType = "advanced"
@@ -58,11 +99,22 @@ const (
 	X5C             ProvisionerType = "X5C"
 )
 
-// Defines values for WebhookCertType.
+// Defines values for ProvisionerWebhookCertType.
 const (
-	ALL  WebhookCertType = "ALL"
-	SSH  WebhookCertType = "SSH"
-	X509 WebhookCertType = "X509"
+	ProvisionerWebhookCertTypeALL  ProvisionerWebhookCertType = "ALL"
+	ProvisionerWebhookCertTypeSSH  ProvisionerWebhookCertType = "SSH"
+	ProvisionerWebhookCertTypeX509 ProvisionerWebhookCertType = "X509"
+)
+
+// Defines values for ProvisionerWebhookKind.
+const (
+	ENRICHING ProvisionerWebhookKind = "ENRICHING"
+)
+
+// Defines values for ProvisionerWebhookServerType.
+const (
+	EXTERNAL          ProvisionerWebhookServerType = "EXTERNAL"
+	HOSTEDATTESTATION ProvisionerWebhookServerType = "HOSTED_ATTESTATION"
 )
 
 // Defines values for X509IssuerKeyVersion.
@@ -116,6 +168,24 @@ type AcmeProvisioner struct {
 
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
+
+// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+type AgentConfiguration struct {
+	// AttestationSlug The slug of the attestation authority the agent connects to to get a certificate.
+	AttestationSlug *string `json:"attestationSlug,omitempty"`
+
+	// AuthorityID UUID identifying the authority the agent uses to generate endpoint certificates.
+	AuthorityID *string `json:"authorityID,omitempty"`
+
+	// Id A UUID identifying this agent configuration. Generated server-side on creation.
+	Id *string `json:"id,omitempty"`
+
+	// Name The name of this agent configuration.
+	Name string `json:"name"`
+
+	// Provisioner The name of the provisioner on the authority the agent uses to generate endpoint certificates.
+	Provisioner string `json:"provisioner"`
+}
 
 // AttestationAuthority An attestation authority used with the device-attest-01 ACME challenge to verify a device's hardware identity. This object is experimental and subject to change.
 type AttestationAuthority struct {
@@ -186,6 +256,12 @@ type AuthorityCsr struct {
 // AuthorityType One of the available authority types
 type AuthorityType string
 
+// BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+type BasicAuth struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
 // DistinguishedName Name used in x509 certificates
 type DistinguishedName struct {
 	CommonName         *string `json:"commonName,omitempty"`
@@ -204,6 +280,144 @@ type DistinguishedName struct {
 type Email struct {
 	Email   *string `json:"email,omitempty"`
 	Primary *bool   `json:"primary,omitempty"`
+}
+
+// EndpointCertificateInfo Details on a managed certificate
+type EndpointCertificateInfo struct {
+	// CrtFile The filepath where the certificate is to be stored.
+	CrtFile *string `json:"crtFile,omitempty"`
+
+	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	Duration *string `json:"duration,omitempty"`
+
+	// Gid GID of the files where the certificate is stored.
+	Gid *int `json:"gid,omitempty"`
+
+	// KeyFile The filepath where the key is to be stored.
+	KeyFile *string `json:"keyFile,omitempty"`
+
+	// Mode Permission bits of the files where the certificate is stored.
+	Mode *int `json:"mode,omitempty"`
+
+	// RootFile The filepath where the root certificate is to be stored.
+	RootFile *string `json:"rootFile,omitempty"`
+
+	// Type The type of certificate
+	Type EndpointCertificateInfoType `json:"type"`
+
+	// Uid UID of the files where the certificate is stored.
+	Uid *int `json:"uid,omitempty"`
+}
+
+// EndpointCertificateInfoType The type of certificate
+type EndpointCertificateInfoType string
+
+// EndpointConfiguration Configuration for a managed endpoint
+type EndpointConfiguration struct {
+	// AuthorityID UUID identifying the authority that will issue certificates for the endpoint.
+	AuthorityID *string `json:"authorityID,omitempty"`
+
+	// CertificateInfo Details on a managed certificate
+	CertificateInfo EndpointCertificateInfo `json:"certificateInfo"`
+
+	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
+	Hooks *EndpointHooks `json:"hooks,omitempty"`
+
+	// Id A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+	Id *string `json:"id,omitempty"`
+
+	// KeyInfo The attributes of the cryptographic key.
+	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
+
+	// Kind The kind of endpoint this configuration applies to.
+	Kind EndpointConfigurationKind `json:"kind"`
+
+	// Name The name of the endpoint configuration.
+	Name string `json:"name"`
+
+	// Provisioner Name of the provisioner on the authority that will authorize certificates for the endpoint.
+	Provisioner string `json:"provisioner"`
+
+	// ReloadInfo The properties used to reload a service.
+	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
+}
+
+// EndpointConfigurationKind The kind of endpoint this configuration applies to.
+type EndpointConfigurationKind string
+
+// EndpointHook A list of commands to run before and after a certificate is granted.
+type EndpointHook struct {
+	// After List of commands to run after the operation.
+	After *[]string `json:"after,omitempty"`
+
+	// Before List of commands to run before the operation.
+	Before *[]string `json:"before,omitempty"`
+
+	// OnError List of commands to run when the operation fails.
+	OnError *[]string `json:"onError,omitempty"`
+
+	// Shell The shell to use to execute the commands.
+	Shell *string `json:"shell,omitempty"`
+}
+
+// EndpointHooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
+type EndpointHooks struct {
+	// Renew A list of commands to run before and after a certificate is granted.
+	Renew *EndpointHook `json:"renew,omitempty"`
+
+	// Sign A list of commands to run before and after a certificate is granted.
+	Sign *EndpointHook `json:"sign,omitempty"`
+}
+
+// EndpointKeyInfo The attributes of the cryptographic key.
+type EndpointKeyInfo struct {
+	// Format The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
+	Format *EndpointKeyInfoFormat `json:"format,omitempty"`
+
+	// PubFile A CSR or SSH public key to use instead of generating one.
+	PubFile *string `json:"pubFile,omitempty"`
+
+	// Type The key type used. The current DEFAULT type is ECDSA_P256.
+	Type *EndpointKeyInfoType `json:"type,omitempty"`
+}
+
+// EndpointKeyInfoFormat The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
+type EndpointKeyInfoFormat string
+
+// EndpointKeyInfoType The key type used. The current DEFAULT type is ECDSA_P256.
+type EndpointKeyInfoType string
+
+// EndpointReloadInfo The properties used to reload a service.
+type EndpointReloadInfo struct {
+	// Method Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+	Method EndpointReloadInfoMethod `json:"method"`
+
+	// PidFile File that holds the pid of the process to signal. Required when method is SIGNAL.
+	PidFile *string `json:"pidFile,omitempty"`
+
+	// Signal The signal to send to a process when a certificate should be reloaded. Required when method is SIGNAL.
+	Signal *int `json:"signal,omitempty"`
+}
+
+// EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+type EndpointReloadInfoMethod string
+
+// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+type EndpointSSHCertificateData struct {
+	// KeyID The key ID to include in the endpoint certificate.
+	KeyID string `json:"keyID"`
+
+	// Principals The principals to include in the endpoint certificate.
+	Principals []string `json:"principals"`
+}
+
+// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+type EndpointX509CertificateData struct {
+	// CommonName The Common Name to be used in the subject of the endpoint certificate.
+	CommonName string `json:"commonName"`
+
+	// Sans The list of SANs to include in the endpoint certificate.
+	Sans []string `json:"sans"`
 }
 
 // Error defines model for error.
@@ -305,6 +519,37 @@ type JwkProvisioner struct {
 
 	// Key The public JSON web key
 	Key interface{} `json:"key"`
+}
+
+// ManagedConfiguration The agent and managed endpoints used in one host.
+type ManagedConfiguration struct {
+	// AgentConfigurationID UUID identifying the agent configuration.
+	AgentConfigurationID string `json:"agentConfigurationID"`
+
+	// HostID UUID identifying the host this managed configuration is for. Will be generated on server-side if not provided.
+	HostID *string `json:"hostID,omitempty"`
+
+	// Id UUID identifying this managed configuration.
+	Id               *string           `json:"id,omitempty"`
+	ManagedEndpoints []ManagedEndpoint `json:"managedEndpoints"`
+
+	// Name The name of this managed configuration.
+	Name string `json:"name"`
+}
+
+// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` and `sshCertificateData` must be set and must match the endpoint configuration certificate info type.
+type ManagedEndpoint struct {
+	// EndpointConfigurationID UUID identifying the endpoint configuration.
+	EndpointConfigurationID string `json:"endpointConfigurationID"`
+
+	// Id UUID identifying this managed endpoint. Generated server-side on creation.
+	Id *string `json:"id,omitempty"`
+
+	// SshCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+	SshCertificateData *EndpointSSHCertificateData `json:"sshCertificateData,omitempty"`
+
+	// X509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+	X509CertificateData *EndpointX509CertificateData `json:"x509CertificateData,omitempty"`
 }
 
 // NameConstraints defines model for name-constraints.
@@ -528,14 +773,63 @@ type ProvisionerClaims struct {
 // ProvisionerOptions Options that apply when issuing certificates with this provisioner
 type ProvisionerOptions struct {
 	// Ssh Options that apply when issuing SSH certificates
-	Ssh *SshOptions `json:"ssh,omitempty"`
-
-	// Webhooks Configuration for a webhook to be called when issuing certificates with this provisioner
-	Webhooks *Webhook `json:"webhooks,omitempty"`
+	Ssh      *SshOptions           `json:"ssh,omitempty"`
+	Webhooks *[]ProvisionerWebhook `json:"webhooks,omitempty"`
 
 	// X509 Options that apply when issuing x509 certificates
 	X509 *X509Options `json:"x509,omitempty"`
 }
+
+// ProvisionerWebhook A [webhook](https://smallstep.com/docs/step-ca/webhooks/) to call when a certificate request is being processed.
+type ProvisionerWebhook struct {
+	// BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+	BasicAuth *BasicAuth `json:"basicAuth,omitempty"`
+
+	// BearerToken Webhook requests will include an Authorization header with the token. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+	BearerToken *string                    `json:"bearerToken,omitempty"`
+	CertType    ProvisionerWebhookCertType `json:"certType"`
+
+	// DisableTLSClientAuth The CA will not send a client certificate when requested by the webhook server. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers.
+	DisableTLSClientAuth *bool `json:"disableTLSClientAuth,omitempty"`
+
+	// Id UUID identifying this webhook. Generated server-side when the webhook is created. Will be sent to the webhook server in every request in the `X-Smallstep-Webhook-ID` header.
+	Id *string `json:"id,omitempty"`
+
+	// InventorySlug For HOSTED_ATTESTATION webhooks, the inventorySlug is a reference to the inventory that holds the devices that may be issued certificates. This inventory must already exist. Required for `HOSTED_ATTESTATION` webhook servers; not allowed for `EXTERNAL`.
+	InventorySlug *string `json:"inventorySlug,omitempty"`
+
+	// Kind The webhook kind indicates how and when it is called.
+	//
+	// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+	Kind ProvisionerWebhookKind `json:"kind"`
+
+	// Name The name of the webhook. For `ENRICHING` webhooks, the returned data can be referenced in the certificate under the path `.Webhooks.<name>`. Must be unique to the provisioner.
+	Name string `json:"name"`
+
+	// Secret The shared secret used to authenticate the payload sent to the webhook server. Generated server-side. This is returned only for `EXTERNAL` webhook servers and only once, at the time of creation.
+	Secret *string `json:"secret,omitempty"`
+
+	// ServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
+	//
+	// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an item in the configured inventory. The data of the item in the inventory will be added to the template data.
+	ServerType ProvisionerWebhookServerType `json:"serverType"`
+
+	// Url The URL of the webhook server. Required for `EXTERNAL` webhook servers; read-only for hosted webhook servers.
+	Url *string `json:"url,omitempty"`
+}
+
+// ProvisionerWebhookCertType defines model for ProvisionerWebhook.CertType.
+type ProvisionerWebhookCertType string
+
+// ProvisionerWebhookKind The webhook kind indicates how and when it is called.
+//
+// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+type ProvisionerWebhookKind string
+
+// ProvisionerWebhookServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
+//
+// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an item in the configured inventory. The data of the item in the inventory will be added to the template data.
+type ProvisionerWebhookServerType string
 
 // SshOptions Options that apply when issuing SSH certificates
 type SshOptions struct {
@@ -580,27 +874,6 @@ type User struct {
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
 }
 
-// Webhook Configuration for a webhook to be called when issuing certificates with this provisioner
-type Webhook struct {
-	// CertType Whether to call this webhook when signing X509 certificates, SSH certificates, or ALL certificates. Default is ALL.
-	CertType *WebhookCertType `json:"certType,omitempty"`
-
-	// DisableTLSClientAuth The CA will not send a client certificate when requested by the webhook server.
-	DisableTLSClientAuth *bool `json:"disableTLSClientAuth,omitempty"`
-
-	// Id UUID identifying this webhook. Generated server-side when the webhook is created.
-	Id *string `json:"id,omitempty"`
-
-	// Name The name of the webhook.
-	Name *string `json:"name,omitempty"`
-
-	// Url The URL of the webhook server.
-	Url *string `json:"url,omitempty"`
-}
-
-// WebhookCertType Whether to call this webhook when signing X509 certificates, SSH certificates, or ALL certificates. Default is ALL.
-type WebhookCertType string
-
 // X509Issuer A Customized X509 issuer for an authority
 type X509Issuer struct {
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -639,11 +912,17 @@ type X5cProvisioner struct {
 // Accept defines model for accept.
 type Accept = string
 
+// AgentConfigurationID defines model for agentConfigurationID.
+type AgentConfigurationID = string
+
 // AttestationAuthorityID defines model for attestationAuthorityID.
 type AttestationAuthorityID = string
 
 // AuthorityID defines model for authorityID.
 type AuthorityID = string
+
+// EndpointConfigurationID defines model for endpointConfigurationID.
+type EndpointConfigurationID = string
 
 // GrantID defines model for grantID.
 type GrantID = string
@@ -659,6 +938,9 @@ type InventorySlug = string
 
 // ItemID defines model for itemID.
 type ItemID = string
+
+// ManagedConfigurationID defines model for managedConfigurationID.
+type ManagedConfigurationID = string
 
 // Pagination defines model for pagination.
 type Pagination struct {
@@ -676,6 +958,9 @@ type ProvisionerNameOrID = string
 
 // RequestID defines model for requestID.
 type RequestID = string
+
+// WebhookNameOrID defines model for webhookNameOrID.
+type WebhookNameOrID = string
 
 // N400 defines model for 400.
 type N400 = Error
@@ -697,6 +982,33 @@ type N412 = Error
 
 // N500 defines model for 500.
 type N500 = Error
+
+// PostAgentConfigurationsParams defines parameters for PostAgentConfigurations.
+type PostAgentConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteAgentConfigurationParams defines parameters for DeleteAgentConfiguration.
+type DeleteAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetAgentConfigurationParams defines parameters for GetAgentConfiguration.
+type GetAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
 
 // GetAttestationAuthoritiesParams defines parameters for GetAttestationAuthorities.
 type GetAttestationAuthoritiesParams struct {
@@ -825,6 +1137,33 @@ type GetProvisionerParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostWebhooksParams defines parameters for PostWebhooks.
+type PostWebhooksParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteWebhookParams defines parameters for DeleteWebhook.
+type DeleteWebhookParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetWebhookParams defines parameters for GetWebhook.
+type GetWebhookParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // PostAuthorityRootJSONBody defines parameters for PostAuthorityRoot.
 type PostAuthorityRootJSONBody struct {
 	// AdminEmails Users that will have admin access to manage the authority
@@ -845,6 +1184,33 @@ type PostAuthorityRootJSONBody struct {
 
 // PostAuthorityRootParams defines parameters for PostAuthorityRoot.
 type PostAuthorityRootParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostEndpointConfigurationsParams defines parameters for PostEndpointConfigurations.
+type PostEndpointConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteEndpointConfigurationParams defines parameters for DeleteEndpointConfiguration.
+type DeleteEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetEndpointConfigurationParams defines parameters for GetEndpointConfiguration.
+type GetEndpointConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1058,6 +1424,33 @@ type PutInventoryItemDataParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostManagedConfigurationsParams defines parameters for PostManagedConfigurations.
+type PostManagedConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteManagedConfigurationParams defines parameters for DeleteManagedConfiguration.
+type DeleteManagedConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetManagedConfigurationParams defines parameters for GetManagedConfiguration.
+type GetManagedConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // GetSshHostTagsParams defines parameters for GetSshHostTags.
 type GetSshHostTagsParams struct {
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1082,6 +1475,9 @@ type GetSshUsersParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostAgentConfigurationsJSONRequestBody defines body for PostAgentConfigurations for application/json ContentType.
+type PostAgentConfigurationsJSONRequestBody = AgentConfiguration
+
 // PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
 type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
 
@@ -1097,8 +1493,14 @@ type PostAuthoritiesCsrJSONRequestBody = NewAuthorityCsr
 // PostAuthorityProvisionersJSONRequestBody defines body for PostAuthorityProvisioners for application/json ContentType.
 type PostAuthorityProvisionersJSONRequestBody = Provisioner
 
+// PostWebhooksJSONRequestBody defines body for PostWebhooks for application/json ContentType.
+type PostWebhooksJSONRequestBody = ProvisionerWebhook
+
 // PostAuthorityRootJSONRequestBody defines body for PostAuthorityRoot for application/json ContentType.
 type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
+
+// PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
+type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
 
 // PostSshGrantsJSONRequestBody defines body for PostSshGrants for application/json ContentType.
 type PostSshGrantsJSONRequestBody = NewGrant
@@ -1114,6 +1516,9 @@ type PutInventoryItemJSONRequestBody PutInventoryItemJSONBody
 
 // PutInventoryItemDataJSONRequestBody defines body for PutInventoryItemData for application/json ContentType.
 type PutInventoryItemDataJSONRequestBody = PutInventoryItemDataJSONBody
+
+// PostManagedConfigurationsJSONRequestBody defines body for PostManagedConfigurations for application/json ContentType.
+type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -1429,6 +1834,17 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// PostAgentConfigurations request with any body
+	PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostAgentConfigurations(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAgentConfiguration request
+	DeleteAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAgentConfiguration request
+	GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1481,10 +1897,32 @@ type ClientInterface interface {
 	// GetProvisioner request
 	GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostWebhooks request with any body
+	PostWebhooksWithBody(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostWebhooks(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWebhook request
+	DeleteWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWebhook request
+	GetWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBody(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostAuthorityRoot(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostEndpointConfigurations request with any body
+	PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEndpointConfiguration request
+	DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEndpointConfiguration request
+	GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshGrants request
 	GetSshGrants(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1556,11 +1994,70 @@ type ClientInterface interface {
 
 	PutInventoryItemData(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostManagedConfigurations request with any body
+	PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostManagedConfigurations(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteManagedConfiguration request
+	DeleteManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetManagedConfiguration request
+	GetManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetSshHostTags request
 	GetSshHostTags(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshUsers request
 	GetSshUsers(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAgentConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostAgentConfigurations(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAgentConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAgentConfigurationRequest(c.Server, agentConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAgentConfigurationRequest(c.Server, agentConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1791,6 +2288,54 @@ func (c *Client) GetProvisioner(ctx context.Context, authorityID AuthorityID, pr
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostWebhooksWithBody(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWebhooksRequestWithBody(c.Server, authorityID, provisionerNameOrID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostWebhooks(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWebhooksRequest(c.Server, authorityID, provisionerNameOrID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWebhookRequest(c.Server, authorityID, provisionerNameOrID, webhookNameOrID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWebhookRequest(c.Server, authorityID, provisionerNameOrID, webhookNameOrID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostAuthorityRootWithBody(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostAuthorityRootRequestWithBody(c.Server, authorityID, params, contentType, body)
 	if err != nil {
@@ -1805,6 +2350,54 @@ func (c *Client) PostAuthorityRootWithBody(ctx context.Context, authorityID Auth
 
 func (c *Client) PostAuthorityRoot(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostAuthorityRootRequest(c.Server, authorityID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2115,6 +2708,54 @@ func (c *Client) PutInventoryItemData(ctx context.Context, inventorySlug Invento
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostManagedConfigurations(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteManagedConfigurationRequest(c.Server, managedConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetManagedConfigurationRequest(c.Server, managedConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetSshHostTags(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSshHostTagsRequest(c.Server, params)
 	if err != nil {
@@ -2137,6 +2778,180 @@ func (c *Client) GetSshUsers(ctx context.Context, params *GetSshUsersParams, req
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewPostAgentConfigurationsRequest calls the generic PostAgentConfigurations builder with application/json body
+func NewPostAgentConfigurationsRequest(server string, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostAgentConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostAgentConfigurationsRequestWithBody generates requests for PostAgentConfigurations with any type of body
+func NewPostAgentConfigurationsRequestWithBody(server string, params *PostAgentConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteAgentConfigurationRequest generates requests for DeleteAgentConfiguration
+func NewDeleteAgentConfigurationRequest(server string, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, agentConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetAgentConfigurationRequest generates requests for GetAgentConfiguration
+func NewGetAgentConfigurationRequest(server string, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, agentConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
 }
 
 // NewGetAttestationAuthoritiesRequest generates requests for GetAttestationAuthorities
@@ -2938,6 +3753,222 @@ func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisione
 	return req, nil
 }
 
+// NewPostWebhooksRequest calls the generic PostWebhooks builder with application/json body
+func NewPostWebhooksRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostWebhooksRequestWithBody(server, authorityID, provisionerNameOrID, params, "application/json", bodyReader)
+}
+
+// NewPostWebhooksRequestWithBody generates requests for PostWebhooks with any type of body
+func NewPostWebhooksRequestWithBody(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteWebhookRequest generates requests for DeleteWebhook
+func NewDeleteWebhookRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "webhookNameOrID", runtime.ParamLocationPath, webhookNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetWebhookRequest generates requests for GetWebhook
+func NewGetWebhookRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "webhookNameOrID", runtime.ParamLocationPath, webhookNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewPostAuthorityRootRequest calls the generic PostAuthorityRoot builder with application/json body
 func NewPostAuthorityRootRequest(server string, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -2981,6 +4012,180 @@ func NewPostAuthorityRootRequestWithBody(server string, authorityID AuthorityID,
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPostEndpointConfigurationsRequest calls the generic PostEndpointConfigurations builder with application/json body
+func NewPostEndpointConfigurationsRequest(server string, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEndpointConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostEndpointConfigurationsRequestWithBody generates requests for PostEndpointConfigurations with any type of body
+func NewPostEndpointConfigurationsRequestWithBody(server string, params *PostEndpointConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteEndpointConfigurationRequest generates requests for DeleteEndpointConfiguration
+func NewDeleteEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetEndpointConfigurationRequest generates requests for GetEndpointConfiguration
+func NewGetEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params.XRequestId != nil {
 		var headerParam0 string
@@ -4297,6 +5502,180 @@ func NewPutInventoryItemDataRequestWithBody(server string, inventorySlug Invento
 	return req, nil
 }
 
+// NewPostManagedConfigurationsRequest calls the generic PostManagedConfigurations builder with application/json body
+func NewPostManagedConfigurationsRequest(server string, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostManagedConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostManagedConfigurationsRequestWithBody generates requests for PostManagedConfigurations with any type of body
+func NewPostManagedConfigurationsRequestWithBody(server string, params *PostManagedConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteManagedConfigurationRequest generates requests for DeleteManagedConfiguration
+func NewDeleteManagedConfigurationRequest(server string, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, managedConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetManagedConfigurationRequest generates requests for GetManagedConfiguration
+func NewGetManagedConfigurationRequest(server string, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, managedConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewGetSshHostTagsRequest generates requests for GetSshHostTags
 func NewGetSshHostTagsRequest(server string, params *GetSshHostTagsParams) (*http.Request, error) {
 	var err error
@@ -4478,6 +5857,17 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// PostAgentConfigurations request with any body
+	PostAgentConfigurationsWithBodyWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error)
+
+	PostAgentConfigurationsWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error)
+
+	// DeleteAgentConfiguration request
+	DeleteAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteAgentConfigurationResponse, error)
+
+	// GetAgentConfiguration request
+	GetAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*GetAgentConfigurationResponse, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthoritiesWithResponse(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthoritiesResponse, error)
 
@@ -4530,10 +5920,32 @@ type ClientWithResponsesInterface interface {
 	// GetProvisioner request
 	GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error)
 
+	// PostWebhooks request with any body
+	PostWebhooksWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error)
+
+	PostWebhooksWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error)
+
+	// DeleteWebhook request
+	DeleteWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*DeleteWebhookResponse, error)
+
+	// GetWebhook request
+	GetWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*GetWebhookResponse, error)
+
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error)
 
 	PostAuthorityRootWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error)
+
+	// PostEndpointConfigurations request with any body
+	PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	// DeleteEndpointConfiguration request
+	DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error)
+
+	// GetEndpointConfiguration request
+	GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error)
 
 	// GetSshGrants request
 	GetSshGrantsWithResponse(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*GetSshGrantsResponse, error)
@@ -4605,11 +6017,97 @@ type ClientWithResponsesInterface interface {
 
 	PutInventoryItemDataWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*PutInventoryItemDataResponse, error)
 
+	// PostManagedConfigurations request with any body
+	PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error)
+
+	PostManagedConfigurationsWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error)
+
+	// DeleteManagedConfiguration request
+	DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error)
+
+	// GetManagedConfiguration request
+	GetManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationResponse, error)
+
 	// GetSshHostTags request
 	GetSshHostTagsWithResponse(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*GetSshHostTagsResponse, error)
 
 	// GetSshUsers request
 	GetSshUsersWithResponse(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*GetSshUsersResponse, error)
+}
+
+type PostAgentConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostAgentConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostAgentConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteAgentConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAgentConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAgentConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetAgentConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAgentConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAgentConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetAttestationAuthoritiesResponse struct {
@@ -4974,6 +6472,83 @@ func (r GetProvisionerResponse) StatusCode() int {
 	return 0
 }
 
+type PostWebhooksResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ProvisionerWebhook
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON409      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostWebhooksResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostWebhooksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWebhookResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWebhookResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWebhookResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWebhookResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ProvisionerWebhook
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWebhookResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWebhookResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostAuthorityRootResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4994,6 +6569,81 @@ func (r PostAuthorityRootResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostAuthorityRootResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEndpointConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEndpointConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEndpointConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEndpointConfigurationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5504,6 +7154,80 @@ func (r PutInventoryItemDataResponse) StatusCode() int {
 	return 0
 }
 
+type PostManagedConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ManagedConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostManagedConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostManagedConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteManagedConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteManagedConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteManagedConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetManagedConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetManagedConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetManagedConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetSshHostTagsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5552,6 +7276,41 @@ func (r GetSshUsersResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
+}
+
+// PostAgentConfigurationsWithBodyWithResponse request with arbitrary body returning *PostAgentConfigurationsResponse
+func (c *ClientWithResponses) PostAgentConfigurationsWithBodyWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error) {
+	rsp, err := c.PostAgentConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAgentConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostAgentConfigurationsWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error) {
+	rsp, err := c.PostAgentConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAgentConfigurationsResponse(rsp)
+}
+
+// DeleteAgentConfigurationWithResponse request returning *DeleteAgentConfigurationResponse
+func (c *ClientWithResponses) DeleteAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteAgentConfigurationResponse, error) {
+	rsp, err := c.DeleteAgentConfiguration(ctx, agentConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAgentConfigurationResponse(rsp)
+}
+
+// GetAgentConfigurationWithResponse request returning *GetAgentConfigurationResponse
+func (c *ClientWithResponses) GetAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*GetAgentConfigurationResponse, error) {
+	rsp, err := c.GetAgentConfiguration(ctx, agentConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAgentConfigurationResponse(rsp)
 }
 
 // GetAttestationAuthoritiesWithResponse request returning *GetAttestationAuthoritiesResponse
@@ -5720,6 +7479,41 @@ func (c *ClientWithResponses) GetProvisionerWithResponse(ctx context.Context, au
 	return ParseGetProvisionerResponse(rsp)
 }
 
+// PostWebhooksWithBodyWithResponse request with arbitrary body returning *PostWebhooksResponse
+func (c *ClientWithResponses) PostWebhooksWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error) {
+	rsp, err := c.PostWebhooksWithBody(ctx, authorityID, provisionerNameOrID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWebhooksResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostWebhooksWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error) {
+	rsp, err := c.PostWebhooks(ctx, authorityID, provisionerNameOrID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWebhooksResponse(rsp)
+}
+
+// DeleteWebhookWithResponse request returning *DeleteWebhookResponse
+func (c *ClientWithResponses) DeleteWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*DeleteWebhookResponse, error) {
+	rsp, err := c.DeleteWebhook(ctx, authorityID, provisionerNameOrID, webhookNameOrID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWebhookResponse(rsp)
+}
+
+// GetWebhookWithResponse request returning *GetWebhookResponse
+func (c *ClientWithResponses) GetWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*GetWebhookResponse, error) {
+	rsp, err := c.GetWebhook(ctx, authorityID, provisionerNameOrID, webhookNameOrID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWebhookResponse(rsp)
+}
+
 // PostAuthorityRootWithBodyWithResponse request with arbitrary body returning *PostAuthorityRootResponse
 func (c *ClientWithResponses) PostAuthorityRootWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error) {
 	rsp, err := c.PostAuthorityRootWithBody(ctx, authorityID, params, contentType, body, reqEditors...)
@@ -5735,6 +7529,41 @@ func (c *ClientWithResponses) PostAuthorityRootWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParsePostAuthorityRootResponse(rsp)
+}
+
+// PostEndpointConfigurationsWithBodyWithResponse request with arbitrary body returning *PostEndpointConfigurationsResponse
+func (c *ClientWithResponses) PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+// DeleteEndpointConfigurationWithResponse request returning *DeleteEndpointConfigurationResponse
+func (c *ClientWithResponses) DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error) {
+	rsp, err := c.DeleteEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEndpointConfigurationResponse(rsp)
+}
+
+// GetEndpointConfigurationWithResponse request returning *GetEndpointConfigurationResponse
+func (c *ClientWithResponses) GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error) {
+	rsp, err := c.GetEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEndpointConfigurationResponse(rsp)
 }
 
 // GetSshGrantsWithResponse request returning *GetSshGrantsResponse
@@ -5957,6 +7786,41 @@ func (c *ClientWithResponses) PutInventoryItemDataWithResponse(ctx context.Conte
 	return ParsePutInventoryItemDataResponse(rsp)
 }
 
+// PostManagedConfigurationsWithBodyWithResponse request with arbitrary body returning *PostManagedConfigurationsResponse
+func (c *ClientWithResponses) PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error) {
+	rsp, err := c.PostManagedConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostManagedConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostManagedConfigurationsWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error) {
+	rsp, err := c.PostManagedConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostManagedConfigurationsResponse(rsp)
+}
+
+// DeleteManagedConfigurationWithResponse request returning *DeleteManagedConfigurationResponse
+func (c *ClientWithResponses) DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error) {
+	rsp, err := c.DeleteManagedConfiguration(ctx, managedConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteManagedConfigurationResponse(rsp)
+}
+
+// GetManagedConfigurationWithResponse request returning *GetManagedConfigurationResponse
+func (c *ClientWithResponses) GetManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationResponse, error) {
+	rsp, err := c.GetManagedConfiguration(ctx, managedConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetManagedConfigurationResponse(rsp)
+}
+
 // GetSshHostTagsWithResponse request returning *GetSshHostTagsResponse
 func (c *ClientWithResponses) GetSshHostTagsWithResponse(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*GetSshHostTagsResponse, error) {
 	rsp, err := c.GetSshHostTags(ctx, params, reqEditors...)
@@ -5973,6 +7837,147 @@ func (c *ClientWithResponses) GetSshUsersWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetSshUsersResponse(rsp)
+}
+
+// ParsePostAgentConfigurationsResponse parses an HTTP response from a PostAgentConfigurationsWithResponse call
+func ParsePostAgentConfigurationsResponse(rsp *http.Response) (*PostAgentConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostAgentConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAgentConfigurationResponse parses an HTTP response from a DeleteAgentConfigurationWithResponse call
+func ParseDeleteAgentConfigurationResponse(rsp *http.Response) (*DeleteAgentConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAgentConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAgentConfigurationResponse parses an HTTP response from a GetAgentConfigurationWithResponse call
+func ParseGetAgentConfigurationResponse(rsp *http.Response) (*GetAgentConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAgentConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetAttestationAuthoritiesResponse parses an HTTP response from a GetAttestationAuthoritiesWithResponse call
@@ -6705,6 +8710,161 @@ func ParseGetProvisionerResponse(rsp *http.Response) (*GetProvisionerResponse, e
 	return response, nil
 }
 
+// ParsePostWebhooksResponse parses an HTTP response from a PostWebhooksWithResponse call
+func ParsePostWebhooksResponse(rsp *http.Response) (*PostWebhooksResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostWebhooksResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ProvisionerWebhook
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWebhookResponse parses an HTTP response from a DeleteWebhookWithResponse call
+func ParseDeleteWebhookResponse(rsp *http.Response) (*DeleteWebhookResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWebhookResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWebhookResponse parses an HTTP response from a GetWebhookWithResponse call
+func ParseGetWebhookResponse(rsp *http.Response) (*GetWebhookResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWebhookResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ProvisionerWebhook
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostAuthorityRootResponse parses an HTTP response from a PostAuthorityRootWithResponse call
 func ParsePostAuthorityRootResponse(rsp *http.Response) (*PostAuthorityRootResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6721,6 +8881,147 @@ func ParsePostAuthorityRootResponse(rsp *http.Response) (*PostAuthorityRootRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Authority
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostEndpointConfigurationsResponse parses an HTTP response from a PostEndpointConfigurationsWithResponse call
+func ParsePostEndpointConfigurationsResponse(rsp *http.Response) (*PostEndpointConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEndpointConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEndpointConfigurationResponse parses an HTTP response from a DeleteEndpointConfigurationWithResponse call
+func ParseDeleteEndpointConfigurationResponse(rsp *http.Response) (*DeleteEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEndpointConfigurationResponse parses an HTTP response from a GetEndpointConfigurationWithResponse call
+func ParseGetEndpointConfigurationResponse(rsp *http.Response) (*GetEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EndpointConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7714,6 +10015,140 @@ func ParsePutInventoryItemDataResponse(rsp *http.Response) (*PutInventoryItemDat
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostManagedConfigurationsResponse parses an HTTP response from a PostManagedConfigurationsWithResponse call
+func ParsePostManagedConfigurationsResponse(rsp *http.Response) (*PostManagedConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostManagedConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ManagedConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteManagedConfigurationResponse parses an HTTP response from a DeleteManagedConfigurationWithResponse call
+func ParseDeleteManagedConfigurationResponse(rsp *http.Response) (*DeleteManagedConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteManagedConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetManagedConfigurationResponse parses an HTTP response from a GetManagedConfigurationWithResponse call
+func ParseGetManagedConfigurationResponse(rsp *http.Response) (*GetManagedConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetManagedConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ManagedConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
