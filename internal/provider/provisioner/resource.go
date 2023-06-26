@@ -13,9 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -111,6 +112,36 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		oidc = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication."
 	}
 	oidc += " This object is required when type is `OIDC` and is otherwise ignored."
+
+	acme, acmeProps, err := utils.Describe("acmeProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	acme += " This object is required when type is `ACME` and is otherwise ignored."
+
+	attest, attestProps, err := utils.Describe("acmeAttestationProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	attest += " This object is required when type is `ACME_ATTESTATION` and is otherwise ignored."
+
+	x5c, x5cProps, err := utils.Describe("x5cProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	x5c += " This object is required when type is `X5C` and is otherwise ignored."
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
@@ -334,28 +365,28 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
-					"admins": schema.ListAttribute{
+					"admins": schema.SetAttribute{
 						MarkdownDescription: oidcProps["admins"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
-					"domains": schema.ListAttribute{
+					"domains": schema.SetAttribute{
 						MarkdownDescription: oidcProps["domains"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
-					"groups": schema.ListAttribute{
+					"groups": schema.SetAttribute{
 						MarkdownDescription: oidcProps["groups"],
 						ElementType:         types.StringType,
 						Optional:            true,
-						PlanModifiers: []planmodifier.List{
-							listplanmodifier.RequiresReplace(),
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 					"listen_address": schema.StringAttribute{
@@ -370,6 +401,90 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Optional:            true,
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
+						},
+					},
+				},
+			},
+			"acme": schema.SingleNestedAttribute{
+				MarkdownDescription: acme,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"challenges": schema.SetAttribute{
+						MarkdownDescription: acmeProps["challenges"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["requireEAB"],
+						Required:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["forceCN"],
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+						Default: booldefault.StaticBool(false),
+					},
+				},
+			},
+			"acme_attestation": schema.SingleNestedAttribute{
+				MarkdownDescription: attest,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"attestation_formats": schema.SetAttribute{
+						MarkdownDescription: attestProps["attestationFormats"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"attestation_roots": schema.SetAttribute{
+						MarkdownDescription: attestProps["attestationRoots"],
+						ElementType:         types.StringType,
+						Optional:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: attestProps["requireEAB"],
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+						Default: booldefault.StaticBool(false),
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: attestProps["forceCN"],
+						Optional:            true,
+						Computed:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+						Default: booldefault.StaticBool(false),
+					},
+				},
+			},
+			"x5c": schema.SingleNestedAttribute{
+				MarkdownDescription: x5c,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"roots": schema.SetAttribute{
+						MarkdownDescription: x5cProps["roots"],
+						Required:            true,
+						ElementType:         types.StringType,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
 						},
 					},
 				},
@@ -444,7 +559,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	state, diags := fromAPI(provisioner, plan.AuthorityID.ValueString())
+	state, diags := fromAPI(ctx, provisioner, plan.AuthorityID.ValueString(), req.Plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -514,7 +629,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	actual, diags := fromAPI(provisioner, state.AuthorityID.ValueString())
+	actual, diags := fromAPI(ctx, provisioner, state.AuthorityID.ValueString(), req.State)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

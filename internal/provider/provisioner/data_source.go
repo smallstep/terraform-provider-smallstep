@@ -89,7 +89,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		)
 		return
 	}
-	state, diags := fromAPI(provisioner, config.AuthorityID.ValueString())
+	state, diags := fromAPI(ctx, provisioner, config.AuthorityID.ValueString(), req.Config)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -172,6 +172,36 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		oidc = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication."
 	}
 	oidc += " This object is populated when type is `OIDC`."
+
+	acme, acmeProps, err := utils.Describe("acmeProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	acme += " This object is populated when type is `ACME`."
+
+	attest, attestProps, err := utils.Describe("acmeAttestationProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	attest += " This object is populated when type is `ACME_ATTESTATION`."
+
+	x5c, x5cProps, err := utils.Describe("x5cProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	x5c += " This object is populated when type is `X5C`."
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
@@ -317,17 +347,17 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 						MarkdownDescription: oidcProps["configurationEndpoint"],
 						Computed:            true,
 					},
-					"admins": schema.ListAttribute{
+					"admins": schema.SetAttribute{
 						MarkdownDescription: oidcProps["admins"],
 						ElementType:         types.StringType,
 						Computed:            true,
 					},
-					"domains": schema.ListAttribute{
+					"domains": schema.SetAttribute{
 						MarkdownDescription: oidcProps["domains"],
 						ElementType:         types.StringType,
 						Computed:            true,
 					},
-					"groups": schema.ListAttribute{
+					"groups": schema.SetAttribute{
 						MarkdownDescription: oidcProps["groups"],
 						ElementType:         types.StringType,
 						Computed:            true,
@@ -338,6 +368,60 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 					},
 					"tenant_id": schema.StringAttribute{
 						MarkdownDescription: oidcProps["tenantID"],
+						Computed:            true,
+					},
+				},
+			},
+			"acme": schema.SingleNestedAttribute{
+				MarkdownDescription: acme,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"challenges": schema.SetAttribute{
+						MarkdownDescription: acmeProps["challenges"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["requireEAB"],
+						Computed:            true,
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: acmeProps["forceCN"],
+						Computed:            true,
+					},
+				},
+			},
+			"acme_attestation": schema.SingleNestedAttribute{
+				MarkdownDescription: attest,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"attestation_formats": schema.SetAttribute{
+						MarkdownDescription: attestProps["attestationFormats"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"attestation_roots": schema.SetAttribute{
+						MarkdownDescription: attestProps["attestationRoots"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: attestProps["requireEAB"],
+						Computed:            true,
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: attestProps["forceCN"],
+						Computed:            true,
+					},
+				},
+			},
+			"x5c": schema.SingleNestedAttribute{
+				MarkdownDescription: x5c,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"roots": schema.SetAttribute{
+						MarkdownDescription: x5cProps["roots"],
+						ElementType:         types.StringType,
 						Computed:            true,
 					},
 				},

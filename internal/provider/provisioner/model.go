@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
@@ -18,15 +19,18 @@ import (
 const provisionerTypeName = "smallstep_provisioner"
 
 type Model struct {
-	ID          types.String  `tfsdk:"id"`
-	AuthorityID types.String  `tfsdk:"authority_id"`
-	Name        types.String  `tfsdk:"name"`
-	Type        types.String  `tfsdk:"type"`
-	CreatedAt   types.String  `tfsdk:"created_at"`
-	Claims      *ClaimsModel  `tfsdk:"claims"`
-	Options     *OptionsModel `tfsdk:"options"`
-	JWK         *JWKModel     `tfsdk:"jwk"`
-	OIDC        *OIDCModel    `tfsdk:"oidc"`
+	ID              types.String          `tfsdk:"id"`
+	AuthorityID     types.String          `tfsdk:"authority_id"`
+	Name            types.String          `tfsdk:"name"`
+	Type            types.String          `tfsdk:"type"`
+	CreatedAt       types.String          `tfsdk:"created_at"`
+	Claims          *ClaimsModel          `tfsdk:"claims"`
+	Options         *OptionsModel         `tfsdk:"options"`
+	JWK             *JWKModel             `tfsdk:"jwk"`
+	OIDC            *OIDCModel            `tfsdk:"oidc"`
+	ACME            *ACMEModel            `tfsdk:"acme"`
+	ACMEAttestation *ACMEAttestationModel `tfsdk:"acme_attestation"`
+	X5C             *X5CModel             `tfsdk:"x5c"`
 }
 
 type OptionsModel struct {
@@ -94,11 +98,28 @@ type OIDCModel struct {
 	ClientID              types.String `tfsdk:"client_id"`
 	ClientSecret          types.String `tfsdk:"client_secret"`
 	ConfigurationEndpoint types.String `tfsdk:"configuration_endpoint"`
-	Admins                types.List   `tfsdk:"admins"`
-	Domains               types.List   `tfsdk:"domains"`
-	Groups                types.List   `tfsdk:"groups"`
+	Admins                types.Set    `tfsdk:"admins"`
+	Domains               types.Set    `tfsdk:"domains"`
+	Groups                types.Set    `tfsdk:"groups"`
 	ListenAddress         types.String `tfsdk:"listen_address"`
 	TenantID              types.String `tfsdk:"tenant_id"`
+}
+
+type ACMEModel struct {
+	Challenges types.Set  `tfsdk:"challenges"`
+	ForceCN    types.Bool `tfsdk:"force_cn"`
+	RequireEAB types.Bool `tfsdk:"require_eab"`
+}
+
+type ACMEAttestationModel struct {
+	AttestationFormats types.Set  `tfsdk:"attestation_formats"`
+	AttestationRoots   types.Set  `tfsdk:"attestation_roots"`
+	ForceCN            types.Bool `tfsdk:"force_cn"`
+	RequireEAB         types.Bool `tfsdk:"require_eab"`
+}
+
+type X5CModel struct {
+	Roots types.Set `tfsdk:"roots"`
 }
 
 func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
@@ -208,12 +229,57 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 		if err := p.FromOidcProvisioner(oidc); err != nil {
 			return nil, err
 		}
+	case m.ACME != nil:
+		acme := v20230301.AcmeProvisioner{
+			ForceCN:    m.ACME.ForceCN.ValueBoolPointer(),
+			RequireEAB: m.ACME.RequireEAB.ValueBool(),
+		}
+
+		diagnostics := m.ACME.Challenges.ElementsAs(ctx, &acme.Challenges, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromAcmeProvisioner(acme); err != nil {
+			return nil, err
+		}
+	case m.ACMEAttestation != nil:
+		attest := v20230301.AcmeAttestationProvisioner{
+			ForceCN:    m.ACMEAttestation.ForceCN.ValueBoolPointer(),
+			RequireEAB: m.ACMEAttestation.RequireEAB.ValueBoolPointer(),
+		}
+
+		diagnostics := m.ACMEAttestation.AttestationFormats.ElementsAs(ctx, &attest.AttestationFormats, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if !m.ACMEAttestation.AttestationRoots.IsNull() {
+			diagnostics = m.ACMEAttestation.AttestationRoots.ElementsAs(ctx, &attest.AttestationRoots, false)
+			if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+				return nil, err
+			}
+		}
+
+		if err := p.FromAcmeAttestationProvisioner(attest); err != nil {
+			return nil, err
+		}
+	case m.X5C != nil:
+		x5c := v20230301.X5cProvisioner{}
+		diagnostics := m.X5C.Roots.ElementsAs(ctx, &x5c.Roots, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromX5cProvisioner(x5c); err != nil {
+			return nil, err
+		}
 	}
 
 	return p, nil
 }
 
-func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityID string, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	data := &Model{
@@ -227,19 +293,55 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 	}
 
 	if provisioner.Claims != nil {
+		disableRenewal, d := utils.ToOptionalBool(ctx, provisioner.Claims.DisableRenewal, state, path.Root("claims").AtName("disable_renewal"))
+		diags = append(diags, d...)
+
+		allowRenewalAfterExpiry, d := utils.ToOptionalBool(ctx, provisioner.Claims.AllowRenewalAfterExpiry, state, path.Root("claims").AtName("allow_renewal_after_expiry"))
+		diags = append(diags, d...)
+
+		enableSSHCA, d := utils.ToOptionalBool(ctx, provisioner.Claims.EnableSSHCA, state, path.Root("claims").AtName("enable_ssh_ca"))
+		diags = append(diags, d...)
+
+		minTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinTLSCertDuration, state, path.Root("claims").AtName("min_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		maxTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxTLSCertDuration, state, path.Root("claims").AtName("max_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultTLSCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultTLSCertDuration, state, path.Root("claims").AtName("default_tls_cert_duration"))
+		diags = append(diags, d...)
+
+		minUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinUserSSHCertDuration, state, path.Root("claims").AtName("min_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		maxUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxUserSSHCertDuration, state, path.Root("claims").AtName("max_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultUserSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultUserSSHCertDuration, state, path.Root("claims").AtName("default_user_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		minHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MinHostSSHCertDuration, state, path.Root("claims").AtName("min_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		maxHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.MaxHostSSHCertDuration, state, path.Root("claims").AtName("max_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
+		defaultHostSSHCertDuration, d := utils.ToOptionalString(ctx, provisioner.Claims.DefaultHostSSHCertDuration, state, path.Root("claims").AtName("default_host_ssh_cert_duration"))
+		diags = append(diags, d...)
+
 		data.Claims = &ClaimsModel{
-			DisableRenewal:             types.BoolPointerValue(provisioner.Claims.DisableRenewal),
-			AllowRenewalAfterExpiry:    types.BoolPointerValue(provisioner.Claims.AllowRenewalAfterExpiry),
-			EnableSSHCA:                types.BoolPointerValue(provisioner.Claims.EnableSSHCA),
-			MinTLSCertDuration:         types.StringPointerValue(provisioner.Claims.MinTLSCertDuration),
-			MaxTLSCertDuration:         types.StringPointerValue(provisioner.Claims.MaxTLSCertDuration),
-			DefaultTLSCertDuration:     types.StringPointerValue(provisioner.Claims.DefaultTLSCertDuration),
-			MinUserSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MinUserSSHCertDuration),
-			MaxUserSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MaxUserSSHCertDuration),
-			DefaultUserSSHCertDuration: types.StringPointerValue(provisioner.Claims.DefaultUserSSHCertDuration),
-			MinHostSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MinHostSSHCertDuration),
-			MaxHostSSHCertDuration:     types.StringPointerValue(provisioner.Claims.MaxHostSSHCertDuration),
-			DefaultHostSSHCertDuration: types.StringPointerValue(provisioner.Claims.DefaultHostSSHCertDuration),
+			DisableRenewal:             disableRenewal,
+			AllowRenewalAfterExpiry:    allowRenewalAfterExpiry,
+			EnableSSHCA:                enableSSHCA,
+			MinTLSCertDuration:         minTLSCertDuration,
+			MaxTLSCertDuration:         maxTLSCertDuration,
+			DefaultTLSCertDuration:     defaultTLSCertDuration,
+			MinUserSSHCertDuration:     minUserSSHCertDuration,
+			MaxUserSSHCertDuration:     maxUserSSHCertDuration,
+			DefaultUserSSHCertDuration: defaultUserSSHCertDuration,
+			MinHostSSHCertDuration:     minHostSSHCertDuration,
+			MaxHostSSHCertDuration:     maxHostSSHCertDuration,
+			DefaultHostSSHCertDuration: defaultHostSSHCertDuration,
 		}
 	}
 
@@ -298,9 +400,13 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 			)
 		}
 		data.JWK = &JWKModel{
-			Key:          types.StringValue(string(pubKeyJSON)),
-			EncryptedKey: types.StringValue(utils.Deref(jwk.EncryptedKey)),
+			Key: types.StringValue(string(pubKeyJSON)),
 		}
+		encryptedKey, diags := utils.ToOptionalString(ctx, jwk.EncryptedKey, state, path.Root("jwk").AtName("encrypted_key"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.JWK.EncryptedKey = encryptedKey
 
 	case v20230301.OIDC:
 		oidc, err := provisioner.AsOidcProvisioner()
@@ -314,58 +420,133 @@ func fromAPI(provisioner *v20230301.Provisioner, authorityID string) (*Model, di
 
 		data.OIDC = &OIDCModel{
 			ClientID:              types.StringValue(oidc.ClientID),
-			ClientSecret:          types.StringValue(oidc.ClientSecret),
 			ConfigurationEndpoint: types.StringValue(oidc.ConfigurationEndpoint),
 		}
 
-		if oidc.Admins != nil {
-			var admins []attr.Value
-			for _, admin := range *oidc.Admins {
-				admins = append(admins, types.StringValue(admin))
+		secret, diags := utils.ToOptionalString(ctx, &oidc.ClientSecret, state, path.Root("oidc").AtName("client_secret"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.ClientSecret = secret
+
+		admins, diags := utils.ToOptionalSet(ctx, oidc.Admins, state, path.Root("oidc").AtName("admins"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.Admins = admins
+
+		domains, diags := utils.ToOptionalSet(ctx, oidc.Domains, state, path.Root("oidc").AtName("domains"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.Domains = domains
+
+		groups, diags := utils.ToOptionalSet(ctx, oidc.Groups, state, path.Root("oidc").AtName("groups"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.Groups = groups
+
+		listen, diags := utils.ToOptionalString(ctx, oidc.ListenAddress, state, path.Root("oidc").AtName("listen_address"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.ListenAddress = listen
+
+		tenantID, diags := utils.ToOptionalString(ctx, oidc.TenantID, state, path.Root("oidc").AtName("tenant_id"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.OIDC.TenantID = tenantID
+
+	case v20230301.ACME:
+		acme, err := provisioner.AsAcmeProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse ACME Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+		data.ACME = &ACMEModel{
+			RequireEAB: types.BoolValue(acme.RequireEAB),
+			ForceCN:    types.BoolPointerValue(acme.ForceCN),
+		}
+
+		var challenges []attr.Value
+		for _, challenge := range acme.Challenges {
+			challenges = append(challenges, types.StringValue(string(challenge)))
+		}
+		challengesSet, diags := types.SetValue(types.StringType, challenges)
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACME.Challenges = challengesSet
+
+	case v20230301.ACMEATTESTATION:
+		attest, err := provisioner.AsAcmeAttestationProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse ACME Attestation Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+		data.ACMEAttestation = &ACMEAttestationModel{
+			RequireEAB: types.BoolPointerValue(attest.RequireEAB),
+			ForceCN:    types.BoolPointerValue(attest.ForceCN),
+		}
+
+		var attestationFormats []attr.Value
+		for _, format := range attest.AttestationFormats {
+			attestationFormats = append(attestationFormats, types.StringValue(string(format)))
+		}
+		formatsSet, diags := types.SetValue(types.StringType, attestationFormats)
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACMEAttestation.AttestationFormats = formatsSet
+
+		if attest.AttestationRoots != nil {
+			var roots []attr.Value
+			for _, root := range *attest.AttestationRoots {
+				roots = append(roots, types.StringValue(root))
 			}
-			adminsList, listDiags := types.ListValue(types.StringType, admins)
-			if listDiags.HasError() {
-				return nil, listDiags
+			rootsSet, diags := types.SetValue(types.StringType, roots)
+			if diags.HasError() {
+				return nil, diags
 			}
-			data.OIDC.Admins = adminsList
+			data.ACMEAttestation.AttestationRoots = rootsSet
 		} else {
-			data.OIDC.Admins = types.ListNull(types.StringType)
+			data.ACMEAttestation.AttestationRoots = types.SetNull(types.StringType)
 		}
 
-		if oidc.Domains != nil {
-			var domains []attr.Value
-			for _, domain := range *oidc.Domains {
-				domains = append(domains, types.StringValue(domain))
-			}
-			domainsList, listDiags := types.ListValue(types.StringType, domains)
-			if listDiags.HasError() {
-				return nil, listDiags
-			}
-			data.OIDC.Domains = domainsList
-		} else {
-			data.OIDC.Domains = types.ListNull(types.StringType)
+		attestationRoots, diags := utils.ToOptionalSet(ctx, attest.AttestationRoots, state, path.Root("acme_attestation").AtName("attestation_roots"))
+		if diags.HasError() {
+			return nil, diags
+		}
+		data.ACMEAttestation.AttestationRoots = attestationRoots
+
+	case v20230301.X5C:
+		x5c, err := provisioner.AsX5cProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse X5C Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
 		}
 
-		if oidc.Groups != nil {
-			var groups []attr.Value
-			for _, group := range *oidc.Groups {
-				groups = append(groups, types.StringValue(group))
-			}
-			groupsList, listDiags := types.ListValue(types.StringType, groups)
-			if listDiags.HasError() {
-				return nil, listDiags
-			}
-			data.OIDC.Groups = groupsList
-		} else {
-			data.OIDC.Groups = types.ListNull(types.StringType)
+		var roots []attr.Value
+		for _, root := range x5c.Roots {
+			roots = append(roots, types.StringValue(root))
 		}
-
-		if oidc.ListenAddress != nil {
-			data.OIDC.ListenAddress = types.StringValue(*oidc.ListenAddress)
+		rootsSet, diags := types.SetValue(types.StringType, roots)
+		if diags.HasError() {
+			return nil, diags
 		}
-
-		if oidc.TenantID != nil {
-			data.OIDC.TenantID = types.StringValue(*oidc.TenantID)
+		data.X5C = &X5CModel{
+			Roots: rootsSet,
 		}
 
 	default:

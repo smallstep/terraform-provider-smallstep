@@ -49,7 +49,15 @@ func init() {
 					continue
 				}
 				// Don't delete authorities that may be used by running tests
-				if authority.CreatedAt.After(time.Now().Add(time.Minute * -1)) {
+				age := time.Minute
+				if sweepAge := os.Getenv("SWEEP_AGE"); sweepAge != "" {
+					d, err := time.ParseDuration(sweepAge)
+					if err != nil {
+						return err
+					}
+					age = d
+				}
+				if authority.CreatedAt.After(time.Now().Add(age * -1)) {
 					continue
 				}
 				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20230301.DeleteAuthorityParams{})
@@ -79,7 +87,6 @@ resource "smallstep_authority" "devops" {
 	name = "%s Authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
-	active_revocation = false
 }
 `, devopsSlug, devopsSlug)
 
