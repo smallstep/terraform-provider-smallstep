@@ -17,6 +17,7 @@ import (
 	"go.step.sm/crypto/jose"
 	"go.step.sm/crypto/minica"
 	"go.step.sm/crypto/pemutil"
+	"go.step.sm/crypto/randutil"
 )
 
 func SmallstepAPIClientFromEnv() (*v20230301.Client, error) {
@@ -130,4 +131,36 @@ func CACerts(t *testing.T) (string, string) {
 	require.NoError(t, err)
 
 	return string(pem.EncodeToMemory(root)), string(pem.EncodeToMemory(intermediate))
+}
+
+func NewWebhook(t *testing.T, provisionerID, authorityID string) *v20230301.ProvisionerWebhook {
+	client, err := SmallstepAPIClientFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+	url := "https://example.com/hook"
+	name, err := randutil.Alphanumeric(8)
+	require.NoError(t, err)
+
+	req := v20230301.ProvisionerWebhook{
+		Name:       name,
+		Url:        &url,
+		Kind:       v20230301.ENRICHING,
+		CertType:   v20230301.ProvisionerWebhookCertTypeALL,
+		ServerType: v20230301.EXTERNAL,
+	}
+
+	resp, err := client.PostWebhooks(context.Background(), authorityID, provisionerID, &v20230301.PostWebhooksParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusCreated, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	wh := &v20230301.ProvisionerWebhook{}
+	require.NoError(t, json.Unmarshal(body, wh))
+	wh.Secret = nil
+
+	return wh
 }

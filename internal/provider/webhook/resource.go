@@ -67,7 +67,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	provisionerID := state.ProvisionerID.ValueString()
 	authorityID := state.AuthorityID.ValueString()
 	idOrName := state.ID.ValueString()
-	if state.ID.IsNull() {
+	if idOrName == "" {
 		idOrName = state.Name.ValueString()
 	}
 	httpResp, err := r.client.GetWebhook(ctx, authorityID, provisionerID, idOrName, &v20230301.GetWebhookParams{})

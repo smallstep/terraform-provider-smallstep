@@ -60,16 +60,17 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 	diags = append(diags, d...)
 	data.InventorySlug = inventorySlug
 
-	bearerToken, d := utils.ToOptionalString(ctx, webhook.BearerToken, state, path.Root("bearer_token"))
+	// bearer token and basic auth are never set in API responses.
+	// Always use state.
+	bearerTokenFromState := types.String{}
+	d = state.GetAttribute(ctx, path.Root("bearer_token"), &bearerTokenFromState)
 	diags = append(diags, d...)
-	data.BearerToken = bearerToken
+	data.BearerToken = bearerTokenFromState
 
-	if webhook.BasicAuth != nil {
-		data.BasicAuth = &BasicAuthModel{
-			Username: types.StringValue(webhook.BasicAuth.Username),
-			Password: types.StringValue(webhook.BasicAuth.Password),
-		}
-	}
+	basic := &BasicAuthModel{}
+	d = state.GetAttribute(ctx, path.Root("basic_auth"), &basic)
+	diags = append(diags, d...)
+	data.BasicAuth = basic
 
 	disableTLSClientAuth, d := utils.ToOptionalBool(ctx, webhook.DisableTLSClientAuth, state, path.Root("disable_tls_client_auth"))
 	diags = append(diags, d...)

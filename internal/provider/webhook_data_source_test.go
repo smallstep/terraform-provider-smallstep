@@ -1,6 +1,5 @@
 package provider
 
-/*
 import (
 	"fmt"
 	"testing"
@@ -13,14 +12,14 @@ func TestAccWebhookDataSource(t *testing.T) {
 	t.Parallel()
 	authority := utils.NewAuthority(t)
 	provisioner, _ := utils.NewOIDCProvisioner(t, authority.Id)
-	webhook := utils.New()
+	webhook := utils.NewWebhook(t, authority.Id, *provisioner.Id)
 	config := fmt.Sprintf(`
 data "smallstep_provisioner_webhook" "test" {
 	authority_id = %q
 	provisioner_id = %q
 	id = %q
 }
-`, authority.Id, provisioner)
+`, authority.Id, *provisioner.Id, *webhook.Id)
 
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -36,4 +35,3 @@ data "smallstep_provisioner_webhook" "test" {
 		},
 	})
 }
-*/
