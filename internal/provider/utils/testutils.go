@@ -192,6 +192,31 @@ func NewCollection(t *testing.T) *v20230301.Collection {
 	return collection
 }
 
+func NewInstance(t *testing.T, slug string) *v20230301.CollectionInstance {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	id, err := randutil.Alphanumeric(8)
+	require.NoError(t, err)
+
+	req := v20230301.PutCollectionInstanceJSONRequestBody{
+		Data: map[string]string{"id": id},
+	}
+	resp, err := client.PutCollectionInstance(context.Background(), slug, id, &v20230301.PutCollectionInstanceParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	instance := &v20230301.CollectionInstance{}
+	err = json.Unmarshal(body, instance)
+	require.NoError(t, err)
+
+	return instance
+}
+
 func Slug(t *testing.T) string {
 	slug, err := randutil.String(10, "abcdefghijklmnopqrstuvwxyz0123456789")
 	require.NoError(t, err)

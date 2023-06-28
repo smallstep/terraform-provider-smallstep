@@ -1,10 +1,11 @@
-package collection
+package instance
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -28,7 +29,7 @@ type Resource struct {
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = collectionTypeName
+	resp.TypeName = instanceTypeName
 }
 
 // Configure adds the Smallstep API client to the resource.
@@ -60,11 +61,14 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetCollection(ctx, state.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	slug := state.CollectionSlug.ValueString()
+	id := state.ID.ValueString()
+
+	httpResp, err := r.client.GetCollectionInstance(ctx, slug, id, &v20230301.GetCollectionInstanceParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read collection %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to read collection instance %s/%s: %v", slug, id, err),
 		)
 		return
 	}
@@ -73,33 +77,33 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d reading collection instance %s/%s: %s", httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	collection := &v20230301.Collection{}
-	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
+	instance := &v20230301.CollectionInstance{}
+	if err := json.NewDecoder(httpResp.Body).Decode(instance); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal collection %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to unmarshal collection instance %s/%s: %v", slug, id, err),
 		)
 		return
 	}
 
-	remote, d := fromAPI(ctx, collection, req.State)
+	remote, d := fromAPI(ctx, slug, instance, req.State)
 	if d.HasError() {
 		resp.Diagnostics.Append(d...)
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read collection %q resource", collection.Slug))
+	tflog.Trace(ctx, fmt.Sprintf("read collection resource %s/%s", slug, id))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	component, props, err := utils.Describe("collection")
+	component, props, err := utils.Describe("collection-instance")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -113,27 +117,22 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: "Internal use only",
-				Computed:            true,
+				MarkdownDescription: props["id"],
+				Required:            true,
 			},
-			"slug": schema.StringAttribute{
-				MarkdownDescription: props["slug"],
+			"collection_slug": schema.StringAttribute{
+				MarkdownDescription: props["collectionSlug"],
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"display_name": schema.StringAttribute{
-				MarkdownDescription: props["name"],
-				Optional:            true,
-				Computed:            true,
+			"data": schema.StringAttribute{
+				MarkdownDescription: props["data"],
+				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-			},
-			"instance_count": schema.Int64Attribute{
-				MarkdownDescription: props["instanceCount"],
-				Computed:            true,
 			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: props["createdAt"],
@@ -159,22 +158,29 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	reqBody := toAPI(&plan)
+	reqBody, diags := toAPI(&plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	b, _ := json.Marshal(reqBody)
 	tflog.Trace(ctx, string(b))
 
-	httpResp, err := a.client.PostCollections(ctx, &v20230301.PostCollectionsParams{}, *reqBody)
+	id := plan.ID.ValueString()
+	slug := plan.CollectionSlug.ValueString()
+
+	httpResp, err := a.client.PutCollectionInstance(ctx, slug, id, &v20230301.PutCollectionInstanceParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to create collection %q: %v", plan.Slug.String(), err),
+			fmt.Sprintf("Failed to create collection instance %s/%s: %v", slug, id, err),
 		)
 		return
 	}
 	defer httpResp.Body.Close()
 
-	if httpResp.StatusCode != http.StatusCreated {
+	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
 			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
@@ -182,22 +188,22 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.Collection{}
-	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
+	instance := &v20230301.CollectionInstance{}
+	if err := json.NewDecoder(httpResp.Body).Decode(instance); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal collection %q: %v", plan.Slug.ValueString(), err),
+			fmt.Sprintf("Failed to unmarshal collection instance %s/%s: %v", slug, id, err),
 		)
 		return
 	}
 
-	state, diags := fromAPI(ctx, collection, req.Plan)
+	state, diags := fromAPI(ctx, slug, instance, req.Plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("create collection %q resource", plan.Slug.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("create collection instance %s/%s resource", slug, id))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -215,11 +221,14 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.DeleteCollection(ctx, state.Slug.ValueString(), &v20230301.DeleteCollectionParams{})
+	slug := state.CollectionSlug.ValueString()
+	id := state.ID.ValueString()
+
+	httpResp, err := a.client.DeleteCollectionInstance(ctx, slug, id, &v20230301.DeleteCollectionInstanceParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to delete webhook %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to delete collection instance %s/%s: %v", slug, id, err),
 		)
 		return
 	}
@@ -228,12 +237,21 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if httpResp.StatusCode != http.StatusNoContent {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting webhook %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d deleting collection instance %s/%s: %s", httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 }
 
 func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("slug"), req, resp)
+	parts := strings.Split(req.ID, "/")
+	if len(parts) != 2 {
+		resp.Diagnostics.AddError(
+			"Invalid import ID",
+			`Import ID must be "<collection_slug>/<id>"`,
+		)
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("collection_slug"), parts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), parts[1])...)
 }
