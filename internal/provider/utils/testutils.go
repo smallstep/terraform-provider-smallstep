@@ -164,3 +164,36 @@ func NewWebhook(t *testing.T, provisionerID, authorityID string) *v20230301.Prov
 
 	return wh
 }
+
+func NewCollection(t *testing.T) *v20230301.Collection {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	slug := Slug(t)
+	displayName := "Collection " + slug
+
+	req := v20230301.NewCollection{
+		Slug:        slug,
+		DisplayName: &displayName,
+	}
+
+	resp, err := client.PostCollections(context.Background(), &v20230301.PostCollectionsParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusCreated, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	collection := &v20230301.Collection{}
+	err = json.Unmarshal(body, collection)
+	require.NoError(t, err)
+
+	return collection
+}
+
+func Slug(t *testing.T) string {
+	slug, err := randutil.String(10, "abcdefghijklmnopqrstuvwxyz0123456789")
+	require.NoError(t, err)
+	return "tfprovider" + slug
+}

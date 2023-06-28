@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
@@ -166,6 +167,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		authority.NewResource,
 		provisioner.NewResource,
 		webhook.NewResource,
+		collection.NewResource,
 	}
 }
 
@@ -174,6 +176,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		authority.NewDataSource,
 		provisioner.NewDataSource,
 		webhook.NewDataSource,
+		collection.NewDataSource,
 	}
 }
 
