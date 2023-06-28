@@ -145,9 +145,9 @@ func NewWebhook(t *testing.T, provisionerID, authorityID string) *v20230301.Prov
 	req := v20230301.ProvisionerWebhook{
 		Name:       name,
 		Url:        &url,
-		Kind:       v20230301.ENRICHING,
-		CertType:   v20230301.ProvisionerWebhookCertTypeALL,
-		ServerType: v20230301.EXTERNAL,
+		Kind:       "ENRICHING",
+		CertType:   "ALL",
+		ServerType: "EXTERNAL",
 	}
 
 	resp, err := client.PostWebhooks(context.Background(), authorityID, provisionerID, &v20230301.PostWebhooksParams{}, req)

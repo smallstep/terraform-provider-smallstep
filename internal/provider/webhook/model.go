@@ -24,7 +24,7 @@ type Model struct {
 	BearerToken          types.String    `tfsdk:"bearer_token"`
 	BasicAuth            *BasicAuthModel `tfsdk:"basic_auth"`
 	DisableTLSClientAuth types.Bool      `tfsdk:"disable_tls_client_auth"`
-	InventorySlug        types.String    `tfsdk:"inventory_slug"`
+	CollectionSlug       types.String    `tfsdk:"collection_slug"`
 	Secret               types.String    `tfsdk:"secret"`
 }
 
@@ -56,9 +56,9 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 		data.Secret = types.StringValue(utils.Deref(webhook.Secret))
 	}
 
-	inventorySlug, d := utils.ToOptionalString(ctx, webhook.BearerToken, state, path.Root("inventory_slug"))
+	collectionSlug, d := utils.ToOptionalString(ctx, webhook.BearerToken, state, path.Root("collection_slug"))
 	diags = append(diags, d...)
-	data.InventorySlug = inventorySlug
+	data.CollectionSlug = collectionSlug
 
 	// bearer token and basic auth are never set in API responses.
 	// Always use state.
@@ -86,7 +86,7 @@ func toAPI(model *Model) *v20230301.ProvisionerWebhook {
 		BearerToken:          model.BearerToken.ValueStringPointer(),
 		CertType:             v20230301.ProvisionerWebhookCertType(model.CertType.ValueString()),
 		DisableTLSClientAuth: model.DisableTLSClientAuth.ValueBoolPointer(),
-		InventorySlug:        model.InventorySlug.ValueStringPointer(),
+		CollectionSlug:       model.CollectionSlug.ValueStringPointer(),
 		Kind:                 v20230301.ProvisionerWebhookKind(model.Kind.ValueString()),
 		Secret:               model.Secret.ValueStringPointer(),
 		ServerType:           v20230301.ProvisionerWebhookServerType(model.ServerType.ValueString()),

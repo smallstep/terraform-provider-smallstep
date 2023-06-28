@@ -12,7 +12,7 @@ func TestAccWebhookDataSource(t *testing.T) {
 	t.Parallel()
 	authority := utils.NewAuthority(t)
 	provisioner, _ := utils.NewOIDCProvisioner(t, authority.Id)
-	webhook := utils.NewWebhook(t, authority.Id, *provisioner.Id)
+	webhook := utils.NewWebhook(t, *provisioner.Id, authority.Id)
 	config := fmt.Sprintf(`
 data "smallstep_provisioner_webhook" "test" {
 	authority_id = %q
@@ -27,9 +27,12 @@ data "smallstep_provisioner_webhook" "test" {
 			{
 				Config: config,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.smallstep_authority.test", "id", authority.Id),
-					resource.TestCheckResourceAttr("data.smallstep_authority.test", "name", authority.Name),
-					resource.TestCheckResourceAttr("data.smallstep_authority.test", "kind", string(webhook.Kind)),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "id", *webhook.Id),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "name", webhook.Name),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "kind", string(webhook.Kind)),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "cert_type", string(webhook.CertType)),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "server_type", string(webhook.ServerType)),
+					resource.TestCheckResourceAttr("data.smallstep_provisioner_webhook.test", "url", *webhook.Url),
 				),
 			},
 		},

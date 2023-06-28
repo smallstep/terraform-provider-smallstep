@@ -47,47 +47,6 @@ const (
 	AuthorityTypeDevops   AuthorityType = "devops"
 )
 
-// Defines values for EndpointCertificateInfoType.
-const (
-	EndpointCertificateInfoTypeSSHHOST EndpointCertificateInfoType = "SSH_HOST"
-	EndpointCertificateInfoTypeSSHUSER EndpointCertificateInfoType = "SSH_USER"
-	EndpointCertificateInfoTypeX509    EndpointCertificateInfoType = "X509"
-)
-
-// Defines values for EndpointConfigurationKind.
-const (
-	DEVICE   EndpointConfigurationKind = "DEVICE"
-	USER     EndpointConfigurationKind = "USER"
-	WORKLOAD EndpointConfigurationKind = "WORKLOAD"
-)
-
-// Defines values for EndpointKeyInfoFormat.
-const (
-	EndpointKeyInfoFormatDEFAULT EndpointKeyInfoFormat = "DEFAULT"
-	EndpointKeyInfoFormatDER     EndpointKeyInfoFormat = "DER"
-	EndpointKeyInfoFormatOPENSSH EndpointKeyInfoFormat = "OPENSSH"
-	EndpointKeyInfoFormatPKCS8   EndpointKeyInfoFormat = "PKCS8"
-)
-
-// Defines values for EndpointKeyInfoType.
-const (
-	EndpointKeyInfoTypeDEFAULT   EndpointKeyInfoType = "DEFAULT"
-	EndpointKeyInfoTypeECDSAP256 EndpointKeyInfoType = "ECDSA_P256"
-	EndpointKeyInfoTypeECDSAP384 EndpointKeyInfoType = "ECDSA_P384"
-	EndpointKeyInfoTypeECDSAP521 EndpointKeyInfoType = "ECDSA_P521"
-	EndpointKeyInfoTypeED25519   EndpointKeyInfoType = "ED25519"
-	EndpointKeyInfoTypeRSA2048   EndpointKeyInfoType = "RSA_2048"
-	EndpointKeyInfoTypeRSA3072   EndpointKeyInfoType = "RSA_3072"
-	EndpointKeyInfoTypeRSA4096   EndpointKeyInfoType = "RSA_4096"
-)
-
-// Defines values for EndpointReloadInfoMethod.
-const (
-	AUTOMATIC EndpointReloadInfoMethod = "AUTOMATIC"
-	CUSTOM    EndpointReloadInfoMethod = "CUSTOM"
-	SIGNAL    EndpointReloadInfoMethod = "SIGNAL"
-)
-
 // Defines values for NewAuthorityType.
 const (
 	NewAuthorityTypeAdvanced NewAuthorityType = "advanced"
@@ -105,9 +64,9 @@ const (
 
 // Defines values for ProvisionerWebhookCertType.
 const (
-	ProvisionerWebhookCertTypeALL  ProvisionerWebhookCertType = "ALL"
-	ProvisionerWebhookCertTypeSSH  ProvisionerWebhookCertType = "SSH"
-	ProvisionerWebhookCertTypeX509 ProvisionerWebhookCertType = "X509"
+	ALL  ProvisionerWebhookCertType = "ALL"
+	SSH  ProvisionerWebhookCertType = "SSH"
+	X509 ProvisionerWebhookCertType = "X509"
 )
 
 // Defines values for ProvisionerWebhookKind.
@@ -173,24 +132,6 @@ type AcmeProvisioner struct {
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
 
-// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates.
-type AgentConfiguration struct {
-	// AttestationSlug The slug of the attestation authority the agent connects to to get a certificate.
-	AttestationSlug *string `json:"attestationSlug,omitempty"`
-
-	// AuthorityID UUID identifying the authority the agent uses to generate endpoint certificates.
-	AuthorityID *string `json:"authorityID,omitempty"`
-
-	// Id A UUID identifying this agent configuration. Generated server-side on creation.
-	Id *string `json:"id,omitempty"`
-
-	// Name The name of this agent configuration.
-	Name string `json:"name"`
-
-	// Provisioner The name of the provisioner on the authority the agent uses to generate endpoint certificates.
-	Provisioner string `json:"provisioner"`
-}
-
 // AttestationAuthority An attestation authority used with the device-attest-01 ACME challenge to verify a device's hardware identity. This object is experimental and subject to change.
 type AttestationAuthority struct {
 	// AttestorIntermediates The pem-encoded list of intermediate certificates used to build a chain of trust to verify the attestation certificates submitted by devices.
@@ -199,7 +140,7 @@ type AttestationAuthority struct {
 	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
 	AttestorRoots string `json:"attestorRoots"`
 
-	// Catalog The slug of an inventory that holds the list of devices belonging to the team
+	// Catalog The slug of a collection that holds the list of devices belonging to the team
 	Catalog string `json:"catalog"`
 
 	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created
@@ -266,6 +207,34 @@ type BasicAuth struct {
 	Username string `json:"username"`
 }
 
+// Collection A collection of instances
+type Collection struct {
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DisplayName A user-friendly name for the collection
+	DisplayName string `json:"displayName"`
+
+	// InstanceCount The number of instances in the collection
+	InstanceCount int `json:"instanceCount"`
+
+	// Slug A lowercase name identifying the collection.
+	Slug      string    `json:"slug"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// CollectionInstance An instance in a collection
+type CollectionInstance struct {
+	// CreatedAt Timestamp of when the instance was added to the collection
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Data The instance data
+	Data interface{} `json:"data"`
+	Id   string      `json:"id"`
+
+	// UpdatedAt Timestamp of when the instance was last changed
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 // DistinguishedName Name used in x509 certificates
 type DistinguishedName struct {
 	CommonName         *string `json:"commonName,omitempty"`
@@ -284,144 +253,6 @@ type DistinguishedName struct {
 type Email struct {
 	Email   *string `json:"email,omitempty"`
 	Primary *bool   `json:"primary,omitempty"`
-}
-
-// EndpointCertificateInfo Details on a managed certificate
-type EndpointCertificateInfo struct {
-	// CrtFile The filepath where the certificate is to be stored.
-	CrtFile *string `json:"crtFile,omitempty"`
-
-	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
-	Duration *string `json:"duration,omitempty"`
-
-	// Gid GID of the files where the certificate is stored.
-	Gid *int `json:"gid,omitempty"`
-
-	// KeyFile The filepath where the key is to be stored.
-	KeyFile *string `json:"keyFile,omitempty"`
-
-	// Mode Permission bits of the files where the certificate is stored.
-	Mode *int `json:"mode,omitempty"`
-
-	// RootFile The filepath where the root certificate is to be stored.
-	RootFile *string `json:"rootFile,omitempty"`
-
-	// Type The type of certificate
-	Type EndpointCertificateInfoType `json:"type"`
-
-	// Uid UID of the files where the certificate is stored.
-	Uid *int `json:"uid,omitempty"`
-}
-
-// EndpointCertificateInfoType The type of certificate
-type EndpointCertificateInfoType string
-
-// EndpointConfiguration Configuration for a managed endpoint
-type EndpointConfiguration struct {
-	// AuthorityID UUID identifying the authority that will issue certificates for the endpoint.
-	AuthorityID *string `json:"authorityID,omitempty"`
-
-	// CertificateInfo Details on a managed certificate
-	CertificateInfo EndpointCertificateInfo `json:"certificateInfo"`
-
-	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
-	Hooks *EndpointHooks `json:"hooks,omitempty"`
-
-	// Id A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
-	Id *string `json:"id,omitempty"`
-
-	// KeyInfo The attributes of the cryptographic key.
-	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
-
-	// Kind The kind of endpoint this configuration applies to.
-	Kind EndpointConfigurationKind `json:"kind"`
-
-	// Name The name of the endpoint configuration.
-	Name string `json:"name"`
-
-	// Provisioner Name of the provisioner on the authority that will authorize certificates for the endpoint.
-	Provisioner string `json:"provisioner"`
-
-	// ReloadInfo The properties used to reload a service.
-	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
-}
-
-// EndpointConfigurationKind The kind of endpoint this configuration applies to.
-type EndpointConfigurationKind string
-
-// EndpointHook A list of commands to run before and after a certificate is granted.
-type EndpointHook struct {
-	// After List of commands to run after the operation.
-	After *[]string `json:"after,omitempty"`
-
-	// Before List of commands to run before the operation.
-	Before *[]string `json:"before,omitempty"`
-
-	// OnError List of commands to run when the operation fails.
-	OnError *[]string `json:"onError,omitempty"`
-
-	// Shell The shell to use to execute the commands.
-	Shell *string `json:"shell,omitempty"`
-}
-
-// EndpointHooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
-type EndpointHooks struct {
-	// Renew A list of commands to run before and after a certificate is granted.
-	Renew *EndpointHook `json:"renew,omitempty"`
-
-	// Sign A list of commands to run before and after a certificate is granted.
-	Sign *EndpointHook `json:"sign,omitempty"`
-}
-
-// EndpointKeyInfo The attributes of the cryptographic key.
-type EndpointKeyInfo struct {
-	// Format The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
-	Format *EndpointKeyInfoFormat `json:"format,omitempty"`
-
-	// PubFile A CSR or SSH public key to use instead of generating one.
-	PubFile *string `json:"pubFile,omitempty"`
-
-	// Type The key type used. The current DEFAULT type is ECDSA_P256.
-	Type *EndpointKeyInfoType `json:"type,omitempty"`
-}
-
-// EndpointKeyInfoFormat The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
-type EndpointKeyInfoFormat string
-
-// EndpointKeyInfoType The key type used. The current DEFAULT type is ECDSA_P256.
-type EndpointKeyInfoType string
-
-// EndpointReloadInfo The properties used to reload a service.
-type EndpointReloadInfo struct {
-	// Method Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
-	Method EndpointReloadInfoMethod `json:"method"`
-
-	// PidFile File that holds the pid of the process to signal. Required when method is SIGNAL.
-	PidFile *string `json:"pidFile,omitempty"`
-
-	// Signal The signal to send to a process when a certificate should be reloaded. Required when method is SIGNAL.
-	Signal *int `json:"signal,omitempty"`
-}
-
-// EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
-type EndpointReloadInfoMethod string
-
-// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
-type EndpointSSHCertificateData struct {
-	// KeyID The key ID to include in the endpoint certificate.
-	KeyID string `json:"keyID"`
-
-	// Principals The principals to include in the endpoint certificate.
-	Principals []string `json:"principals"`
-}
-
-// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
-type EndpointX509CertificateData struct {
-	// CommonName The Common Name to be used in the subject of the endpoint certificate.
-	CommonName string `json:"commonName"`
-
-	// Sans The list of SANs to include in the endpoint certificate.
-	Sans []string `json:"sans"`
 }
 
 // Error defines model for error.
@@ -488,34 +319,6 @@ type Host struct {
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
-// Inventory A collection of items
-type Inventory struct {
-	CreatedAt time.Time `json:"createdAt"`
-
-	// DisplayName A user-friendly name for the inventory
-	DisplayName string `json:"displayName"`
-
-	// ItemCount The number of items in the inventory
-	ItemCount int `json:"itemCount"`
-
-	// Slug A lowercase name identifying the inventory.
-	Slug      string    `json:"slug"`
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
-// InventoryItem An item in an inventory
-type InventoryItem struct {
-	// CreatedAt Timestamp of when the item was added to the inventory
-	CreatedAt time.Time `json:"createdAt"`
-
-	// Data The item data
-	Data interface{} `json:"data"`
-	Id   string      `json:"id"`
-
-	// UpdatedAt Timestamp of when the item was last changed
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
 // JwkProvisioner defines model for jwkProvisioner.
 type JwkProvisioner struct {
 	// EncryptedKey The JWE encrypted private key
@@ -523,37 +326,6 @@ type JwkProvisioner struct {
 
 	// Key The public JSON web key
 	Key interface{} `json:"key"`
-}
-
-// ManagedConfiguration The agent and managed endpoints used in one host.
-type ManagedConfiguration struct {
-	// AgentConfigurationID UUID identifying the agent configuration.
-	AgentConfigurationID string `json:"agentConfigurationID"`
-
-	// HostID UUID identifying the host this managed configuration is for. Will be generated on server-side if not provided.
-	HostID *string `json:"hostID,omitempty"`
-
-	// Id UUID identifying this managed configuration.
-	Id               *string           `json:"id,omitempty"`
-	ManagedEndpoints []ManagedEndpoint `json:"managedEndpoints"`
-
-	// Name The name of this managed configuration.
-	Name string `json:"name"`
-}
-
-// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` and `sshCertificateData` must be set and must match the endpoint configuration certificate info type.
-type ManagedEndpoint struct {
-	// EndpointConfigurationID UUID identifying the endpoint configuration.
-	EndpointConfigurationID string `json:"endpointConfigurationID"`
-
-	// Id UUID identifying this managed endpoint. Generated server-side on creation.
-	Id *string `json:"id,omitempty"`
-
-	// SshCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
-	SshCertificateData *EndpointSSHCertificateData `json:"sshCertificateData,omitempty"`
-
-	// X509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
-	X509CertificateData *EndpointX509CertificateData `json:"x509CertificateData,omitempty"`
 }
 
 // NameConstraints defines model for name-constraints.
@@ -612,6 +384,15 @@ type NewAuthorityCsr struct {
 	Subdomain string `json:"subdomain"`
 }
 
+// NewCollection A collection of instances
+type NewCollection struct {
+	// DisplayName A user-friendly name for the collection
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Slug A lowercase name identifying the collection.
+	Slug string `json:"slug"`
+}
+
 // NewGrant The body of a request to add a grant to a group.
 type NewGrant struct {
 	// GroupID A UUID identifying the group this grant is attached to
@@ -625,15 +406,6 @@ type NewGrant struct {
 
 	// Value Matched against host tag values
 	Value *string `json:"value,omitempty"`
-}
-
-// NewInventory A collection of items
-type NewInventory struct {
-	// DisplayName A user-friendly name for the inventory
-	DisplayName *string `json:"displayName,omitempty"`
-
-	// Slug A lowercase name identifying the inventory.
-	Slug string `json:"slug"`
 }
 
 // NewTag The body of a request to add a tag to a host.
@@ -793,14 +565,14 @@ type ProvisionerWebhook struct {
 	BearerToken *string                    `json:"bearerToken,omitempty"`
 	CertType    ProvisionerWebhookCertType `json:"certType"`
 
+	// CollectionSlug For HOSTED_ATTESTATION webhooks, the collectionSlug is a reference to the collection that holds the devices that may be issued certificates. This collection must already exist. Required for `HOSTED_ATTESTATION` webhook servers; not allowed for `EXTERNAL`.
+	CollectionSlug *string `json:"collectionSlug,omitempty"`
+
 	// DisableTLSClientAuth The CA will not send a client certificate when requested by the webhook server. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers.
 	DisableTLSClientAuth *bool `json:"disableTLSClientAuth,omitempty"`
 
 	// Id UUID identifying this webhook. Generated server-side when the webhook is created. Will be sent to the webhook server in every request in the `X-Smallstep-Webhook-ID` header.
 	Id *string `json:"id,omitempty"`
-
-	// InventorySlug For HOSTED_ATTESTATION webhooks, the inventorySlug is a reference to the inventory that holds the devices that may be issued certificates. This inventory must already exist. Required for `HOSTED_ATTESTATION` webhook servers; not allowed for `EXTERNAL`.
-	InventorySlug *string `json:"inventorySlug,omitempty"`
 
 	// Kind The webhook kind indicates how and when it is called.
 	//
@@ -815,7 +587,7 @@ type ProvisionerWebhook struct {
 
 	// ServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
 	//
-	// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an item in the configured inventory. The data of the item in the inventory will be added to the template data.
+	// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
 	ServerType ProvisionerWebhookServerType `json:"serverType"`
 
 	// Url The URL of the webhook server. Required for `EXTERNAL` webhook servers; read-only for hosted webhook servers.
@@ -832,7 +604,7 @@ type ProvisionerWebhookKind string
 
 // ProvisionerWebhookServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
 //
-// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an item in the configured inventory. The data of the item in the inventory will be added to the template data.
+// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
 type ProvisionerWebhookServerType string
 
 // SshOptions Options that apply when issuing SSH certificates
@@ -916,17 +688,14 @@ type X5cProvisioner struct {
 // Accept defines model for accept.
 type Accept = string
 
-// AgentConfigurationID defines model for agentConfigurationID.
-type AgentConfigurationID = string
-
 // AttestationAuthorityID defines model for attestationAuthorityID.
 type AttestationAuthorityID = string
 
 // AuthorityID defines model for authorityID.
 type AuthorityID = string
 
-// EndpointConfigurationID defines model for endpointConfigurationID.
-type EndpointConfigurationID = string
+// CollectionSlug defines model for collectionSlug.
+type CollectionSlug = string
 
 // GrantID defines model for grantID.
 type GrantID = string
@@ -937,14 +706,8 @@ type GroupID = string
 // HostID defines model for hostID.
 type HostID = string
 
-// InventorySlug defines model for inventorySlug.
-type InventorySlug = string
-
-// ItemID defines model for itemID.
-type ItemID = string
-
-// ManagedConfigurationID defines model for managedConfigurationID.
-type ManagedConfigurationID = string
+// InstanceID defines model for instanceID.
+type InstanceID = string
 
 // Pagination defines model for pagination.
 type Pagination struct {
@@ -986,33 +749,6 @@ type N412 = Error
 
 // N500 defines model for 500.
 type N500 = Error
-
-// PostAgentConfigurationsParams defines parameters for PostAgentConfigurations.
-type PostAgentConfigurationsParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// DeleteAgentConfigurationParams defines parameters for DeleteAgentConfiguration.
-type DeleteAgentConfigurationParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetAgentConfigurationParams defines parameters for GetAgentConfiguration.
-type GetAgentConfigurationParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
 
 // GetAttestationAuthoritiesParams defines parameters for GetAttestationAuthorities.
 type GetAttestationAuthoritiesParams struct {
@@ -1195,8 +931,11 @@ type PostAuthorityRootParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// PostEndpointConfigurationsParams defines parameters for PostEndpointConfigurations.
-type PostEndpointConfigurationsParams struct {
+// ListCollectionsParams defines parameters for ListCollections.
+type ListCollectionsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1204,8 +943,8 @@ type PostEndpointConfigurationsParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// DeleteEndpointConfigurationParams defines parameters for DeleteEndpointConfiguration.
-type DeleteEndpointConfigurationParams struct {
+// PostCollectionsParams defines parameters for PostCollections.
+type PostCollectionsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1213,8 +952,82 @@ type DeleteEndpointConfigurationParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// GetEndpointConfigurationParams defines parameters for GetEndpointConfiguration.
-type GetEndpointConfigurationParams struct {
+// DeleteCollectionParams defines parameters for DeleteCollection.
+type DeleteCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionParams defines parameters for GetCollection.
+type GetCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteCollectionInstanceParams defines parameters for DeleteCollectionInstance.
+type DeleteCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionInstanceParams defines parameters for GetCollectionInstance.
+type GetCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutCollectionInstanceJSONBody defines parameters for PutCollectionInstance.
+type PutCollectionInstanceJSONBody struct {
+	Data interface{} `json:"data"`
+}
+
+// PutCollectionInstanceParams defines parameters for PutCollectionInstance.
+type PutCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionInstanceDataParams defines parameters for GetCollectionInstanceData.
+type GetCollectionInstanceDataParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutCollectionInstanceDataJSONBody defines parameters for PutCollectionInstanceData.
+type PutCollectionInstanceDataJSONBody = interface{}
+
+// PutCollectionInstanceDataParams defines parameters for PutCollectionInstanceData.
+type PutCollectionInstanceDataParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListCollectionInstancesParams defines parameters for ListCollectionInstances.
+type ListCollectionInstancesParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1324,137 +1137,6 @@ type UnregisterSshHostParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// ListInventoriesParams defines parameters for ListInventories.
-type ListInventoriesParams struct {
-	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
-	Pagination *Pagination `json:"pagination,omitempty"`
-
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PostInventoriesParams defines parameters for PostInventories.
-type PostInventoriesParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// DeleteInventoryParams defines parameters for DeleteInventory.
-type DeleteInventoryParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetInventoryParams defines parameters for GetInventory.
-type GetInventoryParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// ListInventoryItemsParams defines parameters for ListInventoryItems.
-type ListInventoryItemsParams struct {
-	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
-	Pagination *Pagination `json:"pagination,omitempty"`
-
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// DeleteInventoryItemParams defines parameters for DeleteInventoryItem.
-type DeleteInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetInventoryItemParams defines parameters for GetInventoryItem.
-type GetInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PutInventoryItemJSONBody defines parameters for PutInventoryItem.
-type PutInventoryItemJSONBody struct {
-	Data interface{} `json:"data"`
-}
-
-// PutInventoryItemParams defines parameters for PutInventoryItem.
-type PutInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetInventoryItemDataParams defines parameters for GetInventoryItemData.
-type GetInventoryItemDataParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PutInventoryItemDataJSONBody defines parameters for PutInventoryItemData.
-type PutInventoryItemDataJSONBody = interface{}
-
-// PutInventoryItemDataParams defines parameters for PutInventoryItemData.
-type PutInventoryItemDataParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PostManagedConfigurationsParams defines parameters for PostManagedConfigurations.
-type PostManagedConfigurationsParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// DeleteManagedConfigurationParams defines parameters for DeleteManagedConfiguration.
-type DeleteManagedConfigurationParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetManagedConfigurationParams defines parameters for GetManagedConfiguration.
-type GetManagedConfigurationParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
 // GetSshHostTagsParams defines parameters for GetSshHostTags.
 type GetSshHostTagsParams struct {
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1479,9 +1161,6 @@ type GetSshUsersParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// PostAgentConfigurationsJSONRequestBody defines body for PostAgentConfigurations for application/json ContentType.
-type PostAgentConfigurationsJSONRequestBody = AgentConfiguration
-
 // PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
 type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
 
@@ -1503,26 +1182,20 @@ type PostWebhooksJSONRequestBody = ProvisionerWebhook
 // PostAuthorityRootJSONRequestBody defines body for PostAuthorityRoot for application/json ContentType.
 type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
 
-// PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
-type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
+// PostCollectionsJSONRequestBody defines body for PostCollections for application/json ContentType.
+type PostCollectionsJSONRequestBody = NewCollection
+
+// PutCollectionInstanceJSONRequestBody defines body for PutCollectionInstance for application/json ContentType.
+type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
+
+// PutCollectionInstanceDataJSONRequestBody defines body for PutCollectionInstanceData for application/json ContentType.
+type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBody
 
 // PostSshGrantsJSONRequestBody defines body for PostSshGrants for application/json ContentType.
 type PostSshGrantsJSONRequestBody = NewGrant
 
 // PostHostsHostIDTagsJSONRequestBody defines body for PostHostsHostIDTags for application/json ContentType.
 type PostHostsHostIDTagsJSONRequestBody = NewTag
-
-// PostInventoriesJSONRequestBody defines body for PostInventories for application/json ContentType.
-type PostInventoriesJSONRequestBody = NewInventory
-
-// PutInventoryItemJSONRequestBody defines body for PutInventoryItem for application/json ContentType.
-type PutInventoryItemJSONRequestBody PutInventoryItemJSONBody
-
-// PutInventoryItemDataJSONRequestBody defines body for PutInventoryItemData for application/json ContentType.
-type PutInventoryItemDataJSONRequestBody = PutInventoryItemDataJSONBody
-
-// PostManagedConfigurationsJSONRequestBody defines body for PostManagedConfigurations for application/json ContentType.
-type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -1767,15 +1440,6 @@ func (t *Provisioner) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Create an Agent Configuration
-	// (POST /agent-configurations)
-	PostAgentConfigurations(w http.ResponseWriter, r *http.Request, params PostAgentConfigurationsParams)
-	// Delete Agent Configuration
-	// (DELETE /agent-configurations/{agentConfigurationID})
-	DeleteAgentConfiguration(w http.ResponseWriter, r *http.Request, agentConfigurationID AgentConfigurationID, params DeleteAgentConfigurationParams)
-	// Get an Agent Configuration
-	// (GET /agent-configurations/{agentConfigurationID})
-	GetAgentConfiguration(w http.ResponseWriter, r *http.Request, agentConfigurationID AgentConfigurationID, params GetAgentConfigurationParams)
 	// List Attestation Authorities
 	// (GET /attestation-authorities)
 	GetAttestationAuthorities(w http.ResponseWriter, r *http.Request, params GetAttestationAuthoritiesParams)
@@ -1830,15 +1494,36 @@ type ServerInterface interface {
 	// Post Authority External Root
 	// (POST /authorities/{authorityID}/root)
 	PostAuthorityRoot(w http.ResponseWriter, r *http.Request, authorityID AuthorityID, params PostAuthorityRootParams)
-	// Create an Endpoint Configuration
-	// (POST /endpoint-configurations)
-	PostEndpointConfigurations(w http.ResponseWriter, r *http.Request, params PostEndpointConfigurationsParams)
-	// Delete Endpoint Configuration
-	// (DELETE /endpoint-configurations/{endpointConfigurationID})
-	DeleteEndpointConfiguration(w http.ResponseWriter, r *http.Request, endpointConfigurationID EndpointConfigurationID, params DeleteEndpointConfigurationParams)
-	// Get an Endpoint Configuration
-	// (GET /endpoint-configurations/{endpointConfigurationID})
-	GetEndpointConfiguration(w http.ResponseWriter, r *http.Request, endpointConfigurationID EndpointConfigurationID, params GetEndpointConfigurationParams)
+	// List Collections
+	// (GET /collections)
+	ListCollections(w http.ResponseWriter, r *http.Request, params ListCollectionsParams)
+	// Create a Collection
+	// (POST /collections)
+	PostCollections(w http.ResponseWriter, r *http.Request, params PostCollectionsParams)
+	// Delete Collection
+	// (DELETE /collections/{collectionSlug})
+	DeleteCollection(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params DeleteCollectionParams)
+	// Get Collection
+	// (GET /collections/{collectionSlug})
+	GetCollection(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params GetCollectionParams)
+	// Delete Collection Instance
+	// (DELETE /collections/{collectionSlug}/instances/{instanceID})
+	DeleteCollectionInstance(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params DeleteCollectionInstanceParams)
+	// Get Collection Instance
+	// (GET /collections/{collectionSlug}/instances/{instanceID})
+	GetCollectionInstance(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params GetCollectionInstanceParams)
+	// Save Collection Instance
+	// (PUT /collections/{collectionSlug}/instances/{instanceID})
+	PutCollectionInstance(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params PutCollectionInstanceParams)
+	// Get Collection Instance Data
+	// (GET /collections/{collectionSlug}/instances/{instanceID}/data)
+	GetCollectionInstanceData(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params GetCollectionInstanceDataParams)
+	// Save Collection Instance Data
+	// (PUT /collections/{collectionSlug}/instances/{instanceID}/data)
+	PutCollectionInstanceData(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params PutCollectionInstanceDataParams)
+	// List Collection Instances
+	// (GET /collections/{collectionSlug}/items)
+	ListCollectionInstances(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params ListCollectionInstancesParams)
 	// Get SSH Grants
 	// (GET /grants)
 	GetSshGrants(w http.ResponseWriter, r *http.Request, params GetSshGrantsParams)
@@ -1869,45 +1554,6 @@ type ServerInterface interface {
 	// Unregister SSH Host
 	// (POST /hosts/{hostID}/unregister)
 	UnregisterSshHost(w http.ResponseWriter, r *http.Request, hostID HostID, params UnregisterSshHostParams)
-	// List Inventories
-	// (GET /inventories)
-	ListInventories(w http.ResponseWriter, r *http.Request, params ListInventoriesParams)
-	// Create an Inventory
-	// (POST /inventories)
-	PostInventories(w http.ResponseWriter, r *http.Request, params PostInventoriesParams)
-	// Delete Inventory
-	// (DELETE /inventories/{inventorySlug})
-	DeleteInventory(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, params DeleteInventoryParams)
-	// Get Inventory
-	// (GET /inventories/{inventorySlug})
-	GetInventory(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, params GetInventoryParams)
-	// List Inventory Items
-	// (GET /inventories/{inventorySlug}/items)
-	ListInventoryItems(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, params ListInventoryItemsParams)
-	// Delete Inventory Item
-	// (DELETE /inventories/{inventorySlug}/items/{itemID})
-	DeleteInventoryItem(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, itemID ItemID, params DeleteInventoryItemParams)
-	// Get Inventory Item
-	// (GET /inventories/{inventorySlug}/items/{itemID})
-	GetInventoryItem(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, itemID ItemID, params GetInventoryItemParams)
-	// Save Inventory Item
-	// (PUT /inventories/{inventorySlug}/items/{itemID})
-	PutInventoryItem(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, itemID ItemID, params PutInventoryItemParams)
-	// Get Inventory Item Data
-	// (GET /inventories/{inventorySlug}/items/{itemID}/data)
-	GetInventoryItemData(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, itemID ItemID, params GetInventoryItemDataParams)
-	// Save Inventory Item Data
-	// (PUT /inventories/{inventorySlug}/items/{itemID}/data)
-	PutInventoryItemData(w http.ResponseWriter, r *http.Request, inventorySlug InventorySlug, itemID ItemID, params PutInventoryItemDataParams)
-	// Create a Managed Configuration
-	// (POST /managed-configurations)
-	PostManagedConfigurations(w http.ResponseWriter, r *http.Request, params PostManagedConfigurationsParams)
-	// Delete Managed Configuration
-	// (DELETE /managed-configurations/{managedConfigurationID})
-	DeleteManagedConfiguration(w http.ResponseWriter, r *http.Request, managedConfigurationID ManagedConfigurationID, params DeleteManagedConfigurationParams)
-	// Get a Managed Configuration
-	// (GET /managed-configurations/{managedConfigurationID})
-	GetManagedConfiguration(w http.ResponseWriter, r *http.Request, managedConfigurationID ManagedConfigurationID, params GetManagedConfigurationParams)
 	// Get SSH Host Tags
 	// (GET /tags)
 	GetSshHostTags(w http.ResponseWriter, r *http.Request, params GetSshHostTagsParams)
@@ -1924,210 +1570,6 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
-
-// PostAgentConfigurations operation middleware
-func (siw *ServerInterfaceWrapper) PostAgentConfigurations(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PostAgentConfigurationsParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostAgentConfigurations(w, r, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// DeleteAgentConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) DeleteAgentConfiguration(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "agentConfigurationID" -------------
-	var agentConfigurationID AgentConfigurationID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "agentConfigurationID"), &agentConfigurationID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agentConfigurationID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params DeleteAgentConfigurationParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteAgentConfiguration(w, r, agentConfigurationID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// GetAgentConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) GetAgentConfiguration(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "agentConfigurationID" -------------
-	var agentConfigurationID AgentConfigurationID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "agentConfigurationID"), &agentConfigurationID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agentConfigurationID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetAgentConfigurationParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAgentConfiguration(w, r, agentConfigurationID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
 
 // GetAttestationAuthorities operation middleware
 func (siw *ServerInterfaceWrapper) GetAttestationAuthorities(w http.ResponseWriter, r *http.Request) {
@@ -3371,8 +2813,8 @@ func (siw *ServerInterfaceWrapper) PostAuthorityRoot(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// PostEndpointConfigurations operation middleware
-func (siw *ServerInterfaceWrapper) PostEndpointConfigurations(w http.ResponseWriter, r *http.Request) {
+// ListCollections operation middleware
+func (siw *ServerInterfaceWrapper) ListCollections(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
@@ -3380,7 +2822,15 @@ func (siw *ServerInterfaceWrapper) PostEndpointConfigurations(w http.ResponseWri
 	ctx = context.WithValue(ctx, JWTScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params PostEndpointConfigurationsParams
+	var params ListCollectionsParams
+
+	// ------------- Optional query parameter "pagination" -------------
+
+	err = runtime.BindQueryParameter("deepObject", true, false, "pagination", r.URL.Query(), &params.Pagination)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "pagination", Err: err})
+		return
+	}
 
 	headers := r.Header
 
@@ -3423,7 +2873,7 @@ func (siw *ServerInterfaceWrapper) PostEndpointConfigurations(w http.ResponseWri
 	}
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostEndpointConfigurations(w, r, params)
+		siw.Handler.ListCollections(w, r, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3433,25 +2883,16 @@ func (siw *ServerInterfaceWrapper) PostEndpointConfigurations(w http.ResponseWri
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// DeleteEndpointConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) DeleteEndpointConfiguration(w http.ResponseWriter, r *http.Request) {
+// PostCollections operation middleware
+func (siw *ServerInterfaceWrapper) PostCollections(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
-	// ------------- Path parameter "endpointConfigurationID" -------------
-	var endpointConfigurationID EndpointConfigurationID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "endpointConfigurationID"), &endpointConfigurationID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "endpointConfigurationID", Err: err})
-		return
-	}
-
 	ctx = context.WithValue(ctx, JWTScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params DeleteEndpointConfigurationParams
+	var params PostCollectionsParams
 
 	headers := r.Header
 
@@ -3494,7 +2935,7 @@ func (siw *ServerInterfaceWrapper) DeleteEndpointConfiguration(w http.ResponseWr
 	}
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteEndpointConfiguration(w, r, endpointConfigurationID, params)
+		siw.Handler.PostCollections(w, r, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3504,25 +2945,25 @@ func (siw *ServerInterfaceWrapper) DeleteEndpointConfiguration(w http.ResponseWr
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// GetEndpointConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) GetEndpointConfiguration(w http.ResponseWriter, r *http.Request) {
+// DeleteCollection operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCollection(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
-	// ------------- Path parameter "endpointConfigurationID" -------------
-	var endpointConfigurationID EndpointConfigurationID
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "endpointConfigurationID"), &endpointConfigurationID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "endpointConfigurationID", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
 		return
 	}
 
 	ctx = context.WithValue(ctx, JWTScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetEndpointConfigurationParams
+	var params DeleteCollectionParams
 
 	headers := r.Header
 
@@ -3565,7 +3006,557 @@ func (siw *ServerInterfaceWrapper) GetEndpointConfiguration(w http.ResponseWrite
 	}
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetEndpointConfiguration(w, r, endpointConfigurationID, params)
+		siw.Handler.DeleteCollection(w, r, collectionSlug, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetCollection operation middleware
+func (siw *ServerInterfaceWrapper) GetCollection(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCollectionParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollection(w, r, collectionSlug, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteCollectionInstance operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCollectionInstance(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "instanceID" -------------
+	var instanceID InstanceID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, chi.URLParam(r, "instanceID"), &instanceID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "instanceID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteCollectionInstanceParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteCollectionInstance(w, r, collectionSlug, instanceID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetCollectionInstance operation middleware
+func (siw *ServerInterfaceWrapper) GetCollectionInstance(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "instanceID" -------------
+	var instanceID InstanceID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, chi.URLParam(r, "instanceID"), &instanceID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "instanceID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCollectionInstanceParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollectionInstance(w, r, collectionSlug, instanceID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutCollectionInstance operation middleware
+func (siw *ServerInterfaceWrapper) PutCollectionInstance(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "instanceID" -------------
+	var instanceID InstanceID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, chi.URLParam(r, "instanceID"), &instanceID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "instanceID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutCollectionInstanceParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutCollectionInstance(w, r, collectionSlug, instanceID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetCollectionInstanceData operation middleware
+func (siw *ServerInterfaceWrapper) GetCollectionInstanceData(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "instanceID" -------------
+	var instanceID InstanceID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, chi.URLParam(r, "instanceID"), &instanceID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "instanceID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCollectionInstanceDataParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCollectionInstanceData(w, r, collectionSlug, instanceID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutCollectionInstanceData operation middleware
+func (siw *ServerInterfaceWrapper) PutCollectionInstanceData(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "instanceID" -------------
+	var instanceID InstanceID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, chi.URLParam(r, "instanceID"), &instanceID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "instanceID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutCollectionInstanceDataParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutCollectionInstanceData(w, r, collectionSlug, instanceID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// ListCollectionInstances operation middleware
+func (siw *ServerInterfaceWrapper) ListCollectionInstances(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCollectionInstancesParams
+
+	// ------------- Optional query parameter "pagination" -------------
+
+	err = runtime.BindQueryParameter("deepObject", true, false, "pagination", r.URL.Query(), &params.Pagination)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "pagination", Err: err})
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCollectionInstances(w, r, collectionSlug, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4281,963 +4272,6 @@ func (siw *ServerInterfaceWrapper) UnregisterSshHost(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// ListInventories operation middleware
-func (siw *ServerInterfaceWrapper) ListInventories(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListInventoriesParams
-
-	// ------------- Optional query parameter "pagination" -------------
-
-	err = runtime.BindQueryParameter("deepObject", true, false, "pagination", r.URL.Query(), &params.Pagination)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "pagination", Err: err})
-		return
-	}
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListInventories(w, r, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// PostInventories operation middleware
-func (siw *ServerInterfaceWrapper) PostInventories(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PostInventoriesParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostInventories(w, r, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// DeleteInventory operation middleware
-func (siw *ServerInterfaceWrapper) DeleteInventory(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params DeleteInventoryParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteInventory(w, r, inventorySlug, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// GetInventory operation middleware
-func (siw *ServerInterfaceWrapper) GetInventory(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetInventoryParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetInventory(w, r, inventorySlug, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// ListInventoryItems operation middleware
-func (siw *ServerInterfaceWrapper) ListInventoryItems(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListInventoryItemsParams
-
-	// ------------- Optional query parameter "pagination" -------------
-
-	err = runtime.BindQueryParameter("deepObject", true, false, "pagination", r.URL.Query(), &params.Pagination)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "pagination", Err: err})
-		return
-	}
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListInventoryItems(w, r, inventorySlug, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// DeleteInventoryItem operation middleware
-func (siw *ServerInterfaceWrapper) DeleteInventoryItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "itemID" -------------
-	var itemID ItemID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "itemID", runtime.ParamLocationPath, chi.URLParam(r, "itemID"), &itemID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params DeleteInventoryItemParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteInventoryItem(w, r, inventorySlug, itemID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// GetInventoryItem operation middleware
-func (siw *ServerInterfaceWrapper) GetInventoryItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "itemID" -------------
-	var itemID ItemID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "itemID", runtime.ParamLocationPath, chi.URLParam(r, "itemID"), &itemID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetInventoryItemParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetInventoryItem(w, r, inventorySlug, itemID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// PutInventoryItem operation middleware
-func (siw *ServerInterfaceWrapper) PutInventoryItem(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "itemID" -------------
-	var itemID ItemID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "itemID", runtime.ParamLocationPath, chi.URLParam(r, "itemID"), &itemID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PutInventoryItemParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutInventoryItem(w, r, inventorySlug, itemID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// GetInventoryItemData operation middleware
-func (siw *ServerInterfaceWrapper) GetInventoryItemData(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "itemID" -------------
-	var itemID ItemID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "itemID", runtime.ParamLocationPath, chi.URLParam(r, "itemID"), &itemID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetInventoryItemDataParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetInventoryItemData(w, r, inventorySlug, itemID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// PutInventoryItemData operation middleware
-func (siw *ServerInterfaceWrapper) PutInventoryItemData(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "inventorySlug" -------------
-	var inventorySlug InventorySlug
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, chi.URLParam(r, "inventorySlug"), &inventorySlug)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "inventorySlug", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "itemID" -------------
-	var itemID ItemID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "itemID", runtime.ParamLocationPath, chi.URLParam(r, "itemID"), &itemID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "itemID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PutInventoryItemDataParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutInventoryItemData(w, r, inventorySlug, itemID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// PostManagedConfigurations operation middleware
-func (siw *ServerInterfaceWrapper) PostManagedConfigurations(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PostManagedConfigurationsParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostManagedConfigurations(w, r, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// DeleteManagedConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) DeleteManagedConfiguration(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "managedConfigurationID" -------------
-	var managedConfigurationID ManagedConfigurationID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "managedConfigurationID"), &managedConfigurationID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "managedConfigurationID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params DeleteManagedConfigurationParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteManagedConfiguration(w, r, managedConfigurationID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// GetManagedConfiguration operation middleware
-func (siw *ServerInterfaceWrapper) GetManagedConfiguration(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "managedConfigurationID" -------------
-	var managedConfigurationID ManagedConfigurationID
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "managedConfigurationID"), &managedConfigurationID)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "managedConfigurationID", Err: err})
-		return
-	}
-
-	ctx = context.WithValue(ctx, JWTScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetManagedConfigurationParams
-
-	headers := r.Header
-
-	// ------------- Optional header parameter "X-Request-Id" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
-		var XRequestId RequestID
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
-			return
-		}
-
-		params.XRequestId = &XRequestId
-
-	}
-
-	// ------------- Optional header parameter "Accept" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
-		var Accept Accept
-		n := len(valueList)
-		if n != 1 {
-			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
-			return
-		}
-
-		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
-		if err != nil {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
-			return
-		}
-
-		params.Accept = &Accept
-
-	}
-
-	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetManagedConfiguration(w, r, managedConfigurationID, params)
-	})
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
 // GetSshHostTags operation middleware
 func (siw *ServerInterfaceWrapper) GetSshHostTags(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -5492,15 +4526,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/agent-configurations", wrapper.PostAgentConfigurations)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/agent-configurations/{agentConfigurationID}", wrapper.DeleteAgentConfiguration)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/agent-configurations/{agentConfigurationID}", wrapper.GetAgentConfiguration)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/attestation-authorities", wrapper.GetAttestationAuthorities)
 	})
 	r.Group(func(r chi.Router) {
@@ -5555,13 +4580,34 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/authorities/{authorityID}/root", wrapper.PostAuthorityRoot)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/endpoint-configurations", wrapper.PostEndpointConfigurations)
+		r.Get(options.BaseURL+"/collections", wrapper.ListCollections)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/endpoint-configurations/{endpointConfigurationID}", wrapper.DeleteEndpointConfiguration)
+		r.Post(options.BaseURL+"/collections", wrapper.PostCollections)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/endpoint-configurations/{endpointConfigurationID}", wrapper.GetEndpointConfiguration)
+		r.Delete(options.BaseURL+"/collections/{collectionSlug}", wrapper.DeleteCollection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collections/{collectionSlug}", wrapper.GetCollection)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}", wrapper.DeleteCollectionInstance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}", wrapper.GetCollectionInstance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}", wrapper.PutCollectionInstance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}/data", wrapper.GetCollectionInstanceData)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}/data", wrapper.PutCollectionInstanceData)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/collections/{collectionSlug}/items", wrapper.ListCollectionInstances)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/grants", wrapper.GetSshGrants)
@@ -5594,45 +4640,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/hosts/{hostID}/unregister", wrapper.UnregisterSshHost)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/inventories", wrapper.ListInventories)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/inventories", wrapper.PostInventories)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/inventories/{inventorySlug}", wrapper.DeleteInventory)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/inventories/{inventorySlug}", wrapper.GetInventory)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/inventories/{inventorySlug}/items", wrapper.ListInventoryItems)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/inventories/{inventorySlug}/items/{itemID}", wrapper.DeleteInventoryItem)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/inventories/{inventorySlug}/items/{itemID}", wrapper.GetInventoryItem)
-	})
-	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/inventories/{inventorySlug}/items/{itemID}", wrapper.PutInventoryItem)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/inventories/{inventorySlug}/items/{itemID}/data", wrapper.GetInventoryItemData)
-	})
-	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/inventories/{inventorySlug}/items/{itemID}/data", wrapper.PutInventoryItemData)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/managed-configurations", wrapper.PostManagedConfigurations)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/managed-configurations/{managedConfigurationID}", wrapper.DeleteManagedConfiguration)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/managed-configurations/{managedConfigurationID}", wrapper.GetManagedConfiguration)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/tags", wrapper.GetSshHostTags)
 	})
 	r.Group(func(r chi.Router) {
@@ -5645,245 +4652,216 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"sYlMcb37T/f/LwAA//9KMAMdfxgBAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

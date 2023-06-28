@@ -197,8 +197,8 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"inventory_slug": schema.StringAttribute{
-				MarkdownDescription: props["inventorySlug"],
+			"collection_slug": schema.StringAttribute{
+				MarkdownDescription: props["collectionSlug"],
 				Optional:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),

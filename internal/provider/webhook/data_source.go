@@ -165,8 +165,8 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: props["secret"],
 				Computed:            true,
 			},
-			"inventory_slug": schema.StringAttribute{
-				MarkdownDescription: props["inventorySlug"],
+			"collection_slug": schema.StringAttribute{
+				MarkdownDescription: props["collectionSlug"],
 				Computed:            true,
 			},
 			"disable_tls_client_auth": schema.BoolAttribute{
