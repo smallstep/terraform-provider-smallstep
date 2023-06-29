@@ -112,6 +112,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
+	collectionWarning := `
+The collection will be created implicitly if it does not exist.
+If creating this collection with a smallstep_collection resource in the same config you MUST use depends_on to avoid race conditions.`
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: component,
 
@@ -121,7 +125,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Required:            true,
 			},
 			"collection_slug": schema.StringAttribute{
-				MarkdownDescription: props["collectionSlug"],
+				MarkdownDescription: props["collectionSlug"] + collectionWarning,
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),

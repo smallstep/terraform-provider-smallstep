@@ -177,7 +177,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if httpResp.StatusCode != http.StatusCreated {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d creating collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -219,7 +219,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to delete webhook %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to delete collection %s: %v", state.Slug.String(), err),
 		)
 		return
 	}
@@ -228,7 +228,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if httpResp.StatusCode != http.StatusNoContent {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting webhook %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d deleting collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}

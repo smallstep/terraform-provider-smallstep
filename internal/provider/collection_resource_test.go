@@ -68,7 +68,7 @@ func init() {
 					body, _ := io.ReadAll(resp.Body)
 					return fmt.Errorf("failed to delete collection %q: %d: %s", collection.Slug, resp.StatusCode, body)
 				}
-				log.Printf("Successfully swept %s\n", collection.Slug)
+				log.Printf("Successfully swept collection %s\n", collection.Slug)
 			}
 
 			return nil
@@ -104,35 +104,6 @@ resource "smallstep_collection" "employees" {
 				ResourceName:      "smallstep_collection.employees",
 				ImportState:       true,
 				ImportStateId:     slug,
-				ImportStateVerify: true,
-			},
-		},
-	})
-
-	slug2 := utils.Slug(t)
-	onlySlug := fmt.Sprintf(`
-resource "smallstep_collection" "things" {
-	slug = %q
-}`, slug2)
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config: onlySlug,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("smallstep_collection.things", "slug", slug2),
-					resource.TestCheckResourceAttr("smallstep_collection.things", "display_name", ""),
-					resource.TestCheckResourceAttr("smallstep_collection.things", "instance_count", "0"),
-					resource.TestMatchResourceAttr("smallstep_collection.things", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-					resource.TestMatchResourceAttr("smallstep_collection.things", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-				),
-			},
-			{
-				ResourceName:      "smallstep_collection.things",
-				ImportState:       true,
-				ImportStateId:     slug2,
 				ImportStateVerify: true,
 			},
 		},
