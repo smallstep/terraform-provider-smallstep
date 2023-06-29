@@ -26,7 +26,7 @@ data "smallstep_collection" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.smallstep_collection.test", "slug", collection.Slug),
 					resource.TestCheckResourceAttr("data.smallstep_collection.test", "instance_count", "0"),
-					// resource.TestCheckResourceAttr("data.smallstep_collection.test", "display_name", collection.DisplayName),
+					resource.TestCheckResourceAttr("data.smallstep_collection.test", "display_name", collection.DisplayName),
 					resource.TestMatchResourceAttr("data.smallstep_collection.test", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 					resource.TestMatchResourceAttr("data.smallstep_collection.test", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),

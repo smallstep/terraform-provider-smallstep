@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"testing"
@@ -221,4 +222,91 @@ func Slug(t *testing.T) string {
 	slug, err := randutil.String(10, "abcdefghijklmnopqrstuvwxyz0123456789")
 	require.NoError(t, err)
 	return "tfprovider" + slug
+}
+
+// There can only be 1 per team - don't try to create a new one if one exists
+func FixAttestationAuthority(t *testing.T, catalog string) *v20230301.AttestationAuthority {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.GetAttestationAuthorities(context.Background(), &v20230301.GetAttestationAuthoritiesParams{})
+	require.NoError(t, err)
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "list attestation authorities got %d: %s", resp.StatusCode, body)
+
+	list := []*v20230301.AttestationAuthority{}
+	err = json.Unmarshal(body, &list)
+	require.NoError(t, err)
+
+	if len(list) > 0 {
+		return list[0]
+	}
+
+	root, intermediate := CACerts(t)
+
+	req := v20230301.AttestationAuthority{
+		Name:                  "tfprovider",
+		AttestorRoots:         root,
+		AttestorIntermediates: &intermediate,
+		Catalog:               catalog,
+	}
+
+	resp, err = client.PostAttestationAuthorities(context.Background(), &v20230301.PostAttestationAuthoritiesParams{}, req)
+	require.NoError(t, err)
+	body, err = io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusCreated, resp.StatusCode, "create attestation authority got %d: %s", resp.StatusCode, body)
+
+	aa := &v20230301.AttestationAuthority{}
+	err = json.Unmarshal(body, aa)
+	require.NoError(t, err)
+
+	return aa
+}
+
+func SweepAttestationAuthorities() error {
+	client, err := SmallstepAPIClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	resp, err := client.GetAttestationAuthorities(context.Background(), &v20230301.GetAttestationAuthoritiesParams{})
+	if err != nil {
+		return err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("list attestation authorities got %d: %s", resp.StatusCode, body)
+	}
+
+	list := []*v20230301.AttestationAuthority{}
+	if err := json.Unmarshal(body, &list); err != nil {
+		return err
+	}
+
+	for _, aa := range list {
+		if aa.Name != "tfprovider" {
+			continue
+		}
+		resp, err := client.DeleteAttestationAuthority(context.Background(), *aa.Id, &v20230301.DeleteAttestationAuthorityParams{})
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+
+		if resp.StatusCode != http.StatusNoContent {
+			return fmt.Errorf("delete attestation authority %q got %d: %s", *aa.Id, resp.StatusCode, body)
+		}
+		log.Printf("Successfully swept attestation authority %s\n", *aa.Id)
+	}
+
+	return nil
 }
