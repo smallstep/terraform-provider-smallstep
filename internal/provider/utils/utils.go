@@ -39,6 +39,22 @@ func Deref[T dereferencable](v *T) (r T) {
 	return
 }
 
+func ToIntPointer(i64 *int64) *int {
+	if i64 == nil {
+		return nil
+	}
+	i := int(*i64)
+	return &i
+}
+
+func ToStringPointer[In Str, Out Str](str *In) *Out {
+	if str == nil {
+		return nil
+	}
+	s := Out(*str)
+	return &s
+}
+
 // Describe parses descriptions for a component from its schema in Smallstep's
 // OpenAPI spec. This ensures the terraform attribute documentation is kept in
 // sync with the API spec.

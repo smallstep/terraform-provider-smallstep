@@ -108,6 +108,10 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	tflog.Trace(ctx, fmt.Sprintf("read webhook %q resource", idOrName))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
+
+	tflog.Info(ctx, "WEBHOOK READ")
+	tflog.Info(ctx, utils.Deref(webhook.CollectionSlug))
+	tflog.Info(ctx, remote.CollectionSlug.ValueString())
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -196,6 +200,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
+				Sensitive: true,
 			},
 			"collection_slug": schema.StringAttribute{
 				MarkdownDescription: props["collectionSlug"],
@@ -217,6 +222,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
+				Sensitive: true,
 			},
 			"basic_auth": schema.SingleNestedAttribute{
 				MarkdownDescription: basicAuth,
@@ -231,6 +237,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
+						Sensitive: true,
 					},
 					"password": schema.StringAttribute{
 						MarkdownDescription: basicAuthProps["password"],
@@ -238,6 +245,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
+						Sensitive: true,
 					},
 				},
 			},
@@ -300,6 +308,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	tflog.Trace(ctx, fmt.Sprintf("create webhook %q resource", plan.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
+
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

@@ -1,3 +1,4 @@
+/*
 data "smallstep_provisioner" "prov" {
   authority_id = "129dd44e-0381-4d45-a446-216b9a6e3bf4"
   id = "af7f3b22-057c-4bd8-8832-bca9f0c59aa8"
@@ -6,6 +7,7 @@ data "smallstep_provisioner" "prov" {
 output "provisioner_name" {
   value = data.smallstep_provisioner.prov.name
 }
+*/
 
 resource "smallstep_provisioner" "my_oidc" {
   authority_id = smallstep_authority.basic.id

@@ -164,6 +164,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			"secret": schema.StringAttribute{
 				MarkdownDescription: props["secret"],
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"collection_slug": schema.StringAttribute{
 				MarkdownDescription: props["collectionSlug"],
@@ -176,6 +177,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			"bearer_token": schema.StringAttribute{
 				MarkdownDescription: props["bearerToken"],
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"basic_auth": schema.SingleNestedAttribute{
 				MarkdownDescription: basicAuth,
@@ -184,10 +186,12 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 					"username": schema.StringAttribute{
 						MarkdownDescription: basicAuthProps["username"],
 						Computed:            true,
+						Sensitive:           true,
 					},
 					"password": schema.StringAttribute{
 						MarkdownDescription: basicAuthProps["password"],
 						Computed:            true,
+						Sensitive:           true,
 					},
 				},
 			},

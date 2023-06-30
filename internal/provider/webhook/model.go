@@ -56,9 +56,11 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 		data.Secret = types.StringValue(utils.Deref(webhook.Secret))
 	}
 
-	collectionSlug, d := utils.ToOptionalString(ctx, webhook.BearerToken, state, path.Root("collection_slug"))
+	// Currently the API never returns collection slug so always use state
+	collectionSlugFromState := types.String{}
+	d := state.GetAttribute(ctx, path.Root("collection_slug"), &collectionSlugFromState)
 	diags = append(diags, d...)
-	data.CollectionSlug = collectionSlug
+	data.CollectionSlug = collectionSlugFromState
 
 	// bearer token and basic auth are never set in API responses.
 	// Always use state.
