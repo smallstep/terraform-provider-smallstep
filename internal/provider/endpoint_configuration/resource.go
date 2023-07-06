@@ -175,6 +175,13 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
+			"kind": schema.StringAttribute{
+				MarkdownDescription: props["kind"],
+				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
 			"authority_id": schema.StringAttribute{
 				MarkdownDescription: props["authorityID"],
 				Required:            true,
@@ -190,11 +197,22 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				},
 			},
 			"key_info": schema.SingleNestedAttribute{
-				Optional:            true,
+				// This object is not required by the API but a default object
+				// will always be returned with both format and type set to
+				// "DEFAULT". To avoid "inconsistent result after apply" errors
+				// require these fields to be set explicitlyl in terraform.
+				Required:            true,
 				MarkdownDescription: keyInfo,
 				Attributes: map[string]schema.Attribute{
+					"type": schema.StringAttribute{
+						Required:            true,
+						MarkdownDescription: keyInfoProps["type"],
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
 					"format": schema.StringAttribute{
-						Optional:            true,
+						Required:            true,
 						MarkdownDescription: keyInfoProps["format"],
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
@@ -203,13 +221,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"pub_file": schema.StringAttribute{
 						Optional:            true,
 						MarkdownDescription: keyInfoProps["pubFile"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-					},
-					"type": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: keyInfoProps["type"],
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
@@ -234,11 +245,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
-					"type": schema.StringAttribute{
+					"signal": schema.Int64Attribute{
 						Optional:            true,
-						MarkdownDescription: reloadInfoProps["type"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
+						MarkdownDescription: reloadInfoProps["signal"],
+						PlanModifiers: []planmodifier.Int64{
+							int64planmodifier.RequiresReplace(),
 						},
 					},
 				},

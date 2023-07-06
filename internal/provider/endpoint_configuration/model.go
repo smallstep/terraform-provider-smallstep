@@ -13,15 +13,15 @@ import (
 const typeName = "smallstep_endpoint_configuration"
 
 type Model struct {
-	ID              types.String         `tfsdk:"id"`
-	Name            types.String         `tfsdk:"name"`
-	AuthorityID     types.String         `tfsdk:"authority_id"`
-	Provisioner     types.String         `tfsdk:"provisioner_name"`
-	Kind            types.String         `tfsdk:"kind"`
-	CertificateInfo CertificateInfoModel `tfsdk:"certificate_info"`
-	Hooks           *HooksModel          `tfsdk:"hooks"`
-	KeyInfo         *KeyInfoModel        `tfsdk:"key_info"`
-	ReloadInfo      *ReloadInfoModel     `tfsdk:"reload_info"`
+	ID              types.String          `tfsdk:"id"`
+	Name            types.String          `tfsdk:"name"`
+	AuthorityID     types.String          `tfsdk:"authority_id"`
+	Provisioner     types.String          `tfsdk:"provisioner_name"`
+	Kind            types.String          `tfsdk:"kind"`
+	CertificateInfo *CertificateInfoModel `tfsdk:"certificate_info"`
+	Hooks           *HooksModel           `tfsdk:"hooks"`
+	KeyInfo         *KeyInfoModel         `tfsdk:"key_info"`
+	ReloadInfo      *ReloadInfoModel      `tfsdk:"reload_info"`
 }
 
 type CertificateInfoModel struct {
@@ -168,7 +168,7 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 		Kind:        types.StringValue(string(ec.Kind)),
 		AuthorityID: types.StringValue(ec.AuthorityID),
 		Provisioner: types.StringValue(ec.Provisioner),
-		CertificateInfo: CertificateInfoModel{
+		CertificateInfo: &CertificateInfoModel{
 			Type:     types.StringValue(string(ec.CertificateInfo.Type)),
 			Duration: ciDuration,
 			CrtFile:  ciCrtFile,
@@ -258,7 +258,7 @@ func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath pat
 	after, d := utils.ToOptionalList(ctx, hook.After, state, hookPath.AtName("after"))
 	diags = append(diags, d...)
 
-	onError, d := utils.ToOptionalList(ctx, hook.OnError, state, hookPath.AtName("on-error"))
+	onError, d := utils.ToOptionalList(ctx, hook.OnError, state, hookPath.AtName("on_error"))
 	diags = append(diags, d...)
 
 	hm := &HookModel{

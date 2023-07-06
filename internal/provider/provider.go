@@ -19,6 +19,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/endpoint_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/instance"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
@@ -176,6 +177,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		attestation_authority.NewResource,
 		agent_configuration.NewResource,
 		endpoint_configuration.NewResource,
+		managed_configuration.NewResource,
 	}
 }
 
@@ -189,6 +191,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		attestation_authority.NewDataSource,
 		agent_configuration.NewDataSource,
 		endpoint_configuration.NewDataSource,
+		managed_configuration.NewDataSource,
 	}
 }
 

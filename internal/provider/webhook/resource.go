@@ -108,10 +108,6 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	tflog.Trace(ctx, fmt.Sprintf("read webhook %q resource", idOrName))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
-
-	tflog.Info(ctx, "WEBHOOK READ")
-	tflog.Info(ctx, utils.Deref(webhook.CollectionSlug))
-	tflog.Info(ctx, remote.CollectionSlug.ValueString())
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {

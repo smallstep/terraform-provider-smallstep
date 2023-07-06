@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -292,7 +293,7 @@ func SweepAttestationAuthorities() error {
 	}
 
 	for _, aa := range list {
-		if aa.Name != "tfprovider" {
+		if !strings.HasPrefix(aa.Name, "tfprovider") {
 			continue
 		}
 		resp, err := client.DeleteAttestationAuthority(context.Background(), *aa.Id, &v20230301.DeleteAttestationAuthorityParams{})
