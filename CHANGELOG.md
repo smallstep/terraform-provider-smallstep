@@ -3,7 +3,8 @@
 FEATURES:
 
 * Add smallstep_provisioner resource and data source
-* Add smallstep_provisioner_webhook resource and data source
+* Add smallstep_collection resource and data source
+* Add smallstep_collection_instance resource and data source
 
 BUG FIXES:
 
