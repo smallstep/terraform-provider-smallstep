@@ -1,4 +1,4 @@
 
 resource "smallstep_collection" "tpms" {
-	slug = "tpms"
+  slug = "tpms"
 }

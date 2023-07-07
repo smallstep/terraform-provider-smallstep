@@ -194,7 +194,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 								},
 								"principals": schema.SetAttribute{
 									ElementType:         types.StringType,
-									MarkdownDescription: x509Props["principals"],
+									MarkdownDescription: sshProps["principals"],
 									Computed:            true,
 								},
 							},

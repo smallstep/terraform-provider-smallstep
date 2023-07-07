@@ -233,7 +233,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								},
 								"principals": schema.SetAttribute{
 									ElementType:         types.StringType,
-									MarkdownDescription: x509Props["principals"],
+									MarkdownDescription: sshProps["principals"],
 									Required:            true,
 									PlanModifiers: []planmodifier.Set{
 										setplanmodifier.RequiresReplace(),
