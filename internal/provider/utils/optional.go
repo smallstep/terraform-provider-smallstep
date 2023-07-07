@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 )
 
 // These helpers handle conversion from API types to terraform types for
@@ -39,7 +40,36 @@ func ToOptionalSet(ctx context.Context, remote *[]string, priorState AttributeGe
 	return types.SetValue(types.StringType, values)
 }
 
-func ToOptionalString(ctx context.Context, remote *string, priorState AttributeGetter, p path.Path) (types.String, diag.Diagnostics) {
+func ToOptionalList(ctx context.Context, remote *[]string, priorState AttributeGetter, p path.Path) (types.List, diag.Diagnostics) {
+	if remote == nil || len(*remote) == 0 {
+		listFromState := types.List{}
+		diags := priorState.GetAttribute(ctx, p, &listFromState)
+		if diags.HasError() {
+			return types.List{}, diags
+		}
+		if listFromState.IsNull() || len(listFromState.Elements()) == 0 {
+			return listFromState, diags
+		}
+	}
+
+	if remote == nil {
+		return types.ListNull(types.StringType), diag.Diagnostics{}
+	}
+
+	values := make([]attr.Value, len(*remote))
+	for i, s := range *remote {
+		values[i] = types.StringValue(s)
+	}
+	return types.ListValue(types.StringType, values)
+}
+
+type Str interface {
+	string |
+		v20230301.EndpointKeyInfoFormat |
+		v20230301.EndpointKeyInfoType
+}
+
+func ToOptionalString[S Str](ctx context.Context, remote *S, priorState AttributeGetter, p path.Path) (types.String, diag.Diagnostics) {
 	if remote == nil || *remote == "" {
 		stringFromState := types.String{}
 		diags := priorState.GetAttribute(ctx, p, &stringFromState)
@@ -55,7 +85,7 @@ func ToOptionalString(ctx context.Context, remote *string, priorState AttributeG
 		return types.StringNull(), diag.Diagnostics{}
 	}
 
-	return types.StringValue(*remote), diag.Diagnostics{}
+	return types.StringValue(string(*remote)), diag.Diagnostics{}
 }
 
 func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGetter, p path.Path) (types.Bool, diag.Diagnostics) {
@@ -75,4 +105,23 @@ func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGette
 	}
 
 	return types.BoolValue(*remote), diag.Diagnostics{}
+}
+
+func ToOptionalInt(ctx context.Context, remote *int, priorState AttributeGetter, p path.Path) (types.Int64, diag.Diagnostics) {
+	if remote == nil || *remote == 0 {
+		intFromState := types.Int64{}
+		diags := priorState.GetAttribute(ctx, p, &intFromState)
+		if diags.HasError() {
+			return types.Int64{}, diags
+		}
+		if intFromState.IsNull() || intFromState.ValueInt64() == 0 {
+			return intFromState, diags
+		}
+	}
+
+	if remote == nil {
+		return types.Int64Null(), diag.Diagnostics{}
+	}
+
+	return types.Int64Value(int64(*remote)), diag.Diagnostics{}
 }

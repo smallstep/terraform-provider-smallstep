@@ -345,7 +345,8 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 	}
 
-	if provisioner.Options != nil {
+	// Not including webhooks here
+	if provisioner.Options != nil && (provisioner.Options.Ssh != nil || provisioner.Options.X509 != nil) {
 		data.Options = &OptionsModel{}
 
 		if provisioner.Options.X509 != nil {
