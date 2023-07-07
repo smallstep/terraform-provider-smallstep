@@ -1,0 +1,1 @@
+terraform import smallstep_managed_configuration.ac 411009f5-b30d-4c16-818f-cefcc71d86b4

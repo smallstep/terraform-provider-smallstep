@@ -1,0 +1,1 @@
+terraform import smallstep_collection_instance.tpms devices/device1
