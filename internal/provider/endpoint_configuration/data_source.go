@@ -164,7 +164,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			},
 			"kind": schema.StringAttribute{
 				MarkdownDescription: props["kind"],
-				Required:            true,
+				Computed:            true,
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
@@ -208,7 +208,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 						Computed:            true,
 						MarkdownDescription: reloadInfoProps["pidFile"],
 					},
-					"signal": schema.StringAttribute{
+					"signal": schema.Int64Attribute{
 						Computed:            true,
 						MarkdownDescription: reloadInfoProps["signal"],
 					},

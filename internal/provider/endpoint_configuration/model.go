@@ -3,9 +3,11 @@ package endpoint_configuration
 import (
 	"context"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
@@ -19,9 +21,9 @@ type Model struct {
 	Provisioner     types.String          `tfsdk:"provisioner_name"`
 	Kind            types.String          `tfsdk:"kind"`
 	CertificateInfo *CertificateInfoModel `tfsdk:"certificate_info"`
-	Hooks           *HooksModel           `tfsdk:"hooks"`
 	KeyInfo         *KeyInfoModel         `tfsdk:"key_info"`
-	ReloadInfo      *ReloadInfoModel      `tfsdk:"reload_info"`
+	ReloadInfo      types.Object          `tfsdk:"reload_info"`
+	Hooks           types.Object          `tfsdk:"hooks"`
 }
 
 type CertificateInfoModel struct {
@@ -55,6 +57,21 @@ type HookModel struct {
 	OnError types.List   `tfsdk:"on_error"`
 }
 
+var hookObjectType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"shell": types.StringType,
+		"before": types.ListType{
+			ElemType: types.StringType,
+		},
+		"after": types.ListType{
+			ElemType: types.StringType,
+		},
+		"on_error": types.ListType{
+			ElemType: types.StringType,
+		},
+	},
+}
+
 func (h *HookModel) toAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
@@ -66,9 +83,16 @@ func (h *HookModel) toAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Di
 	var after *[]string
 	var onError *[]string
 
-	diags.Append(h.Before.ElementsAs(ctx, &before, false)...)
-	diags.Append(h.After.ElementsAs(ctx, &after, false)...)
-	diags.Append(h.OnError.ElementsAs(ctx, &onError, false)...)
+	// TODO do I still need double pointer with this null check?
+	if !h.Before.IsNull() {
+		diags.Append(h.Before.ElementsAs(ctx, &before, false)...)
+	}
+	if !h.After.IsNull() {
+		diags.Append(h.After.ElementsAs(ctx, &after, false)...)
+	}
+	if !h.OnError.IsNull() {
+		diags.Append(h.OnError.ElementsAs(ctx, &onError, false)...)
+	}
 
 	return &v20230301.EndpointHook{
 		Shell:   h.Shell.ValueStringPointer(),
@@ -79,8 +103,25 @@ func (h *HookModel) toAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Di
 }
 
 type HooksModel struct {
-	Sign  *HookModel `tfsdk:"sign"`
-	Renew *HookModel `tfsdk:"renew"`
+	Sign  types.Object `tfsdk:"sign"`
+	Renew types.Object `tfsdk:"renew"`
+}
+
+var hooksObjectType = map[string]attr.Type{
+	"sign":  hookObjectType,
+	"renew": hookObjectType,
+}
+
+func hookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook, diag.Diagnostics) {
+	hookModel := &HookModel{}
+	diags := hook.As(ctx, hookModel, basetypes.ObjectAsOptions{
+		UnhandledUnknownAsEmpty: true,
+	})
+
+	h, d := hookModel.toAPI(ctx)
+	diags.Append(d...)
+
+	return h, diags
 }
 
 func (h *HooksModel) toAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.Diagnostics) {
@@ -90,10 +131,10 @@ func (h *HooksModel) toAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.
 		return nil, diags
 	}
 
-	sign, d := h.Sign.toAPI(ctx)
+	sign, d := hookToAPI(ctx, h.Sign)
 	diags.Append(d...)
 
-	renew, d := h.Renew.toAPI(ctx)
+	renew, d := hookToAPI(ctx, h.Renew)
 	diags.Append(d...)
 
 	return &v20230301.EndpointHooks{
@@ -124,6 +165,12 @@ type ReloadInfoModel struct {
 	Method  types.String `tfsdk:"method"`
 	PIDFile types.String `tfsdk:"pid_file"`
 	Signal  types.Int64  `tfsdk:"signal"`
+}
+
+var reloadInfoType = map[string]attr.Type{
+	"method":   types.StringType,
+	"pid_file": types.StringType,
+	"signal":   types.Int64Type,
 }
 
 func (ri *ReloadInfoModel) toAPI() *v20230301.EndpointReloadInfo {
@@ -182,15 +229,20 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 
 	if ec.Hooks != nil {
 		sign, d := hookFromAPI(ctx, ec.Hooks.Sign, path.Root("hooks").AtName("sign"), state)
-		diags = append(diags, d...)
+		diags.Append(d...)
 
 		renew, d := hookFromAPI(ctx, ec.Hooks.Renew, path.Root("hooks").AtName("renew"), state)
-		diags = append(diags, d...)
+		diags.Append(d...)
 
-		model.Hooks = &HooksModel{
-			Sign:  sign,
-			Renew: renew,
-		}
+		hooksObj, d := basetypes.NewObjectValue(hooksObjectType, map[string]attr.Value{
+			"sign":  sign,
+			"renew": renew,
+		})
+		diags.Append(d...)
+
+		model.Hooks = hooksObj
+	} else {
+		model.Hooks = basetypes.NewObjectNull(hooksObjectType)
 	}
 
 	if ec.KeyInfo != nil {
@@ -212,23 +264,38 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 
 	if ec.ReloadInfo != nil {
 		pidFile, d := utils.ToOptionalString(ctx, ec.ReloadInfo.PidFile, state, path.Root("reload_info").AtName("method"))
-		diags = append(diags, d...)
+		diags.Append(d...)
 
 		signal, d := utils.ToOptionalInt(ctx, ec.ReloadInfo.Signal, state, path.Root("reload_info").AtName("signal"))
-		diags = append(diags, d...)
+		diags.Append(d...)
 
-		model.ReloadInfo = &ReloadInfoModel{
-			Method:  types.StringValue(string(ec.ReloadInfo.Method)),
-			PIDFile: pidFile,
-			Signal:  signal,
-		}
+		reloadInfoObject, d := basetypes.NewObjectValue(reloadInfoType, map[string]attr.Value{
+			"method":   types.StringValue(string(ec.ReloadInfo.Method)),
+			"pid_file": pidFile,
+			"signal":   signal,
+		})
+		diags.Append(d...)
+		model.ReloadInfo = reloadInfoObject
+	} else {
+		model.ReloadInfo = basetypes.NewObjectNull(reloadInfoType)
 	}
 
 	return model, diags
 }
 
 func toAPI(ctx context.Context, model *Model) (*v20230301.EndpointConfiguration, diag.Diagnostics) {
-	hooks, diags := model.Hooks.toAPI(ctx)
+	hooksModel := &HooksModel{}
+	diags := model.Hooks.As(ctx, &hooksModel, basetypes.ObjectAsOptions{
+		UnhandledUnknownAsEmpty: true,
+	})
+	hooks, d := hooksModel.toAPI(ctx)
+	diags.Append(d...)
+
+	reloadInfo := &ReloadInfoModel{}
+	d = model.ReloadInfo.As(ctx, &reloadInfo, basetypes.ObjectAsOptions{
+		UnhandledUnknownAsEmpty: true,
+	})
+	diags.Append(d...)
 
 	return &v20230301.EndpointConfiguration{
 		Name:            model.Name.ValueString(),
@@ -236,17 +303,17 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.EndpointConfiguration,
 		AuthorityID:     model.AuthorityID.ValueString(),
 		Provisioner:     model.Provisioner.ValueString(),
 		CertificateInfo: model.CertificateInfo.toAPI(),
-		Hooks:           hooks,
 		KeyInfo:         model.KeyInfo.toAPI(),
-		ReloadInfo:      model.ReloadInfo.toAPI(),
+		Hooks:           hooks,
+		ReloadInfo:      reloadInfo.toAPI(),
 	}, diags
 }
 
-func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (*HookModel, diag.Diagnostics) {
+func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if hook == nil {
-		return nil, diags
+		return basetypes.NewObjectNull(hookObjectType.AttrTypes), diags
 	}
 
 	shell, d := utils.ToOptionalString(ctx, hook.Shell, state, hookPath.AtName("shell"))
@@ -261,11 +328,13 @@ func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath pat
 	onError, d := utils.ToOptionalList(ctx, hook.OnError, state, hookPath.AtName("on_error"))
 	diags = append(diags, d...)
 
-	hm := &HookModel{
-		Shell:   shell,
-		Before:  before,
-		After:   after,
-		OnError: onError,
-	}
-	return hm, diags
+	obj, d := basetypes.NewObjectValue(hookObjectType.AttrTypes, map[string]attr.Value{
+		"shell":    shell,
+		"before":   before,
+		"after":    after,
+		"on_error": onError,
+	})
+	diags.Append(d...)
+
+	return obj, diags
 }

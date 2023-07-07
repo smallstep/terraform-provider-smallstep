@@ -70,6 +70,11 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 	defer httpResp.Body.Close()
 
+	if httpResp.StatusCode == http.StatusNotFound {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",

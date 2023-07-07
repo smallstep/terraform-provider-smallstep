@@ -55,7 +55,6 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 
 func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	state := &Model{}
-
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 
 	if resp.Diagnostics.HasError() {
@@ -73,6 +72,11 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode == http.StatusNotFound {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
@@ -229,6 +233,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"reload_info": schema.SingleNestedAttribute{
 				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: reloadInfo,
 				Attributes: map[string]schema.Attribute{
 					"method": schema.StringAttribute{
@@ -256,6 +261,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"hooks": schema.SingleNestedAttribute{
 				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: hooks,
 				Attributes: map[string]schema.Attribute{
 					"sign": schema.SingleNestedAttribute{
@@ -377,15 +383,14 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 }
 
 func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan Model
-
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	plan := &Model{}
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	reqBody, diags := toAPI(ctx, &plan)
+	reqBody, diags := toAPI(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -437,9 +442,8 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state Model
-
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	state := &Model{}
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 
 	if resp.Diagnostics.HasError() {
 		return

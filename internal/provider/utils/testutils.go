@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/stretchr/testify/require"
@@ -310,4 +311,142 @@ func SweepAttestationAuthorities() error {
 	}
 
 	return nil
+}
+
+func NewAgentConfiguration(t *testing.T, authorityID, provisionerName, attestSlug string) *v20230301.AgentConfiguration {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	slug := Slug(t)
+	reqBody := v20230301.AgentConfiguration{
+		Name:            "tfprovider" + slug,
+		AttestationSlug: &attestSlug,
+		AuthorityID:     authorityID,
+		Provisioner:     provisionerName,
+	}
+
+	resp, err := client.PostAgentConfigurations(context.Background(), &v20230301.PostAgentConfigurationsParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	require.Equal(t, 201, resp.StatusCode, fmt.Sprintf("POST /agent-configurations: %d %s", resp.StatusCode, body))
+
+	ac := &v20230301.AgentConfiguration{}
+	require.NoError(t, json.Unmarshal(body, ac))
+
+	return ac
+}
+
+func NewManagedConfiguration(t *testing.T, agentConfigID string, endpointConfigID string) *v20230301.ManagedConfiguration {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	hostID := uuid.New().String()
+	slug := Slug(t)
+
+	reqBody := v20230301.ManagedConfiguration{
+		AgentConfigurationID: agentConfigID,
+		HostID:               &hostID,
+		Name:                 "tfprovider" + slug,
+		ManagedEndpoints: []v20230301.ManagedEndpoint{
+			{
+				EndpointConfigurationID: endpointConfigID,
+				X509CertificateData: &v20230301.EndpointX509CertificateData{
+					CommonName: "db1",
+					Sans:       []string{"db.internal"},
+				},
+			},
+		},
+	}
+	resp, err := client.PostManagedConfigurations(context.Background(), &v20230301.PostManagedConfigurationsParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	require.Equal(t, 201, resp.StatusCode, fmt.Sprintf("POST /managed-configuraions %d: %s", resp.StatusCode, body))
+
+	mc := &v20230301.ManagedConfiguration{}
+	require.NoError(t, json.Unmarshal(body, mc))
+
+	return mc
+}
+
+func NewEndpointConfiguration(t *testing.T, authorityID, provisionerName string) *v20230301.EndpointConfiguration {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	uid, gid, mode := 1000, 999, 0400
+	pubFile := "pub.crt"
+	pidFile := "db.pid"
+	signal := 15
+	signShell := "/bin/sh"
+	renewShell := "/bin/bash"
+	beforeSign := []string{"echo sign"}
+	afterSign := []string{"echo signed"}
+	failSign := []string{"echo failed to sign"}
+	beforeRenew := []string{"echo renew"}
+	afterRenew := []string{"echo renewed"}
+	failRenew := []string{"echo failed to renew"}
+	crtFile := "db.crt"
+	keyFile := "db.key"
+	rootFile := "ca.crt"
+	duration := "5m0s"
+	keyType := v20230301.EndpointKeyInfoTypeDEFAULT
+	keyFormat := v20230301.EndpointKeyInfoFormatDEFAULT
+	slug := Slug(t)
+
+	req := v20230301.EndpointConfiguration{
+		Name:        "tfprovider" + slug,
+		Kind:        v20230301.DEVICE,
+		AuthorityID: authorityID,
+		Provisioner: provisionerName,
+		CertificateInfo: v20230301.EndpointCertificateInfo{
+			Type:     v20230301.EndpointCertificateInfoTypeX509,
+			CrtFile:  &crtFile,
+			KeyFile:  &keyFile,
+			RootFile: &rootFile,
+			Duration: &duration,
+			Uid:      &uid,
+			Gid:      &gid,
+			Mode:     &mode,
+		},
+		KeyInfo: &v20230301.EndpointKeyInfo{
+			Format:  &keyFormat,
+			Type:    &keyType,
+			PubFile: &pubFile,
+		},
+		ReloadInfo: &v20230301.EndpointReloadInfo{
+			Method:  v20230301.SIGNAL,
+			PidFile: &pidFile,
+			Signal:  &signal,
+		},
+		Hooks: &v20230301.EndpointHooks{
+			Sign: &v20230301.EndpointHook{
+				Shell:   &signShell,
+				After:   &afterSign,
+				Before:  &beforeSign,
+				OnError: &failSign,
+			},
+			Renew: &v20230301.EndpointHook{
+				Shell:   &renewShell,
+				After:   &afterRenew,
+				Before:  &beforeRenew,
+				OnError: &failRenew,
+			},
+		},
+	}
+
+	params := &v20230301.PostEndpointConfigurationsParams{}
+	resp, err := client.PostEndpointConfigurations(context.Background(), params, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	require.Equal(t, 201, resp.StatusCode, fmt.Sprintf("POST /endpoint-configurations %d: %s", resp.StatusCode, body))
+
+	ec := &v20230301.EndpointConfiguration{}
+	require.NoError(t, json.Unmarshal(body, ec))
+
+	return ec
 }

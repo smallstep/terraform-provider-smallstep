@@ -27,7 +27,9 @@ type dereferencable interface {
 	string |
 		bool |
 		int |
-		[]string
+		[]string |
+		v20230301.EndpointKeyInfoType |
+		v20230301.EndpointKeyInfoFormat
 }
 
 // Deref gets the default value for a pointer type. This makes it easier to work
