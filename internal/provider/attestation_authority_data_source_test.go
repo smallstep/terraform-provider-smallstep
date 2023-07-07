@@ -34,7 +34,7 @@ data "smallstep_attestation_authority" "test" {
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "slug", *aa.Slug),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "root", *aa.Root),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "attestor_roots", aa.AttestorRoots),
-					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "attestor_intermediates", *aa.AttestorIntermediates),
+					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "attestor_intermediates", utils.Deref(aa.AttestorIntermediates)),
 					resource.TestMatchResourceAttr("data.smallstep_attestation_authority.test", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
