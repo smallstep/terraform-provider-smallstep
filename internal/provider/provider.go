@@ -13,15 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/agent_configuration"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/endpoint_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/instance"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -171,13 +166,8 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 	return []func() resource.Resource{
 		authority.NewResource,
 		provisioner.NewResource,
-		webhook.NewResource,
 		collection.NewResource,
 		instance.NewResource,
-		attestation_authority.NewResource,
-		agent_configuration.NewResource,
-		endpoint_configuration.NewResource,
-		managed_configuration.NewResource,
 	}
 }
 
@@ -185,13 +175,8 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 	return []func() datasource.DataSource{
 		authority.NewDataSource,
 		provisioner.NewDataSource,
-		webhook.NewDataSource,
 		collection.NewDataSource,
 		instance.NewDataSource,
-		attestation_authority.NewDataSource,
-		agent_configuration.NewDataSource,
-		endpoint_configuration.NewDataSource,
-		managed_configuration.NewDataSource,
 	}
 }
 
