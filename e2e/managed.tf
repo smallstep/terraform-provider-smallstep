@@ -10,3 +10,10 @@ resource "smallstep_collection_instance" "server1" {
 	depends_on = [smallstep_collection.tpms]
 }
 
+resource "smallstep_attestation_authority" "aa" {
+	name = "foo"
+	catalog = smallstep_collection.tpms.slug
+  attestor_roots = file("${path.module}/ca.crt")
+	depends_on = [smallstep_collection.tpms]
+}
+
