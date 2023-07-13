@@ -43,6 +43,47 @@ const (
 	AuthorityTypeDevops   AuthorityType = "devops"
 )
 
+// Defines values for EndpointCertificateInfoType.
+const (
+	EndpointCertificateInfoTypeSSHHOST EndpointCertificateInfoType = "SSH_HOST"
+	EndpointCertificateInfoTypeSSHUSER EndpointCertificateInfoType = "SSH_USER"
+	EndpointCertificateInfoTypeX509    EndpointCertificateInfoType = "X509"
+)
+
+// Defines values for EndpointConfigurationKind.
+const (
+	DEVICE   EndpointConfigurationKind = "DEVICE"
+	PEOPLE   EndpointConfigurationKind = "PEOPLE"
+	WORKLOAD EndpointConfigurationKind = "WORKLOAD"
+)
+
+// Defines values for EndpointKeyInfoFormat.
+const (
+	EndpointKeyInfoFormatDEFAULT EndpointKeyInfoFormat = "DEFAULT"
+	EndpointKeyInfoFormatDER     EndpointKeyInfoFormat = "DER"
+	EndpointKeyInfoFormatOPENSSH EndpointKeyInfoFormat = "OPENSSH"
+	EndpointKeyInfoFormatPKCS8   EndpointKeyInfoFormat = "PKCS8"
+)
+
+// Defines values for EndpointKeyInfoType.
+const (
+	EndpointKeyInfoTypeDEFAULT   EndpointKeyInfoType = "DEFAULT"
+	EndpointKeyInfoTypeECDSAP256 EndpointKeyInfoType = "ECDSA_P256"
+	EndpointKeyInfoTypeECDSAP384 EndpointKeyInfoType = "ECDSA_P384"
+	EndpointKeyInfoTypeECDSAP521 EndpointKeyInfoType = "ECDSA_P521"
+	EndpointKeyInfoTypeED25519   EndpointKeyInfoType = "ED25519"
+	EndpointKeyInfoTypeRSA2048   EndpointKeyInfoType = "RSA_2048"
+	EndpointKeyInfoTypeRSA3072   EndpointKeyInfoType = "RSA_3072"
+	EndpointKeyInfoTypeRSA4096   EndpointKeyInfoType = "RSA_4096"
+)
+
+// Defines values for EndpointReloadInfoMethod.
+const (
+	AUTOMATIC EndpointReloadInfoMethod = "AUTOMATIC"
+	CUSTOM    EndpointReloadInfoMethod = "CUSTOM"
+	SIGNAL    EndpointReloadInfoMethod = "SIGNAL"
+)
+
 // Defines values for NewAuthorityType.
 const (
 	NewAuthorityTypeAdvanced NewAuthorityType = "advanced"
@@ -58,11 +99,22 @@ const (
 	X5C             ProvisionerType = "X5C"
 )
 
-// Defines values for WebhookCertType.
+// Defines values for ProvisionerWebhookCertType.
 const (
-	ALL  WebhookCertType = "ALL"
-	SSH  WebhookCertType = "SSH"
-	X509 WebhookCertType = "X509"
+	ProvisionerWebhookCertTypeALL  ProvisionerWebhookCertType = "ALL"
+	ProvisionerWebhookCertTypeSSH  ProvisionerWebhookCertType = "SSH"
+	ProvisionerWebhookCertTypeX509 ProvisionerWebhookCertType = "X509"
+)
+
+// Defines values for ProvisionerWebhookKind.
+const (
+	ENRICHING ProvisionerWebhookKind = "ENRICHING"
+)
+
+// Defines values for ProvisionerWebhookServerType.
+const (
+	EXTERNAL          ProvisionerWebhookServerType = "EXTERNAL"
+	HOSTEDATTESTATION ProvisionerWebhookServerType = "HOSTED_ATTESTATION"
 )
 
 // Defines values for X509IssuerKeyVersion.
@@ -117,6 +169,24 @@ type AcmeProvisioner struct {
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
 
+// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+type AgentConfiguration struct {
+	// AttestationSlug The slug of the attestation authority the agent connects to to get a certificate.
+	AttestationSlug *string `json:"attestationSlug,omitempty"`
+
+	// AuthorityID UUID identifying the authority the agent uses to generate endpoint certificates.
+	AuthorityID string `json:"authorityID"`
+
+	// Id A UUID identifying this agent configuration. Generated server-side on creation.
+	Id *string `json:"id,omitempty"`
+
+	// Name The name of this agent configuration.
+	Name string `json:"name"`
+
+	// Provisioner The name of the provisioner on the authority the agent uses to generate endpoint certificates.
+	Provisioner string `json:"provisioner"`
+}
+
 // AttestationAuthority An attestation authority used with the device-attest-01 ACME challenge to verify a device's hardware identity. This object is experimental and subject to change.
 type AttestationAuthority struct {
 	// AttestorIntermediates The pem-encoded list of intermediate certificates used to build a chain of trust to verify the attestation certificates submitted by devices.
@@ -125,7 +195,7 @@ type AttestationAuthority struct {
 	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
 	AttestorRoots string `json:"attestorRoots"`
 
-	// Catalog The slug of an inventory that holds the list of devices belonging to the team
+	// Catalog The slug of a collection that holds the list of devices belonging to the team
 	Catalog string `json:"catalog"`
 
 	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created
@@ -186,6 +256,40 @@ type AuthorityCsr struct {
 // AuthorityType One of the available authority types
 type AuthorityType string
 
+// BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+type BasicAuth struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
+// Collection A collection of instances
+type Collection struct {
+	CreatedAt time.Time `json:"createdAt"`
+
+	// DisplayName A user-friendly name for the collection
+	DisplayName string `json:"displayName"`
+
+	// InstanceCount The number of instances in the collection
+	InstanceCount int `json:"instanceCount"`
+
+	// Slug A lowercase name identifying the collection.
+	Slug      string    `json:"slug"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// CollectionInstance An instance in a collection
+type CollectionInstance struct {
+	// CreatedAt Timestamp of when the instance was added to the collection
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Data The instance data
+	Data interface{} `json:"data"`
+	Id   string      `json:"id"`
+
+	// UpdatedAt Timestamp of when the instance was last changed
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 // DistinguishedName Name used in x509 certificates
 type DistinguishedName struct {
 	CommonName         *string `json:"commonName,omitempty"`
@@ -204,6 +308,144 @@ type DistinguishedName struct {
 type Email struct {
 	Email   *string `json:"email,omitempty"`
 	Primary *bool   `json:"primary,omitempty"`
+}
+
+// EndpointCertificateInfo Details on a managed certificate
+type EndpointCertificateInfo struct {
+	// CrtFile The filepath where the certificate is to be stored.
+	CrtFile *string `json:"crtFile,omitempty"`
+
+	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	Duration *string `json:"duration,omitempty"`
+
+	// Gid GID of the files where the certificate is stored.
+	Gid *int `json:"gid,omitempty"`
+
+	// KeyFile The filepath where the key is to be stored.
+	KeyFile *string `json:"keyFile,omitempty"`
+
+	// Mode Permission bits of the files where the certificate is stored.
+	Mode *int `json:"mode,omitempty"`
+
+	// RootFile The filepath where the root certificate is to be stored.
+	RootFile *string `json:"rootFile,omitempty"`
+
+	// Type The type of certificate
+	Type EndpointCertificateInfoType `json:"type"`
+
+	// Uid UID of the files where the certificate is stored.
+	Uid *int `json:"uid,omitempty"`
+}
+
+// EndpointCertificateInfoType The type of certificate
+type EndpointCertificateInfoType string
+
+// EndpointConfiguration Configuration for a managed endpoint
+type EndpointConfiguration struct {
+	// AuthorityID UUID identifying the authority that will issue certificates for the endpoint.
+	AuthorityID string `json:"authorityID"`
+
+	// CertificateInfo Details on a managed certificate
+	CertificateInfo EndpointCertificateInfo `json:"certificateInfo"`
+
+	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
+	Hooks *EndpointHooks `json:"hooks,omitempty"`
+
+	// Id A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+	Id *string `json:"id,omitempty"`
+
+	// KeyInfo The attributes of the cryptographic key.
+	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
+
+	// Kind The kind of endpoint this configuration applies to.
+	Kind EndpointConfigurationKind `json:"kind"`
+
+	// Name The name of the endpoint configuration.
+	Name string `json:"name"`
+
+	// Provisioner Name of the provisioner on the authority that will authorize certificates for the endpoint.
+	Provisioner string `json:"provisioner"`
+
+	// ReloadInfo The properties used to reload a service.
+	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
+}
+
+// EndpointConfigurationKind The kind of endpoint this configuration applies to.
+type EndpointConfigurationKind string
+
+// EndpointHook A list of commands to run before and after a certificate is granted.
+type EndpointHook struct {
+	// After List of commands to run after the operation.
+	After *[]string `json:"after,omitempty"`
+
+	// Before List of commands to run before the operation.
+	Before *[]string `json:"before,omitempty"`
+
+	// OnError List of commands to run when the operation fails.
+	OnError *[]string `json:"onError,omitempty"`
+
+	// Shell The shell to use to execute the commands.
+	Shell *string `json:"shell,omitempty"`
+}
+
+// EndpointHooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
+type EndpointHooks struct {
+	// Renew A list of commands to run before and after a certificate is granted.
+	Renew *EndpointHook `json:"renew,omitempty"`
+
+	// Sign A list of commands to run before and after a certificate is granted.
+	Sign *EndpointHook `json:"sign,omitempty"`
+}
+
+// EndpointKeyInfo The attributes of the cryptographic key.
+type EndpointKeyInfo struct {
+	// Format The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
+	Format *EndpointKeyInfoFormat `json:"format,omitempty"`
+
+	// PubFile A CSR or SSH public key to use instead of generating one.
+	PubFile *string `json:"pubFile,omitempty"`
+
+	// Type The key type used. The current DEFAULT type is ECDSA_P256.
+	Type *EndpointKeyInfoType `json:"type,omitempty"`
+}
+
+// EndpointKeyInfoFormat The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format.
+type EndpointKeyInfoFormat string
+
+// EndpointKeyInfoType The key type used. The current DEFAULT type is ECDSA_P256.
+type EndpointKeyInfoType string
+
+// EndpointReloadInfo The properties used to reload a service.
+type EndpointReloadInfo struct {
+	// Method Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+	Method EndpointReloadInfoMethod `json:"method"`
+
+	// PidFile File that holds the pid of the process to signal. Required when method is SIGNAL.
+	PidFile *string `json:"pidFile,omitempty"`
+
+	// Signal The signal to send to a process when a certificate should be reloaded. Required when method is SIGNAL.
+	Signal *int `json:"signal,omitempty"`
+}
+
+// EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+type EndpointReloadInfoMethod string
+
+// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+type EndpointSSHCertificateData struct {
+	// KeyID The key ID to include in the endpoint certificate.
+	KeyID string `json:"keyID"`
+
+	// Principals The principals to include in the endpoint certificate.
+	Principals []string `json:"principals"`
+}
+
+// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+type EndpointX509CertificateData struct {
+	// CommonName The Common Name to be used in the subject of the endpoint certificate.
+	CommonName string `json:"commonName"`
+
+	// Sans The list of SANs to include in the endpoint certificate.
+	Sans []string `json:"sans"`
 }
 
 // Error defines model for error.
@@ -270,34 +512,6 @@ type Host struct {
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
-// Inventory A collection of items
-type Inventory struct {
-	CreatedAt time.Time `json:"createdAt"`
-
-	// DisplayName A user-friendly name for the inventory
-	DisplayName string `json:"displayName"`
-
-	// ItemCount The number of items in the inventory
-	ItemCount int `json:"itemCount"`
-
-	// Slug A lowercase name identifying the inventory.
-	Slug      string    `json:"slug"`
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
-// InventoryItem An item in an inventory
-type InventoryItem struct {
-	// CreatedAt Timestamp of when the item was added to the inventory
-	CreatedAt time.Time `json:"createdAt"`
-
-	// Data The item data
-	Data interface{} `json:"data"`
-	Id   string      `json:"id"`
-
-	// UpdatedAt Timestamp of when the item was last changed
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
 // JwkProvisioner defines model for jwkProvisioner.
 type JwkProvisioner struct {
 	// EncryptedKey The JWE encrypted private key
@@ -305,6 +519,37 @@ type JwkProvisioner struct {
 
 	// Key The public JSON web key
 	Key interface{} `json:"key"`
+}
+
+// ManagedConfiguration The agent and managed endpoints used in one host.
+type ManagedConfiguration struct {
+	// AgentConfigurationID UUID identifying the agent configuration.
+	AgentConfigurationID string `json:"agentConfigurationID"`
+
+	// HostID UUID identifying the host this managed configuration is for. Will be generated on server-side if not provided.
+	HostID *string `json:"hostID,omitempty"`
+
+	// Id UUID identifying this managed configuration.
+	Id               *string           `json:"id,omitempty"`
+	ManagedEndpoints []ManagedEndpoint `json:"managedEndpoints"`
+
+	// Name The name of this managed configuration.
+	Name string `json:"name"`
+}
+
+// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type.
+type ManagedEndpoint struct {
+	// EndpointConfigurationID UUID identifying the endpoint configuration.
+	EndpointConfigurationID string `json:"endpointConfigurationID"`
+
+	// Id UUID identifying this managed endpoint. Generated server-side on creation.
+	Id *string `json:"id,omitempty"`
+
+	// SshCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+	SshCertificateData *EndpointSSHCertificateData `json:"sshCertificateData,omitempty"`
+
+	// X509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+	X509CertificateData *EndpointX509CertificateData `json:"x509CertificateData,omitempty"`
 }
 
 // NameConstraints defines model for name-constraints.
@@ -363,6 +608,15 @@ type NewAuthorityCsr struct {
 	Subdomain string `json:"subdomain"`
 }
 
+// NewCollection A collection of instances
+type NewCollection struct {
+	// DisplayName A user-friendly name for the collection
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Slug A lowercase name identifying the collection.
+	Slug string `json:"slug"`
+}
+
 // NewGrant The body of a request to add a grant to a group.
 type NewGrant struct {
 	// GroupID A UUID identifying the group this grant is attached to
@@ -376,15 +630,6 @@ type NewGrant struct {
 
 	// Value Matched against host tag values
 	Value *string `json:"value,omitempty"`
-}
-
-// NewInventory A collection of items
-type NewInventory struct {
-	// DisplayName A user-friendly name for the inventory
-	DisplayName *string `json:"displayName,omitempty"`
-
-	// Slug A lowercase name identifying the inventory.
-	Slug string `json:"slug"`
 }
 
 // NewTag The body of a request to add a tag to a host.
@@ -528,14 +773,63 @@ type ProvisionerClaims struct {
 // ProvisionerOptions Options that apply when issuing certificates with this provisioner
 type ProvisionerOptions struct {
 	// Ssh Options that apply when issuing SSH certificates
-	Ssh *SshOptions `json:"ssh,omitempty"`
-
-	// Webhooks Configuration for a webhook to be called when issuing certificates with this provisioner
-	Webhooks *Webhook `json:"webhooks,omitempty"`
+	Ssh      *SshOptions           `json:"ssh,omitempty"`
+	Webhooks *[]ProvisionerWebhook `json:"webhooks,omitempty"`
 
 	// X509 Options that apply when issuing x509 certificates
 	X509 *X509Options `json:"x509,omitempty"`
 }
+
+// ProvisionerWebhook A [webhook](https://smallstep.com/docs/step-ca/webhooks/) to call when a certificate request is being processed.
+type ProvisionerWebhook struct {
+	// BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+	BasicAuth *BasicAuth `json:"basicAuth,omitempty"`
+
+	// BearerToken Webhook requests will include an Authorization header with the token. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
+	BearerToken *string                    `json:"bearerToken,omitempty"`
+	CertType    ProvisionerWebhookCertType `json:"certType"`
+
+	// CollectionSlug For HOSTED_ATTESTATION webhooks, the collectionSlug is a reference to the collection that holds the devices that may be issued certificates. This collection must already exist. Required for `HOSTED_ATTESTATION` webhook servers; not allowed for `EXTERNAL`.
+	CollectionSlug *string `json:"collectionSlug,omitempty"`
+
+	// DisableTLSClientAuth The CA will not send a client certificate when requested by the webhook server. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers.
+	DisableTLSClientAuth *bool `json:"disableTLSClientAuth,omitempty"`
+
+	// Id UUID identifying this webhook. Generated server-side when the webhook is created. Will be sent to the webhook server in every request in the `X-Smallstep-Webhook-ID` header.
+	Id *string `json:"id,omitempty"`
+
+	// Kind The webhook kind indicates how and when it is called.
+	//
+	// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+	Kind ProvisionerWebhookKind `json:"kind"`
+
+	// Name The name of the webhook. For `ENRICHING` webhooks, the returned data can be referenced in the certificate under the path `.Webhooks.<name>`. Must be unique to the provisioner.
+	Name string `json:"name"`
+
+	// Secret The shared secret used to authenticate the payload sent to the webhook server. Generated server-side. This is returned only for `EXTERNAL` webhook servers and only once, at the time of creation.
+	Secret *string `json:"secret,omitempty"`
+
+	// ServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
+	//
+	// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
+	ServerType ProvisionerWebhookServerType `json:"serverType"`
+
+	// Url The URL of the webhook server. Required for `EXTERNAL` webhook servers; read-only for hosted webhook servers.
+	Url *string `json:"url,omitempty"`
+}
+
+// ProvisionerWebhookCertType defines model for ProvisionerWebhook.CertType.
+type ProvisionerWebhookCertType string
+
+// ProvisionerWebhookKind The webhook kind indicates how and when it is called.
+//
+// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+type ProvisionerWebhookKind string
+
+// ProvisionerWebhookServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
+//
+// A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
+type ProvisionerWebhookServerType string
 
 // SshOptions Options that apply when issuing SSH certificates
 type SshOptions struct {
@@ -580,27 +874,6 @@ type User struct {
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
 }
 
-// Webhook Configuration for a webhook to be called when issuing certificates with this provisioner
-type Webhook struct {
-	// CertType Whether to call this webhook when signing X509 certificates, SSH certificates, or ALL certificates. Default is ALL.
-	CertType *WebhookCertType `json:"certType,omitempty"`
-
-	// DisableTLSClientAuth The CA will not send a client certificate when requested by the webhook server.
-	DisableTLSClientAuth *bool `json:"disableTLSClientAuth,omitempty"`
-
-	// Id UUID identifying this webhook. Generated server-side when the webhook is created.
-	Id *string `json:"id,omitempty"`
-
-	// Name The name of the webhook.
-	Name *string `json:"name,omitempty"`
-
-	// Url The URL of the webhook server.
-	Url *string `json:"url,omitempty"`
-}
-
-// WebhookCertType Whether to call this webhook when signing X509 certificates, SSH certificates, or ALL certificates. Default is ALL.
-type WebhookCertType string
-
 // X509Issuer A Customized X509 issuer for an authority
 type X509Issuer struct {
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -639,11 +912,20 @@ type X5cProvisioner struct {
 // Accept defines model for accept.
 type Accept = string
 
+// AgentConfigurationID defines model for agentConfigurationID.
+type AgentConfigurationID = string
+
 // AttestationAuthorityID defines model for attestationAuthorityID.
 type AttestationAuthorityID = string
 
 // AuthorityID defines model for authorityID.
 type AuthorityID = string
+
+// CollectionSlug defines model for collectionSlug.
+type CollectionSlug = string
+
+// EndpointConfigurationID defines model for endpointConfigurationID.
+type EndpointConfigurationID = string
 
 // GrantID defines model for grantID.
 type GrantID = string
@@ -654,11 +936,14 @@ type GroupID = string
 // HostID defines model for hostID.
 type HostID = string
 
-// InventorySlug defines model for inventorySlug.
-type InventorySlug = string
+// InstanceID defines model for instanceID.
+type InstanceID = string
 
-// ItemID defines model for itemID.
-type ItemID = string
+// ManagedConfigurationHostID defines model for managedConfigurationHostID.
+type ManagedConfigurationHostID = string
+
+// ManagedConfigurationID defines model for managedConfigurationID.
+type ManagedConfigurationID = string
 
 // Pagination defines model for pagination.
 type Pagination struct {
@@ -676,6 +961,9 @@ type ProvisionerNameOrID = string
 
 // RequestID defines model for requestID.
 type RequestID = string
+
+// WebhookNameOrID defines model for webhookNameOrID.
+type WebhookNameOrID = string
 
 // N400 defines model for 400.
 type N400 = Error
@@ -697,6 +985,33 @@ type N412 = Error
 
 // N500 defines model for 500.
 type N500 = Error
+
+// PostAgentConfigurationsParams defines parameters for PostAgentConfigurations.
+type PostAgentConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteAgentConfigurationParams defines parameters for DeleteAgentConfiguration.
+type DeleteAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetAgentConfigurationParams defines parameters for GetAgentConfiguration.
+type GetAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
 
 // GetAttestationAuthoritiesParams defines parameters for GetAttestationAuthorities.
 type GetAttestationAuthoritiesParams struct {
@@ -825,6 +1140,33 @@ type GetProvisionerParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostWebhooksParams defines parameters for PostWebhooks.
+type PostWebhooksParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteWebhookParams defines parameters for DeleteWebhook.
+type DeleteWebhookParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetWebhookParams defines parameters for GetWebhook.
+type GetWebhookParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // PostAuthorityRootJSONBody defines parameters for PostAuthorityRoot.
 type PostAuthorityRootJSONBody struct {
 	// AdminEmails Users that will have admin access to manage the authority
@@ -845,6 +1187,137 @@ type PostAuthorityRootJSONBody struct {
 
 // PostAuthorityRootParams defines parameters for PostAuthorityRoot.
 type PostAuthorityRootParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListCollectionsParams defines parameters for ListCollections.
+type ListCollectionsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostCollectionsParams defines parameters for PostCollections.
+type PostCollectionsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteCollectionParams defines parameters for DeleteCollection.
+type DeleteCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionParams defines parameters for GetCollection.
+type GetCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteCollectionInstanceParams defines parameters for DeleteCollectionInstance.
+type DeleteCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionInstanceParams defines parameters for GetCollectionInstance.
+type GetCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutCollectionInstanceJSONBody defines parameters for PutCollectionInstance.
+type PutCollectionInstanceJSONBody struct {
+	Data interface{} `json:"data"`
+}
+
+// PutCollectionInstanceParams defines parameters for PutCollectionInstance.
+type PutCollectionInstanceParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCollectionInstanceDataParams defines parameters for GetCollectionInstanceData.
+type GetCollectionInstanceDataParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutCollectionInstanceDataJSONBody defines parameters for PutCollectionInstanceData.
+type PutCollectionInstanceDataJSONBody = interface{}
+
+// PutCollectionInstanceDataParams defines parameters for PutCollectionInstanceData.
+type PutCollectionInstanceDataParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListCollectionInstancesParams defines parameters for ListCollectionInstances.
+type ListCollectionInstancesParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostEndpointConfigurationsParams defines parameters for PostEndpointConfigurations.
+type PostEndpointConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteEndpointConfigurationParams defines parameters for DeleteEndpointConfiguration.
+type DeleteEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetEndpointConfigurationParams defines parameters for GetEndpointConfiguration.
+type GetEndpointConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -954,11 +1427,8 @@ type UnregisterSshHostParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// ListInventoriesParams defines parameters for ListInventories.
-type ListInventoriesParams struct {
-	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
-	Pagination *Pagination `json:"pagination,omitempty"`
-
+// PostManagedConfigurationsParams defines parameters for PostManagedConfigurations.
+type PostManagedConfigurationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -966,8 +1436,8 @@ type ListInventoriesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// PostInventoriesParams defines parameters for PostInventories.
-type PostInventoriesParams struct {
+// DeleteManagedConfigurationHostIdParams defines parameters for DeleteManagedConfigurationHostId.
+type DeleteManagedConfigurationHostIdParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -975,8 +1445,8 @@ type PostInventoriesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// DeleteInventoryParams defines parameters for DeleteInventory.
-type DeleteInventoryParams struct {
+// GetManagedConfigurationHostIdParams defines parameters for GetManagedConfigurationHostId.
+type GetManagedConfigurationHostIdParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -984,8 +1454,8 @@ type DeleteInventoryParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// GetInventoryParams defines parameters for GetInventory.
-type GetInventoryParams struct {
+// DeleteManagedConfigurationParams defines parameters for DeleteManagedConfiguration.
+type DeleteManagedConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -993,64 +1463,8 @@ type GetInventoryParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// ListInventoryItemsParams defines parameters for ListInventoryItems.
-type ListInventoryItemsParams struct {
-	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
-	Pagination *Pagination `json:"pagination,omitempty"`
-
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// DeleteInventoryItemParams defines parameters for DeleteInventoryItem.
-type DeleteInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetInventoryItemParams defines parameters for GetInventoryItem.
-type GetInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PutInventoryItemJSONBody defines parameters for PutInventoryItem.
-type PutInventoryItemJSONBody struct {
-	Data interface{} `json:"data"`
-}
-
-// PutInventoryItemParams defines parameters for PutInventoryItem.
-type PutInventoryItemParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// GetInventoryItemDataParams defines parameters for GetInventoryItemData.
-type GetInventoryItemDataParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PutInventoryItemDataJSONBody defines parameters for PutInventoryItemData.
-type PutInventoryItemDataJSONBody = interface{}
-
-// PutInventoryItemDataParams defines parameters for PutInventoryItemData.
-type PutInventoryItemDataParams struct {
+// GetManagedConfigurationParams defines parameters for GetManagedConfiguration.
+type GetManagedConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1082,6 +1496,9 @@ type GetSshUsersParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PostAgentConfigurationsJSONRequestBody defines body for PostAgentConfigurations for application/json ContentType.
+type PostAgentConfigurationsJSONRequestBody = AgentConfiguration
+
 // PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
 type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
 
@@ -1097,8 +1514,23 @@ type PostAuthoritiesCsrJSONRequestBody = NewAuthorityCsr
 // PostAuthorityProvisionersJSONRequestBody defines body for PostAuthorityProvisioners for application/json ContentType.
 type PostAuthorityProvisionersJSONRequestBody = Provisioner
 
+// PostWebhooksJSONRequestBody defines body for PostWebhooks for application/json ContentType.
+type PostWebhooksJSONRequestBody = ProvisionerWebhook
+
 // PostAuthorityRootJSONRequestBody defines body for PostAuthorityRoot for application/json ContentType.
 type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
+
+// PostCollectionsJSONRequestBody defines body for PostCollections for application/json ContentType.
+type PostCollectionsJSONRequestBody = NewCollection
+
+// PutCollectionInstanceJSONRequestBody defines body for PutCollectionInstance for application/json ContentType.
+type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
+
+// PutCollectionInstanceDataJSONRequestBody defines body for PutCollectionInstanceData for application/json ContentType.
+type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBody
+
+// PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
+type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
 
 // PostSshGrantsJSONRequestBody defines body for PostSshGrants for application/json ContentType.
 type PostSshGrantsJSONRequestBody = NewGrant
@@ -1106,14 +1538,8 @@ type PostSshGrantsJSONRequestBody = NewGrant
 // PostHostsHostIDTagsJSONRequestBody defines body for PostHostsHostIDTags for application/json ContentType.
 type PostHostsHostIDTagsJSONRequestBody = NewTag
 
-// PostInventoriesJSONRequestBody defines body for PostInventories for application/json ContentType.
-type PostInventoriesJSONRequestBody = NewInventory
-
-// PutInventoryItemJSONRequestBody defines body for PutInventoryItem for application/json ContentType.
-type PutInventoryItemJSONRequestBody PutInventoryItemJSONBody
-
-// PutInventoryItemDataJSONRequestBody defines body for PutInventoryItemData for application/json ContentType.
-type PutInventoryItemDataJSONRequestBody = PutInventoryItemDataJSONBody
+// PostManagedConfigurationsJSONRequestBody defines body for PostManagedConfigurations for application/json ContentType.
+type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -1429,6 +1855,17 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// PostAgentConfigurations request with any body
+	PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostAgentConfigurations(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAgentConfiguration request
+	DeleteAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAgentConfiguration request
+	GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1481,10 +1918,68 @@ type ClientInterface interface {
 	// GetProvisioner request
 	GetProvisioner(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostWebhooks request with any body
+	PostWebhooksWithBody(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostWebhooks(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWebhook request
+	DeleteWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWebhook request
+	GetWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBody(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostAuthorityRoot(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCollections request
+	ListCollections(ctx context.Context, params *ListCollectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostCollections request with any body
+	PostCollectionsWithBody(ctx context.Context, params *PostCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostCollections(ctx context.Context, params *PostCollectionsParams, body PostCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCollection request
+	DeleteCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCollection request
+	GetCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCollectionInstance request
+	DeleteCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCollectionInstance request
+	GetCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutCollectionInstance request with any body
+	PutCollectionInstanceWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, body PutCollectionInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCollectionInstanceData request
+	GetCollectionInstanceData(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceDataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutCollectionInstanceData request with any body
+	PutCollectionInstanceDataWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutCollectionInstanceData(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, body PutCollectionInstanceDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCollectionInstances request
+	ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostEndpointConfigurations request with any body
+	PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEndpointConfiguration request
+	DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEndpointConfiguration request
+	GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshGrants request
 	GetSshGrants(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1520,47 +2015,76 @@ type ClientInterface interface {
 	// UnregisterSshHost request
 	UnregisterSshHost(ctx context.Context, hostID HostID, params *UnregisterSshHostParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListInventories request
-	ListInventories(ctx context.Context, params *ListInventoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostManagedConfigurations request with any body
+	PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostInventories request with any body
-	PostInventoriesWithBody(ctx context.Context, params *PostInventoriesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostManagedConfigurations(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostInventories(ctx context.Context, params *PostInventoriesParams, body PostInventoriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteManagedConfigurationHostId request
+	DeleteManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *DeleteManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteInventory request
-	DeleteInventory(ctx context.Context, inventorySlug InventorySlug, params *DeleteInventoryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetManagedConfigurationHostId request
+	GetManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetInventory request
-	GetInventory(ctx context.Context, inventorySlug InventorySlug, params *GetInventoryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteManagedConfiguration request
+	DeleteManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListInventoryItems request
-	ListInventoryItems(ctx context.Context, inventorySlug InventorySlug, params *ListInventoryItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteInventoryItem request
-	DeleteInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *DeleteInventoryItemParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetInventoryItem request
-	GetInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PutInventoryItem request with any body
-	PutInventoryItemWithBody(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PutInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, body PutInventoryItemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetInventoryItemData request
-	GetInventoryItemData(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemDataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PutInventoryItemData request with any body
-	PutInventoryItemDataWithBody(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PutInventoryItemData(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetManagedConfiguration request
+	GetManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshHostTags request
 	GetSshHostTags(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshUsers request
 	GetSshUsers(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAgentConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostAgentConfigurations(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostAgentConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAgentConfigurationRequest(c.Server, agentConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAgentConfigurationRequest(c.Server, agentConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -1791,6 +2315,54 @@ func (c *Client) GetProvisioner(ctx context.Context, authorityID AuthorityID, pr
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostWebhooksWithBody(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWebhooksRequestWithBody(c.Server, authorityID, provisionerNameOrID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostWebhooks(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWebhooksRequest(c.Server, authorityID, provisionerNameOrID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWebhookRequest(c.Server, authorityID, provisionerNameOrID, webhookNameOrID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWebhook(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWebhookRequest(c.Server, authorityID, provisionerNameOrID, webhookNameOrID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostAuthorityRootWithBody(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostAuthorityRootRequestWithBody(c.Server, authorityID, params, contentType, body)
 	if err != nil {
@@ -1805,6 +2377,210 @@ func (c *Client) PostAuthorityRootWithBody(ctx context.Context, authorityID Auth
 
 func (c *Client) PostAuthorityRoot(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostAuthorityRootRequest(c.Server, authorityID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListCollections(ctx context.Context, params *ListCollectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCollectionsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCollectionsWithBody(ctx context.Context, params *PostCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostCollectionsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCollections(ctx context.Context, params *PostCollectionsParams, body PostCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostCollectionsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCollectionRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCollectionRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCollectionInstanceRequest(c.Server, collectionSlug, instanceID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCollectionInstanceRequest(c.Server, collectionSlug, instanceID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCollectionInstanceWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionInstanceRequestWithBody(c.Server, collectionSlug, instanceID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, body PutCollectionInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionInstanceRequest(c.Server, collectionSlug, instanceID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCollectionInstanceData(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceDataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCollectionInstanceDataRequest(c.Server, collectionSlug, instanceID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCollectionInstanceDataWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionInstanceDataRequestWithBody(c.Server, collectionSlug, instanceID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCollectionInstanceData(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, body PutCollectionInstanceDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionInstanceDataRequest(c.Server, collectionSlug, instanceID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCollectionInstancesRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1959,8 +2735,8 @@ func (c *Client) UnregisterSshHost(ctx context.Context, hostID HostID, params *U
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListInventories(ctx context.Context, params *ListInventoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListInventoriesRequest(c.Server, params)
+func (c *Client) PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedConfigurationsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1971,8 +2747,8 @@ func (c *Client) ListInventories(ctx context.Context, params *ListInventoriesPar
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostInventoriesWithBody(ctx context.Context, params *PostInventoriesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostInventoriesRequestWithBody(c.Server, params, contentType, body)
+func (c *Client) PostManagedConfigurations(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedConfigurationsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1983,8 +2759,8 @@ func (c *Client) PostInventoriesWithBody(ctx context.Context, params *PostInvent
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostInventories(ctx context.Context, params *PostInventoriesParams, body PostInventoriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostInventoriesRequest(c.Server, params, body)
+func (c *Client) DeleteManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *DeleteManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteManagedConfigurationHostIdRequest(c.Server, managedConfigurationHostID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1995,8 +2771,8 @@ func (c *Client) PostInventories(ctx context.Context, params *PostInventoriesPar
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteInventory(ctx context.Context, inventorySlug InventorySlug, params *DeleteInventoryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteInventoryRequest(c.Server, inventorySlug, params)
+func (c *Client) GetManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetManagedConfigurationHostIdRequest(c.Server, managedConfigurationHostID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2007,8 +2783,8 @@ func (c *Client) DeleteInventory(ctx context.Context, inventorySlug InventorySlu
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetInventory(ctx context.Context, inventorySlug InventorySlug, params *GetInventoryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInventoryRequest(c.Server, inventorySlug, params)
+func (c *Client) DeleteManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteManagedConfigurationRequest(c.Server, managedConfigurationID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2019,92 +2795,8 @@ func (c *Client) GetInventory(ctx context.Context, inventorySlug InventorySlug, 
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListInventoryItems(ctx context.Context, inventorySlug InventorySlug, params *ListInventoryItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListInventoryItemsRequest(c.Server, inventorySlug, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *DeleteInventoryItemParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteInventoryItemRequest(c.Server, inventorySlug, itemID, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInventoryItemRequest(c.Server, inventorySlug, itemID, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PutInventoryItemWithBody(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutInventoryItemRequestWithBody(c.Server, inventorySlug, itemID, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PutInventoryItem(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, body PutInventoryItemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutInventoryItemRequest(c.Server, inventorySlug, itemID, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetInventoryItemData(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemDataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInventoryItemDataRequest(c.Server, inventorySlug, itemID, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PutInventoryItemDataWithBody(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutInventoryItemDataRequestWithBody(c.Server, inventorySlug, itemID, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PutInventoryItemData(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutInventoryItemDataRequest(c.Server, inventorySlug, itemID, params, body)
+func (c *Client) GetManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetManagedConfigurationRequest(c.Server, managedConfigurationID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2137,6 +2829,180 @@ func (c *Client) GetSshUsers(ctx context.Context, params *GetSshUsersParams, req
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewPostAgentConfigurationsRequest calls the generic PostAgentConfigurations builder with application/json body
+func NewPostAgentConfigurationsRequest(server string, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostAgentConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostAgentConfigurationsRequestWithBody generates requests for PostAgentConfigurations with any type of body
+func NewPostAgentConfigurationsRequestWithBody(server string, params *PostAgentConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteAgentConfigurationRequest generates requests for DeleteAgentConfiguration
+func NewDeleteAgentConfigurationRequest(server string, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, agentConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetAgentConfigurationRequest generates requests for GetAgentConfiguration
+func NewGetAgentConfigurationRequest(server string, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, agentConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
 }
 
 // NewGetAttestationAuthoritiesRequest generates requests for GetAttestationAuthorities
@@ -2938,6 +3804,222 @@ func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisione
 	return req, nil
 }
 
+// NewPostWebhooksRequest calls the generic PostWebhooks builder with application/json body
+func NewPostWebhooksRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostWebhooksRequestWithBody(server, authorityID, provisionerNameOrID, params, "application/json", bodyReader)
+}
+
+// NewPostWebhooksRequestWithBody generates requests for PostWebhooks with any type of body
+func NewPostWebhooksRequestWithBody(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteWebhookRequest generates requests for DeleteWebhook
+func NewDeleteWebhookRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "webhookNameOrID", runtime.ParamLocationPath, webhookNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetWebhookRequest generates requests for GetWebhook
+func NewGetWebhookRequest(server string, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "authorityID", runtime.ParamLocationPath, authorityID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "provisionerNameOrID", runtime.ParamLocationPath, provisionerNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "webhookNameOrID", runtime.ParamLocationPath, webhookNameOrID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/authorities/%s/provisioners/%s/webhooks/%s", pathParam0, pathParam1, pathParam2)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewPostAuthorityRootRequest calls the generic PostAuthorityRoot builder with application/json body
 func NewPostAuthorityRootRequest(server string, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -2981,6 +4063,840 @@ func NewPostAuthorityRootRequestWithBody(server string, authorityID AuthorityID,
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewListCollectionsRequest generates requests for ListCollections
+func NewListCollectionsRequest(server string, params *ListCollectionsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Pagination != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPostCollectionsRequest calls the generic PostCollections builder with application/json body
+func NewPostCollectionsRequest(server string, params *PostCollectionsParams, body PostCollectionsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostCollectionsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostCollectionsRequestWithBody generates requests for PostCollections with any type of body
+func NewPostCollectionsRequestWithBody(server string, params *PostCollectionsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteCollectionRequest generates requests for DeleteCollection
+func NewDeleteCollectionRequest(server string, collectionSlug CollectionSlug, params *DeleteCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetCollectionRequest generates requests for GetCollection
+func NewGetCollectionRequest(server string, collectionSlug CollectionSlug, params *GetCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteCollectionInstanceRequest generates requests for DeleteCollectionInstance
+func NewDeleteCollectionInstanceRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/instances/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetCollectionInstanceRequest generates requests for GetCollectionInstance
+func NewGetCollectionInstanceRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/instances/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutCollectionInstanceRequest calls the generic PutCollectionInstance builder with application/json body
+func NewPutCollectionInstanceRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, body PutCollectionInstanceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutCollectionInstanceRequestWithBody(server, collectionSlug, instanceID, params, "application/json", bodyReader)
+}
+
+// NewPutCollectionInstanceRequestWithBody generates requests for PutCollectionInstance with any type of body
+func NewPutCollectionInstanceRequestWithBody(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/instances/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetCollectionInstanceDataRequest generates requests for GetCollectionInstanceData
+func NewGetCollectionInstanceDataRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceDataParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/instances/%s/data", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutCollectionInstanceDataRequest calls the generic PutCollectionInstanceData builder with application/json body
+func NewPutCollectionInstanceDataRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, body PutCollectionInstanceDataJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutCollectionInstanceDataRequestWithBody(server, collectionSlug, instanceID, params, "application/json", bodyReader)
+}
+
+// NewPutCollectionInstanceDataRequestWithBody generates requests for PutCollectionInstanceData with any type of body
+func NewPutCollectionInstanceDataRequestWithBody(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/instances/%s/data", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewListCollectionInstancesRequest generates requests for ListCollectionInstances
+func NewListCollectionInstancesRequest(server string, collectionSlug CollectionSlug, params *ListCollectionInstancesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s/items", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Pagination != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPostEndpointConfigurationsRequest calls the generic PostEndpointConfigurations builder with application/json body
+func NewPostEndpointConfigurationsRequest(server string, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEndpointConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostEndpointConfigurationsRequestWithBody generates requests for PostEndpointConfigurations with any type of body
+func NewPostEndpointConfigurationsRequestWithBody(server string, params *PostEndpointConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteEndpointConfigurationRequest generates requests for DeleteEndpointConfiguration
+func NewDeleteEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetEndpointConfigurationRequest generates requests for GetEndpointConfiguration
+func NewGetEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params.XRequestId != nil {
 		var headerParam0 string
@@ -3637,88 +5553,19 @@ func NewUnregisterSshHostRequest(server string, hostID HostID, params *Unregiste
 	return req, nil
 }
 
-// NewListInventoriesRequest generates requests for ListInventories
-func NewListInventoriesRequest(server string, params *ListInventoriesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/inventories")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	queryValues := queryURL.Query()
-
-	if params.Pagination != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
-	queryURL.RawQuery = queryValues.Encode()
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.XRequestId != nil {
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("X-Request-Id", headerParam0)
-	}
-
-	if params.Accept != nil {
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Accept", headerParam1)
-	}
-
-	return req, nil
-}
-
-// NewPostInventoriesRequest calls the generic PostInventories builder with application/json body
-func NewPostInventoriesRequest(server string, params *PostInventoriesParams, body PostInventoriesJSONRequestBody) (*http.Request, error) {
+// NewPostManagedConfigurationsRequest calls the generic PostManagedConfigurations builder with application/json body
+func NewPostManagedConfigurationsRequest(server string, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostInventoriesRequestWithBody(server, params, "application/json", bodyReader)
+	return NewPostManagedConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
 }
 
-// NewPostInventoriesRequestWithBody generates requests for PostInventories with any type of body
-func NewPostInventoriesRequestWithBody(server string, params *PostInventoriesParams, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostManagedConfigurationsRequestWithBody generates requests for PostManagedConfigurations with any type of body
+func NewPostManagedConfigurationsRequestWithBody(server string, params *PostManagedConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -3726,7 +5573,7 @@ func NewPostInventoriesRequestWithBody(server string, params *PostInventoriesPar
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/inventories")
+	operationPath := fmt.Sprintf("/managed-configurations")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3768,13 +5615,13 @@ func NewPostInventoriesRequestWithBody(server string, params *PostInventoriesPar
 	return req, nil
 }
 
-// NewDeleteInventoryRequest generates requests for DeleteInventory
-func NewDeleteInventoryRequest(server string, inventorySlug InventorySlug, params *DeleteInventoryParams) (*http.Request, error) {
+// NewDeleteManagedConfigurationHostIdRequest generates requests for DeleteManagedConfigurationHostId
+func NewDeleteManagedConfigurationHostIdRequest(server string, managedConfigurationHostID ManagedConfigurationHostID, params *DeleteManagedConfigurationHostIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationHostID", runtime.ParamLocationPath, managedConfigurationHostID)
 	if err != nil {
 		return nil, err
 	}
@@ -3784,7 +5631,7 @@ func NewDeleteInventoryRequest(server string, inventorySlug InventorySlug, param
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/inventories/%s", pathParam0)
+	operationPath := fmt.Sprintf("/managed-configurations/host/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3824,13 +5671,13 @@ func NewDeleteInventoryRequest(server string, inventorySlug InventorySlug, param
 	return req, nil
 }
 
-// NewGetInventoryRequest generates requests for GetInventory
-func NewGetInventoryRequest(server string, inventorySlug InventorySlug, params *GetInventoryParams) (*http.Request, error) {
+// NewGetManagedConfigurationHostIdRequest generates requests for GetManagedConfigurationHostId
+func NewGetManagedConfigurationHostIdRequest(server string, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationHostID", runtime.ParamLocationPath, managedConfigurationHostID)
 	if err != nil {
 		return nil, err
 	}
@@ -3840,7 +5687,7 @@ func NewGetInventoryRequest(server string, inventorySlug InventorySlug, params *
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/inventories/%s", pathParam0)
+	operationPath := fmt.Sprintf("/managed-configurations/host/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3880,13 +5727,13 @@ func NewGetInventoryRequest(server string, inventorySlug InventorySlug, params *
 	return req, nil
 }
 
-// NewListInventoryItemsRequest generates requests for ListInventoryItems
-func NewListInventoryItemsRequest(server string, inventorySlug InventorySlug, params *ListInventoryItemsParams) (*http.Request, error) {
+// NewDeleteManagedConfigurationRequest generates requests for DeleteManagedConfiguration
+func NewDeleteManagedConfigurationRequest(server string, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, managedConfigurationID)
 	if err != nil {
 		return nil, err
 	}
@@ -3896,90 +5743,7 @@ func NewListInventoryItemsRequest(server string, inventorySlug InventorySlug, pa
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/inventories/%s/items", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	queryValues := queryURL.Query()
-
-	if params.Pagination != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
-	queryURL.RawQuery = queryValues.Encode()
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.XRequestId != nil {
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("X-Request-Id", headerParam0)
-	}
-
-	if params.Accept != nil {
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Accept", headerParam1)
-	}
-
-	return req, nil
-}
-
-// NewDeleteInventoryItemRequest generates requests for DeleteInventoryItem
-func NewDeleteInventoryItemRequest(server string, inventorySlug InventorySlug, itemID ItemID, params *DeleteInventoryItemParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "itemID", runtime.ParamLocationPath, itemID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/inventories/%s/items/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/managed-configurations/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4019,20 +5783,13 @@ func NewDeleteInventoryItemRequest(server string, inventorySlug InventorySlug, i
 	return req, nil
 }
 
-// NewGetInventoryItemRequest generates requests for GetInventoryItem
-func NewGetInventoryItemRequest(server string, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemParams) (*http.Request, error) {
+// NewGetManagedConfigurationRequest generates requests for GetManagedConfiguration
+func NewGetManagedConfigurationRequest(server string, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "itemID", runtime.ParamLocationPath, itemID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationID", runtime.ParamLocationPath, managedConfigurationID)
 	if err != nil {
 		return nil, err
 	}
@@ -4042,7 +5799,7 @@ func NewGetInventoryItemRequest(server string, inventorySlug InventorySlug, item
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/inventories/%s/items/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/managed-configurations/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4056,221 +5813,6 @@ func NewGetInventoryItemRequest(server string, inventorySlug InventorySlug, item
 	if err != nil {
 		return nil, err
 	}
-
-	if params.XRequestId != nil {
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("X-Request-Id", headerParam0)
-	}
-
-	if params.Accept != nil {
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Accept", headerParam1)
-	}
-
-	return req, nil
-}
-
-// NewPutInventoryItemRequest calls the generic PutInventoryItem builder with application/json body
-func NewPutInventoryItemRequest(server string, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, body PutInventoryItemJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutInventoryItemRequestWithBody(server, inventorySlug, itemID, params, "application/json", bodyReader)
-}
-
-// NewPutInventoryItemRequestWithBody generates requests for PutInventoryItem with any type of body
-func NewPutInventoryItemRequestWithBody(server string, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "itemID", runtime.ParamLocationPath, itemID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/inventories/%s/items/%s", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	if params.XRequestId != nil {
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("X-Request-Id", headerParam0)
-	}
-
-	if params.Accept != nil {
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Accept", headerParam1)
-	}
-
-	return req, nil
-}
-
-// NewGetInventoryItemDataRequest generates requests for GetInventoryItemData
-func NewGetInventoryItemDataRequest(server string, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemDataParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "itemID", runtime.ParamLocationPath, itemID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/inventories/%s/items/%s/data", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.XRequestId != nil {
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("X-Request-Id", headerParam0)
-	}
-
-	if params.Accept != nil {
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Accept", headerParam1)
-	}
-
-	return req, nil
-}
-
-// NewPutInventoryItemDataRequest calls the generic PutInventoryItemData builder with application/json body
-func NewPutInventoryItemDataRequest(server string, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutInventoryItemDataRequestWithBody(server, inventorySlug, itemID, params, "application/json", bodyReader)
-}
-
-// NewPutInventoryItemDataRequestWithBody generates requests for PutInventoryItemData with any type of body
-func NewPutInventoryItemDataRequestWithBody(server string, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "inventorySlug", runtime.ParamLocationPath, inventorySlug)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "itemID", runtime.ParamLocationPath, itemID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/inventories/%s/items/%s/data", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	if params.XRequestId != nil {
 		var headerParam0 string
@@ -4478,6 +6020,17 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// PostAgentConfigurations request with any body
+	PostAgentConfigurationsWithBodyWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error)
+
+	PostAgentConfigurationsWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error)
+
+	// DeleteAgentConfiguration request
+	DeleteAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteAgentConfigurationResponse, error)
+
+	// GetAgentConfiguration request
+	GetAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*GetAgentConfigurationResponse, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthoritiesWithResponse(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthoritiesResponse, error)
 
@@ -4530,10 +6083,68 @@ type ClientWithResponsesInterface interface {
 	// GetProvisioner request
 	GetProvisionerWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *GetProvisionerParams, reqEditors ...RequestEditorFn) (*GetProvisionerResponse, error)
 
+	// PostWebhooks request with any body
+	PostWebhooksWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error)
+
+	PostWebhooksWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error)
+
+	// DeleteWebhook request
+	DeleteWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*DeleteWebhookResponse, error)
+
+	// GetWebhook request
+	GetWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*GetWebhookResponse, error)
+
 	// PostAuthorityRoot request with any body
 	PostAuthorityRootWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error)
 
 	PostAuthorityRootWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, body PostAuthorityRootJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error)
+
+	// ListCollections request
+	ListCollectionsWithResponse(ctx context.Context, params *ListCollectionsParams, reqEditors ...RequestEditorFn) (*ListCollectionsResponse, error)
+
+	// PostCollections request with any body
+	PostCollectionsWithBodyWithResponse(ctx context.Context, params *PostCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostCollectionsResponse, error)
+
+	PostCollectionsWithResponse(ctx context.Context, params *PostCollectionsParams, body PostCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostCollectionsResponse, error)
+
+	// DeleteCollection request
+	DeleteCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteCollectionParams, reqEditors ...RequestEditorFn) (*DeleteCollectionResponse, error)
+
+	// GetCollection request
+	GetCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*GetCollectionResponse, error)
+
+	// DeleteCollectionInstance request
+	DeleteCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*DeleteCollectionInstanceResponse, error)
+
+	// GetCollectionInstance request
+	GetCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceParams, reqEditors ...RequestEditorFn) (*GetCollectionInstanceResponse, error)
+
+	// PutCollectionInstance request with any body
+	PutCollectionInstanceWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionInstanceResponse, error)
+
+	PutCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, body PutCollectionInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionInstanceResponse, error)
+
+	// GetCollectionInstanceData request
+	GetCollectionInstanceDataWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceDataParams, reqEditors ...RequestEditorFn) (*GetCollectionInstanceDataResponse, error)
+
+	// PutCollectionInstanceData request with any body
+	PutCollectionInstanceDataWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionInstanceDataResponse, error)
+
+	PutCollectionInstanceDataWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, body PutCollectionInstanceDataJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionInstanceDataResponse, error)
+
+	// ListCollectionInstances request
+	ListCollectionInstancesWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*ListCollectionInstancesResponse, error)
+
+	// PostEndpointConfigurations request with any body
+	PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	// DeleteEndpointConfiguration request
+	DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error)
+
+	// GetEndpointConfiguration request
+	GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error)
 
 	// GetSshGrants request
 	GetSshGrantsWithResponse(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*GetSshGrantsResponse, error)
@@ -4569,47 +6180,103 @@ type ClientWithResponsesInterface interface {
 	// UnregisterSshHost request
 	UnregisterSshHostWithResponse(ctx context.Context, hostID HostID, params *UnregisterSshHostParams, reqEditors ...RequestEditorFn) (*UnregisterSshHostResponse, error)
 
-	// ListInventories request
-	ListInventoriesWithResponse(ctx context.Context, params *ListInventoriesParams, reqEditors ...RequestEditorFn) (*ListInventoriesResponse, error)
+	// PostManagedConfigurations request with any body
+	PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error)
 
-	// PostInventories request with any body
-	PostInventoriesWithBodyWithResponse(ctx context.Context, params *PostInventoriesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostInventoriesResponse, error)
+	PostManagedConfigurationsWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error)
 
-	PostInventoriesWithResponse(ctx context.Context, params *PostInventoriesParams, body PostInventoriesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostInventoriesResponse, error)
+	// DeleteManagedConfigurationHostId request
+	DeleteManagedConfigurationHostIdWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *DeleteManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationHostIdResponse, error)
 
-	// DeleteInventory request
-	DeleteInventoryWithResponse(ctx context.Context, inventorySlug InventorySlug, params *DeleteInventoryParams, reqEditors ...RequestEditorFn) (*DeleteInventoryResponse, error)
+	// GetManagedConfigurationHostId request
+	GetManagedConfigurationHostIdWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationHostIdResponse, error)
 
-	// GetInventory request
-	GetInventoryWithResponse(ctx context.Context, inventorySlug InventorySlug, params *GetInventoryParams, reqEditors ...RequestEditorFn) (*GetInventoryResponse, error)
+	// DeleteManagedConfiguration request
+	DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error)
 
-	// ListInventoryItems request
-	ListInventoryItemsWithResponse(ctx context.Context, inventorySlug InventorySlug, params *ListInventoryItemsParams, reqEditors ...RequestEditorFn) (*ListInventoryItemsResponse, error)
-
-	// DeleteInventoryItem request
-	DeleteInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *DeleteInventoryItemParams, reqEditors ...RequestEditorFn) (*DeleteInventoryItemResponse, error)
-
-	// GetInventoryItem request
-	GetInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemParams, reqEditors ...RequestEditorFn) (*GetInventoryItemResponse, error)
-
-	// PutInventoryItem request with any body
-	PutInventoryItemWithBodyWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutInventoryItemResponse, error)
-
-	PutInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, body PutInventoryItemJSONRequestBody, reqEditors ...RequestEditorFn) (*PutInventoryItemResponse, error)
-
-	// GetInventoryItemData request
-	GetInventoryItemDataWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemDataParams, reqEditors ...RequestEditorFn) (*GetInventoryItemDataResponse, error)
-
-	// PutInventoryItemData request with any body
-	PutInventoryItemDataWithBodyWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutInventoryItemDataResponse, error)
-
-	PutInventoryItemDataWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*PutInventoryItemDataResponse, error)
+	// GetManagedConfiguration request
+	GetManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationResponse, error)
 
 	// GetSshHostTags request
 	GetSshHostTagsWithResponse(ctx context.Context, params *GetSshHostTagsParams, reqEditors ...RequestEditorFn) (*GetSshHostTagsResponse, error)
 
 	// GetSshUsers request
 	GetSshUsersWithResponse(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*GetSshUsersResponse, error)
+}
+
+type PostAgentConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostAgentConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostAgentConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteAgentConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteAgentConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteAgentConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetAgentConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAgentConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAgentConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetAttestationAuthoritiesResponse struct {
@@ -4974,6 +6641,83 @@ func (r GetProvisionerResponse) StatusCode() int {
 	return 0
 }
 
+type PostWebhooksResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ProvisionerWebhook
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON409      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostWebhooksResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostWebhooksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWebhookResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWebhookResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWebhookResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWebhookResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ProvisionerWebhook
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWebhookResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWebhookResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostAuthorityRootResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4994,6 +6738,333 @@ func (r PostAuthorityRootResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostAuthorityRootResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListCollectionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Collection
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCollectionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCollectionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostCollectionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Collection
+	JSON400      *Error
+	JSON401      *Error
+	JSON409      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostCollectionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostCollectionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Collection
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteCollectionInstanceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCollectionInstanceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCollectionInstanceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCollectionInstanceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CollectionInstance
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCollectionInstanceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCollectionInstanceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutCollectionInstanceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CollectionInstance
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutCollectionInstanceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutCollectionInstanceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCollectionInstanceDataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCollectionInstanceDataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCollectionInstanceDataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutCollectionInstanceDataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *interface{}
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutCollectionInstanceDataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutCollectionInstanceDataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListCollectionInstancesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]CollectionInstance
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCollectionInstancesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCollectionInstancesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEndpointConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEndpointConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEndpointConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEndpointConfigurationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5252,17 +7323,17 @@ func (r UnregisterSshHostResponse) StatusCode() int {
 	return 0
 }
 
-type ListInventoriesResponse struct {
+type PostManagedConfigurationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Inventory
+	JSON201      *ManagedConfiguration
 	JSON400      *Error
 	JSON401      *Error
 	JSON500      *Error
 }
 
 // Status returns HTTPResponse.Status
-func (r ListInventoriesResponse) Status() string {
+func (r PostManagedConfigurationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -5270,40 +7341,14 @@ func (r ListInventoriesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ListInventoriesResponse) StatusCode() int {
+func (r PostManagedConfigurationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostInventoriesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON201      *Inventory
-	JSON400      *Error
-	JSON401      *Error
-	JSON409      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r PostInventoriesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostInventoriesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteInventoryResponse struct {
+type DeleteManagedConfigurationHostIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Error
@@ -5311,7 +7356,7 @@ type DeleteInventoryResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteInventoryResponse) Status() string {
+func (r DeleteManagedConfigurationHostIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -5319,17 +7364,17 @@ func (r DeleteInventoryResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteInventoryResponse) StatusCode() int {
+func (r DeleteManagedConfigurationHostIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetInventoryResponse struct {
+type GetManagedConfigurationHostIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Inventory
+	JSON200      *ManagedConfiguration
 	JSON400      *Error
 	JSON401      *Error
 	JSON404      *Error
@@ -5337,7 +7382,7 @@ type GetInventoryResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetInventoryResponse) Status() string {
+func (r GetManagedConfigurationHostIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -5345,17 +7390,40 @@ func (r GetInventoryResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetInventoryResponse) StatusCode() int {
+func (r GetManagedConfigurationHostIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type ListInventoryItemsResponse struct {
+type DeleteManagedConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]InventoryItem
+	JSON400      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteManagedConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteManagedConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetManagedConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedConfiguration
 	JSON400      *Error
 	JSON401      *Error
 	JSON404      *Error
@@ -5363,7 +7431,7 @@ type ListInventoryItemsResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r ListInventoryItemsResponse) Status() string {
+func (r GetManagedConfigurationResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -5371,133 +7439,7 @@ func (r ListInventoryItemsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r ListInventoryItemsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteInventoryItemResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON400      *Error
-	JSON401      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteInventoryItemResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteInventoryItemResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetInventoryItemResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *InventoryItem
-	JSON400      *Error
-	JSON401      *Error
-	JSON404      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetInventoryItemResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetInventoryItemResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutInventoryItemResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *InventoryItem
-	JSON400      *Error
-	JSON401      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r PutInventoryItemResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutInventoryItemResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetInventoryItemDataResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *interface{}
-	JSON400      *Error
-	JSON401      *Error
-	JSON404      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetInventoryItemDataResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetInventoryItemDataResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutInventoryItemDataResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *interface{}
-	JSON400      *Error
-	JSON401      *Error
-	JSON500      *Error
-}
-
-// Status returns HTTPResponse.Status
-func (r PutInventoryItemDataResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutInventoryItemDataResponse) StatusCode() int {
+func (r GetManagedConfigurationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5552,6 +7494,41 @@ func (r GetSshUsersResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
+}
+
+// PostAgentConfigurationsWithBodyWithResponse request with arbitrary body returning *PostAgentConfigurationsResponse
+func (c *ClientWithResponses) PostAgentConfigurationsWithBodyWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error) {
+	rsp, err := c.PostAgentConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAgentConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostAgentConfigurationsWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, body PostAgentConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error) {
+	rsp, err := c.PostAgentConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostAgentConfigurationsResponse(rsp)
+}
+
+// DeleteAgentConfigurationWithResponse request returning *DeleteAgentConfigurationResponse
+func (c *ClientWithResponses) DeleteAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *DeleteAgentConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteAgentConfigurationResponse, error) {
+	rsp, err := c.DeleteAgentConfiguration(ctx, agentConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAgentConfigurationResponse(rsp)
+}
+
+// GetAgentConfigurationWithResponse request returning *GetAgentConfigurationResponse
+func (c *ClientWithResponses) GetAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*GetAgentConfigurationResponse, error) {
+	rsp, err := c.GetAgentConfiguration(ctx, agentConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAgentConfigurationResponse(rsp)
 }
 
 // GetAttestationAuthoritiesWithResponse request returning *GetAttestationAuthoritiesResponse
@@ -5720,6 +7697,41 @@ func (c *ClientWithResponses) GetProvisionerWithResponse(ctx context.Context, au
 	return ParseGetProvisionerResponse(rsp)
 }
 
+// PostWebhooksWithBodyWithResponse request with arbitrary body returning *PostWebhooksResponse
+func (c *ClientWithResponses) PostWebhooksWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error) {
+	rsp, err := c.PostWebhooksWithBody(ctx, authorityID, provisionerNameOrID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWebhooksResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostWebhooksWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, params *PostWebhooksParams, body PostWebhooksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWebhooksResponse, error) {
+	rsp, err := c.PostWebhooks(ctx, authorityID, provisionerNameOrID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWebhooksResponse(rsp)
+}
+
+// DeleteWebhookWithResponse request returning *DeleteWebhookResponse
+func (c *ClientWithResponses) DeleteWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *DeleteWebhookParams, reqEditors ...RequestEditorFn) (*DeleteWebhookResponse, error) {
+	rsp, err := c.DeleteWebhook(ctx, authorityID, provisionerNameOrID, webhookNameOrID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWebhookResponse(rsp)
+}
+
+// GetWebhookWithResponse request returning *GetWebhookResponse
+func (c *ClientWithResponses) GetWebhookWithResponse(ctx context.Context, authorityID AuthorityID, provisionerNameOrID ProvisionerNameOrID, webhookNameOrID WebhookNameOrID, params *GetWebhookParams, reqEditors ...RequestEditorFn) (*GetWebhookResponse, error) {
+	rsp, err := c.GetWebhook(ctx, authorityID, provisionerNameOrID, webhookNameOrID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWebhookResponse(rsp)
+}
+
 // PostAuthorityRootWithBodyWithResponse request with arbitrary body returning *PostAuthorityRootResponse
 func (c *ClientWithResponses) PostAuthorityRootWithBodyWithResponse(ctx context.Context, authorityID AuthorityID, params *PostAuthorityRootParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAuthorityRootResponse, error) {
 	rsp, err := c.PostAuthorityRootWithBody(ctx, authorityID, params, contentType, body, reqEditors...)
@@ -5735,6 +7747,155 @@ func (c *ClientWithResponses) PostAuthorityRootWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParsePostAuthorityRootResponse(rsp)
+}
+
+// ListCollectionsWithResponse request returning *ListCollectionsResponse
+func (c *ClientWithResponses) ListCollectionsWithResponse(ctx context.Context, params *ListCollectionsParams, reqEditors ...RequestEditorFn) (*ListCollectionsResponse, error) {
+	rsp, err := c.ListCollections(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCollectionsResponse(rsp)
+}
+
+// PostCollectionsWithBodyWithResponse request with arbitrary body returning *PostCollectionsResponse
+func (c *ClientWithResponses) PostCollectionsWithBodyWithResponse(ctx context.Context, params *PostCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostCollectionsResponse, error) {
+	rsp, err := c.PostCollectionsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCollectionsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostCollectionsWithResponse(ctx context.Context, params *PostCollectionsParams, body PostCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostCollectionsResponse, error) {
+	rsp, err := c.PostCollections(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCollectionsResponse(rsp)
+}
+
+// DeleteCollectionWithResponse request returning *DeleteCollectionResponse
+func (c *ClientWithResponses) DeleteCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteCollectionParams, reqEditors ...RequestEditorFn) (*DeleteCollectionResponse, error) {
+	rsp, err := c.DeleteCollection(ctx, collectionSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCollectionResponse(rsp)
+}
+
+// GetCollectionWithResponse request returning *GetCollectionResponse
+func (c *ClientWithResponses) GetCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*GetCollectionResponse, error) {
+	rsp, err := c.GetCollection(ctx, collectionSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCollectionResponse(rsp)
+}
+
+// DeleteCollectionInstanceWithResponse request returning *DeleteCollectionInstanceResponse
+func (c *ClientWithResponses) DeleteCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*DeleteCollectionInstanceResponse, error) {
+	rsp, err := c.DeleteCollectionInstance(ctx, collectionSlug, instanceID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCollectionInstanceResponse(rsp)
+}
+
+// GetCollectionInstanceWithResponse request returning *GetCollectionInstanceResponse
+func (c *ClientWithResponses) GetCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceParams, reqEditors ...RequestEditorFn) (*GetCollectionInstanceResponse, error) {
+	rsp, err := c.GetCollectionInstance(ctx, collectionSlug, instanceID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCollectionInstanceResponse(rsp)
+}
+
+// PutCollectionInstanceWithBodyWithResponse request with arbitrary body returning *PutCollectionInstanceResponse
+func (c *ClientWithResponses) PutCollectionInstanceWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionInstanceResponse, error) {
+	rsp, err := c.PutCollectionInstanceWithBody(ctx, collectionSlug, instanceID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionInstanceResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceParams, body PutCollectionInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionInstanceResponse, error) {
+	rsp, err := c.PutCollectionInstance(ctx, collectionSlug, instanceID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionInstanceResponse(rsp)
+}
+
+// GetCollectionInstanceDataWithResponse request returning *GetCollectionInstanceDataResponse
+func (c *ClientWithResponses) GetCollectionInstanceDataWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *GetCollectionInstanceDataParams, reqEditors ...RequestEditorFn) (*GetCollectionInstanceDataResponse, error) {
+	rsp, err := c.GetCollectionInstanceData(ctx, collectionSlug, instanceID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCollectionInstanceDataResponse(rsp)
+}
+
+// PutCollectionInstanceDataWithBodyWithResponse request with arbitrary body returning *PutCollectionInstanceDataResponse
+func (c *ClientWithResponses) PutCollectionInstanceDataWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionInstanceDataResponse, error) {
+	rsp, err := c.PutCollectionInstanceDataWithBody(ctx, collectionSlug, instanceID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionInstanceDataResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutCollectionInstanceDataWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PutCollectionInstanceDataParams, body PutCollectionInstanceDataJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionInstanceDataResponse, error) {
+	rsp, err := c.PutCollectionInstanceData(ctx, collectionSlug, instanceID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionInstanceDataResponse(rsp)
+}
+
+// ListCollectionInstancesWithResponse request returning *ListCollectionInstancesResponse
+func (c *ClientWithResponses) ListCollectionInstancesWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*ListCollectionInstancesResponse, error) {
+	rsp, err := c.ListCollectionInstances(ctx, collectionSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCollectionInstancesResponse(rsp)
+}
+
+// PostEndpointConfigurationsWithBodyWithResponse request with arbitrary body returning *PostEndpointConfigurationsResponse
+func (c *ClientWithResponses) PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+// DeleteEndpointConfigurationWithResponse request returning *DeleteEndpointConfigurationResponse
+func (c *ClientWithResponses) DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error) {
+	rsp, err := c.DeleteEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEndpointConfigurationResponse(rsp)
+}
+
+// GetEndpointConfigurationWithResponse request returning *GetEndpointConfigurationResponse
+func (c *ClientWithResponses) GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error) {
+	rsp, err := c.GetEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEndpointConfigurationResponse(rsp)
 }
 
 // GetSshGrantsWithResponse request returning *GetSshGrantsResponse
@@ -5843,118 +8004,57 @@ func (c *ClientWithResponses) UnregisterSshHostWithResponse(ctx context.Context,
 	return ParseUnregisterSshHostResponse(rsp)
 }
 
-// ListInventoriesWithResponse request returning *ListInventoriesResponse
-func (c *ClientWithResponses) ListInventoriesWithResponse(ctx context.Context, params *ListInventoriesParams, reqEditors ...RequestEditorFn) (*ListInventoriesResponse, error) {
-	rsp, err := c.ListInventories(ctx, params, reqEditors...)
+// PostManagedConfigurationsWithBodyWithResponse request with arbitrary body returning *PostManagedConfigurationsResponse
+func (c *ClientWithResponses) PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error) {
+	rsp, err := c.PostManagedConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseListInventoriesResponse(rsp)
+	return ParsePostManagedConfigurationsResponse(rsp)
 }
 
-// PostInventoriesWithBodyWithResponse request with arbitrary body returning *PostInventoriesResponse
-func (c *ClientWithResponses) PostInventoriesWithBodyWithResponse(ctx context.Context, params *PostInventoriesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostInventoriesResponse, error) {
-	rsp, err := c.PostInventoriesWithBody(ctx, params, contentType, body, reqEditors...)
+func (c *ClientWithResponses) PostManagedConfigurationsWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error) {
+	rsp, err := c.PostManagedConfigurations(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostInventoriesResponse(rsp)
+	return ParsePostManagedConfigurationsResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostInventoriesWithResponse(ctx context.Context, params *PostInventoriesParams, body PostInventoriesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostInventoriesResponse, error) {
-	rsp, err := c.PostInventories(ctx, params, body, reqEditors...)
+// DeleteManagedConfigurationHostIdWithResponse request returning *DeleteManagedConfigurationHostIdResponse
+func (c *ClientWithResponses) DeleteManagedConfigurationHostIdWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *DeleteManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationHostIdResponse, error) {
+	rsp, err := c.DeleteManagedConfigurationHostId(ctx, managedConfigurationHostID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostInventoriesResponse(rsp)
+	return ParseDeleteManagedConfigurationHostIdResponse(rsp)
 }
 
-// DeleteInventoryWithResponse request returning *DeleteInventoryResponse
-func (c *ClientWithResponses) DeleteInventoryWithResponse(ctx context.Context, inventorySlug InventorySlug, params *DeleteInventoryParams, reqEditors ...RequestEditorFn) (*DeleteInventoryResponse, error) {
-	rsp, err := c.DeleteInventory(ctx, inventorySlug, params, reqEditors...)
+// GetManagedConfigurationHostIdWithResponse request returning *GetManagedConfigurationHostIdResponse
+func (c *ClientWithResponses) GetManagedConfigurationHostIdWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationHostIdResponse, error) {
+	rsp, err := c.GetManagedConfigurationHostId(ctx, managedConfigurationHostID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteInventoryResponse(rsp)
+	return ParseGetManagedConfigurationHostIdResponse(rsp)
 }
 
-// GetInventoryWithResponse request returning *GetInventoryResponse
-func (c *ClientWithResponses) GetInventoryWithResponse(ctx context.Context, inventorySlug InventorySlug, params *GetInventoryParams, reqEditors ...RequestEditorFn) (*GetInventoryResponse, error) {
-	rsp, err := c.GetInventory(ctx, inventorySlug, params, reqEditors...)
+// DeleteManagedConfigurationWithResponse request returning *DeleteManagedConfigurationResponse
+func (c *ClientWithResponses) DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error) {
+	rsp, err := c.DeleteManagedConfiguration(ctx, managedConfigurationID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetInventoryResponse(rsp)
+	return ParseDeleteManagedConfigurationResponse(rsp)
 }
 
-// ListInventoryItemsWithResponse request returning *ListInventoryItemsResponse
-func (c *ClientWithResponses) ListInventoryItemsWithResponse(ctx context.Context, inventorySlug InventorySlug, params *ListInventoryItemsParams, reqEditors ...RequestEditorFn) (*ListInventoryItemsResponse, error) {
-	rsp, err := c.ListInventoryItems(ctx, inventorySlug, params, reqEditors...)
+// GetManagedConfigurationWithResponse request returning *GetManagedConfigurationResponse
+func (c *ClientWithResponses) GetManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *GetManagedConfigurationParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationResponse, error) {
+	rsp, err := c.GetManagedConfiguration(ctx, managedConfigurationID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseListInventoryItemsResponse(rsp)
-}
-
-// DeleteInventoryItemWithResponse request returning *DeleteInventoryItemResponse
-func (c *ClientWithResponses) DeleteInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *DeleteInventoryItemParams, reqEditors ...RequestEditorFn) (*DeleteInventoryItemResponse, error) {
-	rsp, err := c.DeleteInventoryItem(ctx, inventorySlug, itemID, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteInventoryItemResponse(rsp)
-}
-
-// GetInventoryItemWithResponse request returning *GetInventoryItemResponse
-func (c *ClientWithResponses) GetInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemParams, reqEditors ...RequestEditorFn) (*GetInventoryItemResponse, error) {
-	rsp, err := c.GetInventoryItem(ctx, inventorySlug, itemID, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetInventoryItemResponse(rsp)
-}
-
-// PutInventoryItemWithBodyWithResponse request with arbitrary body returning *PutInventoryItemResponse
-func (c *ClientWithResponses) PutInventoryItemWithBodyWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutInventoryItemResponse, error) {
-	rsp, err := c.PutInventoryItemWithBody(ctx, inventorySlug, itemID, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutInventoryItemResponse(rsp)
-}
-
-func (c *ClientWithResponses) PutInventoryItemWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemParams, body PutInventoryItemJSONRequestBody, reqEditors ...RequestEditorFn) (*PutInventoryItemResponse, error) {
-	rsp, err := c.PutInventoryItem(ctx, inventorySlug, itemID, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutInventoryItemResponse(rsp)
-}
-
-// GetInventoryItemDataWithResponse request returning *GetInventoryItemDataResponse
-func (c *ClientWithResponses) GetInventoryItemDataWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *GetInventoryItemDataParams, reqEditors ...RequestEditorFn) (*GetInventoryItemDataResponse, error) {
-	rsp, err := c.GetInventoryItemData(ctx, inventorySlug, itemID, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetInventoryItemDataResponse(rsp)
-}
-
-// PutInventoryItemDataWithBodyWithResponse request with arbitrary body returning *PutInventoryItemDataResponse
-func (c *ClientWithResponses) PutInventoryItemDataWithBodyWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutInventoryItemDataResponse, error) {
-	rsp, err := c.PutInventoryItemDataWithBody(ctx, inventorySlug, itemID, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutInventoryItemDataResponse(rsp)
-}
-
-func (c *ClientWithResponses) PutInventoryItemDataWithResponse(ctx context.Context, inventorySlug InventorySlug, itemID ItemID, params *PutInventoryItemDataParams, body PutInventoryItemDataJSONRequestBody, reqEditors ...RequestEditorFn) (*PutInventoryItemDataResponse, error) {
-	rsp, err := c.PutInventoryItemData(ctx, inventorySlug, itemID, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutInventoryItemDataResponse(rsp)
+	return ParseGetManagedConfigurationResponse(rsp)
 }
 
 // GetSshHostTagsWithResponse request returning *GetSshHostTagsResponse
@@ -5973,6 +8073,147 @@ func (c *ClientWithResponses) GetSshUsersWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetSshUsersResponse(rsp)
+}
+
+// ParsePostAgentConfigurationsResponse parses an HTTP response from a PostAgentConfigurationsWithResponse call
+func ParsePostAgentConfigurationsResponse(rsp *http.Response) (*PostAgentConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostAgentConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteAgentConfigurationResponse parses an HTTP response from a DeleteAgentConfigurationWithResponse call
+func ParseDeleteAgentConfigurationResponse(rsp *http.Response) (*DeleteAgentConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteAgentConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetAgentConfigurationResponse parses an HTTP response from a GetAgentConfigurationWithResponse call
+func ParseGetAgentConfigurationResponse(rsp *http.Response) (*GetAgentConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAgentConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetAttestationAuthoritiesResponse parses an HTTP response from a GetAttestationAuthoritiesWithResponse call
@@ -6705,6 +8946,161 @@ func ParseGetProvisionerResponse(rsp *http.Response) (*GetProvisionerResponse, e
 	return response, nil
 }
 
+// ParsePostWebhooksResponse parses an HTTP response from a PostWebhooksWithResponse call
+func ParsePostWebhooksResponse(rsp *http.Response) (*PostWebhooksResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostWebhooksResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ProvisionerWebhook
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWebhookResponse parses an HTTP response from a DeleteWebhookWithResponse call
+func ParseDeleteWebhookResponse(rsp *http.Response) (*DeleteWebhookResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWebhookResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWebhookResponse parses an HTTP response from a GetWebhookWithResponse call
+func ParseGetWebhookResponse(rsp *http.Response) (*GetWebhookResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWebhookResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ProvisionerWebhook
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostAuthorityRootResponse parses an HTTP response from a PostAuthorityRootWithResponse call
 func ParsePostAuthorityRootResponse(rsp *http.Response) (*PostAuthorityRootResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6721,6 +9117,631 @@ func ParsePostAuthorityRootResponse(rsp *http.Response) (*PostAuthorityRootRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Authority
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListCollectionsResponse parses an HTTP response from a ListCollectionsWithResponse call
+func ParseListCollectionsResponse(rsp *http.Response) (*ListCollectionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCollectionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Collection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostCollectionsResponse parses an HTTP response from a PostCollectionsWithResponse call
+func ParsePostCollectionsResponse(rsp *http.Response) (*PostCollectionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostCollectionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Collection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCollectionResponse parses an HTTP response from a DeleteCollectionWithResponse call
+func ParseDeleteCollectionResponse(rsp *http.Response) (*DeleteCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCollectionResponse parses an HTTP response from a GetCollectionWithResponse call
+func ParseGetCollectionResponse(rsp *http.Response) (*GetCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Collection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCollectionInstanceResponse parses an HTTP response from a DeleteCollectionInstanceWithResponse call
+func ParseDeleteCollectionInstanceResponse(rsp *http.Response) (*DeleteCollectionInstanceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCollectionInstanceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCollectionInstanceResponse parses an HTTP response from a GetCollectionInstanceWithResponse call
+func ParseGetCollectionInstanceResponse(rsp *http.Response) (*GetCollectionInstanceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCollectionInstanceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CollectionInstance
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutCollectionInstanceResponse parses an HTTP response from a PutCollectionInstanceWithResponse call
+func ParsePutCollectionInstanceResponse(rsp *http.Response) (*PutCollectionInstanceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutCollectionInstanceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CollectionInstance
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCollectionInstanceDataResponse parses an HTTP response from a GetCollectionInstanceDataWithResponse call
+func ParseGetCollectionInstanceDataResponse(rsp *http.Response) (*GetCollectionInstanceDataResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCollectionInstanceDataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutCollectionInstanceDataResponse parses an HTTP response from a PutCollectionInstanceDataWithResponse call
+func ParsePutCollectionInstanceDataResponse(rsp *http.Response) (*PutCollectionInstanceDataResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutCollectionInstanceDataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest interface{}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListCollectionInstancesResponse parses an HTTP response from a ListCollectionInstancesWithResponse call
+func ParseListCollectionInstancesResponse(rsp *http.Response) (*ListCollectionInstancesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCollectionInstancesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []CollectionInstance
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostEndpointConfigurationsResponse parses an HTTP response from a PostEndpointConfigurationsWithResponse call
+func ParsePostEndpointConfigurationsResponse(rsp *http.Response) (*PostEndpointConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEndpointConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEndpointConfigurationResponse parses an HTTP response from a DeleteEndpointConfigurationWithResponse call
+func ParseDeleteEndpointConfigurationResponse(rsp *http.Response) (*DeleteEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEndpointConfigurationResponse parses an HTTP response from a GetEndpointConfigurationWithResponse call
+func ParseGetEndpointConfigurationResponse(rsp *http.Response) (*GetEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EndpointConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7243,69 +10264,22 @@ func ParseUnregisterSshHostResponse(rsp *http.Response) (*UnregisterSshHostRespo
 	return response, nil
 }
 
-// ParseListInventoriesResponse parses an HTTP response from a ListInventoriesWithResponse call
-func ParseListInventoriesResponse(rsp *http.Response) (*ListInventoriesResponse, error) {
+// ParsePostManagedConfigurationsResponse parses an HTTP response from a PostManagedConfigurationsWithResponse call
+func ParsePostManagedConfigurationsResponse(rsp *http.Response) (*PostManagedConfigurationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ListInventoriesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Inventory
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostInventoriesResponse parses an HTTP response from a PostInventoriesWithResponse call
-func ParsePostInventoriesResponse(rsp *http.Response) (*PostInventoriesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostInventoriesResponse{
+	response := &PostManagedConfigurationsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Inventory
+		var dest ManagedConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7325,13 +10299,6 @@ func ParsePostInventoriesResponse(rsp *http.Response) (*PostInventoriesResponse,
 		}
 		response.JSON401 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -7344,15 +10311,15 @@ func ParsePostInventoriesResponse(rsp *http.Response) (*PostInventoriesResponse,
 	return response, nil
 }
 
-// ParseDeleteInventoryResponse parses an HTTP response from a DeleteInventoryWithResponse call
-func ParseDeleteInventoryResponse(rsp *http.Response) (*DeleteInventoryResponse, error) {
+// ParseDeleteManagedConfigurationHostIdResponse parses an HTTP response from a DeleteManagedConfigurationHostIdWithResponse call
+func ParseDeleteManagedConfigurationHostIdResponse(rsp *http.Response) (*DeleteManagedConfigurationHostIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteInventoryResponse{
+	response := &DeleteManagedConfigurationHostIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -7377,22 +10344,22 @@ func ParseDeleteInventoryResponse(rsp *http.Response) (*DeleteInventoryResponse,
 	return response, nil
 }
 
-// ParseGetInventoryResponse parses an HTTP response from a GetInventoryWithResponse call
-func ParseGetInventoryResponse(rsp *http.Response) (*GetInventoryResponse, error) {
+// ParseGetManagedConfigurationHostIdResponse parses an HTTP response from a GetManagedConfigurationHostIdWithResponse call
+func ParseGetManagedConfigurationHostIdResponse(rsp *http.Response) (*GetManagedConfigurationHostIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetInventoryResponse{
+	response := &GetManagedConfigurationHostIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Inventory
+		var dest ManagedConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7431,22 +10398,55 @@ func ParseGetInventoryResponse(rsp *http.Response) (*GetInventoryResponse, error
 	return response, nil
 }
 
-// ParseListInventoryItemsResponse parses an HTTP response from a ListInventoryItemsWithResponse call
-func ParseListInventoryItemsResponse(rsp *http.Response) (*ListInventoryItemsResponse, error) {
+// ParseDeleteManagedConfigurationResponse parses an HTTP response from a DeleteManagedConfigurationWithResponse call
+func ParseDeleteManagedConfigurationResponse(rsp *http.Response) (*DeleteManagedConfigurationResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &ListInventoryItemsResponse{
+	response := &DeleteManagedConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetManagedConfigurationResponse parses an HTTP response from a GetManagedConfigurationWithResponse call
+func ParseGetManagedConfigurationResponse(rsp *http.Response) (*GetManagedConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetManagedConfigurationResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []InventoryItem
+		var dest ManagedConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7472,248 +10472,6 @@ func ParseListInventoryItemsResponse(rsp *http.Response) (*ListInventoryItemsRes
 			return nil, err
 		}
 		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteInventoryItemResponse parses an HTTP response from a DeleteInventoryItemWithResponse call
-func ParseDeleteInventoryItemResponse(rsp *http.Response) (*DeleteInventoryItemResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteInventoryItemResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetInventoryItemResponse parses an HTTP response from a GetInventoryItemWithResponse call
-func ParseGetInventoryItemResponse(rsp *http.Response) (*GetInventoryItemResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetInventoryItemResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest InventoryItem
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePutInventoryItemResponse parses an HTTP response from a PutInventoryItemWithResponse call
-func ParsePutInventoryItemResponse(rsp *http.Response) (*PutInventoryItemResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutInventoryItemResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest InventoryItem
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetInventoryItemDataResponse parses an HTTP response from a GetInventoryItemDataWithResponse call
-func ParseGetInventoryItemDataResponse(rsp *http.Response) (*GetInventoryItemDataResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetInventoryItemDataResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest interface{}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePutInventoryItemDataResponse parses an HTTP response from a PutInventoryItemDataWithResponse call
-func ParsePutInventoryItemDataResponse(rsp *http.Response) (*PutInventoryItemDataResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutInventoryItemDataResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest interface{}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error

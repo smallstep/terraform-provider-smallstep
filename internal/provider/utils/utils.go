@@ -27,7 +27,9 @@ type dereferencable interface {
 	string |
 		bool |
 		int |
-		[]string
+		[]string |
+		v20230301.EndpointKeyInfoType |
+		v20230301.EndpointKeyInfoFormat
 }
 
 // Deref gets the default value for a pointer type. This makes it easier to work
@@ -37,6 +39,22 @@ func Deref[T dereferencable](v *T) (r T) {
 		r = *v
 	}
 	return
+}
+
+func ToIntPointer(i64 *int64) *int {
+	if i64 == nil {
+		return nil
+	}
+	i := int(*i64)
+	return &i
+}
+
+func ToStringPointer[In Str, Out Str](str *In) *Out {
+	if str == nil {
+		return nil
+	}
+	s := Out(*str)
+	return &s
 }
 
 // Describe parses descriptions for a component from its schema in Smallstep's

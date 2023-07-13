@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 	"time"
 
@@ -567,7 +566,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	// Use the original key if it's a jwk provisioner. Terraform will fail if
 	// the state does not match the plan but there are many valid json
 	// serializations of the key
-	if plan.JWK != nil && state.JWK != nil && jsonEqual(plan.JWK.Key.ValueString(), state.JWK.Key.ValueString()) {
+	if plan.JWK != nil && state.JWK != nil && utils.IsJSONEqual(plan.JWK.Key.ValueString(), state.JWK.Key.ValueString()) {
 		state.JWK.Key = plan.JWK.Key
 	}
 	// A null claims is returned as an empty claims object. Restore it to null
@@ -612,6 +611,11 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
+	if httpResp.StatusCode == http.StatusNotFound {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
@@ -637,7 +641,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	// Use the original key if it's a jwk provisioner. Terraform will fail if
 	// the stored state does not match the current state but there are many valid
 	// json serializations of the key.
-	if state.JWK != nil && actual.JWK != nil && jsonEqual(state.JWK.Key.ValueString(), actual.JWK.Key.ValueString()) {
+	if state.JWK != nil && actual.JWK != nil && utils.IsJSONEqual(state.JWK.Key.ValueString(), actual.JWK.Key.ValueString()) {
 		actual.JWK.Key = state.JWK.Key
 	}
 
@@ -691,7 +695,6 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 }
 
 func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	parts := strings.Split(req.ID, "/")
 	if len(parts) != 2 {
 		resp.Diagnostics.AddError(
@@ -710,20 +713,6 @@ func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequ
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), "")...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("authority_id"), parts[0])...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), parts[1])...)
-}
-
-func jsonEqual(a, b string) bool {
-	if a == b {
-		return true
-	}
-	var aVal, bVal any
-	if err := json.Unmarshal([]byte(a), &aVal); err != nil {
-		return false
-	}
-	if err := json.Unmarshal([]byte(b), &bVal); err != nil {
-		return false
-	}
-	return reflect.DeepEqual(aVal, bVal)
 }
 
 func durationEqual(a, b types.String) bool {

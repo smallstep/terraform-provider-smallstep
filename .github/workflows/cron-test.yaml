@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
 
+concurrency: terraform-provider-smallstep
+
 jobs:
   # Run acceptance tests in a matrix with Terraform CLI versions
   test:
