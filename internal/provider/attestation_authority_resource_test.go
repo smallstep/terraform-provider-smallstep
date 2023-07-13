@@ -54,7 +54,7 @@ resource "smallstep_attestation_authority" "aa" {
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_roots", attestorRoot),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_intermediates", attestorIntermediate),
 					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "root", regexp.MustCompile(`^-----BEGIN CERTIFICATE-----`)),
-					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "slug", regexp.MustCompile(`^[a-z1-9]+$`)),
+					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "slug", regexp.MustCompile(`^[a-z1-9-]+$`)),
 					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
