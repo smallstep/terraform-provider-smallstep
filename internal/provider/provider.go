@@ -15,7 +15,7 @@ import (
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/instance"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection_instance"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 )
 
@@ -167,7 +167,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		authority.NewResource,
 		provisioner.NewResource,
 		collection.NewResource,
-		instance.NewResource,
+		collection_instance.NewResource,
 	}
 }
 
@@ -176,7 +176,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		authority.NewDataSource,
 		provisioner.NewDataSource,
 		collection.NewDataSource,
-		instance.NewDataSource,
+		collection_instance.NewDataSource,
 	}
 }
 

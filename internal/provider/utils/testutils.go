@@ -195,7 +195,7 @@ func NewCollection(t *testing.T) *v20230301.Collection {
 	return collection
 }
 
-func NewInstance(t *testing.T, slug string) *v20230301.CollectionInstance {
+func NewCollectionInstance(t *testing.T, slug string) *v20230301.CollectionInstance {
 	client, err := SmallstepAPIClientFromEnv()
 	require.NoError(t, err)
 

@@ -14,7 +14,7 @@ import (
 func TestAccCollectionInstanceDataSource(t *testing.T) {
 	t.Parallel()
 	collection := utils.NewCollection(t)
-	instance := utils.NewInstance(t, collection.Slug)
+	instance := utils.NewCollectionInstance(t, collection.Slug)
 	config := fmt.Sprintf(`
 data "smallstep_collection_instance" "test" {
 	collection_slug = %q

@@ -93,8 +93,8 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	remote, d := fromAPI(ctx, collection, req.State)
-	if d.HasError() {
-		resp.Diagnostics.Append(d...)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 

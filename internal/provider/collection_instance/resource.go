@@ -1,4 +1,4 @@
-package instance
+package collection_instance
 
 import (
 	"context"
