@@ -301,17 +301,53 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.AWS != nil:
-		aws := v20230301.AwsProvisioner{}
+		aws := v20230301.AwsProvisioner{
+			DisableTrustOnFirstUse: m.AWS.DisableTrustOnFirstUse.ValueBoolPointer(),
+			DisableCustomSANs:      m.AWS.DisableCustomSANs.ValueBoolPointer(),
+			InstanceAge:            m.AWS.InstanceAge.ValueStringPointer(),
+		}
 		diagnostics := m.AWS.Accounts.ElementsAs(ctx, &aws.Accounts, false)
 		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
 			return nil, err
 		}
 
-		if !m.AWS.InstanceAge.IsNull() {
-			aws.InstanceAge = m.AWS.InstanceAge.ValueStringPointer()
+		if err := p.FromAwsProvisioner(aws); err != nil {
+			return nil, err
+		}
+	case m.GCP != nil:
+		gcp := v20230301.GcpProvisioner{
+			DisableTrustOnFirstUse: m.GCP.DisableTrustOnFirstUse.ValueBoolPointer(),
+			DisableCustomSANs:      m.GCP.DisableCustomSANs.ValueBoolPointer(),
+			InstanceAge:            m.GCP.InstanceAge.ValueStringPointer(),
 		}
 
-		if err := p.FromAwsProvisioner(aws); err != nil {
+		diagnostics := m.GCP.ProjectIDs.ElementsAs(ctx, &gcp.ProjectIDs, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		diagnostics = m.GCP.ServiceAccounts.ElementsAs(ctx, &gcp.ServiceAccounts, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromGcpProvisioner(gcp); err != nil {
+			return nil, err
+		}
+	case m.Azure != nil:
+		azure := v20230301.AzureProvisioner{
+			TenantID:               m.Azure.TenantID.ValueString(),
+			Audience:               m.Azure.Audience.ValueStringPointer(),
+			DisableTrustOnFirstUse: m.Azure.DisableTrustOnFirstUse.ValueBoolPointer(),
+			DisableCustomSANs:      m.Azure.DisableCustomSANs.ValueBoolPointer(),
+		}
+
+		diagnostics := m.Azure.ResourceGroups.ElementsAs(ctx, &azure.ResourceGroups, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if err := p.FromAzureProvisioner(azure); err != nil {
 			return nil, err
 		}
 	}
@@ -588,6 +624,140 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 		data.X5C = &X5CModel{
 			Roots: rootsSet,
+		}
+
+	case v20230301.AWS:
+		aws, err := provisioner.AsAwsProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse AWS Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+
+		var accounts []attr.Value
+		for _, account := range aws.Accounts {
+			accounts = append(accounts, types.StringValue(account))
+		}
+		accountsSet, diags := types.SetValue(types.StringType, accounts)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		instanceAge, diags := utils.ToEqualString(ctx, aws.InstanceAge, state, path.Root("aws").AtName("instance_age"), utils.IsDurationEqual)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableTOFU, diags := utils.ToOptionalBool(ctx, aws.DisableTrustOnFirstUse, state, path.Root("aws").AtName("disable_trust_on_first_use"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableCustomSANs, diags := utils.ToOptionalBool(ctx, aws.DisableCustomSANs, state, path.Root("aws").AtName("disable_custom_sans"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		data.AWS = &AWSModel{
+			Accounts:               accountsSet,
+			InstanceAge:            instanceAge,
+			DisableTrustOnFirstUse: disableTOFU,
+			DisableCustomSANs:      disableCustomSANs,
+		}
+
+	case v20230301.GCP:
+		gcp, err := provisioner.AsGcpProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse GCP Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+
+		var serviceAccounts []attr.Value
+		for _, sa := range gcp.ServiceAccounts {
+			serviceAccounts = append(serviceAccounts, types.StringValue(sa))
+		}
+		serviceAccountsSet, diags := types.SetValue(types.StringType, serviceAccounts)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		var projectIDs []attr.Value
+		for _, projectID := range gcp.ProjectIDs {
+			projectIDs = append(projectIDs, types.StringValue(projectID))
+		}
+		projectIDsSet, diags := types.SetValue(types.StringType, projectIDs)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		instanceAge, diags := utils.ToEqualString(ctx, gcp.InstanceAge, state, path.Root("gcp").AtName("instance_age"), utils.IsDurationEqual)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableTOFU, diags := utils.ToOptionalBool(ctx, gcp.DisableTrustOnFirstUse, state, path.Root("gcp").AtName("disable_trust_on_first_use"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableCustomSANs, diags := utils.ToOptionalBool(ctx, gcp.DisableCustomSANs, state, path.Root("gcp").AtName("disable_custom_sans"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		data.GCP = &GCPModel{
+			ProjectIDs:             projectIDsSet,
+			ServiceAccounts:        serviceAccountsSet,
+			InstanceAge:            instanceAge,
+			DisableCustomSANs:      disableCustomSANs,
+			DisableTrustOnFirstUse: disableTOFU,
+		}
+
+	case v20230301.AZURE:
+		azure, err := provisioner.AsAzureProvisioner()
+		if err != nil {
+			diags.AddError(
+				"Parse Azure Provisioner",
+				fmt.Sprintf("provisioner %s: %v", data.Name.ValueString(), err),
+			)
+			return nil, diags
+		}
+
+		var resourceGroups []attr.Value
+		for _, rg := range azure.ResourceGroups {
+			resourceGroups = append(resourceGroups, types.StringValue(rg))
+		}
+		resourceGroupsSet, diags := types.SetValue(types.StringType, resourceGroups)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableTOFU, diags := utils.ToOptionalBool(ctx, azure.DisableTrustOnFirstUse, state, path.Root("azure").AtName("disable_trust_on_first_use"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		disableCustomSANs, diags := utils.ToOptionalBool(ctx, azure.DisableCustomSANs, state, path.Root("azure").AtName("disable_custom_sans"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		audience, diags := utils.ToOptionalString(ctx, azure.Audience, state, path.Root("azure").AtName("audience"))
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		data.Azure = &AzureModel{
+			ResourceGroups:         resourceGroupsSet,
+			TenantID:               types.StringValue(azure.TenantID),
+			Audience:               audience,
+			DisableCustomSANs:      disableCustomSANs,
+			DisableTrustOnFirstUse: disableTOFU,
 		}
 
 	default:

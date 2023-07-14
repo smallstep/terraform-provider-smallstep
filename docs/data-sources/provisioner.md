@@ -40,12 +40,15 @@ data "smallstep_provisioner" "by_id" {
 
 - `acme` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [ACME protocol](https://smallstep.com/docs/step-ca/acme-basics/#acme-challenges). This object is populated when type is `ACME`. (see [below for nested schema](#nestedatt--acme))
 - `acme_attestation` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/). This object is populated when type is `ACME_ATTESTATION`. (see [below for nested schema](#nestedatt--acme_attestation))
+- `aws` (Attributes) Grant a certificate to an Amazon EC2 instance using the Instance Identity Document. This object is populated when type is `AWS`. (see [below for nested schema](#nestedatt--aws))
+- `azure` (Attributes) Grants certificates to Microsoft Azure instances using the managed identities tokens. This object is populated when type is `AZURE`. (see [below for nested schema](#nestedatt--azure))
 - `claims` (Attributes) A set of constraints configuring how this provisioner can be used to issue certificates. (see [below for nested schema](#nestedatt--claims))
 - `created_at` (String) Timestamp of when the provisioner was created in RFC 3339 format. Generated server-side.
+- `gcp` (Attributes) Grant a certificate to a Google Compute Engine instance using its identity token. This object is populated when type is `GCP`. (see [below for nested schema](#nestedatt--gcp))
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is populated when type is `JWK`. (see [below for nested schema](#nestedatt--jwk))
 - `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
 - `options` (Attributes) Options that apply when issuing certificates with this provisioner (see [below for nested schema](#nestedatt--options))
-- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C`
+- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE`
 - `x5c` (Attributes) Authenticate a certificate request with an existing x509 certificate. This object is populated when type is `X5C`. (see [below for nested schema](#nestedatt--x5c))
 
 <a id="nestedatt--acme"></a>
@@ -69,6 +72,29 @@ Read-Only:
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
 
 
+<a id="nestedatt--aws"></a>
+### Nested Schema for `aws`
+
+Read-Only:
+
+- `accounts` (Set of String) The list of AWS account numbers that are allowed to use this provisioner.
+- `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
+- `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
+- `instance_age` (String) The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+
+
+<a id="nestedatt--azure"></a>
+### Nested Schema for `azure`
+
+Read-Only:
+
+- `audience` (String) Defaults to https://management.azure.com/ but it can be changed if necessary.
+- `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the token will be valid, in Azure only the virtual machine name is available.
+- `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to true this limit is not set and different tokens can be used to get different certificates.
+- `resource_groups` (Set of String) The list of resource group names that are allowed to use this provisioner.
+- `tenant_id` (String) The Azure account tenant ID for this provisioner. This ID is the Directory ID available in the Azure Active Directory properties.
+
+
 <a id="nestedatt--claims"></a>
 ### Nested Schema for `claims`
 
@@ -86,6 +112,18 @@ Read-Only:
 - `min_host_ssh_cert_duration` (String) The minimum duration for an SSH host certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `min_tls_cert_duration` (String) The minimum duration for an x509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `min_user_ssh_cert_duration` (String) The minimum duration for an SSH user certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+
+
+<a id="nestedatt--gcp"></a>
+### Nested Schema for `gcp`
+
+Read-Only:
+
+- `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
+- `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
+- `instance_age` (String) The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+- `project_ids` (Set of String) The list of project identifiers that are allowed to use this provisioner.
+- `service_accounts` (Set of String) The list of service accounts that are allowed to use this provisioner.
 
 
 <a id="nestedatt--jwk"></a>

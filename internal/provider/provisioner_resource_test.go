@@ -17,15 +17,15 @@ func TestAccProvisionerResource(t *testing.T) {
 	pubJSON, priv := utils.NewJWK(t, "pass")
 
 	jwkConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "jwk" {
-	authority_id = %q
-	name = "eng@smallstep.com"
-	type = "JWK"
-	jwk = {
-		key = %q
-		encrypted_key = %q
-	}
-}`, authority.Id, pubJSON, priv)
+		resource "smallstep_provisioner" "jwk" {
+			authority_id = %q
+			name = "eng@smallstep.com"
+			type = "JWK"
+			jwk = {
+				key = %q
+				encrypted_key = %q
+			}
+		}`, authority.Id, pubJSON, priv)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -52,15 +52,15 @@ resource "smallstep_provisioner" "jwk" {
 	})
 
 	jwkEmptyConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "jwk_empty" {
-	authority_id = %q
-	name = "jwk empty"
-	type = "JWK"
-	jwk = {
-		key = %q
-		encrypted_key = ""
-	}
-}`, authority.Id, pubJSON)
+		resource "smallstep_provisioner" "jwk_empty" {
+			authority_id = %q
+			name = "jwk empty"
+			type = "JWK"
+			jwk = {
+				key = %q
+				encrypted_key = ""
+			}
+		}`, authority.Id, pubJSON)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -81,14 +81,14 @@ resource "smallstep_provisioner" "jwk_empty" {
 	})
 
 	jwkOnlyRequiredConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "jwk_only_required" {
-	authority_id = %q
-	name = "jwk only required"
-	type = "JWK"
-	jwk = {
-		key = %q
-	}
-}`, authority.Id, pubJSON)
+		resource "smallstep_provisioner" "jwk_only_required" {
+			authority_id = %q
+			name = "jwk only required"
+			type = "JWK"
+			jwk = {
+				key = %q
+			}
+		}`, authority.Id, pubJSON)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -108,24 +108,24 @@ resource "smallstep_provisioner" "jwk_only_required" {
 	})
 
 	oidcConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "oidc" {
-	authority_id = %q
-	name = "smallstep.com"
-	type = "OIDC"
-	oidc = {
-		client_id = "abc"
-		client_secret = "123"
-		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
-		domains = ["smallstep.com"]
-		groups = ["eng"]
-		admins = ["eng@smallstep.com"]
-		listen_address = "localhost:9999"
-		tenant_id = "7"
-	}
-	claims = {
-		disable_renewal = true
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "oidc" {
+			authority_id = %q
+			name = "smallstep.com"
+			type = "OIDC"
+			oidc = {
+				client_id = "abc"
+				client_secret = "123"
+				configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+				domains = ["smallstep.com"]
+				groups = ["eng"]
+				admins = ["eng@smallstep.com"]
+				listen_address = "localhost:9999"
+				tenant_id = "7"
+			}
+			claims = {
+				disable_renewal = true
+			}
+		}`, authority.Id)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -159,21 +159,21 @@ resource "smallstep_provisioner" "oidc" {
 	})
 
 	oidcEmptyConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "oidc_empty" {
-	authority_id = %q
-	name = "empty oidc"
-	type = "OIDC"
-	oidc = {
-		client_id = "abc"
-		client_secret = ""
-		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
-		domains = []
-		groups = []
-		admins = []
-		listen_address = ""
-		tenant_id = ""
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "oidc_empty" {
+			authority_id = %q
+			name = "empty oidc"
+			type = "OIDC"
+			oidc = {
+				client_id = "abc"
+				client_secret = ""
+				configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+				domains = []
+				groups = []
+				admins = []
+				listen_address = ""
+				tenant_id = ""
+			}
+		}`, authority.Id)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -207,28 +207,28 @@ resource "smallstep_provisioner" "oidc_empty" {
 
 	// Also tests OIDC with no optional values set
 	claimsConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "claims" {
-	authority_id = %q
-	name = "claims"
-	type = "OIDC"
-	claims = {
-		allow_renewal_after_expiry = true
-		enable_ssh_ca = true
-		min_tls_cert_duration = "5m"
-		max_tls_cert_duration = "45m"
-		default_tls_cert_duration = "15m"
-		min_user_ssh_cert_duration = "6m"
-		max_user_ssh_cert_duration = "46m"
-		default_user_ssh_cert_duration = "16m"
-		min_host_ssh_cert_duration = "7m"
-		max_host_ssh_cert_duration = "47m"
-		default_host_ssh_cert_duration = "17m"
-	}
-	oidc = {
-		client_id = "abc"
-		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "claims" {
+			authority_id = %q
+			name = "claims"
+			type = "OIDC"
+			claims = {
+				allow_renewal_after_expiry = true
+				enable_ssh_ca = true
+				min_tls_cert_duration = "5m"
+				max_tls_cert_duration = "45m"
+				default_tls_cert_duration = "15m"
+				min_user_ssh_cert_duration = "6m"
+				max_user_ssh_cert_duration = "46m"
+				default_user_ssh_cert_duration = "16m"
+				min_host_ssh_cert_duration = "7m"
+				max_host_ssh_cert_duration = "47m"
+				default_host_ssh_cert_duration = "17m"
+			}
+			oidc = {
+				client_id = "abc"
+				configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+			}
+		}`, authority.Id)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -260,29 +260,29 @@ resource "smallstep_provisioner" "claims" {
 	})
 
 	claimsEmptyConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "claims_empty" {
-	authority_id = %q
-	name = "claims empty"
-	type = "OIDC"
-	claims = {
-		allow_renewal_after_expiry = false
-		enable_ssh_ca = false
-		disable_renewal = false
-		min_tls_cert_duration = ""
-		max_tls_cert_duration = ""
-		default_tls_cert_duration = ""
-		min_user_ssh_cert_duration = ""
-		max_user_ssh_cert_duration = ""
-		default_user_ssh_cert_duration = ""
-		min_host_ssh_cert_duration = ""
-		max_host_ssh_cert_duration = ""
-		default_host_ssh_cert_duration = ""
-	}
-	oidc = {
-		client_id = "abc"
-		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "claims_empty" {
+			authority_id = %q
+			name = "claims empty"
+			type = "OIDC"
+			claims = {
+				allow_renewal_after_expiry = false
+				enable_ssh_ca = false
+				disable_renewal = false
+				min_tls_cert_duration = ""
+				max_tls_cert_duration = ""
+				default_tls_cert_duration = ""
+				min_user_ssh_cert_duration = ""
+				max_user_ssh_cert_duration = ""
+				default_user_ssh_cert_duration = ""
+				min_host_ssh_cert_duration = ""
+				max_host_ssh_cert_duration = ""
+				default_host_ssh_cert_duration = ""
+			}
+			oidc = {
+				client_id = "abc"
+				configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+			}
+		}`, authority.Id)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -309,26 +309,26 @@ resource "smallstep_provisioner" "claims_empty" {
 	})
 
 	optionsConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "options" {
-	authority_id = %q
-	name = "option"
-	type = "OIDC"
-	options = {
-		x509 = {
-			template = "{{.}}"
-			template_data = "{\"role\":\"eng\"}"
-		}
-		ssh = {
-			template = "{{ . }}"
-			template_data = "{\"role\":\"ops\"}"
-		}
-	}
-	oidc = {
-		client_id = "abc"
-		client_secret = "123"
-		configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "options" {
+			authority_id = %q
+			name = "option"
+			type = "OIDC"
+			options = {
+				x509 = {
+					template = "{{.}}"
+					template_data = "{\"role\":\"eng\"}"
+				}
+				ssh = {
+					template = "{{ . }}"
+					template_data = "{\"role\":\"ops\"}"
+				}
+			}
+			oidc = {
+				client_id = "abc"
+				client_secret = "123"
+				configuration_endpoint = "https://accounts.google.com/.well-known/openid-configuration"
+			}
+		}`, authority.Id)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -350,16 +350,16 @@ resource "smallstep_provisioner" "options" {
 	})
 
 	acmeConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "acme" {
-	authority_id = %q
-	name = "acme foo"
-	type = "ACME"
-	acme = {
-		challenges = ["http-01", "dns-01", "tls-alpn-01"]
-		require_eab = true
-		force_cn = true
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "acme" {
+			authority_id = %q
+			name = "acme foo"
+			type = "ACME"
+			acme = {
+				challenges = ["http-01", "dns-01", "tls-alpn-01"]
+				require_eab = true
+				force_cn = true
+			}
+		}`, authority.Id)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -385,16 +385,16 @@ resource "smallstep_provisioner" "acme" {
 	})
 
 	acmeEmptyConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "acme_empty" {
-	authority_id = %q
-	name = "acme empty"
-	type = "ACME"
-	acme = {
-		challenges = ["http-01"]
-		require_eab = true
-		force_cn = false
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "acme_empty" {
+			authority_id = %q
+			name = "acme empty"
+			type = "ACME"
+			acme = {
+				challenges = ["http-01"]
+				require_eab = true
+				force_cn = false
+			}
+		}`, authority.Id)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -414,15 +414,15 @@ resource "smallstep_provisioner" "acme_empty" {
 	})
 
 	acmeRequiredOnlyConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "acme_required_only" {
-	authority_id = %q
-	name = "acme required only"
-	type = "ACME"
-	acme = {
-		challenges = ["tls-alpn-01", "dns-01", "http-01"]
-		require_eab = true
-	}
-}`, authority.Id)
+		resource "smallstep_provisioner" "acme_required_only" {
+			authority_id = %q
+			name = "acme required only"
+			type = "ACME"
+			acme = {
+				challenges = ["tls-alpn-01", "dns-01", "http-01"]
+				require_eab = true
+			}
+		}`, authority.Id)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -442,15 +442,15 @@ resource "smallstep_provisioner" "acme_required_only" {
 
 	root, _ := utils.CACerts(t)
 	attestConfig := fmt.Sprintf(`
-		resource "smallstep_provisioner" "attest" {
-			authority_id = %q
-			name = "attest foo"
-			type = "ACME_ATTESTATION"
-			acme_attestation = {
-				attestation_formats = ["apple", "step", "tpm"]
-				attestation_roots = [%q]
-			}
-		}`, authority.Id, root)
+				resource "smallstep_provisioner" "attest" {
+					authority_id = %q
+					name = "attest foo"
+					type = "ACME_ATTESTATION"
+					acme_attestation = {
+						attestation_formats = ["apple", "step", "tpm"]
+						attestation_roots = [%q]
+					}
+				}`, authority.Id, root)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -478,15 +478,15 @@ resource "smallstep_provisioner" "acme_required_only" {
 	})
 
 	attestEmptyConfig := fmt.Sprintf(`
-		resource "smallstep_provisioner" "attest_empty" {
-			authority_id = %q
-			name = "attest empty"
-			type = "ACME_ATTESTATION"
-			acme_attestation = {
-				attestation_formats = ["step"]
-				attestation_roots = []
-			}
-		}`, authority.Id)
+				resource "smallstep_provisioner" "attest_empty" {
+					authority_id = %q
+					name = "attest empty"
+					type = "ACME_ATTESTATION"
+					acme_attestation = {
+						attestation_formats = ["step"]
+						attestation_roots = []
+					}
+				}`, authority.Id)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -507,14 +507,14 @@ resource "smallstep_provisioner" "acme_required_only" {
 	})
 
 	attestOnlyRequiredConfig := fmt.Sprintf(`
-		resource "smallstep_provisioner" "attest_only_required" {
-			authority_id = %q
-			name = "attest only required"
-			type = "ACME_ATTESTATION"
-			acme_attestation = {
-				attestation_formats = ["step", "apple"]
-			}
-		}`, authority.Id)
+				resource "smallstep_provisioner" "attest_only_required" {
+					authority_id = %q
+					name = "attest only required"
+					type = "ACME_ATTESTATION"
+					acme_attestation = {
+						attestation_formats = ["step", "apple"]
+					}
+				}`, authority.Id)
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -536,14 +536,14 @@ resource "smallstep_provisioner" "acme_required_only" {
 	})
 
 	x5cConfig := fmt.Sprintf(`
-resource "smallstep_provisioner" "x5c" {
-	authority_id = %q
-	name = "x5c foo"
-	type = "X5C"
-	x5c = {
-		roots = [%q]
-	}
-}`, authority.Id, root)
+		resource "smallstep_provisioner" "x5c" {
+			authority_id = %q
+			name = "x5c foo"
+			type = "X5C"
+			x5c = {
+				roots = [%q]
+			}
+		}`, authority.Id, root)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -564,6 +564,329 @@ resource "smallstep_provisioner" "x5c" {
 				ResourceName:      "smallstep_provisioner.x5c",
 				ImportState:       true,
 				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "x5c foo"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	awsFullConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "aws_full" {
+			authority_id = %q
+			name = "aws full"
+			type = "AWS"
+			aws = {
+				accounts = ["0123456789"]
+				instance_age = "1h"
+				disable_trust_on_first_use = true
+				disable_custom_sans = true
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: awsFullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.aws_full", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "type", "AWS"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "name", "aws full"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.aws_full", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "aws.accounts.#", "1"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "aws.accounts.0", "0123456789"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "aws.instance_age", "1h"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "aws.disable_trust_on_first_use", "true"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_full", "aws.disable_custom_sans", "true"),
+				),
+			},
+			{
+				ResourceName:            "smallstep_provisioner.aws_full",
+				ImportState:             true,
+				ImportStateId:           fmt.Sprintf("%s/%s", authority.Id, "aws full"),
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"aws.instance_age"},
+			},
+		},
+	})
+
+	awsEmptyConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "aws_empty" {
+			authority_id = %q
+			name = "aws empty"
+			type = "AWS"
+			aws = {
+				accounts = ["0123456789"]
+				instance_age = ""
+				disable_trust_on_first_use = false
+				disable_custom_sans = false
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: awsEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_empty", "aws.instance_age", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_empty", "aws.disable_trust_on_first_use", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_empty", "aws.disable_custom_sans", "false"),
+				),
+			},
+			{
+				ResourceName:  "smallstep_provisioner.aws_empty",
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("%s/%s", authority.Id, "aws empty"),
+				// empty fields will be null
+				ImportStateVerify: false,
+			},
+		},
+	})
+
+	awsNullConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "aws_null" {
+			authority_id = %q
+			name = "aws null"
+			type = "AWS"
+			aws = {
+				accounts = ["0123456789"]
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: awsNullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.aws_null", "name", "aws null"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.aws_null",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "aws null"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	gcpFullConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "gcp_full" {
+	authority_id = %q
+	name = "gcp full"
+	type = "GCP"
+	gcp = {
+		project_ids = ["prod-1234"]
+		service_accounts = ["pki@prod-1234.iam.gserviceaccount.com"]
+		instance_age = "1h"
+		disable_trust_on_first_use = true
+		disable_custom_sans = true
+	}
+}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: gcpFullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.gcp_full", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "type", "GCP"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "name", "gcp full"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.gcp_full", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.project_ids.#", "1"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.project_ids.0", "prod-1234"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.service_accounts.#", "1"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.service_accounts.0", "pki@prod-1234.iam.gserviceaccount.com"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.instance_age", "1h"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.disable_trust_on_first_use", "true"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_full", "gcp.disable_custom_sans", "true"),
+				),
+			},
+			{
+				ResourceName:            "smallstep_provisioner.gcp_full",
+				ImportState:             true,
+				ImportStateId:           fmt.Sprintf("%s/%s", authority.Id, "gcp full"),
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"gcp.instance_age"},
+			},
+		},
+	})
+
+	gcpEmptyConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "gcp_empty" {
+			authority_id = %q
+			name = "gcp empty"
+			type = "GCP"
+			gcp = {
+				project_ids = ["prod-1234"]
+				service_accounts = ["pki@prod-1234.iam.gserviceaccount.com"]
+				instance_age = ""
+				disable_trust_on_first_use = false
+				disable_custom_sans = false
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: gcpEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_empty", "gcp.instance_age", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_empty", "gcp.disable_trust_on_first_use", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_empty", "gcp.disable_custom_sans", "false"),
+				),
+			},
+			{
+				ResourceName:  "smallstep_provisioner.gcp_empty",
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("%s/%s", authority.Id, "gcp empty"),
+				// empty fields will be null on import
+				ImportStateVerify: false,
+			},
+		},
+	})
+
+	gcpNullConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "gcp_null" {
+			authority_id = %q
+			name = "gcp null"
+			type = "GCP"
+			gcp = {
+				project_ids = ["prod-1234"]
+				service_accounts = ["pki@prod-1234.iam.gserviceaccount.com"]
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: gcpNullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.gcp_null", "name", "gcp null"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.gcp_null",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "gcp null"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	azureFullConfig := fmt.Sprintf(`
+resource "smallstep_provisioner" "azure_full" {
+	authority_id = %q
+	name = "azure full"
+	type = "AZURE"
+	azure = {
+		tenant_id = "948920a7-8fc1-431f-be94-030a80232e51"
+		resource_groups = ["prod-1234"]
+		audience = "example.com"
+		disable_trust_on_first_use = true
+		disable_custom_sans = true
+	}
+}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: azureFullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestMatchResourceAttr("smallstep_provisioner.azure_full", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "type", "AZURE"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "name", "azure full"),
+					resource.TestMatchResourceAttr("smallstep_provisioner.azure_full", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.resource_groups.#", "1"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.resource_groups.0", "prod-1234"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.tenant_id", "948920a7-8fc1-431f-be94-030a80232e51"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.audience", "example.com"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.disable_trust_on_first_use", "true"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_full", "azure.disable_custom_sans", "true"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.azure_full",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "azure full"),
+				ImportStateVerify: true,
+			},
+		},
+	})
+
+	azureEmptyConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "azure_empty" {
+			authority_id = %q
+			name = "azure empty"
+			type = "AZURE"
+			azure = {
+				tenant_id = "948920a7-8fc1-431f-be94-030a80232e51"
+				resource_groups = ["prod-1234"]
+				audience = ""
+				disable_trust_on_first_use = false
+				disable_custom_sans = false
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: azureEmptyConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_empty", "azure.audience", ""),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_empty", "azure.disable_trust_on_first_use", "false"),
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_empty", "azure.disable_custom_sans", "false"),
+				),
+			},
+			{
+				ResourceName:  "smallstep_provisioner.azure_empty",
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("%s/%s", authority.Id, "azure empty"),
+				// empty fields will be null on import
+				ImportStateVerify: false,
+			},
+		},
+	})
+
+	azureNullConfig := fmt.Sprintf(`
+		resource "smallstep_provisioner" "azure_null" {
+			authority_id = %q
+			name = "azure null"
+			type = "AZURE"
+			azure = {
+				tenant_id = "948920a7-8fc1-431f-be94-030a80232e51"
+				resource_groups = ["prod-1234"]
+			}
+		}`, authority.Id)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: azureNullConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("smallstep_provisioner.azure_null", "name", "azure null"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_provisioner.azure_null",
+				ImportState:       true,
+				ImportStateId:     fmt.Sprintf("%s/%s", authority.Id, "azure null"),
 				ImportStateVerify: true,
 			},
 		},
