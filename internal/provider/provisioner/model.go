@@ -31,6 +31,9 @@ type Model struct {
 	ACME            *ACMEModel            `tfsdk:"acme"`
 	ACMEAttestation *ACMEAttestationModel `tfsdk:"acme_attestation"`
 	X5C             *X5CModel             `tfsdk:"x5c"`
+	AWS             *AWSModel             `tfsdk:"aws"`
+	GCP             *GCPModel             `tfsdk:"gcp"`
+	Azure           *AzureModel           `tfsdk:"azure"`
 }
 
 type OptionsModel struct {
@@ -120,6 +123,29 @@ type ACMEAttestationModel struct {
 
 type X5CModel struct {
 	Roots types.Set `tfsdk:"roots"`
+}
+
+type AWSModel struct {
+	Accounts               types.Set    `tfsdk:"accounts"`
+	DisableCustomSANs      types.Bool   `tfsdk:"disable_custom_sans"`
+	DisableTrustOnFirstUse types.Bool   `tfsdk:"disable_trust_on_first_use"`
+	InstanceAge            types.String `tfsdk:"instance_age"`
+}
+
+type GCPModel struct {
+	ProjectIDs             types.Set    `tfsdk:"project_ids"`
+	ServiceAccounts        types.Set    `tfsdk:"service_accounts"`
+	DisableCustomSANs      types.Bool   `tfsdk:"disable_custom_sans"`
+	DisableTrustOnFirstUse types.Bool   `tfsdk:"disable_trust_on_first_use"`
+	InstanceAge            types.String `tfsdk:"instance_age"`
+}
+
+type AzureModel struct {
+	TenantID               types.String `tfsdk:"tenant_id"`
+	ResourceGroups         types.Set    `tfsdk:"resource_groups"`
+	Audience               types.String `tfsdk:"audience"`
+	DisableCustomSANs      types.Bool   `tfsdk:"disable_custom_sans"`
+	DisableTrustOnFirstUse types.Bool   `tfsdk:"disable_trust_on_first_use"`
 }
 
 func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
@@ -272,6 +298,20 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 		}
 
 		if err := p.FromX5cProvisioner(x5c); err != nil {
+			return nil, err
+		}
+	case m.AWS != nil:
+		aws := v20230301.AwsProvisioner{}
+		diagnostics := m.AWS.Accounts.ElementsAs(ctx, &aws.Accounts, false)
+		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
+			return nil, err
+		}
+
+		if !m.AWS.InstanceAge.IsNull() {
+			aws.InstanceAge = m.AWS.InstanceAge.ValueStringPointer()
+		}
+
+		if err := p.FromAwsProvisioner(aws); err != nil {
 			return nil, err
 		}
 	}
