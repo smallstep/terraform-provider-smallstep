@@ -14,9 +14,9 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-// Secrets and the collection_slug are never returned in Read operations and
+// Secrets and the collection_slug are never returned in read operations and
 // won't be available in state for data source so those fields will always be
-// empty even if the webhooks was created them. The data source schema must not
+// empty even if the webhook was created them. The data source schema must not
 // document those fields to avoid confusion, but the type cannot have fields not
 // found in the schema. So for webhooks a separate model is needed for resource
 // and data source.
@@ -136,16 +136,6 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		)
 		return
 	}
-	/*
-		basicAuth, basicAuthProps, err := utils.Describe("basicAuth")
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Parse Smallstep OpenAPI spec",
-				err.Error(),
-			)
-			return
-		}
-	*/
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: component,
