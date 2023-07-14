@@ -14,6 +14,24 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
+// Secrets and the collection_slug are never returned in Read operations and
+// won't be available in state for data source so those fields will always be
+// empty even if the webhooks was created them. The data source schema must not
+// document those fields to avoid confusion, but the type cannot have fields not
+// found in the schema. So for webhooks a separate model is needed for resource
+// and data source.
+type DataModel struct {
+	ID                   types.String `tfsdk:"id"`
+	AuthorityID          types.String `tfsdk:"authority_id"`
+	ProvisionerID        types.String `tfsdk:"provisioner_id"`
+	Name                 types.String `tfsdk:"name"`
+	Kind                 types.String `tfsdk:"kind"`
+	CertType             types.String `tfsdk:"cert_type"`
+	ServerType           types.String `tfsdk:"server_type"`
+	URL                  types.String `tfsdk:"url"`
+	DisableTLSClientAuth types.Bool   `tfsdk:"disable_tls_client_auth"`
+}
+
 var _ datasource.DataSourceWithConfigure = (*DataSource)(nil)
 
 func NewDataSource() datasource.DataSource {
@@ -50,7 +68,7 @@ func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequ
 }
 
 func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config Model
+	var config DataModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
@@ -92,13 +110,17 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		return
 	}
 
-	remote, d := fromAPI(ctx, webhook, req.Config)
-	resp.Diagnostics.Append(d...)
-	if resp.Diagnostics.HasError() {
-		return
+	remote := &DataModel{
+		AuthorityID:          types.StringValue(authorityID),
+		ProvisionerID:        types.StringValue(provisionerID),
+		ID:                   types.StringValue(utils.Deref(webhook.Id)),
+		Name:                 types.StringValue(webhook.Name),
+		Kind:                 types.StringValue(string(webhook.Kind)),
+		CertType:             types.StringValue(string(webhook.CertType)),
+		ServerType:           types.StringValue(string(webhook.ServerType)),
+		URL:                  types.StringValue(utils.Deref(webhook.Url)),
+		DisableTLSClientAuth: types.BoolValue(utils.Deref(webhook.DisableTLSClientAuth)),
 	}
-	remote.AuthorityID = types.StringValue(authorityID)
-	remote.ProvisionerID = types.StringValue(provisionerID)
 
 	tflog.Trace(ctx, fmt.Sprintf("read webhook %q data source", idOrName))
 
@@ -114,14 +136,16 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		)
 		return
 	}
-	basicAuth, basicAuthProps, err := utils.Describe("basicAuth")
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI spec",
-			err.Error(),
-		)
-		return
-	}
+	/*
+		basicAuth, basicAuthProps, err := utils.Describe("basicAuth")
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Parse Smallstep OpenAPI spec",
+				err.Error(),
+			)
+			return
+		}
+	*/
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: component,
@@ -161,39 +185,9 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: props["url"],
 				Computed:            true,
 			},
-			"secret": schema.StringAttribute{
-				MarkdownDescription: props["secret"],
-				Computed:            true,
-				Sensitive:           true,
-			},
-			"collection_slug": schema.StringAttribute{
-				MarkdownDescription: props["collectionSlug"],
-				Computed:            true,
-			},
 			"disable_tls_client_auth": schema.BoolAttribute{
 				MarkdownDescription: props["disableTLSClientAuth"],
 				Computed:            true,
-			},
-			"bearer_token": schema.StringAttribute{
-				MarkdownDescription: props["bearerToken"],
-				Computed:            true,
-				Sensitive:           true,
-			},
-			"basic_auth": schema.SingleNestedAttribute{
-				MarkdownDescription: basicAuth,
-				Computed:            true,
-				Attributes: map[string]schema.Attribute{
-					"username": schema.StringAttribute{
-						MarkdownDescription: basicAuthProps["username"],
-						Computed:            true,
-						Sensitive:           true,
-					},
-					"password": schema.StringAttribute{
-						MarkdownDescription: basicAuthProps["password"],
-						Computed:            true,
-						Sensitive:           true,
-					},
-				},
 			},
 		},
 	}
