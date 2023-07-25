@@ -203,6 +203,36 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 	}
 	x5c += " This object is populated when type is `X5C`."
 
+	aws, awsProps, err := utils.Describe("awsProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	aws += " This object is populated when type is `AWS`."
+
+	gcp, gcpProps, err := utils.Describe("gcpProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	gcp += " This object is populated when type is `GCP`."
+
+	azure, azureProps, err := utils.Describe("azureProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	azure += " This object is populated when type is `AZURE`."
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
 
@@ -422,6 +452,84 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 					"roots": schema.SetAttribute{
 						MarkdownDescription: x5cProps["roots"],
 						ElementType:         types.StringType,
+						Computed:            true,
+					},
+				},
+			},
+			"aws": schema.SingleNestedAttribute{
+				MarkdownDescription: aws,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"accounts": schema.SetAttribute{
+						MarkdownDescription: awsProps["accounts"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"instance_age": schema.StringAttribute{
+						MarkdownDescription: awsProps["instanceAge"],
+						Computed:            true,
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: awsProps["disableTrustOnFirstUse"],
+						Computed:            true,
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: awsProps["disableCustomSANs"],
+						Computed:            true,
+					},
+				},
+			},
+			"gcp": schema.SingleNestedAttribute{
+				MarkdownDescription: gcp,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"project_ids": schema.SetAttribute{
+						MarkdownDescription: gcpProps["projectIDs"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"service_accounts": schema.SetAttribute{
+						MarkdownDescription: gcpProps["serviceAccounts"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"instance_age": schema.StringAttribute{
+						MarkdownDescription: gcpProps["instanceAge"],
+						Computed:            true,
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: gcpProps["disableTrustOnFirstUse"],
+						Computed:            true,
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: gcpProps["disableCustomSANs"],
+						Computed:            true,
+					},
+				},
+			},
+			"azure": schema.SingleNestedAttribute{
+				MarkdownDescription: azure,
+				Computed:            true,
+				Attributes: map[string]schema.Attribute{
+					"tenant_id": schema.StringAttribute{
+						MarkdownDescription: azureProps["tenantID"],
+						Computed:            true,
+					},
+					"resource_groups": schema.SetAttribute{
+						MarkdownDescription: azureProps["resourceGroups"],
+						ElementType:         types.StringType,
+						Computed:            true,
+					},
+					"audience": schema.StringAttribute{
+						MarkdownDescription: azureProps["audience"],
+						Computed:            true,
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: azureProps["disableTrustOnFirstUse"],
+						Computed:            true,
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: azureProps["disableCustomSANs"],
 						Computed:            true,
 					},
 				},

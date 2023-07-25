@@ -142,6 +142,36 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	}
 	x5c += " This object is required when type is `X5C` and is otherwise ignored."
 
+	aws, awsProps, err := utils.Describe("awsProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	aws += " This object is required when type is `AWS` and is otherwise ignored."
+
+	gcp, gcpProps, err := utils.Describe("gcpProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	gcp += " This object is required when type is `GCP` and is otherwise ignored."
+
+	azure, azureProps, err := utils.Describe("azureProvisioner")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI schema",
+			err.Error(),
+		)
+		return
+	}
+	azure += " This object is required when type is `AZURE` and is otherwise ignored."
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: prov,
 
@@ -484,6 +514,126 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						ElementType:         types.StringType,
 						PlanModifiers: []planmodifier.Set{
 							setplanmodifier.RequiresReplace(),
+						},
+					},
+				},
+			},
+			"aws": schema.SingleNestedAttribute{
+				MarkdownDescription: aws,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"accounts": schema.SetAttribute{
+						MarkdownDescription: awsProps["accounts"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"instance_age": schema.StringAttribute{
+						MarkdownDescription: awsProps["instanceAge"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: awsProps["disableTrustOnFirstUse"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: awsProps["disableCustomSANs"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+				},
+			},
+			"gcp": schema.SingleNestedAttribute{
+				MarkdownDescription: gcp,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"project_ids": schema.SetAttribute{
+						MarkdownDescription: gcpProps["projectIDs"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"service_accounts": schema.SetAttribute{
+						MarkdownDescription: gcpProps["serviceAccounts"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"instance_age": schema.StringAttribute{
+						MarkdownDescription: gcpProps["instanceAge"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: gcpProps["disableTrustOnFirstUse"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: gcpProps["disableCustomSANs"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+				},
+			},
+			"azure": schema.SingleNestedAttribute{
+				MarkdownDescription: azure,
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"tenant_id": schema.StringAttribute{
+						MarkdownDescription: azureProps["tenantID"],
+						Required:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
+					"resource_groups": schema.SetAttribute{
+						MarkdownDescription: azureProps["resourceGroups"],
+						ElementType:         types.StringType,
+						Required:            true,
+						PlanModifiers: []planmodifier.Set{
+							setplanmodifier.RequiresReplace(),
+						},
+					},
+					"audience": schema.StringAttribute{
+						MarkdownDescription: azureProps["audience"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_trust_on_first_use": schema.BoolAttribute{
+						MarkdownDescription: azureProps["disableTrustOnFirstUse"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: azureProps["disableCustomSANs"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
 						},
 					},
 				},

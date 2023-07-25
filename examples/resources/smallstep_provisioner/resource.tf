@@ -60,3 +60,40 @@ resource "smallstep_provisioner" "tpm_attest" {
     attestation_roots   = ["-----BEGIN CERTIFICATE-----\n..."]
   }
 }
+
+resource "smallstep_provisioner" "my_aws" {
+  authority_id = smallstep_authority.basic.id
+  name         = "AWS foo"
+  type         = "AWS"
+  aws = {
+    accounts                   = ["0123456789"]
+    instance_age               = "1h"
+    disable_trust_on_first_use = true
+    disable_custom_sans        = true
+  }
+}
+resource "smallstep_provisioner" "my_gcp" {
+  authority_id = smallstep_authority.basic.id
+  name         = "GCP foo"
+  type         = "GCP"
+  gcp = {
+    project_ids                = ["prod-1234"]
+    service_accounts           = ["pki@prod-1234.iam.gserviceaccount.com"]
+    instance_age               = "1h"
+    disable_trust_on_first_use = true
+    disable_custom_sans        = true
+  }
+}
+
+resource "smallstep_provisioner" "my_azure" {
+  authority_id = smallstep_authority.basic.id
+  name         = "Azure foo"
+  type         = "AZURE"
+  azure = {
+    tenant_id                  = "948920a7-8fc1-431f-be94-030a80232e51"
+    resource_groups            = ["prod-1234"]
+    audience                   = "example.com"
+    disable_trust_on_first_use = true
+    disable_custom_sans        = true
+  }
+}

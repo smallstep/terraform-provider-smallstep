@@ -94,6 +94,9 @@ const (
 const (
 	ACME            ProvisionerType = "ACME"
 	ACMEATTESTATION ProvisionerType = "ACME_ATTESTATION"
+	AWS             ProvisionerType = "AWS"
+	AZURE           ProvisionerType = "AZURE"
+	GCP             ProvisionerType = "GCP"
 	JWK             ProvisionerType = "JWK"
 	OIDC            ProvisionerType = "OIDC"
 	X5C             ProvisionerType = "X5C"
@@ -255,6 +258,39 @@ type AuthorityCsr struct {
 
 // AuthorityType One of the available authority types
 type AuthorityType string
+
+// AwsProvisioner Grant a certificate to an Amazon EC2 instance using the Instance Identity Document.
+type AwsProvisioner struct {
+	// Accounts The list of AWS account numbers that are allowed to use this provisioner.
+	Accounts []string `json:"accounts"`
+
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
+	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+
+	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
+	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
+
+	// InstanceAge The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	InstanceAge *string `json:"instanceAge,omitempty"`
+}
+
+// AzureProvisioner Grants certificates to Microsoft Azure instances using the managed identities tokens.
+type AzureProvisioner struct {
+	// Audience Defaults to https://management.azure.com/ but it can be changed if necessary.
+	Audience *string `json:"audience,omitempty"`
+
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the token will be valid, in Azure only the virtual machine name is available.
+	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+
+	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to true this limit is not set and different tokens can be used to get different certificates.
+	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
+
+	// ResourceGroups The list of resource group names that are allowed to use this provisioner.
+	ResourceGroups []string `json:"resourceGroups"`
+
+	// TenantID The Azure account tenant ID for this provisioner. This ID is the Directory ID available in the Azure Active Directory properties.
+	TenantID string `json:"tenantID"`
+}
 
 // BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
 type BasicAuth struct {
@@ -452,6 +488,24 @@ type EndpointX509CertificateData struct {
 type Error struct {
 	// Message A description of the error
 	Message string `json:"message"`
+}
+
+// GcpProvisioner Grant a certificate to a Google Compute Engine instance using its identity token.
+type GcpProvisioner struct {
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
+	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+
+	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
+	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
+
+	// InstanceAge The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	InstanceAge *string `json:"instanceAge,omitempty"`
+
+	// ProjectIDs The list of project identifiers that are allowed to use this provisioner.
+	ProjectIDs []string `json:"projectIDs"`
+
+	// ServiceAccounts The list of service accounts that are allowed to use this provisioner.
+	ServiceAccounts []string `json:"serviceAccounts"`
 }
 
 // Grant A grant gives permission to all users in a group to access a host with a matching tag.
@@ -1054,6 +1108,7 @@ type PostAuthJSONBody struct {
 	Audience *PostAuthJSONBodyAudience `json:"audience,omitempty"`
 	Bundle   *[]openapi_types.File     `json:"bundle,omitempty"`
 	TeamID   *string                   `json:"teamID,omitempty"`
+	TeamSlug *string                   `json:"teamSlug,omitempty"`
 }
 
 // PostAuthJSONBodyAudience defines parameters for PostAuth.
@@ -1661,6 +1716,84 @@ func (t *Provisioner) FromX5cProvisioner(v X5cProvisioner) error {
 
 // MergeX5cProvisioner performs a merge with any union data inside the Provisioner, using the provided X5cProvisioner
 func (t *Provisioner) MergeX5cProvisioner(v X5cProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsAwsProvisioner returns the union data inside the Provisioner as a AwsProvisioner
+func (t Provisioner) AsAwsProvisioner() (AwsProvisioner, error) {
+	var body AwsProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAwsProvisioner overwrites any union data inside the Provisioner as the provided AwsProvisioner
+func (t *Provisioner) FromAwsProvisioner(v AwsProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAwsProvisioner performs a merge with any union data inside the Provisioner, using the provided AwsProvisioner
+func (t *Provisioner) MergeAwsProvisioner(v AwsProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsGcpProvisioner returns the union data inside the Provisioner as a GcpProvisioner
+func (t Provisioner) AsGcpProvisioner() (GcpProvisioner, error) {
+	var body GcpProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGcpProvisioner overwrites any union data inside the Provisioner as the provided GcpProvisioner
+func (t *Provisioner) FromGcpProvisioner(v GcpProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGcpProvisioner performs a merge with any union data inside the Provisioner, using the provided GcpProvisioner
+func (t *Provisioner) MergeGcpProvisioner(v GcpProvisioner) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsAzureProvisioner returns the union data inside the Provisioner as a AzureProvisioner
+func (t Provisioner) AsAzureProvisioner() (AzureProvisioner, error) {
+	var body AzureProvisioner
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAzureProvisioner overwrites any union data inside the Provisioner as the provided AzureProvisioner
+func (t *Provisioner) FromAzureProvisioner(v AzureProvisioner) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAzureProvisioner performs a merge with any union data inside the Provisioner, using the provided AzureProvisioner
+func (t *Provisioner) MergeAzureProvisioner(v AzureProvisioner) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
