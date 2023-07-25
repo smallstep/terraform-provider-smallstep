@@ -19,12 +19,6 @@ func TestAccManagedWorkloadDataSource(t *testing.T) {
 	ec := utils.NewEndpointConfiguration(t, authority.Id, provisioner.Name)
 	mc := utils.NewManagedConfiguration(t, *ac.Id, *ec.Id)
 
-	agentConfig := fmt.Sprintf(`
-data "smallstep_agent_configuration" "agent" {
-	id = %q
-}
-`, *ac.Id)
-
 	managedConfig := fmt.Sprintf(`
 data "smallstep_managed_configuration" "mc" {
 	id = %q
@@ -50,6 +44,12 @@ data "smallstep_managed_configuration" "mc" {
 			},
 		},
 	})
+
+	agentConfig := fmt.Sprintf(`
+data "smallstep_agent_configuration" "agent" {
+	id = %q
+}
+`, *ac.Id)
 
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

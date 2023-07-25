@@ -263,9 +263,6 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	b, _ := json.Marshal(reqBody)
-	tflog.Trace(ctx, string(b))
-
 	httpResp, err := a.client.PostManagedConfigurations(ctx, &v20230301.PostManagedConfigurationsParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(

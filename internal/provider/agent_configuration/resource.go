@@ -95,8 +95,8 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	remote, d := fromAPI(ctx, ac, req.State)
-	if d.HasError() {
-		resp.Diagnostics.Append(d...)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -168,9 +168,6 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 
 	reqBody := toAPI(&plan)
-
-	b, _ := json.Marshal(reqBody)
-	tflog.Trace(ctx, string(b))
 
 	httpResp, err := a.client.PostAgentConfigurations(ctx, &v20230301.PostAgentConfigurationsParams{}, *reqBody)
 	if err != nil {

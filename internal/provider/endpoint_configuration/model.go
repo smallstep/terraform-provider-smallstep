@@ -22,8 +22,10 @@ type Model struct {
 	Kind            types.String          `tfsdk:"kind"`
 	CertificateInfo *CertificateInfoModel `tfsdk:"certificate_info"`
 	KeyInfo         *KeyInfoModel         `tfsdk:"key_info"`
-	ReloadInfo      types.Object          `tfsdk:"reload_info"`
-	Hooks           types.Object          `tfsdk:"hooks"`
+	// ReloadInfo and Hooks are optional. Need to use Object type to support
+	// the "unknown" state.
+	ReloadInfo types.Object `tfsdk:"reload_info"`
+	Hooks      types.Object `tfsdk:"hooks"`
 }
 
 type CertificateInfoModel struct {
@@ -83,7 +85,6 @@ func (h *HookModel) toAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Di
 	var after *[]string
 	var onError *[]string
 
-	// TODO do I still need double pointer with this null check?
 	if !h.Before.IsNull() {
 		diags.Append(h.Before.ElementsAs(ctx, &before, false)...)
 	}

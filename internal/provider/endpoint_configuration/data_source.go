@@ -89,8 +89,8 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	}
 
 	remote, d := fromAPI(ctx, ac, req.Config)
-	if d.HasError() {
-		resp.Diagnostics.Append(d...)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 

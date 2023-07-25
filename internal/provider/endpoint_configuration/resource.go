@@ -96,8 +96,8 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	remote, d := fromAPI(ctx, ac, req.State)
-	if d.HasError() {
-		resp.Diagnostics.Append(d...)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -204,7 +204,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				// This object is not required by the API but a default object
 				// will always be returned with both format and type set to
 				// "DEFAULT". To avoid "inconsistent result after apply" errors
-				// require these fields to be set explicitlyl in terraform.
+				// require these fields to be set explicitly in terraform.
 				Required:            true,
 				MarkdownDescription: keyInfo,
 				Attributes: map[string]schema.Attribute{
@@ -395,9 +395,6 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	b, _ := json.Marshal(reqBody)
-	tflog.Trace(ctx, string(b))
 
 	httpResp, err := a.client.PostEndpointConfigurations(ctx, &v20230301.PostEndpointConfigurationsParams{}, *reqBody)
 	if err != nil {
