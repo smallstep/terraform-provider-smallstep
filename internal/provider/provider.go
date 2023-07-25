@@ -18,6 +18,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection_instance"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -170,6 +171,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		collection.NewResource,
 		collection_instance.NewResource,
 		attestation_authority.NewResource,
+		webhook.NewResource,
 	}
 }
 
@@ -180,6 +182,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		collection.NewDataSource,
 		collection_instance.NewDataSource,
 		attestation_authority.NewDataSource,
+		webhook.NewDataSource,
 	}
 }
 
