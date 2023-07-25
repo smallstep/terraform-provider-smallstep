@@ -62,3 +62,98 @@ resource "smallstep_provisioner_webhook" "devices" {
   collection_slug = smallstep_collection.tpms.slug
   depends_on      = [smallstep_collection.tpms]
 }
+
+resource "smallstep_agent_configuration" "agent1" {
+	authority_id = smallstep_authority.agents.id
+	provisioner_name = smallstep_provisioner.agents.name
+	name = "Agent1"
+	attestation_slug = smallstep_attestation_authority.aa.slug
+	depends_on = [smallstep_provisioner.agents]
+}
+
+resource "smallstep_endpoint_configuration" "ep_x509" {
+	name = "My DB"
+	kind = "WORKLOAD"
+
+	authority_id = smallstep_authority.endpoints.id
+	provisioner_name = smallstep_provisioner.endpoints.name
+
+	certificate_info = {
+		type = "X509"
+		duration = "168h"
+		crt_file = "db.crt"
+		key_file = "db.key"
+		root_file = "ca.crt"
+		uid = 1001
+		gid = 999
+		mode = 256
+	}
+
+	hooks = {
+		renew = {
+			shell = "/bin/sh"
+			before = [ "echo renewing" ]
+			after = [ "echo renewed" ]
+			on_error = [ "echo failed renew" ]
+		}
+		sign = {
+			shell = "/bin/bash"
+			before = [ "echo signing" ]
+			after = [ "echo signed" ]
+			on_error = [ "echo failed sign" ]
+		}
+	}
+
+	key_info = {
+		format = "DEFAULT"
+		type = "ECDSA_P256"
+		pub_file = "file.csr"
+	}
+
+	reload_info = {
+		method = "SIGNAL"
+		pid_file = "db.pid"
+		signal = 1
+	}
+}
+
+resource "smallstep_endpoint_configuration" "ep_ssh" {
+	name = "SSH"
+	kind = "PEOPLE"
+	authority_id = smallstep_authority.agents.id
+	provisioner_name = smallstep_provisioner.agents.name
+	certificate_info = {
+		type = "SSH_USER"
+	}
+  key_info = {
+    type = "RSA_2048"
+    format = "OPENSSH"
+  }
+}
+
+resource "smallstep_managed_configuration" "mc" {
+	agent_configuration_id = smallstep_agent_configuration.agent1.id
+	host_id = "9cdaf513-3296-4037-bd9b-d0634f51cd79"
+	name = "DB Server"
+	managed_endpoints = [
+		{
+			endpoint_configuration_id = smallstep_endpoint_configuration.ep_x509.id
+			x509_certificate_data = {
+				common_name = "db"
+				sans = [
+					"db",
+					"db.default",
+					"db.default.svc",
+					"db.defaulst.svc.cluster.local",
+				]
+			}
+		},
+		{
+			endpoint_configuration_id = smallstep_endpoint_configuration.ep_ssh.id
+      ssh_certificate_data = {
+        key_id = "abc"
+        principals = ["ops"]
+      }
+		},
+	]
+}
