@@ -115,7 +115,7 @@ var hooksObjectType = map[string]attr.Type{
 
 func hookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook, diag.Diagnostics) {
 	hookModel := &HookModel{}
-	diags := hook.As(ctx, hookModel, basetypes.ObjectAsOptions{
+	diags := hook.As(ctx, &hookModel, basetypes.ObjectAsOptions{
 		UnhandledUnknownAsEmpty: true,
 	})
 

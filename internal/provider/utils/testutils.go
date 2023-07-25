@@ -294,7 +294,8 @@ func SweepAttestationAuthorities() error {
 	}
 
 	for _, aa := range list {
-		if !strings.HasPrefix(aa.Name, "tfprovider") {
+		// API e2e tests create one named "foo"
+		if !strings.HasPrefix(aa.Name, "tfprovider") && aa.Name != "foo" {
 			continue
 		}
 		resp, err := client.DeleteAttestationAuthority(context.Background(), *aa.Id, &v20230301.DeleteAttestationAuthorityParams{})
