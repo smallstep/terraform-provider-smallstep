@@ -2,9 +2,14 @@
 
 FEATURES:
 
-* Add smallstep_provisioner resource and data source
-* Add smallstep_collection resource and data source
-* Add smallstep_collection_instance resource and data source
+* Add smallstep_provisioner data source and resource with import. The supported provisioner types are OIDC, JWK, ACME, ACME_ATTESTATION, X5C, AWS, GCP and AZURE.
+* Add smallstep_collection data source and resource with import.
+* Add smallstep_collection_instance data source and resource with import.
+* Add smallstep_provisioner_webhook data source and resource with import.
+* Add smallstep_attestation_authority data source and resource with import.
+* Add smallstep_agent_configuration data source and resource with import.
+* Add smallstep_endpoint_configuration data source and resource with import.
+* Add smallstep_managed_configuration data source and resource with import.
 
 BUG FIXES:
 
