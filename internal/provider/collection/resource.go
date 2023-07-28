@@ -264,6 +264,36 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
+	// Lookup the collection to ensure it's empty before deleting
+	getResp, err := a.client.GetCollection(ctx, state.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to read collection %s: %v", state.Slug.String(), err),
+		)
+		return
+	}
+	defer getResp.Body.Close()
+	if getResp.StatusCode == http.StatusNotFound {
+		return
+	}
+	collection := &v20230301.Collection{}
+	if err := json.NewDecoder(getResp.Body).Decode(collection); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal collection %s: %v", state.Slug.String(), err),
+		)
+		return
+	}
+	if collection.InstanceCount != 0 {
+		resp.Diagnostics.AddError(
+			"Delete Not Allowed",
+			fmt.Sprintf("The collection cannot be deleted because it is not empty"),
+		)
+		return
+
+	}
+
 	httpResp, err := a.client.DeleteCollection(ctx, state.Slug.ValueString(), &v20230301.DeleteCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
