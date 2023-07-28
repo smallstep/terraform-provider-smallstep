@@ -3,12 +3,12 @@
 page_title: "smallstep_agent_configuration Data Source - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+  The agent configuration describes the attestation authority used by the agent to grant workload certificates. This object is experimental and subject to change.
 ---
 
 # smallstep_agent_configuration (Data Source)
 
-The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+The agent configuration describes the attestation authority used by the agent to grant workload certificates. This object is experimental and subject to change.
 
 ## Example Usage
 
@@ -23,7 +23,7 @@ data "smallstep_agent_configuration" "agent1" {
 
 ### Required
 
-- `id` (String) A UUID identifying this agent configuration. Generated server-side on creation.
+- `id` (String) A UUID identifying this agent configuration. Read only.
 
 ### Read-Only
 

@@ -3,12 +3,12 @@
 page_title: "smallstep_endpoint_configuration Data Source - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  Configuration for a managed endpoint
+  Configuration for a managed endpoint. This object is experimental and subject to change.
 ---
 
 # smallstep_endpoint_configuration (Data Source)
 
-Configuration for a managed endpoint
+Configuration for a managed endpoint. This object is experimental and subject to change.
 
 ## Example Usage
 
@@ -23,12 +23,12 @@ data "smallstep_endpoint_configuration" "ep1" {
 
 ### Required
 
-- `id` (String) A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+- `id` (String) A UUID identifying this endpoint configuration. Read only.
 
 ### Read-Only
 
 - `authority_id` (String) UUID identifying the authority that will issue certificates for the endpoint.
-- `certificate_info` (Attributes) Details on a managed certificate (see [below for nested schema](#nestedatt--certificate_info))
+- `certificate_info` (Attributes) Details on a managed certificate. (see [below for nested schema](#nestedatt--certificate_info))
 - `hooks` (Attributes) The collection of commands to run when a certificate for a managed endpoint is signed or renewed. (see [below for nested schema](#nestedatt--hooks))
 - `key_info` (Attributes) The attributes of the cryptographic key. (see [below for nested schema](#nestedatt--key_info))
 - `kind` (String) The kind of endpoint this configuration applies to. Allowed values: `DEVICE` `WORKLOAD` `PEOPLE`
@@ -47,7 +47,7 @@ Read-Only:
 - `key_file` (String) The filepath where the key is to be stored.
 - `mode` (Number) Permission bits of the files where the certificate is stored.
 - `root_file` (String) The filepath where the root certificate is to be stored.
-- `type` (String) The type of certificate Allowed values: `X509` `SSH_USER` `SSH_HOST`
+- `type` (String) The type of certificate. Allowed values: `X509` `SSH_USER` `SSH_HOST`
 - `uid` (Number) UID of the files where the certificate is stored.
 
 

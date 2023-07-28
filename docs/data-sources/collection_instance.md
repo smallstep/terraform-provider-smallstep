@@ -3,12 +3,12 @@
 page_title: "smallstep_collection_instance Data Source - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An instance in a collection
+  An instance in a collection.
 ---
 
 # smallstep_collection_instance (Data Source)
 
-An instance in a collection
+An instance in a collection.
 
 ## Example Usage
 
@@ -28,9 +28,9 @@ data "smallstep_collection_instance" "tpm1" {
 
 ### Read-Only
 
-- `created_at` (String) Timestamp of when the instance was added to the collection
-- `data` (String) The instance data
+- `created_at` (String) Timestamp in RFC3339 format when the instance was added to the collection.
+- `data` (String) The instance data.
 - `id` (String) The ID of this resource.
-- `updated_at` (String) Timestamp of when the instance was last changed
+- `updated_at` (String) Timestamp in RFC3339 format when the instance was last changed.
 
 

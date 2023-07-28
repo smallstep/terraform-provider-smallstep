@@ -3,12 +3,12 @@
 page_title: "smallstep_authority Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An X509 authority hosted by Smallstep
+  An X509 authority hosted by Smallstep.
 ---
 
 # smallstep_authority (Resource)
 
-An X509 authority hosted by Smallstep
+An X509 authority hosted by Smallstep.
 
 ## Example Usage
 
@@ -78,38 +78,38 @@ resource "smallstep_authority" "advanced" {
 ### Required
 
 - `admin_emails` (Set of String)
-- `name` (String) The name of the authority
-- `subdomain` (String) The domain where the authority can be reached
+- `name` (String) The name of the authority.
+- `subdomain` (String) The domain where the authority can be reached.
 - `type` (String) One of the available authority types
- Allowed values: `devops` `advanced`
+ Allowed values: `devops` `advanced` `managed`
 
 ### Optional
 
-- `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only)
+- `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only).
 - `intermediate_issuer` (Attributes) (see [below for nested schema](#nestedatt--intermediate_issuer))
 - `root_issuer` (Attributes) (see [below for nested schema](#nestedatt--root_issuer))
 
 ### Read-Only
 
-- `created_at` (String) Timestamp when the authority was created
-- `domain` (String) The domain where the authority can be reached
-- `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format
-- `id` (String) A UUID identifying this authority
+- `created_at` (String) Timestamp when the authority was created.
+- `domain` (String) The domain where the authority can be reached.
+- `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
+- `id` (String) A UUID identifying this authority.
 
 <a id="nestedatt--intermediate_issuer"></a>
 ### Nested Schema for `intermediate_issuer`
 
 Required:
 
-- `key_version` (String) The signature algorithm
+- `key_version` (String) The signature algorithm.
  Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
-- `name` (String) The name of the issuer
+- `name` (String) The name of the issuer.
 
 Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
+- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--intermediate_issuer--subject))
 
 <a id="nestedatt--intermediate_issuer--name_constraints"></a>
@@ -117,7 +117,7 @@ Optional:
 
 Optional:
 
-- `critical` (Boolean) Whether or not name constraints are marked critical
+- `critical` (Boolean) Whether or not name constraints are marked critical.
 - `excluded_dns_domains` (Set of String)
 - `excluded_email_addresses` (Set of String)
 - `excluded_ip_ranges` (Set of String)
@@ -151,15 +151,15 @@ Optional:
 
 Required:
 
-- `key_version` (String) The signature algorithm
+- `key_version` (String) The signature algorithm.
  Allowed values: `EC_SIGN_P256_SHA256` `EC_SIGN_P384_SHA384` `RSA_SIGN_PKCS1_2048_SHA256` `RSA_SIGN_PKCS1_3072_SHA256` `RSA_SIGN_PKCS1_4096_SHA256` `RSA_SIGN_PKCS1_4096_SHA512` `RSA_SIGN_PSS_2048_SHA256` `RSA_SIGN_PSS_3072_SHA256` `RSA_SIGN_PSS_4096_SHA256` `RSA_SIGN_PSS_4096_SHA512`
-- `name` (String) The name of the issuer
+- `name` (String) The name of the issuer.
 
 Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
+- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--root_issuer--subject))
 
 <a id="nestedatt--root_issuer--name_constraints"></a>
@@ -167,7 +167,7 @@ Optional:
 
 Optional:
 
-- `critical` (Boolean) Whether or not name constraints are marked critical
+- `critical` (Boolean) Whether or not name constraints are marked critical.
 - `excluded_dns_domains` (Set of String)
 - `excluded_email_addresses` (Set of String)
 - `excluded_ip_ranges` (Set of String)
