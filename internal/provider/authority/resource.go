@@ -38,15 +38,15 @@ func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, r
 }
 
 func (r *Resource) x509IssuerSchema() (map[string]schema.Attribute, error) {
-	_, properties, err := utils.Describe("x509-issuer")
+	_, properties, err := utils.Describe("x509Issuer")
 	if err != nil {
 		return nil, err
 	}
-	_, nameConstraints, err := utils.Describe("name-constraints")
+	_, nameConstraints, err := utils.Describe("nameConstraints")
 	if err != nil {
 		return nil, err
 	}
-	_, subject, err := utils.Describe("distinguished-name")
+	_, subject, err := utils.Describe("distinguishedName")
 	if err != nil {
 		return nil, err
 	}

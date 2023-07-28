@@ -1,12 +1,14 @@
 ## 0.3.0
 
 FEATURES:
-* Add schema_uri field to smallstep_collection data source and resource.
-* Changing the data field on a smallstep_collection_instance resources updates the instance in place. Previously changing the instance data required replacing the instance.
+* Add `schema_uri` attribute to smallstep_collection data source and resource.
+* Changing the `data` attribute on a smallstep_collection_instance resource updates the instance in place. Previously changing the `data` attribute required replacing the instance.
+* Changing the `display_name` attribute on a smallstep_collection resource updates the collection in place. Previously changing the `display_name` attribute required replacing the collection.
 
 BUG FIXES:
 
 * Changing smallstep_collection_instance.id forces replace of the instance. Previously a new instance would be created and the instance with the old id would remain in the collection.
+* A smallstep_collection resource without the optional `display_name` attribute set would fail to apply.
 
 ## 0.2.0
 

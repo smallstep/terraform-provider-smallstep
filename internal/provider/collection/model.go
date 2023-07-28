@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
@@ -18,6 +19,7 @@ type Model struct {
 	InstanceCount types.Int64  `tfsdk:"instance_count"`
 	CreatedAt     types.String `tfsdk:"created_at"`
 	UpdatedAt     types.String `tfsdk:"updated_at"`
+	SchemaURI     types.String `tfsdk:"schema_uri"`
 	// https://developer.hashicorp.com/terraform/plugin/framework/acctests#implement-id-attribute
 	ID types.String `tfsdk:"id"`
 }
@@ -25,10 +27,17 @@ type Model struct {
 func fromAPI(ctx context.Context, collection *v20230301.Collection, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
+	displayName, d := utils.ToOptionalString(ctx, &collection.DisplayName, state, path.Root("display_name"))
+	diags.Append(d...)
+
+	schemaURI, d := utils.ToOptionalString(ctx, collection.SchemaURI, state, path.Root("schema_uri"))
+	diags.Append(d...)
+
 	model := &Model{
 		Slug:          types.StringValue(collection.Slug),
 		InstanceCount: types.Int64Value(int64(collection.InstanceCount)),
-		DisplayName:   types.StringValue(collection.DisplayName),
+		DisplayName:   displayName,
+		SchemaURI:     schemaURI,
 		CreatedAt:     types.StringValue(collection.CreatedAt.Format(time.RFC3339)),
 		UpdatedAt:     types.StringValue(collection.UpdatedAt.Format(time.RFC3339)),
 		ID:            types.StringValue(collection.Slug),
@@ -37,9 +46,18 @@ func fromAPI(ctx context.Context, collection *v20230301.Collection, state utils.
 	return model, diags
 }
 
-func toAPI(model *Model) *v20230301.NewCollection {
+func toAPINew(model *Model) *v20230301.NewCollection {
 	return &v20230301.NewCollection{
 		Slug:        model.Slug.ValueString(),
 		DisplayName: model.DisplayName.ValueStringPointer(),
+		SchemaURI:   model.SchemaURI.ValueStringPointer(),
+	}
+}
+
+func toAPI(model *Model) *v20230301.Collection {
+	return &v20230301.Collection{
+		Slug:        model.Slug.ValueString(),
+		DisplayName: model.DisplayName.ValueString(),
+		SchemaURI:   model.SchemaURI.ValueStringPointer(),
 	}
 }

@@ -131,10 +131,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"display_name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
 				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
+			},
+			"schema_uri": schema.StringAttribute{
+				MarkdownDescription: props["schemaURI"],
+				Optional:            true,
 			},
 			"instance_count": schema.Int64Attribute{
 				MarkdownDescription: props["instanceCount"],
@@ -164,7 +164,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	reqBody := toAPI(&plan)
+	reqBody := toAPINew(&plan)
 
 	b, _ := json.Marshal(reqBody)
 	tflog.Trace(ctx, string(b))
@@ -208,7 +208,51 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	plan := &Model{}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody := toAPI(plan)
+
+	httpResp, err := r.client.PutCollection(ctx, plan.Slug.ValueString(), &v20230301.PutCollectionParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update collection %q: %v", plan.Slug.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d updating collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	collection := &v20230301.Collection{}
+	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal collection %q: %v", plan.Slug.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, collection, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update collection %q resource", plan.Slug.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
