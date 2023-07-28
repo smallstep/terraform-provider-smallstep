@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -58,6 +59,11 @@ resource "smallstep_collection_instance" "thing1" {
 					resource.TestMatchResourceAttr("smallstep_collection_instance.thing1", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 					resource.TestMatchResourceAttr("smallstep_collection_instance.thing1", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_collection_instance.thing1", plancheck.ResourceActionUpdate),
+					},
+				},
 			},
 			{
 				ResourceName:  "smallstep_collection_instance.thing1",
