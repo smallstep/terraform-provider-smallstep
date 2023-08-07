@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -175,30 +174,18 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"kind": schema.StringAttribute{
 				MarkdownDescription: props["kind"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"authority_id": schema.StringAttribute{
 				MarkdownDescription: props["authorityID"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"provisioner_name": schema.StringAttribute{
 				MarkdownDescription: props["provisioner"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"key_info": schema.SingleNestedAttribute{
 				// This object is not required by the API but a default object
@@ -211,23 +198,14 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"type": schema.StringAttribute{
 						Required:            true,
 						MarkdownDescription: keyInfoProps["type"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"format": schema.StringAttribute{
 						Required:            true,
 						MarkdownDescription: keyInfoProps["format"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"pub_file": schema.StringAttribute{
 						Optional:            true,
 						MarkdownDescription: keyInfoProps["pubFile"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 				},
 			},
@@ -239,23 +217,14 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"method": schema.StringAttribute{
 						Required:            true,
 						MarkdownDescription: reloadInfoProps["method"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"pid_file": schema.StringAttribute{
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["pidFile"],
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"signal": schema.Int64Attribute{
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["signal"],
-						PlanModifiers: []planmodifier.Int64{
-							int64planmodifier.RequiresReplace(),
-						},
 					},
 				},
 			},
@@ -323,58 +292,34 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"type": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["type"],
 						Required:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"duration": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["duration"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"crt_file": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["crtFile"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"key_file": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["keyFile"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"root_file": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["rootFile"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
 					},
 					"uid": schema.Int64Attribute{
 						MarkdownDescription: certInfoProps["uid"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.Int64{
-							int64planmodifier.RequiresReplace(),
-						},
 					},
 					"gid": schema.Int64Attribute{
 						MarkdownDescription: certInfoProps["gid"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.Int64{
-							int64planmodifier.RequiresReplace(),
-						},
 					},
 					"mode": schema.Int64Attribute{
 						MarkdownDescription: certInfoProps["mode"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.Int64{
-							int64planmodifier.RequiresReplace(),
-						},
 					},
 				},
 			},
@@ -435,7 +380,55 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	plan := &Model{}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody, diags := toAPI(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	httpResp, err := r.client.PutEndpointConfiguration(ctx, plan.ID.ValueString(), &v20230301.PutEndpointConfigurationParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update endpoint configuration %q: %v", plan.ID.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d updating endpoint configuration %q: %s", httpResp.StatusCode, plan.ID.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	ec := &v20230301.EndpointConfiguration{}
+	if err := json.NewDecoder(httpResp.Body).Decode(ec); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal endpoint configuration %q: %v", plan.ID.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, ec, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update endpoint configuration %q resource", plan.ID.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

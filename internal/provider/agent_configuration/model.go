@@ -39,6 +39,7 @@ func fromAPI(ctx context.Context, ac *v20230301.AgentConfiguration, state utils.
 
 func toAPI(model *Model) *v20230301.AgentConfiguration {
 	return &v20230301.AgentConfiguration{
+		Id:              model.ID.ValueStringPointer(),
 		Name:            model.Name.ValueString(),
 		AuthorityID:     model.AuthorityID.ValueString(),
 		Provisioner:     model.Provisioner.ValueString(),
