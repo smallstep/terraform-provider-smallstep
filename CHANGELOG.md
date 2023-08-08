@@ -4,6 +4,7 @@ FEATURES:
 * Add `schema_uri` attribute to smallstep_collection data source and resource.
 * Changing the `data` attribute on a smallstep_collection_instance resource updates the instance in place. Previously changing the `data` attribute required replacing the instance.
 * Changing the `display_name` attribute on a smallstep_collection resource updates the collection in place. Previously changing the `display_name` attribute required replacing the collection.
+* All user-supplied attributes on smallstep_agent_configuration, smallstep_endpoint_configuration and smallstep_managed_configuration resources will update the resource in place. Previously changing any attribute required replacing the resource.
 
 BUG FIXES:
 
