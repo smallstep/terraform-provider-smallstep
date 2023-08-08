@@ -1,4 +1,4 @@
-package provider
+package collection
 
 import (
 	"context"
@@ -13,14 +13,32 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
+	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
 
+var provider = &testprovider.SmallstepTestProvider{
+	ResourceFactories: []func() resource.Resource{
+		NewResource,
+	},
+	DataSourceFactories: []func() datasource.DataSource{
+		NewDataSource,
+	},
+}
+
+var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
+	"smallstep": providerserver.NewProtocol6WithError(provider),
+}
+
 func init() {
-	resource.AddTestSweepers("smallstep_collection", &resource.Sweeper{
+	helper.AddTestSweepers("smallstep_collection", &helper.Sweeper{
 		Name: "smallstep_collection",
 		F: func(region string) error {
 			ctx := context.Background()
@@ -94,28 +112,27 @@ resource "smallstep_collection" "employees" {
 	display_name = "Employees"
 }`, slug)
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
 			{
 				Config: config,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug),
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "display_name", "Current Employees"),
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "schema_uri", "https://schema.infra.smallstep.com/manage-workloads/device/aws-vm"),
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "instance_count", "0"),
-					resource.TestMatchResourceAttr("smallstep_collection.employees", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-					resource.TestMatchResourceAttr("smallstep_collection.employees", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "display_name", "Current Employees"),
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "schema_uri", "https://schema.infra.smallstep.com/manage-workloads/device/aws-vm"),
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "instance_count", "0"),
+					helper.TestMatchResourceAttr("smallstep_collection.employees", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
+					helper.TestMatchResourceAttr("smallstep_collection.employees", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
 			{
 				Config: updatedConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "display_name", "Employees"),
-					resource.TestCheckNoResourceAttr("smallstep_collection.employees", "schema_uri"),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "display_name", "Employees"),
+					helper.TestCheckNoResourceAttr("smallstep_collection.employees", "schema_uri"),
 				),
-				ConfigPlanChecks: resource.ConfigPlanChecks{
+				ConfigPlanChecks: helper.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{
 						plancheck.ExpectResourceAction("smallstep_collection.employees", plancheck.ResourceActionUpdate),
 					},
@@ -138,16 +155,15 @@ resource "smallstep_collection" "employees" {
 	schema_uri = ""
 }`, slug2)
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
 			{
 				Config: emptyConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug2),
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "display_name", ""),
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "schema_uri", ""),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug2),
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "display_name", ""),
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "schema_uri", ""),
 				),
 			},
 		},
@@ -159,16 +175,15 @@ resource "smallstep_collection" "employees" {
 	slug = %q
 }`, slug3)
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
 			{
 				Config: nullConfig,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug3),
-					resource.TestCheckNoResourceAttr("smallstep_collection.employees", "display_name"),
-					resource.TestCheckNoResourceAttr("smallstep_collection.employees", "schema_uri"),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_collection.employees", "slug", slug3),
+					helper.TestCheckNoResourceAttr("smallstep_collection.employees", "display_name"),
+					helper.TestCheckNoResourceAttr("smallstep_collection.employees", "schema_uri"),
 				),
 			},
 		},

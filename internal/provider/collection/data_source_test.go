@@ -1,4 +1,4 @@
-package provider
+package collection
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ data "smallstep_collection" "test" {
 `, collection.Slug)
 
 	resource.Test(t, resource.TestCase{
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		ProtoV6ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
