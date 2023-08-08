@@ -16,6 +16,10 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
 
+func TestMain(m *testing.M) {
+	helper.TestMain(m)
+}
+
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		collection.NewResource,
