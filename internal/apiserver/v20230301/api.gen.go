@@ -45,6 +45,7 @@ const (
 const (
 	AuthorityTypeAdvanced AuthorityType = "advanced"
 	AuthorityTypeDevops   AuthorityType = "devops"
+	AuthorityTypeManaged  AuthorityType = "managed"
 )
 
 // Defines values for EndpointCertificateInfoType.
@@ -145,7 +146,7 @@ const (
 
 // AcmeAttestationProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/).
 type AcmeAttestationProvisioner struct {
-	// AttestationFormats The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
+	// AttestationFormats The allowed attestation formats for the device-attest-01 challenge. Valid values are `apple`, `step`, and `tpm`. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
 	AttestationFormats []AcmeAttestationProvisionerAttestationFormats `json:"attestationFormats"`
 
 	// AttestationRoots A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
@@ -169,14 +170,14 @@ type AcmeProvisioner struct {
 	// ForceCN Force one of the SANs to become the Common Name, if a Common Name is not provided.
 	ForceCN *bool `json:"forceCN,omitempty"`
 
-	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
+	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be `true` for all new provisioners.
 	RequireEAB bool `json:"requireEAB"`
 }
 
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
 
-// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates. This object is experimental and subject to change.
 type AgentConfiguration struct {
 	// AttestationSlug The slug of the attestation authority the agent connects to to get a certificate.
 	AttestationSlug *string `json:"attestationSlug,omitempty"`
@@ -184,7 +185,7 @@ type AgentConfiguration struct {
 	// AuthorityID UUID identifying the authority the agent uses to generate endpoint certificates.
 	AuthorityID string `json:"authorityID"`
 
-	// Id A UUID identifying this agent configuration. Generated server-side on creation.
+	// Id A UUID identifying this agent configuration. Read only.
 	Id *string `json:"id,omitempty"`
 
 	// Name The name of this agent configuration.
@@ -202,16 +203,16 @@ type AttestationAuthority struct {
 	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
 	AttestorRoots string `json:"attestorRoots"`
 
-	// Catalog The slug of a collection that holds the list of devices belonging to the team
+	// Catalog The slug of a collection that holds the list of devices belonging to the team.
 	Catalog string `json:"catalog"`
 
-	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created
+	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created.
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
-	// Id A UUID identifying this attestation authority. Generated server-side.
+	// Id A UUID identifying this attestation authority. Read only.
 	Id *string `json:"id,omitempty"`
 
-	// Name The name of the attestation authority
+	// Name The name of the attestation authority.
 	Name string `json:"name"`
 
 	// Root The pem-encoded root certificate of this attestation authority. This is generated server-side when the attestation authority is created. This certificate should be used in the `attestationRoots` field of an ACME_ATTESTATION provisioner with the `tpm` format.
@@ -221,51 +222,51 @@ type AttestationAuthority struct {
 	Slug *string `json:"slug,omitempty"`
 }
 
-// Authority An X509 authority hosted by Smallstep
+// Authority An X509 authority hosted by Smallstep.
 type Authority struct {
-	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only)
+	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only).
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// AdminEmails Users that have admin access to manage the authority
+	// AdminEmails Users that have admin access to manage the authority.
 	AdminEmails *[]string `json:"adminEmails,omitempty"`
 
-	// CreatedAt Timestamp when the authority was created
+	// CreatedAt Timestamp when the authority was created.
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Domain The domain where the authority can be reached
+	// Domain The domain where the authority can be reached.
 	Domain string `json:"domain"`
 
-	// Fingerprint The SHA-256 digest of the authority's root certificate in hex format
+	// Fingerprint The SHA-256 digest of the authority's root certificate in hex format.
 	Fingerprint *string `json:"fingerprint,omitempty"`
 
-	// Id A UUID identifying this authority
+	// Id A UUID identifying this authority.
 	Id string `json:"id"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
 	// Type One of the available authority types
 	Type AuthorityType `json:"type"`
 }
 
-// AuthorityCsr A certificate signing request for an X509 advanced authority with an external root
+// AuthorityCsr A certificate signing request for an X509 advanced authority with an external root.
 type AuthorityCsr struct {
-	// AuthorityID A UUID identifying the authority
+	// AuthorityID A UUID identifying the authority.
 	AuthorityID string `json:"authorityID"`
 
-	// Csr A certificate sigining request for the authority's intermediate issuer in pem format
+	// Csr A certificate sigining request for the authority's intermediate issuer in pem format.
 	Csr string `json:"csr"`
 
-	// Id A UUID identifying this CSR
+	// Id A UUID identifying this CSR.
 	Id string `json:"id"`
 }
 
 // AuthorityType One of the available authority types
 type AuthorityType string
 
-// AwsProvisioner Grant a certificate to an Amazon EC2 instance using the Instance Identity Document.
+// AwsProvisioner The [AWS provisioner](https://smallstep.com/docs/step-ca/provisioners/#aws) grants a certificate to an Amazon EC2 instance using the Instance Identity Document.
 type AwsProvisioner struct {
-	// Accounts The list of AWS account numbers that are allowed to use this provisioner.
+	// Accounts The list of AWS account IDs that are allowed to use this provisioner.
 	Accounts []string `json:"accounts"`
 
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
@@ -278,7 +279,7 @@ type AwsProvisioner struct {
 	InstanceAge *string `json:"instanceAge,omitempty"`
 }
 
-// AzureProvisioner Grants certificates to Microsoft Azure instances using the managed identities tokens.
+// AzureProvisioner The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens.
 type AzureProvisioner struct {
 	// Audience Defaults to https://management.azure.com/ but it can be changed if necessary.
 	Audience *string `json:"audience,omitempty"`
@@ -302,31 +303,37 @@ type BasicAuth struct {
 	Username string `json:"username"`
 }
 
-// Collection A collection of instances
+// Collection A collection of instances.
 type Collection struct {
+	// CreatedAt Timestamp in RFC3339 format when the collections was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// DisplayName A user-friendly name for the collection
+	// DisplayName A user-friendly name for the collection.
 	DisplayName string `json:"displayName"`
 
-	// InstanceCount The number of instances in the collection
+	// InstanceCount The number of instances in the collection.
 	InstanceCount int `json:"instanceCount"`
 
+	// SchemaURI Reference to a schema that all instances in the collection must conform to.
+	SchemaURI *string `json:"schemaURI,omitempty"`
+
 	// Slug A lowercase name identifying the collection.
-	Slug      string    `json:"slug"`
+	Slug string `json:"slug"`
+
+	// UpdatedAt Timestamp in RFC3339 format when the collections was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// CollectionInstance An instance in a collection
+// CollectionInstance An instance in a collection.
 type CollectionInstance struct {
-	// CreatedAt Timestamp of when the instance was added to the collection
+	// CreatedAt Timestamp in RFC3339 format when the instance was added to the collection.
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Data The instance data
+	// Data The instance data.
 	Data interface{} `json:"data"`
 	Id   string      `json:"id"`
 
-	// UpdatedAt Timestamp of when the instance was last changed
+	// UpdatedAt Timestamp in RFC3339 format when the instance was last changed.
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -337,7 +344,7 @@ type DistinguishedName struct {
 	EmailAddress       *string `json:"emailAddress,omitempty"`
 	Locality           *string `json:"locality,omitempty"`
 	Organization       *string `json:"organization,omitempty"`
-	OrganizationalUnit *string `json:"organizational_unit,omitempty"`
+	OrganizationalUnit *string `json:"organizationalUnit,omitempty"`
 	PostalCode         *string `json:"postalCode,omitempty"`
 	Province           *string `json:"province,omitempty"`
 	SerialNumber       *string `json:"serialNumber,omitempty"`
@@ -350,7 +357,7 @@ type Email struct {
 	Primary *bool   `json:"primary,omitempty"`
 }
 
-// EndpointCertificateInfo Details on a managed certificate
+// EndpointCertificateInfo Details on a managed certificate.
 type EndpointCertificateInfo struct {
 	// CrtFile The filepath where the certificate is to be stored.
 	CrtFile *string `json:"crtFile,omitempty"`
@@ -370,28 +377,28 @@ type EndpointCertificateInfo struct {
 	// RootFile The filepath where the root certificate is to be stored.
 	RootFile *string `json:"rootFile,omitempty"`
 
-	// Type The type of certificate
+	// Type The type of certificate.
 	Type EndpointCertificateInfoType `json:"type"`
 
 	// Uid UID of the files where the certificate is stored.
 	Uid *int `json:"uid,omitempty"`
 }
 
-// EndpointCertificateInfoType The type of certificate
+// EndpointCertificateInfoType The type of certificate.
 type EndpointCertificateInfoType string
 
-// EndpointConfiguration Configuration for a managed endpoint
+// EndpointConfiguration Configuration for a managed endpoint. This object is experimental and subject to change.
 type EndpointConfiguration struct {
 	// AuthorityID UUID identifying the authority that will issue certificates for the endpoint.
 	AuthorityID string `json:"authorityID"`
 
-	// CertificateInfo Details on a managed certificate
+	// CertificateInfo Details on a managed certificate.
 	CertificateInfo EndpointCertificateInfo `json:"certificateInfo"`
 
 	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
 	Hooks *EndpointHooks `json:"hooks,omitempty"`
 
-	// Id A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+	// Id A UUID identifying this endpoint configuration. Read only.
 	Id *string `json:"id,omitempty"`
 
 	// KeyInfo The attributes of the cryptographic key.
@@ -470,7 +477,7 @@ type EndpointReloadInfo struct {
 // EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
 type EndpointReloadInfoMethod string
 
-// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to a managed endpoint.
 type EndpointSSHCertificateData struct {
 	// KeyID The key ID to include in the endpoint certificate.
 	KeyID string `json:"keyID"`
@@ -479,7 +486,7 @@ type EndpointSSHCertificateData struct {
 	Principals []string `json:"principals"`
 }
 
-// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to a managed endpoint.
 type EndpointX509CertificateData struct {
 	// CommonName The Common Name to be used in the subject of the endpoint certificate.
 	CommonName string `json:"commonName"`
@@ -490,11 +497,11 @@ type EndpointX509CertificateData struct {
 
 // Error defines model for error.
 type Error struct {
-	// Message A description of the error
+	// Message A description of the error.
 	Message string `json:"message"`
 }
 
-// GcpProvisioner Grant a certificate to a Google Compute Engine instance using its identity token.
+// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token.
 type GcpProvisioner struct {
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
 	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
@@ -514,72 +521,72 @@ type GcpProvisioner struct {
 
 // Grant A grant gives permission to all users in a group to access a host with a matching tag.
 type Grant struct {
-	// GroupID A UUID identifying the group this grant is attached to
+	// GroupID A UUID identifying the group this grant is attached to.
 	GroupID *string `json:"groupID,omitempty"`
 
-	// Id A UUID identifying this grant
+	// Id A UUID identifying this grant.
 	Id *string `json:"id,omitempty"`
 
-	// Name Matched against host tag names
+	// Name Matched against host tag names.
 	Name *string `json:"name,omitempty"`
 
-	// Sudo Whether users in the group will have sudo permission on matching hosts
+	// Sudo Whether users in the group will have sudo permission on matching hosts.
 	Sudo *bool `json:"sudo,omitempty"`
 
-	// Value Matched against host tag values
+	// Value Matched against host tag values.
 	Value *string `json:"value,omitempty"`
 }
 
-// Group A group is a set of users that have been synced from an identity provider
+// Group A group is a set of users that have been synced from an identity provider.
 type Group struct {
 	HostGrants *[]Grant `json:"hostGrants,omitempty"`
 
-	// Id A UUID identifying the group
+	// Id A UUID identifying the group.
 	Id *string `json:"id,omitempty"`
 
-	// Name The name of the group
+	// Name The name of the group.
 	Name        *string       `json:"name,omitempty"`
 	PosixGroups *[]PosixGroup `json:"posixGroups,omitempty"`
 
-	// Principals Additional principals that will be appended to users' certilficates, in addition to the user's email and POSIX username
+	// Principals Additional principals that will be appended to users' certilficates, in addition to the user's email and POSIX username.
 	Principals *[]string `json:"principals,omitempty"`
 }
 
 // Host A host where Smallstep has been installed to manage SSH access.
 type Host struct {
-	// Active A host is active until it is unregistered
+	// Active A host is active until it is unregistered.
 	Active *bool `json:"active,omitempty"`
 
-	// Bastion Whether or not this host is a bastion
+	// Bastion Whether or not this host is a bastion.
 	Bastion *bool `json:"bastion,omitempty"`
 
-	// BastionHostname The hostname of the bastion server required to access this host, if any
+	// BastionHostname The hostname of the bastion server required to access this host, if any.
 	BastionHostname *string `json:"bastionHostname,omitempty"`
 
-	// CreatedAt Timestamp when the host was registered
+	// CreatedAt Timestamp in RFC3339 format when the host was registered.
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
-	// Hostname The hostname detected during installation
+	// Hostname The hostname detected during installation.
 	Hostname *string `json:"hostname,omitempty"`
 
-	// Id A UUID identifying this host
+	// Id A UUID identifying this host.
 	Id   *string `json:"id,omitempty"`
 	Tags *[]Tag  `json:"tags,omitempty"`
 
-	// UpdatedAt Timestamp when the host was last updated
+	// UpdatedAt Timestamp in RFC3339 format when the host was last updated.
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
-// JwkProvisioner defines model for jwkProvisioner.
+// JwkProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT).
 type JwkProvisioner struct {
-	// EncryptedKey The JWE encrypted private key
+	// EncryptedKey The JWE encrypted private key.
 	EncryptedKey *string `json:"encryptedKey,omitempty"`
 
-	// Key The public JSON web key
+	// Key The public JSON web key.
 	Key interface{} `json:"key"`
 }
 
-// ManagedConfiguration The agent and managed endpoints used in one host.
+// ManagedConfiguration The agent and managed endpoints used in one host. This object is experimental and subject to change.
 type ManagedConfiguration struct {
 	// AgentConfigurationID UUID identifying the agent configuration.
 	AgentConfigurationID string `json:"agentConfigurationID"`
@@ -587,32 +594,34 @@ type ManagedConfiguration struct {
 	// HostID UUID identifying the host this managed configuration is for. Will be generated on server-side if not provided.
 	HostID *string `json:"hostID,omitempty"`
 
-	// Id UUID identifying this managed configuration.
-	Id               *string           `json:"id,omitempty"`
+	// Id UUID identifying this managed configuration. Read only.
+	Id *string `json:"id,omitempty"`
+
+	// ManagedEndpoints The list of endpoints managed by this configuration.
 	ManagedEndpoints []ManagedEndpoint `json:"managedEndpoints"`
 
 	// Name The name of this managed configuration.
 	Name string `json:"name"`
 }
 
-// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type.
+// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type. This object is experimental and subject to change.
 type ManagedEndpoint struct {
 	// EndpointConfigurationID UUID identifying the endpoint configuration.
 	EndpointConfigurationID string `json:"endpointConfigurationID"`
 
-	// Id UUID identifying this managed endpoint. Generated server-side on creation.
+	// Id UUID identifying this managed endpoint. Read only.
 	Id *string `json:"id,omitempty"`
 
-	// SshCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+	// SshCertificateData Contains the information to include when granting an SSH certificate to a managed endpoint.
 	SshCertificateData *EndpointSSHCertificateData `json:"sshCertificateData,omitempty"`
 
-	// X509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+	// X509CertificateData Contains the information to include when granting an x509 certificate to a managed endpoint.
 	X509CertificateData *EndpointX509CertificateData `json:"x509CertificateData,omitempty"`
 }
 
-// NameConstraints defines model for name-constraints.
+// NameConstraints X509 certificate name constratins.
 type NameConstraints struct {
-	// Critical Whether or not name constraints are marked critical
+	// Critical Whether or not name constraints are marked critical.
 	Critical                *bool     `json:"critical,omitempty"`
 	ExcludedDNSDomains      *[]string `json:"excludedDNSDomains,omitempty"`
 	ExcludedEmailAddresses  *[]string `json:"excludedEmailAddresses,omitempty"`
@@ -624,52 +633,55 @@ type NameConstraints struct {
 	PermittedURIDomains     *[]string `json:"permittedURIDomains,omitempty"`
 }
 
-// NewAuthority The body of a request to create a new authority
+// NewAuthority The body of a request to create a new authority.
 type NewAuthority struct {
-	// ActiveRevocation Whether to enable CRL and OCSP on an advanced authority
+	// ActiveRevocation Whether to enable CRL and OCSP on an advanced authority.
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// AdminEmails Users that will have admin access to manage the authority
+	// AdminEmails Users that will have admin access to manage the authority.
 	AdminEmails []string `json:"adminEmails"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority
+	// IntermediateIssuer A Customized X509 issuer for an authority.
 	IntermediateIssuer *X509Issuer `json:"intermediateIssuer,omitempty"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// RootIssuer A Customized X509 issuer for an authority
+	// RootIssuer A Customized X509 issuer for an authority.
 	RootIssuer *X509Issuer `json:"rootIssuer,omitempty"`
 
-	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com
+	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com.
 	Subdomain string `json:"subdomain"`
 
-	// Type Create either a devops or advanced authority
+	// Type Create either a devops or advanced authority.
 	Type NewAuthorityType `json:"type"`
 }
 
-// NewAuthorityType Create either a devops or advanced authority
+// NewAuthorityType Create either a devops or advanced authority.
 type NewAuthorityType string
 
-// NewAuthorityCsr Body of a request to create a new X509 advanced authority with an external root
+// NewAuthorityCsr Body of a request to create a new X509 advanced authority with an external root.
 type NewAuthorityCsr struct {
-	// ActiveRevocation Whether to enable CRL and OCSP on the authority
+	// ActiveRevocation Whether to enable CRL and OCSP on the authority.
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority
+	// IntermediateIssuer A Customized X509 issuer for an authority.
 	IntermediateIssuer X509Issuer `json:"intermediateIssuer"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com
+	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com.
 	Subdomain string `json:"subdomain"`
 }
 
-// NewCollection A collection of instances
+// NewCollection Body of a request to create a new collection.
 type NewCollection struct {
-	// DisplayName A user-friendly name for the collection
+	// DisplayName A user-friendly name for the collection.
 	DisplayName *string `json:"displayName,omitempty"`
+
+	// SchemaURI Reference to a schema that all instances in the collection must conform to.
+	SchemaURI *string `json:"schemaURI,omitempty"`
 
 	// Slug A lowercase name identifying the collection.
 	Slug string `json:"slug"`
@@ -677,7 +689,7 @@ type NewCollection struct {
 
 // NewGrant The body of a request to add a grant to a group.
 type NewGrant struct {
-	// GroupID A UUID identifying the group this grant is attached to
+	// GroupID A UUID identifying the group this grant is attached to.
 	GroupID string `json:"groupID"`
 
 	// Name Matched against host tag names
@@ -692,14 +704,14 @@ type NewGrant struct {
 
 // NewTag The body of a request to add a tag to a host.
 type NewTag struct {
-	// Name The key for the host tag
+	// Name The key for the host tag.
 	Name *string `json:"name,omitempty"`
 
-	// Value The value for the host tag
+	// Value The value for the host tag.
 	Value *string `json:"value,omitempty"`
 }
 
-// OidcProvisioner defines model for oidcProvisioner.
+// OidcProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate.
 type OidcProvisioner struct {
 	// Admins The emails of admin users in an OpenID Connect provisioner. These users will not have restrictions in the certificates to sign.
 	Admins *[]string `json:"admins,omitempty"`
@@ -733,34 +745,34 @@ type OidcProvisioner struct {
 // An SSH Group may have multiple POSIX groups.
 // An SSH User belonging to the group will be a member of the POSIX group when they access the host.
 type PosixGroup struct {
-	// Gid The numeric group ID
+	// Gid The numeric group ID.
 	Gid *int `json:"gid,omitempty"`
 
-	// Id A UUID identifying the POSIX group
+	// Id A UUID identifying the POSIX group.
 	Id *string `json:"id,omitempty"`
 
-	// Managed Whether Smallstep should create and delete the group
+	// Managed Whether Smallstep should create and delete the group.
 	Managed *bool `json:"managed,omitempty"`
 
-	// Name The name of the group
+	// Name The name of the group.
 	Name *string `json:"name,omitempty"`
 }
 
 // PosixUser A POSIX user is the login user on the SSH Host. It will be generated automatically if not supplied by the team's Identity Provider.
 type PosixUser struct {
-	// Gid The numeric group ID of the user
+	// Gid The numeric group ID of the user.
 	Gid *int `json:"gid,omitempty"`
 
-	// HomeDir The user's home directory
+	// HomeDir The user's home directory.
 	HomeDir *string `json:"homeDir,omitempty"`
 
-	// Shell The user's shell
+	// Shell The user's shell.
 	Shell *string `json:"shell,omitempty"`
 
-	// Uid The numeric ID of the user
+	// Uid The numeric ID of the user.
 	Uid *int `json:"uid,omitempty"`
 
-	// Username The login name of the user
+	// Username The login name of the user.
 	Username *string `json:"username,omitempty"`
 }
 
@@ -778,7 +790,7 @@ type Provisioner struct {
 	// Name The name of the provisioner.
 	Name string `json:"name"`
 
-	// Options Options that apply when issuing certificates with this provisioner
+	// Options Options that apply when issuing certificates with this provisioner.
 	Options *ProvisionerOptions `json:"options,omitempty"`
 
 	// Type The type of provisioner.
@@ -828,13 +840,13 @@ type ProvisionerClaims struct {
 	MinUserSSHCertDuration *string `json:"minUserSSHCertDuration,omitempty"`
 }
 
-// ProvisionerOptions Options that apply when issuing certificates with this provisioner
+// ProvisionerOptions Options that apply when issuing certificates with this provisioner.
 type ProvisionerOptions struct {
 	// Ssh Options that apply when issuing SSH certificates
 	Ssh      *SshOptions           `json:"ssh,omitempty"`
 	Webhooks *[]ProvisionerWebhook `json:"webhooks,omitempty"`
 
-	// X509 Options that apply when issuing x509 certificates
+	// X509 Options that apply when issuing x509 certificates.
 	X509 *X509Options `json:"x509,omitempty"`
 }
 
@@ -901,58 +913,60 @@ type SshOptions struct {
 // Tag A key-value pair attached to a host.
 // Smallstep determines access by comparing host tags to group grants when a user attempts to SSH to a host.
 type Tag struct {
-	// Id A UUID identifying this host tag
+	// Id A UUID identifying this host tag.
 	Id *string `json:"id,omitempty"`
 
-	// Name The key for the host tag
+	// Name The key for the host tag.
 	Name *string `json:"name,omitempty"`
 
-	// Value The value for the host tag
+	// Value The value for the host tag.
 	Value *string `json:"value,omitempty"`
 }
 
 // User SSH Users are synced from the team's Identity Provider, or from the default Smallstep directory if no external Identity Provider has been configured.
 type User struct {
-	// Active Whether the user has been deactivated in the team's Identity Provider
+	// Active Whether the user has been deactivated in the team's Identity Provider.
 	Active *bool `json:"active,omitempty"`
 
-	// DisplayName The user's display name
+	// DisplayName The user's display name.
 	DisplayName *string  `json:"displayName,omitempty"`
 	Emails      *[]Email `json:"emails,omitempty"`
 
-	// FamilyName The user's family name
+	// FamilyName The user's family name.
 	FamilyName *string `json:"familyName,omitempty"`
 
-	// GivenName The user's given name
+	// GivenName The user's given name.
 	GivenName *string  `json:"givenName,omitempty"`
 	Groups    *[]Group `json:"groups,omitempty"`
 
-	// Id A UUID identifying the user
+	// Id A UUID identifying the user.
 	Id         *string      `json:"id,omitempty"`
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
 }
 
-// X509Issuer A Customized X509 issuer for an authority
+// X509Issuer A Customized X509 issuer for an authority.
 type X509Issuer struct {
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	Duration *string `json:"duration,omitempty"`
 
-	// KeyVersion The signature algorithm
+	// KeyVersion The signature algorithm.
 	KeyVersion    X509IssuerKeyVersion `json:"keyVersion"`
 	MaxPathLength *int                 `json:"maxPathLength,omitempty"`
 
-	// Name The name of the issuer
-	Name            string           `json:"name"`
+	// Name The name of the issuer.
+	Name string `json:"name"`
+
+	// NameConstraints X509 certificate name constratins.
 	NameConstraints *NameConstraints `json:"nameConstraints,omitempty"`
 
 	// Subject Name used in x509 certificates
 	Subject *DistinguishedName `json:"subject,omitempty"`
 }
 
-// X509IssuerKeyVersion The signature algorithm
+// X509IssuerKeyVersion The signature algorithm.
 type X509IssuerKeyVersion string
 
-// X509Options Options that apply when issuing x509 certificates
+// X509Options Options that apply when issuing x509 certificates.
 type X509Options struct {
 	// Template A JSON representation of the x509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
 	Template *string `json:"template,omitempty"`
@@ -961,7 +975,7 @@ type X509Options struct {
 	TemplateData *interface{} `json:"templateData,omitempty"`
 }
 
-// X5cProvisioner Authenticate a certificate request with an existing x509 certificate.
+// X5cProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing x509 certificate.
 type X5cProvisioner struct {
 	// Roots A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
 	Roots []string `json:"roots"`
@@ -1064,6 +1078,15 @@ type DeleteAgentConfigurationParams struct {
 
 // GetAgentConfigurationParams defines parameters for GetAgentConfiguration.
 type GetAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutAgentConfigurationParams defines parameters for PutAgentConfiguration.
+type PutAgentConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1292,6 +1315,15 @@ type GetCollectionParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutCollectionParams defines parameters for PutCollection.
+type PutCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // DeleteCollectionInstanceParams defines parameters for DeleteCollectionInstance.
 type DeleteCollectionInstanceParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1384,6 +1416,15 @@ type GetEndpointConfigurationParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutEndpointConfigurationParams defines parameters for PutEndpointConfiguration.
+type PutEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // GetSshGrantsParams defines parameters for GetSshGrants.
 type GetSshGrantsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1443,10 +1484,10 @@ type GetSshGroupParams struct {
 
 // GetSshHostsParams defines parameters for GetSshHosts.
 type GetSshHostsParams struct {
-	// Active If unset or set to true the results will only include active hosts. If set to false the results will include both active and inactive hosts.
+	// Active If unset or set to `true` the results will only include active hosts. If set to `false` the results will include both active and inactive hosts.
 	Active *bool `form:"active,omitempty" json:"active,omitempty"`
 
-	// Bastion Filter (non-)bastion hosts. If unset the results will include both bastion and non-bastion hosts. If set to true the results will include only bastion hosts and if set to false the results will include only non-bastion hosts.
+	// Bastion Filter (non-)bastion hosts. If unset the results will include both bastion and non-bastion hosts. If set to `true` the results will include only bastion hosts and if set to `false` the results will include only non-bastion hosts.
 	Bastion *bool `form:"bastion,omitempty" json:"bastion,omitempty"`
 
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1513,6 +1554,15 @@ type GetManagedConfigurationHostIdParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutManagedConfigurationParams defines parameters for PutManagedConfiguration.
+type PutManagedConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // DeleteManagedConfigurationParams defines parameters for DeleteManagedConfiguration.
 type DeleteManagedConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1558,6 +1608,9 @@ type GetSshUsersParams struct {
 // PostAgentConfigurationsJSONRequestBody defines body for PostAgentConfigurations for application/json ContentType.
 type PostAgentConfigurationsJSONRequestBody = AgentConfiguration
 
+// PutAgentConfigurationJSONRequestBody defines body for PutAgentConfiguration for application/json ContentType.
+type PutAgentConfigurationJSONRequestBody = AgentConfiguration
+
 // PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
 type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
 
@@ -1582,6 +1635,9 @@ type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
 // PostCollectionsJSONRequestBody defines body for PostCollections for application/json ContentType.
 type PostCollectionsJSONRequestBody = NewCollection
 
+// PutCollectionJSONRequestBody defines body for PutCollection for application/json ContentType.
+type PutCollectionJSONRequestBody = Collection
+
 // PutCollectionInstanceJSONRequestBody defines body for PutCollectionInstance for application/json ContentType.
 type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
 
@@ -1591,6 +1647,9 @@ type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBod
 // PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
 type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
 
+// PutEndpointConfigurationJSONRequestBody defines body for PutEndpointConfiguration for application/json ContentType.
+type PutEndpointConfigurationJSONRequestBody = EndpointConfiguration
+
 // PostSshGrantsJSONRequestBody defines body for PostSshGrants for application/json ContentType.
 type PostSshGrantsJSONRequestBody = NewGrant
 
@@ -1599,6 +1658,9 @@ type PostHostsHostIDTagsJSONRequestBody = NewTag
 
 // PostManagedConfigurationsJSONRequestBody defines body for PostManagedConfigurations for application/json ContentType.
 type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
+
+// PutManagedConfigurationJSONRequestBody defines body for PutManagedConfiguration for application/json ContentType.
+type PutManagedConfigurationJSONRequestBody = ManagedConfiguration
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -1921,15 +1983,18 @@ func (t *Provisioner) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Create an Agent Configuration
+	// Create Agent Configuration
 	// (POST /agent-configurations)
 	PostAgentConfigurations(w http.ResponseWriter, r *http.Request, params PostAgentConfigurationsParams)
 	// Delete Agent Configuration
 	// (DELETE /agent-configurations/{agentConfigurationID})
 	DeleteAgentConfiguration(w http.ResponseWriter, r *http.Request, agentConfigurationID AgentConfigurationID, params DeleteAgentConfigurationParams)
-	// Get an Agent Configuration
+	// Get Agent Configuration
 	// (GET /agent-configurations/{agentConfigurationID})
 	GetAgentConfiguration(w http.ResponseWriter, r *http.Request, agentConfigurationID AgentConfigurationID, params GetAgentConfigurationParams)
+	// Update Agent Configuration
+	// (PUT /agent-configurations/{agentConfigurationID})
+	PutAgentConfiguration(w http.ResponseWriter, r *http.Request, agentConfigurationID AgentConfigurationID, params PutAgentConfigurationParams)
 	// List Attestation Authorities
 	// (GET /attestation-authorities)
 	GetAttestationAuthorities(w http.ResponseWriter, r *http.Request, params GetAttestationAuthoritiesParams)
@@ -1996,6 +2061,9 @@ type ServerInterface interface {
 	// Get Collection
 	// (GET /collections/{collectionSlug})
 	GetCollection(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params GetCollectionParams)
+	// Update Collection
+	// (PUT /collections/{collectionSlug})
+	PutCollection(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params PutCollectionParams)
 	// Delete Collection Instance
 	// (DELETE /collections/{collectionSlug}/instances/{instanceID})
 	DeleteCollectionInstance(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, instanceID InstanceID, params DeleteCollectionInstanceParams)
@@ -2014,15 +2082,18 @@ type ServerInterface interface {
 	// List Collection Instances
 	// (GET /collections/{collectionSlug}/items)
 	ListCollectionInstances(w http.ResponseWriter, r *http.Request, collectionSlug CollectionSlug, params ListCollectionInstancesParams)
-	// Create an Endpoint Configuration
+	// Create Endpoint Configuration
 	// (POST /endpoint-configurations)
 	PostEndpointConfigurations(w http.ResponseWriter, r *http.Request, params PostEndpointConfigurationsParams)
 	// Delete Endpoint Configuration
 	// (DELETE /endpoint-configurations/{endpointConfigurationID})
 	DeleteEndpointConfiguration(w http.ResponseWriter, r *http.Request, endpointConfigurationID EndpointConfigurationID, params DeleteEndpointConfigurationParams)
-	// Get an Endpoint Configuration
+	// Get Endpoint Configuration
 	// (GET /endpoint-configurations/{endpointConfigurationID})
 	GetEndpointConfiguration(w http.ResponseWriter, r *http.Request, endpointConfigurationID EndpointConfigurationID, params GetEndpointConfigurationParams)
+	// Update Endpoint Configuration
+	// (PUT /endpoint-configurations/{endpointConfigurationID})
+	PutEndpointConfiguration(w http.ResponseWriter, r *http.Request, endpointConfigurationID EndpointConfigurationID, params PutEndpointConfigurationParams)
 	// Get SSH Grants
 	// (GET /grants)
 	GetSshGrants(w http.ResponseWriter, r *http.Request, params GetSshGrantsParams)
@@ -2041,7 +2112,7 @@ type ServerInterface interface {
 	// Get SSH Group
 	// (GET /groups/{groupID})
 	GetSshGroup(w http.ResponseWriter, r *http.Request, groupID GroupID, params GetSshGroupParams)
-	// Get SSH Hosts
+	// List SSH Hosts
 	// (GET /hosts)
 	GetSshHosts(w http.ResponseWriter, r *http.Request, params GetSshHostsParams)
 	// Get SSH Host
@@ -2053,25 +2124,28 @@ type ServerInterface interface {
 	// Unregister SSH Host
 	// (POST /hosts/{hostID}/unregister)
 	UnregisterSshHost(w http.ResponseWriter, r *http.Request, hostID HostID, params UnregisterSshHostParams)
-	// Create a Managed Configuration
+	// Create Managed Configuration
 	// (POST /managed-configurations)
 	PostManagedConfigurations(w http.ResponseWriter, r *http.Request, params PostManagedConfigurationsParams)
 	// Delete Managed Configuration By Host ID
 	// (DELETE /managed-configurations/host/{managedConfigurationHostID})
 	DeleteManagedConfigurationHostId(w http.ResponseWriter, r *http.Request, managedConfigurationHostID ManagedConfigurationHostID, params DeleteManagedConfigurationHostIdParams)
-	// Get a Managed Configuration By Host ID
+	// Get Managed Configuration By Host ID
 	// (GET /managed-configurations/host/{managedConfigurationHostID})
 	GetManagedConfigurationHostId(w http.ResponseWriter, r *http.Request, managedConfigurationHostID ManagedConfigurationHostID, params GetManagedConfigurationHostIdParams)
+	// Update Managed Configuration
+	// (PUT /managed-configurations/host/{managedConfigurationHostID})
+	PutManagedConfiguration(w http.ResponseWriter, r *http.Request, managedConfigurationHostID ManagedConfigurationHostID, params PutManagedConfigurationParams)
 	// Delete Managed Configuration
 	// (DELETE /managed-configurations/{managedConfigurationID})
 	DeleteManagedConfiguration(w http.ResponseWriter, r *http.Request, managedConfigurationID ManagedConfigurationID, params DeleteManagedConfigurationParams)
-	// Get a Managed Configuration
+	// Get Managed Configuration
 	// (GET /managed-configurations/{managedConfigurationID})
 	GetManagedConfiguration(w http.ResponseWriter, r *http.Request, managedConfigurationID ManagedConfigurationID, params GetManagedConfigurationParams)
-	// Get SSH Host Tags
+	// List SSH Host Tags
 	// (GET /tags)
 	GetSshHostTags(w http.ResponseWriter, r *http.Request, params GetSshHostTagsParams)
-	// Get SSH Users
+	// List SSH Users
 	// (GET /users)
 	GetSshUsers(w http.ResponseWriter, r *http.Request, params GetSshUsersParams)
 }
@@ -2280,6 +2354,77 @@ func (siw *ServerInterfaceWrapper) GetAgentConfiguration(w http.ResponseWriter, 
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetAgentConfiguration(w, r, agentConfigurationID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutAgentConfiguration operation middleware
+func (siw *ServerInterfaceWrapper) PutAgentConfiguration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "agentConfigurationID" -------------
+	var agentConfigurationID AgentConfigurationID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "agentConfigurationID"), &agentConfigurationID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agentConfigurationID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutAgentConfigurationParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutAgentConfiguration(w, r, agentConfigurationID, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3805,6 +3950,77 @@ func (siw *ServerInterfaceWrapper) GetCollection(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// PutCollection operation middleware
+func (siw *ServerInterfaceWrapper) PutCollection(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "collectionSlug" -------------
+	var collectionSlug CollectionSlug
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, chi.URLParam(r, "collectionSlug"), &collectionSlug)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "collectionSlug", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutCollectionParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutCollection(w, r, collectionSlug, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // DeleteCollectionInstance operation middleware
 func (siw *ServerInterfaceWrapper) DeleteCollectionInstance(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -4479,6 +4695,77 @@ func (siw *ServerInterfaceWrapper) GetEndpointConfiguration(w http.ResponseWrite
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetEndpointConfiguration(w, r, endpointConfigurationID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PutEndpointConfiguration operation middleware
+func (siw *ServerInterfaceWrapper) PutEndpointConfiguration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "endpointConfigurationID" -------------
+	var endpointConfigurationID EndpointConfigurationID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, chi.URLParam(r, "endpointConfigurationID"), &endpointConfigurationID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "endpointConfigurationID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutEndpointConfigurationParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutEndpointConfiguration(w, r, endpointConfigurationID, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5398,6 +5685,77 @@ func (siw *ServerInterfaceWrapper) GetManagedConfigurationHostId(w http.Response
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// PutManagedConfiguration operation middleware
+func (siw *ServerInterfaceWrapper) PutManagedConfiguration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "managedConfigurationHostID" -------------
+	var managedConfigurationHostID ManagedConfigurationHostID
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "managedConfigurationHostID", runtime.ParamLocationPath, chi.URLParam(r, "managedConfigurationHostID"), &managedConfigurationHostID)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "managedConfigurationHostID", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, JWTScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PutManagedConfigurationParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Request-Id" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Request-Id")]; found {
+		var XRequestId RequestID
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Request-Id", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, valueList[0], &XRequestId)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Request-Id", Err: err})
+			return
+		}
+
+		params.XRequestId = &XRequestId
+
+	}
+
+	// ------------- Optional header parameter "Accept" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Accept")]; found {
+		var Accept Accept
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Accept", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, valueList[0], &Accept)
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Accept", Err: err})
+			return
+		}
+
+		params.Accept = &Accept
+
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutManagedConfiguration(w, r, managedConfigurationHostID, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // DeleteManagedConfiguration operation middleware
 func (siw *ServerInterfaceWrapper) DeleteManagedConfiguration(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -5803,6 +6161,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/agent-configurations/{agentConfigurationID}", wrapper.GetAgentConfiguration)
 	})
 	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/agent-configurations/{agentConfigurationID}", wrapper.PutAgentConfiguration)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/attestation-authorities", wrapper.GetAttestationAuthorities)
 	})
 	r.Group(func(r chi.Router) {
@@ -5869,6 +6230,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/collections/{collectionSlug}", wrapper.GetCollection)
 	})
 	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/collections/{collectionSlug}", wrapper.PutCollection)
+	})
+	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/collections/{collectionSlug}/instances/{instanceID}", wrapper.DeleteCollectionInstance)
 	})
 	r.Group(func(r chi.Router) {
@@ -5894,6 +6258,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/endpoint-configurations/{endpointConfigurationID}", wrapper.GetEndpointConfiguration)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/endpoint-configurations/{endpointConfigurationID}", wrapper.PutEndpointConfiguration)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/grants", wrapper.GetSshGrants)
@@ -5935,6 +6302,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/managed-configurations/host/{managedConfigurationHostID}", wrapper.GetManagedConfigurationHostId)
 	})
 	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/managed-configurations/host/{managedConfigurationHostID}", wrapper.PutManagedConfiguration)
+	})
+	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/managed-configurations/{managedConfigurationID}", wrapper.DeleteManagedConfiguration)
 	})
 	r.Group(func(r chi.Router) {
@@ -5953,264 +6323,294 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"HHb/+f7/BQAA//+Uxv4+TWcBAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

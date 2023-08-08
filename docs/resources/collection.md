@@ -3,12 +3,12 @@
 page_title: "smallstep_collection Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  A collection of instances
+  A collection of instances.
 ---
 
 # smallstep_collection (Resource)
 
-A collection of instances
+A collection of instances.
 
 ## Example Usage
 
@@ -28,13 +28,14 @@ resource "smallstep_collection" "tpms" {
 ### Optional
 
 - `display_name` (String)
+- `schema_uri` (String) Reference to a schema that all instances in the collection must conform to.
 
 ### Read-Only
 
-- `created_at` (String)
+- `created_at` (String) Timestamp in RFC3339 format when the collections was created
 - `id` (String) Internal use only
-- `instance_count` (Number) The number of instances in the collection
-- `updated_at` (String)
+- `instance_count` (Number) The number of instances in the collection.
+- `updated_at` (String) Timestamp in RFC3339 format when the collections was last updated
 
 ## Import
 

@@ -100,7 +100,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 }
 
 func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	component, props, err := utils.Describe("collection-instance")
+	component, props, err := utils.Describe("collectionInstance")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",

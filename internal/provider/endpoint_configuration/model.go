@@ -299,6 +299,7 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.EndpointConfiguration,
 	diags.Append(d...)
 
 	return &v20230301.EndpointConfiguration{
+		Id:              model.ID.ValueStringPointer(),
 		Name:            model.Name.ValueString(),
 		Kind:            v20230301.EndpointConfigurationKind(model.Kind.ValueString()),
 		AuthorityID:     model.AuthorityID.ValueString(),

@@ -41,6 +41,7 @@ const (
 const (
 	AuthorityTypeAdvanced AuthorityType = "advanced"
 	AuthorityTypeDevops   AuthorityType = "devops"
+	AuthorityTypeManaged  AuthorityType = "managed"
 )
 
 // Defines values for EndpointCertificateInfoType.
@@ -141,7 +142,7 @@ const (
 
 // AcmeAttestationProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/).
 type AcmeAttestationProvisioner struct {
-	// AttestationFormats The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
+	// AttestationFormats The allowed attestation formats for the device-attest-01 challenge. Valid values are `apple`, `step`, and `tpm`. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default.
 	AttestationFormats []AcmeAttestationProvisionerAttestationFormats `json:"attestationFormats"`
 
 	// AttestationRoots A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
@@ -165,14 +166,14 @@ type AcmeProvisioner struct {
 	// ForceCN Force one of the SANs to become the Common Name, if a Common Name is not provided.
 	ForceCN *bool `json:"forceCN,omitempty"`
 
-	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
+	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be `true` for all new provisioners.
 	RequireEAB bool `json:"requireEAB"`
 }
 
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
 
-// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates.
+// AgentConfiguration The agent configuration describes the attestation authority used by the agent to grant workload certificates. This object is experimental and subject to change.
 type AgentConfiguration struct {
 	// AttestationSlug The slug of the attestation authority the agent connects to to get a certificate.
 	AttestationSlug *string `json:"attestationSlug,omitempty"`
@@ -180,7 +181,7 @@ type AgentConfiguration struct {
 	// AuthorityID UUID identifying the authority the agent uses to generate endpoint certificates.
 	AuthorityID string `json:"authorityID"`
 
-	// Id A UUID identifying this agent configuration. Generated server-side on creation.
+	// Id A UUID identifying this agent configuration. Read only.
 	Id *string `json:"id,omitempty"`
 
 	// Name The name of this agent configuration.
@@ -198,16 +199,16 @@ type AttestationAuthority struct {
 	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
 	AttestorRoots string `json:"attestorRoots"`
 
-	// Catalog The slug of a collection that holds the list of devices belonging to the team
+	// Catalog The slug of a collection that holds the list of devices belonging to the team.
 	Catalog string `json:"catalog"`
 
-	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created
+	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created.
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
-	// Id A UUID identifying this attestation authority. Generated server-side.
+	// Id A UUID identifying this attestation authority. Read only.
 	Id *string `json:"id,omitempty"`
 
-	// Name The name of the attestation authority
+	// Name The name of the attestation authority.
 	Name string `json:"name"`
 
 	// Root The pem-encoded root certificate of this attestation authority. This is generated server-side when the attestation authority is created. This certificate should be used in the `attestationRoots` field of an ACME_ATTESTATION provisioner with the `tpm` format.
@@ -217,51 +218,51 @@ type AttestationAuthority struct {
 	Slug *string `json:"slug,omitempty"`
 }
 
-// Authority An X509 authority hosted by Smallstep
+// Authority An X509 authority hosted by Smallstep.
 type Authority struct {
-	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only)
+	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only).
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// AdminEmails Users that have admin access to manage the authority
+	// AdminEmails Users that have admin access to manage the authority.
 	AdminEmails *[]string `json:"adminEmails,omitempty"`
 
-	// CreatedAt Timestamp when the authority was created
+	// CreatedAt Timestamp when the authority was created.
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Domain The domain where the authority can be reached
+	// Domain The domain where the authority can be reached.
 	Domain string `json:"domain"`
 
-	// Fingerprint The SHA-256 digest of the authority's root certificate in hex format
+	// Fingerprint The SHA-256 digest of the authority's root certificate in hex format.
 	Fingerprint *string `json:"fingerprint,omitempty"`
 
-	// Id A UUID identifying this authority
+	// Id A UUID identifying this authority.
 	Id string `json:"id"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
 	// Type One of the available authority types
 	Type AuthorityType `json:"type"`
 }
 
-// AuthorityCsr A certificate signing request for an X509 advanced authority with an external root
+// AuthorityCsr A certificate signing request for an X509 advanced authority with an external root.
 type AuthorityCsr struct {
-	// AuthorityID A UUID identifying the authority
+	// AuthorityID A UUID identifying the authority.
 	AuthorityID string `json:"authorityID"`
 
-	// Csr A certificate sigining request for the authority's intermediate issuer in pem format
+	// Csr A certificate sigining request for the authority's intermediate issuer in pem format.
 	Csr string `json:"csr"`
 
-	// Id A UUID identifying this CSR
+	// Id A UUID identifying this CSR.
 	Id string `json:"id"`
 }
 
 // AuthorityType One of the available authority types
 type AuthorityType string
 
-// AwsProvisioner Grant a certificate to an Amazon EC2 instance using the Instance Identity Document.
+// AwsProvisioner The [AWS provisioner](https://smallstep.com/docs/step-ca/provisioners/#aws) grants a certificate to an Amazon EC2 instance using the Instance Identity Document.
 type AwsProvisioner struct {
-	// Accounts The list of AWS account numbers that are allowed to use this provisioner.
+	// Accounts The list of AWS account IDs that are allowed to use this provisioner.
 	Accounts []string `json:"accounts"`
 
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
@@ -274,7 +275,7 @@ type AwsProvisioner struct {
 	InstanceAge *string `json:"instanceAge,omitempty"`
 }
 
-// AzureProvisioner Grants certificates to Microsoft Azure instances using the managed identities tokens.
+// AzureProvisioner The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens.
 type AzureProvisioner struct {
 	// Audience Defaults to https://management.azure.com/ but it can be changed if necessary.
 	Audience *string `json:"audience,omitempty"`
@@ -298,31 +299,37 @@ type BasicAuth struct {
 	Username string `json:"username"`
 }
 
-// Collection A collection of instances
+// Collection A collection of instances.
 type Collection struct {
+	// CreatedAt Timestamp in RFC3339 format when the collections was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// DisplayName A user-friendly name for the collection
+	// DisplayName A user-friendly name for the collection.
 	DisplayName string `json:"displayName"`
 
-	// InstanceCount The number of instances in the collection
+	// InstanceCount The number of instances in the collection.
 	InstanceCount int `json:"instanceCount"`
 
+	// SchemaURI Reference to a schema that all instances in the collection must conform to.
+	SchemaURI *string `json:"schemaURI,omitempty"`
+
 	// Slug A lowercase name identifying the collection.
-	Slug      string    `json:"slug"`
+	Slug string `json:"slug"`
+
+	// UpdatedAt Timestamp in RFC3339 format when the collections was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-// CollectionInstance An instance in a collection
+// CollectionInstance An instance in a collection.
 type CollectionInstance struct {
-	// CreatedAt Timestamp of when the instance was added to the collection
+	// CreatedAt Timestamp in RFC3339 format when the instance was added to the collection.
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Data The instance data
+	// Data The instance data.
 	Data interface{} `json:"data"`
 	Id   string      `json:"id"`
 
-	// UpdatedAt Timestamp of when the instance was last changed
+	// UpdatedAt Timestamp in RFC3339 format when the instance was last changed.
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -333,7 +340,7 @@ type DistinguishedName struct {
 	EmailAddress       *string `json:"emailAddress,omitempty"`
 	Locality           *string `json:"locality,omitempty"`
 	Organization       *string `json:"organization,omitempty"`
-	OrganizationalUnit *string `json:"organizational_unit,omitempty"`
+	OrganizationalUnit *string `json:"organizationalUnit,omitempty"`
 	PostalCode         *string `json:"postalCode,omitempty"`
 	Province           *string `json:"province,omitempty"`
 	SerialNumber       *string `json:"serialNumber,omitempty"`
@@ -346,7 +353,7 @@ type Email struct {
 	Primary *bool   `json:"primary,omitempty"`
 }
 
-// EndpointCertificateInfo Details on a managed certificate
+// EndpointCertificateInfo Details on a managed certificate.
 type EndpointCertificateInfo struct {
 	// CrtFile The filepath where the certificate is to be stored.
 	CrtFile *string `json:"crtFile,omitempty"`
@@ -366,28 +373,28 @@ type EndpointCertificateInfo struct {
 	// RootFile The filepath where the root certificate is to be stored.
 	RootFile *string `json:"rootFile,omitempty"`
 
-	// Type The type of certificate
+	// Type The type of certificate.
 	Type EndpointCertificateInfoType `json:"type"`
 
 	// Uid UID of the files where the certificate is stored.
 	Uid *int `json:"uid,omitempty"`
 }
 
-// EndpointCertificateInfoType The type of certificate
+// EndpointCertificateInfoType The type of certificate.
 type EndpointCertificateInfoType string
 
-// EndpointConfiguration Configuration for a managed endpoint
+// EndpointConfiguration Configuration for a managed endpoint. This object is experimental and subject to change.
 type EndpointConfiguration struct {
 	// AuthorityID UUID identifying the authority that will issue certificates for the endpoint.
 	AuthorityID string `json:"authorityID"`
 
-	// CertificateInfo Details on a managed certificate
+	// CertificateInfo Details on a managed certificate.
 	CertificateInfo EndpointCertificateInfo `json:"certificateInfo"`
 
 	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
 	Hooks *EndpointHooks `json:"hooks,omitempty"`
 
-	// Id A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+	// Id A UUID identifying this endpoint configuration. Read only.
 	Id *string `json:"id,omitempty"`
 
 	// KeyInfo The attributes of the cryptographic key.
@@ -466,7 +473,7 @@ type EndpointReloadInfo struct {
 // EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
 type EndpointReloadInfoMethod string
 
-// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+// EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to a managed endpoint.
 type EndpointSSHCertificateData struct {
 	// KeyID The key ID to include in the endpoint certificate.
 	KeyID string `json:"keyID"`
@@ -475,7 +482,7 @@ type EndpointSSHCertificateData struct {
 	Principals []string `json:"principals"`
 }
 
-// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+// EndpointX509CertificateData Contains the information to include when granting an x509 certificate to a managed endpoint.
 type EndpointX509CertificateData struct {
 	// CommonName The Common Name to be used in the subject of the endpoint certificate.
 	CommonName string `json:"commonName"`
@@ -486,11 +493,11 @@ type EndpointX509CertificateData struct {
 
 // Error defines model for error.
 type Error struct {
-	// Message A description of the error
+	// Message A description of the error.
 	Message string `json:"message"`
 }
 
-// GcpProvisioner Grant a certificate to a Google Compute Engine instance using its identity token.
+// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token.
 type GcpProvisioner struct {
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
 	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
@@ -510,72 +517,72 @@ type GcpProvisioner struct {
 
 // Grant A grant gives permission to all users in a group to access a host with a matching tag.
 type Grant struct {
-	// GroupID A UUID identifying the group this grant is attached to
+	// GroupID A UUID identifying the group this grant is attached to.
 	GroupID *string `json:"groupID,omitempty"`
 
-	// Id A UUID identifying this grant
+	// Id A UUID identifying this grant.
 	Id *string `json:"id,omitempty"`
 
-	// Name Matched against host tag names
+	// Name Matched against host tag names.
 	Name *string `json:"name,omitempty"`
 
-	// Sudo Whether users in the group will have sudo permission on matching hosts
+	// Sudo Whether users in the group will have sudo permission on matching hosts.
 	Sudo *bool `json:"sudo,omitempty"`
 
-	// Value Matched against host tag values
+	// Value Matched against host tag values.
 	Value *string `json:"value,omitempty"`
 }
 
-// Group A group is a set of users that have been synced from an identity provider
+// Group A group is a set of users that have been synced from an identity provider.
 type Group struct {
 	HostGrants *[]Grant `json:"hostGrants,omitempty"`
 
-	// Id A UUID identifying the group
+	// Id A UUID identifying the group.
 	Id *string `json:"id,omitempty"`
 
-	// Name The name of the group
+	// Name The name of the group.
 	Name        *string       `json:"name,omitempty"`
 	PosixGroups *[]PosixGroup `json:"posixGroups,omitempty"`
 
-	// Principals Additional principals that will be appended to users' certilficates, in addition to the user's email and POSIX username
+	// Principals Additional principals that will be appended to users' certilficates, in addition to the user's email and POSIX username.
 	Principals *[]string `json:"principals,omitempty"`
 }
 
 // Host A host where Smallstep has been installed to manage SSH access.
 type Host struct {
-	// Active A host is active until it is unregistered
+	// Active A host is active until it is unregistered.
 	Active *bool `json:"active,omitempty"`
 
-	// Bastion Whether or not this host is a bastion
+	// Bastion Whether or not this host is a bastion.
 	Bastion *bool `json:"bastion,omitempty"`
 
-	// BastionHostname The hostname of the bastion server required to access this host, if any
+	// BastionHostname The hostname of the bastion server required to access this host, if any.
 	BastionHostname *string `json:"bastionHostname,omitempty"`
 
-	// CreatedAt Timestamp when the host was registered
+	// CreatedAt Timestamp in RFC3339 format when the host was registered.
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
-	// Hostname The hostname detected during installation
+	// Hostname The hostname detected during installation.
 	Hostname *string `json:"hostname,omitempty"`
 
-	// Id A UUID identifying this host
+	// Id A UUID identifying this host.
 	Id   *string `json:"id,omitempty"`
 	Tags *[]Tag  `json:"tags,omitempty"`
 
-	// UpdatedAt Timestamp when the host was last updated
+	// UpdatedAt Timestamp in RFC3339 format when the host was last updated.
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
-// JwkProvisioner defines model for jwkProvisioner.
+// JwkProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT).
 type JwkProvisioner struct {
-	// EncryptedKey The JWE encrypted private key
+	// EncryptedKey The JWE encrypted private key.
 	EncryptedKey *string `json:"encryptedKey,omitempty"`
 
-	// Key The public JSON web key
+	// Key The public JSON web key.
 	Key interface{} `json:"key"`
 }
 
-// ManagedConfiguration The agent and managed endpoints used in one host.
+// ManagedConfiguration The agent and managed endpoints used in one host. This object is experimental and subject to change.
 type ManagedConfiguration struct {
 	// AgentConfigurationID UUID identifying the agent configuration.
 	AgentConfigurationID string `json:"agentConfigurationID"`
@@ -583,32 +590,34 @@ type ManagedConfiguration struct {
 	// HostID UUID identifying the host this managed configuration is for. Will be generated on server-side if not provided.
 	HostID *string `json:"hostID,omitempty"`
 
-	// Id UUID identifying this managed configuration.
-	Id               *string           `json:"id,omitempty"`
+	// Id UUID identifying this managed configuration. Read only.
+	Id *string `json:"id,omitempty"`
+
+	// ManagedEndpoints The list of endpoints managed by this configuration.
 	ManagedEndpoints []ManagedEndpoint `json:"managedEndpoints"`
 
 	// Name The name of this managed configuration.
 	Name string `json:"name"`
 }
 
-// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type.
+// ManagedEndpoint All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type. This object is experimental and subject to change.
 type ManagedEndpoint struct {
 	// EndpointConfigurationID UUID identifying the endpoint configuration.
 	EndpointConfigurationID string `json:"endpointConfigurationID"`
 
-	// Id UUID identifying this managed endpoint. Generated server-side on creation.
+	// Id UUID identifying this managed endpoint. Read only.
 	Id *string `json:"id,omitempty"`
 
-	// SshCertificateData Contains the information to include when granting an SSH certificate to an endpoint.
+	// SshCertificateData Contains the information to include when granting an SSH certificate to a managed endpoint.
 	SshCertificateData *EndpointSSHCertificateData `json:"sshCertificateData,omitempty"`
 
-	// X509CertificateData Contains the information to include when granting an x509 certificate to an endpoint.
+	// X509CertificateData Contains the information to include when granting an x509 certificate to a managed endpoint.
 	X509CertificateData *EndpointX509CertificateData `json:"x509CertificateData,omitempty"`
 }
 
-// NameConstraints defines model for name-constraints.
+// NameConstraints X509 certificate name constratins.
 type NameConstraints struct {
-	// Critical Whether or not name constraints are marked critical
+	// Critical Whether or not name constraints are marked critical.
 	Critical                *bool     `json:"critical,omitempty"`
 	ExcludedDNSDomains      *[]string `json:"excludedDNSDomains,omitempty"`
 	ExcludedEmailAddresses  *[]string `json:"excludedEmailAddresses,omitempty"`
@@ -620,52 +629,55 @@ type NameConstraints struct {
 	PermittedURIDomains     *[]string `json:"permittedURIDomains,omitempty"`
 }
 
-// NewAuthority The body of a request to create a new authority
+// NewAuthority The body of a request to create a new authority.
 type NewAuthority struct {
-	// ActiveRevocation Whether to enable CRL and OCSP on an advanced authority
+	// ActiveRevocation Whether to enable CRL and OCSP on an advanced authority.
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// AdminEmails Users that will have admin access to manage the authority
+	// AdminEmails Users that will have admin access to manage the authority.
 	AdminEmails []string `json:"adminEmails"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority
+	// IntermediateIssuer A Customized X509 issuer for an authority.
 	IntermediateIssuer *X509Issuer `json:"intermediateIssuer,omitempty"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// RootIssuer A Customized X509 issuer for an authority
+	// RootIssuer A Customized X509 issuer for an authority.
 	RootIssuer *X509Issuer `json:"rootIssuer,omitempty"`
 
-	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com
+	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com.
 	Subdomain string `json:"subdomain"`
 
-	// Type Create either a devops or advanced authority
+	// Type Create either a devops or advanced authority.
 	Type NewAuthorityType `json:"type"`
 }
 
-// NewAuthorityType Create either a devops or advanced authority
+// NewAuthorityType Create either a devops or advanced authority.
 type NewAuthorityType string
 
-// NewAuthorityCsr Body of a request to create a new X509 advanced authority with an external root
+// NewAuthorityCsr Body of a request to create a new X509 advanced authority with an external root.
 type NewAuthorityCsr struct {
-	// ActiveRevocation Whether to enable CRL and OCSP on the authority
+	// ActiveRevocation Whether to enable CRL and OCSP on the authority.
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority
+	// IntermediateIssuer A Customized X509 issuer for an authority.
 	IntermediateIssuer X509Issuer `json:"intermediateIssuer"`
 
-	// Name The name of the authority
+	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com
+	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com.
 	Subdomain string `json:"subdomain"`
 }
 
-// NewCollection A collection of instances
+// NewCollection Body of a request to create a new collection.
 type NewCollection struct {
-	// DisplayName A user-friendly name for the collection
+	// DisplayName A user-friendly name for the collection.
 	DisplayName *string `json:"displayName,omitempty"`
+
+	// SchemaURI Reference to a schema that all instances in the collection must conform to.
+	SchemaURI *string `json:"schemaURI,omitempty"`
 
 	// Slug A lowercase name identifying the collection.
 	Slug string `json:"slug"`
@@ -673,7 +685,7 @@ type NewCollection struct {
 
 // NewGrant The body of a request to add a grant to a group.
 type NewGrant struct {
-	// GroupID A UUID identifying the group this grant is attached to
+	// GroupID A UUID identifying the group this grant is attached to.
 	GroupID string `json:"groupID"`
 
 	// Name Matched against host tag names
@@ -688,14 +700,14 @@ type NewGrant struct {
 
 // NewTag The body of a request to add a tag to a host.
 type NewTag struct {
-	// Name The key for the host tag
+	// Name The key for the host tag.
 	Name *string `json:"name,omitempty"`
 
-	// Value The value for the host tag
+	// Value The value for the host tag.
 	Value *string `json:"value,omitempty"`
 }
 
-// OidcProvisioner defines model for oidcProvisioner.
+// OidcProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate.
 type OidcProvisioner struct {
 	// Admins The emails of admin users in an OpenID Connect provisioner. These users will not have restrictions in the certificates to sign.
 	Admins *[]string `json:"admins,omitempty"`
@@ -729,34 +741,34 @@ type OidcProvisioner struct {
 // An SSH Group may have multiple POSIX groups.
 // An SSH User belonging to the group will be a member of the POSIX group when they access the host.
 type PosixGroup struct {
-	// Gid The numeric group ID
+	// Gid The numeric group ID.
 	Gid *int `json:"gid,omitempty"`
 
-	// Id A UUID identifying the POSIX group
+	// Id A UUID identifying the POSIX group.
 	Id *string `json:"id,omitempty"`
 
-	// Managed Whether Smallstep should create and delete the group
+	// Managed Whether Smallstep should create and delete the group.
 	Managed *bool `json:"managed,omitempty"`
 
-	// Name The name of the group
+	// Name The name of the group.
 	Name *string `json:"name,omitempty"`
 }
 
 // PosixUser A POSIX user is the login user on the SSH Host. It will be generated automatically if not supplied by the team's Identity Provider.
 type PosixUser struct {
-	// Gid The numeric group ID of the user
+	// Gid The numeric group ID of the user.
 	Gid *int `json:"gid,omitempty"`
 
-	// HomeDir The user's home directory
+	// HomeDir The user's home directory.
 	HomeDir *string `json:"homeDir,omitempty"`
 
-	// Shell The user's shell
+	// Shell The user's shell.
 	Shell *string `json:"shell,omitempty"`
 
-	// Uid The numeric ID of the user
+	// Uid The numeric ID of the user.
 	Uid *int `json:"uid,omitempty"`
 
-	// Username The login name of the user
+	// Username The login name of the user.
 	Username *string `json:"username,omitempty"`
 }
 
@@ -774,7 +786,7 @@ type Provisioner struct {
 	// Name The name of the provisioner.
 	Name string `json:"name"`
 
-	// Options Options that apply when issuing certificates with this provisioner
+	// Options Options that apply when issuing certificates with this provisioner.
 	Options *ProvisionerOptions `json:"options,omitempty"`
 
 	// Type The type of provisioner.
@@ -824,13 +836,13 @@ type ProvisionerClaims struct {
 	MinUserSSHCertDuration *string `json:"minUserSSHCertDuration,omitempty"`
 }
 
-// ProvisionerOptions Options that apply when issuing certificates with this provisioner
+// ProvisionerOptions Options that apply when issuing certificates with this provisioner.
 type ProvisionerOptions struct {
 	// Ssh Options that apply when issuing SSH certificates
 	Ssh      *SshOptions           `json:"ssh,omitempty"`
 	Webhooks *[]ProvisionerWebhook `json:"webhooks,omitempty"`
 
-	// X509 Options that apply when issuing x509 certificates
+	// X509 Options that apply when issuing x509 certificates.
 	X509 *X509Options `json:"x509,omitempty"`
 }
 
@@ -897,58 +909,60 @@ type SshOptions struct {
 // Tag A key-value pair attached to a host.
 // Smallstep determines access by comparing host tags to group grants when a user attempts to SSH to a host.
 type Tag struct {
-	// Id A UUID identifying this host tag
+	// Id A UUID identifying this host tag.
 	Id *string `json:"id,omitempty"`
 
-	// Name The key for the host tag
+	// Name The key for the host tag.
 	Name *string `json:"name,omitempty"`
 
-	// Value The value for the host tag
+	// Value The value for the host tag.
 	Value *string `json:"value,omitempty"`
 }
 
 // User SSH Users are synced from the team's Identity Provider, or from the default Smallstep directory if no external Identity Provider has been configured.
 type User struct {
-	// Active Whether the user has been deactivated in the team's Identity Provider
+	// Active Whether the user has been deactivated in the team's Identity Provider.
 	Active *bool `json:"active,omitempty"`
 
-	// DisplayName The user's display name
+	// DisplayName The user's display name.
 	DisplayName *string  `json:"displayName,omitempty"`
 	Emails      *[]Email `json:"emails,omitempty"`
 
-	// FamilyName The user's family name
+	// FamilyName The user's family name.
 	FamilyName *string `json:"familyName,omitempty"`
 
-	// GivenName The user's given name
+	// GivenName The user's given name.
 	GivenName *string  `json:"givenName,omitempty"`
 	Groups    *[]Group `json:"groups,omitempty"`
 
-	// Id A UUID identifying the user
+	// Id A UUID identifying the user.
 	Id         *string      `json:"id,omitempty"`
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
 }
 
-// X509Issuer A Customized X509 issuer for an authority
+// X509Issuer A Customized X509 issuer for an authority.
 type X509Issuer struct {
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	Duration *string `json:"duration,omitempty"`
 
-	// KeyVersion The signature algorithm
+	// KeyVersion The signature algorithm.
 	KeyVersion    X509IssuerKeyVersion `json:"keyVersion"`
 	MaxPathLength *int                 `json:"maxPathLength,omitempty"`
 
-	// Name The name of the issuer
-	Name            string           `json:"name"`
+	// Name The name of the issuer.
+	Name string `json:"name"`
+
+	// NameConstraints X509 certificate name constratins.
 	NameConstraints *NameConstraints `json:"nameConstraints,omitempty"`
 
 	// Subject Name used in x509 certificates
 	Subject *DistinguishedName `json:"subject,omitempty"`
 }
 
-// X509IssuerKeyVersion The signature algorithm
+// X509IssuerKeyVersion The signature algorithm.
 type X509IssuerKeyVersion string
 
-// X509Options Options that apply when issuing x509 certificates
+// X509Options Options that apply when issuing x509 certificates.
 type X509Options struct {
 	// Template A JSON representation of the x509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
 	Template *string `json:"template,omitempty"`
@@ -957,7 +971,7 @@ type X509Options struct {
 	TemplateData *interface{} `json:"templateData,omitempty"`
 }
 
-// X5cProvisioner Authenticate a certificate request with an existing x509 certificate.
+// X5cProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing x509 certificate.
 type X5cProvisioner struct {
 	// Roots A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
 	Roots []string `json:"roots"`
@@ -1060,6 +1074,15 @@ type DeleteAgentConfigurationParams struct {
 
 // GetAgentConfigurationParams defines parameters for GetAgentConfiguration.
 type GetAgentConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutAgentConfigurationParams defines parameters for PutAgentConfiguration.
+type PutAgentConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1288,6 +1311,15 @@ type GetCollectionParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutCollectionParams defines parameters for PutCollection.
+type PutCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // DeleteCollectionInstanceParams defines parameters for DeleteCollectionInstance.
 type DeleteCollectionInstanceParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1380,6 +1412,15 @@ type GetEndpointConfigurationParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutEndpointConfigurationParams defines parameters for PutEndpointConfiguration.
+type PutEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // GetSshGrantsParams defines parameters for GetSshGrants.
 type GetSshGrantsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1439,10 +1480,10 @@ type GetSshGroupParams struct {
 
 // GetSshHostsParams defines parameters for GetSshHosts.
 type GetSshHostsParams struct {
-	// Active If unset or set to true the results will only include active hosts. If set to false the results will include both active and inactive hosts.
+	// Active If unset or set to `true` the results will only include active hosts. If set to `false` the results will include both active and inactive hosts.
 	Active *bool `form:"active,omitempty" json:"active,omitempty"`
 
-	// Bastion Filter (non-)bastion hosts. If unset the results will include both bastion and non-bastion hosts. If set to true the results will include only bastion hosts and if set to false the results will include only non-bastion hosts.
+	// Bastion Filter (non-)bastion hosts. If unset the results will include both bastion and non-bastion hosts. If set to `true` the results will include only bastion hosts and if set to `false` the results will include only non-bastion hosts.
 	Bastion *bool `form:"bastion,omitempty" json:"bastion,omitempty"`
 
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1509,6 +1550,15 @@ type GetManagedConfigurationHostIdParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PutManagedConfigurationParams defines parameters for PutManagedConfiguration.
+type PutManagedConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // DeleteManagedConfigurationParams defines parameters for DeleteManagedConfiguration.
 type DeleteManagedConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1554,6 +1604,9 @@ type GetSshUsersParams struct {
 // PostAgentConfigurationsJSONRequestBody defines body for PostAgentConfigurations for application/json ContentType.
 type PostAgentConfigurationsJSONRequestBody = AgentConfiguration
 
+// PutAgentConfigurationJSONRequestBody defines body for PutAgentConfiguration for application/json ContentType.
+type PutAgentConfigurationJSONRequestBody = AgentConfiguration
+
 // PostAttestationAuthoritiesJSONRequestBody defines body for PostAttestationAuthorities for application/json ContentType.
 type PostAttestationAuthoritiesJSONRequestBody = AttestationAuthority
 
@@ -1578,6 +1631,9 @@ type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
 // PostCollectionsJSONRequestBody defines body for PostCollections for application/json ContentType.
 type PostCollectionsJSONRequestBody = NewCollection
 
+// PutCollectionJSONRequestBody defines body for PutCollection for application/json ContentType.
+type PutCollectionJSONRequestBody = Collection
+
 // PutCollectionInstanceJSONRequestBody defines body for PutCollectionInstance for application/json ContentType.
 type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
 
@@ -1587,6 +1643,9 @@ type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBod
 // PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
 type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
 
+// PutEndpointConfigurationJSONRequestBody defines body for PutEndpointConfiguration for application/json ContentType.
+type PutEndpointConfigurationJSONRequestBody = EndpointConfiguration
+
 // PostSshGrantsJSONRequestBody defines body for PostSshGrants for application/json ContentType.
 type PostSshGrantsJSONRequestBody = NewGrant
 
@@ -1595,6 +1654,9 @@ type PostHostsHostIDTagsJSONRequestBody = NewTag
 
 // PostManagedConfigurationsJSONRequestBody defines body for PostManagedConfigurations for application/json ContentType.
 type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
+
+// PutManagedConfigurationJSONRequestBody defines body for PutManagedConfiguration for application/json ContentType.
+type PutManagedConfigurationJSONRequestBody = ManagedConfiguration
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -1999,6 +2061,11 @@ type ClientInterface interface {
 	// GetAgentConfiguration request
 	GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PutAgentConfiguration request with any body
+	PutAgentConfigurationWithBody(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, body PutAgentConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthorities(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2081,6 +2148,11 @@ type ClientInterface interface {
 	// GetCollection request
 	GetCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PutCollection request with any body
+	PutCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, body PutCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteCollectionInstance request
 	DeleteCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2113,6 +2185,11 @@ type ClientInterface interface {
 
 	// GetEndpointConfiguration request
 	GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutEndpointConfiguration request with any body
+	PutEndpointConfigurationWithBody(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetSshGrants request
 	GetSshGrants(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2158,6 +2235,11 @@ type ClientInterface interface {
 
 	// GetManagedConfigurationHostId request
 	GetManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutManagedConfiguration request with any body
+	PutManagedConfigurationWithBody(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutManagedConfiguration(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, body PutManagedConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteManagedConfiguration request
 	DeleteManagedConfiguration(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2210,6 +2292,30 @@ func (c *Client) DeleteAgentConfiguration(ctx context.Context, agentConfiguratio
 
 func (c *Client) GetAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAgentConfigurationRequest(c.Server, agentConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutAgentConfigurationWithBody(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutAgentConfigurationRequestWithBody(c.Server, agentConfigurationID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutAgentConfiguration(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, body PutAgentConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutAgentConfigurationRequest(c.Server, agentConfigurationID, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2580,6 +2686,30 @@ func (c *Client) GetCollection(ctx context.Context, collectionSlug CollectionSlu
 	return c.Client.Do(req)
 }
 
+func (c *Client) PutCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionRequestWithBody(c.Server, collectionSlug, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, body PutCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCollectionRequest(c.Server, collectionSlug, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteCollectionInstance(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteCollectionInstanceRequest(c.Server, collectionSlug, instanceID, params)
 	if err != nil {
@@ -2714,6 +2844,30 @@ func (c *Client) DeleteEndpointConfiguration(ctx context.Context, endpointConfig
 
 func (c *Client) GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEndpointConfigurationWithBody(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEndpointConfigurationRequestWithBody(c.Server, endpointConfigurationID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEndpointConfigurationRequest(c.Server, endpointConfigurationID, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2906,6 +3060,30 @@ func (c *Client) DeleteManagedConfigurationHostId(ctx context.Context, managedCo
 
 func (c *Client) GetManagedConfigurationHostId(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetManagedConfigurationHostIdRequest(c.Server, managedConfigurationHostID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutManagedConfigurationWithBody(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutManagedConfigurationRequestWithBody(c.Server, managedConfigurationHostID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutManagedConfiguration(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, body PutManagedConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutManagedConfigurationRequest(c.Server, managedConfigurationHostID, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3112,6 +3290,75 @@ func NewGetAgentConfigurationRequest(server string, agentConfigurationID AgentCo
 	if err != nil {
 		return nil, err
 	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutAgentConfigurationRequest calls the generic PutAgentConfiguration builder with application/json body
+func NewPutAgentConfigurationRequest(server string, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, body PutAgentConfigurationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutAgentConfigurationRequestWithBody(server, agentConfigurationID, params, "application/json", bodyReader)
+}
+
+// NewPutAgentConfigurationRequestWithBody generates requests for PutAgentConfiguration with any type of body
+func NewPutAgentConfigurationRequestWithBody(server string, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "agentConfigurationID", runtime.ParamLocationPath, agentConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	if params.XRequestId != nil {
 		var headerParam0 string
@@ -4465,6 +4712,75 @@ func NewGetCollectionRequest(server string, collectionSlug CollectionSlug, param
 	return req, nil
 }
 
+// NewPutCollectionRequest calls the generic PutCollection builder with application/json body
+func NewPutCollectionRequest(server string, collectionSlug CollectionSlug, params *PutCollectionParams, body PutCollectionJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutCollectionRequestWithBody(server, collectionSlug, params, "application/json", bodyReader)
+}
+
+// NewPutCollectionRequestWithBody generates requests for PutCollection with any type of body
+func NewPutCollectionRequestWithBody(server string, collectionSlug CollectionSlug, params *PutCollectionParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewDeleteCollectionInstanceRequest generates requests for DeleteCollectionInstance
 func NewDeleteCollectionInstanceRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams) (*http.Request, error) {
 	var err error
@@ -5030,6 +5346,75 @@ func NewGetEndpointConfigurationRequest(server string, endpointConfigurationID E
 	if err != nil {
 		return nil, err
 	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutEndpointConfigurationRequest calls the generic PutEndpointConfiguration builder with application/json body
+func NewPutEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutEndpointConfigurationRequestWithBody(server, endpointConfigurationID, params, "application/json", bodyReader)
+}
+
+// NewPutEndpointConfigurationRequestWithBody generates requests for PutEndpointConfiguration with any type of body
+func NewPutEndpointConfigurationRequestWithBody(server string, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	if params.XRequestId != nil {
 		var headerParam0 string
@@ -5860,6 +6245,75 @@ func NewGetManagedConfigurationHostIdRequest(server string, managedConfiguration
 	return req, nil
 }
 
+// NewPutManagedConfigurationRequest calls the generic PutManagedConfiguration builder with application/json body
+func NewPutManagedConfigurationRequest(server string, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, body PutManagedConfigurationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutManagedConfigurationRequestWithBody(server, managedConfigurationHostID, params, "application/json", bodyReader)
+}
+
+// NewPutManagedConfigurationRequestWithBody generates requests for PutManagedConfiguration with any type of body
+func NewPutManagedConfigurationRequestWithBody(server string, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedConfigurationHostID", runtime.ParamLocationPath, managedConfigurationHostID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-configurations/host/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewDeleteManagedConfigurationRequest generates requests for DeleteManagedConfiguration
 func NewDeleteManagedConfigurationRequest(server string, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams) (*http.Request, error) {
 	var err error
@@ -6164,6 +6618,11 @@ type ClientWithResponsesInterface interface {
 	// GetAgentConfiguration request
 	GetAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *GetAgentConfigurationParams, reqEditors ...RequestEditorFn) (*GetAgentConfigurationResponse, error)
 
+	// PutAgentConfiguration request with any body
+	PutAgentConfigurationWithBodyWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutAgentConfigurationResponse, error)
+
+	PutAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, body PutAgentConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutAgentConfigurationResponse, error)
+
 	// GetAttestationAuthorities request
 	GetAttestationAuthoritiesWithResponse(ctx context.Context, params *GetAttestationAuthoritiesParams, reqEditors ...RequestEditorFn) (*GetAttestationAuthoritiesResponse, error)
 
@@ -6246,6 +6705,11 @@ type ClientWithResponsesInterface interface {
 	// GetCollection request
 	GetCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetCollectionParams, reqEditors ...RequestEditorFn) (*GetCollectionResponse, error)
 
+	// PutCollection request with any body
+	PutCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionResponse, error)
+
+	PutCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, body PutCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionResponse, error)
+
 	// DeleteCollectionInstance request
 	DeleteCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*DeleteCollectionInstanceResponse, error)
 
@@ -6278,6 +6742,11 @@ type ClientWithResponsesInterface interface {
 
 	// GetEndpointConfiguration request
 	GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error)
+
+	// PutEndpointConfiguration request with any body
+	PutEndpointConfigurationWithBodyWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error)
+
+	PutEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error)
 
 	// GetSshGrants request
 	GetSshGrantsWithResponse(ctx context.Context, params *GetSshGrantsParams, reqEditors ...RequestEditorFn) (*GetSshGrantsResponse, error)
@@ -6324,6 +6793,11 @@ type ClientWithResponsesInterface interface {
 	// GetManagedConfigurationHostId request
 	GetManagedConfigurationHostIdWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *GetManagedConfigurationHostIdParams, reqEditors ...RequestEditorFn) (*GetManagedConfigurationHostIdResponse, error)
 
+	// PutManagedConfiguration request with any body
+	PutManagedConfigurationWithBodyWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutManagedConfigurationResponse, error)
+
+	PutManagedConfigurationWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, body PutManagedConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutManagedConfigurationResponse, error)
+
 	// DeleteManagedConfiguration request
 	DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error)
 
@@ -6367,6 +6841,7 @@ type DeleteAgentConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Error
+	JSON401      *Error
 	JSON500      *Error
 }
 
@@ -6406,6 +6881,33 @@ func (r GetAgentConfigurationResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAgentConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutAgentConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutAgentConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutAgentConfigurationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6909,6 +7411,7 @@ type PostCollectionsResponse struct {
 	JSON400      *Error
 	JSON401      *Error
 	JSON409      *Error
+	JSON412      *Error
 	JSON500      *Error
 }
 
@@ -6971,6 +7474,33 @@ func (r GetCollectionResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Collection
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutCollectionResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7159,6 +7689,7 @@ type DeleteEndpointConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Error
+	JSON401      *Error
 	JSON500      *Error
 }
 
@@ -7198,6 +7729,33 @@ func (r GetEndpointConfigurationResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutEndpointConfigurationResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7462,6 +8020,7 @@ type PostManagedConfigurationsResponse struct {
 	JSON201      *ManagedConfiguration
 	JSON400      *Error
 	JSON401      *Error
+	JSON412      *Error
 	JSON500      *Error
 }
 
@@ -7485,6 +8044,7 @@ type DeleteManagedConfigurationHostIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Error
+	JSON401      *Error
 	JSON500      *Error
 }
 
@@ -7530,10 +8090,38 @@ func (r GetManagedConfigurationHostIdResponse) StatusCode() int {
 	return 0
 }
 
+type PutManagedConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutManagedConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutManagedConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteManagedConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Error
+	JSON401      *Error
 	JSON500      *Error
 }
 
@@ -7662,6 +8250,23 @@ func (c *ClientWithResponses) GetAgentConfigurationWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseGetAgentConfigurationResponse(rsp)
+}
+
+// PutAgentConfigurationWithBodyWithResponse request with arbitrary body returning *PutAgentConfigurationResponse
+func (c *ClientWithResponses) PutAgentConfigurationWithBodyWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutAgentConfigurationResponse, error) {
+	rsp, err := c.PutAgentConfigurationWithBody(ctx, agentConfigurationID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutAgentConfigurationResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutAgentConfigurationWithResponse(ctx context.Context, agentConfigurationID AgentConfigurationID, params *PutAgentConfigurationParams, body PutAgentConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutAgentConfigurationResponse, error) {
+	rsp, err := c.PutAgentConfiguration(ctx, agentConfigurationID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutAgentConfigurationResponse(rsp)
 }
 
 // GetAttestationAuthoritiesWithResponse request returning *GetAttestationAuthoritiesResponse
@@ -7926,6 +8531,23 @@ func (c *ClientWithResponses) GetCollectionWithResponse(ctx context.Context, col
 	return ParseGetCollectionResponse(rsp)
 }
 
+// PutCollectionWithBodyWithResponse request with arbitrary body returning *PutCollectionResponse
+func (c *ClientWithResponses) PutCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCollectionResponse, error) {
+	rsp, err := c.PutCollectionWithBody(ctx, collectionSlug, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutCollectionParams, body PutCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCollectionResponse, error) {
+	rsp, err := c.PutCollection(ctx, collectionSlug, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCollectionResponse(rsp)
+}
+
 // DeleteCollectionInstanceWithResponse request returning *DeleteCollectionInstanceResponse
 func (c *ClientWithResponses) DeleteCollectionInstanceWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *DeleteCollectionInstanceParams, reqEditors ...RequestEditorFn) (*DeleteCollectionInstanceResponse, error) {
 	rsp, err := c.DeleteCollectionInstance(ctx, collectionSlug, instanceID, params, reqEditors...)
@@ -8029,6 +8651,23 @@ func (c *ClientWithResponses) GetEndpointConfigurationWithResponse(ctx context.C
 		return nil, err
 	}
 	return ParseGetEndpointConfigurationResponse(rsp)
+}
+
+// PutEndpointConfigurationWithBodyWithResponse request with arbitrary body returning *PutEndpointConfigurationResponse
+func (c *ClientWithResponses) PutEndpointConfigurationWithBodyWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error) {
+	rsp, err := c.PutEndpointConfigurationWithBody(ctx, endpointConfigurationID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEndpointConfigurationResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error) {
+	rsp, err := c.PutEndpointConfiguration(ctx, endpointConfigurationID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEndpointConfigurationResponse(rsp)
 }
 
 // GetSshGrantsWithResponse request returning *GetSshGrantsResponse
@@ -8172,6 +8811,23 @@ func (c *ClientWithResponses) GetManagedConfigurationHostIdWithResponse(ctx cont
 	return ParseGetManagedConfigurationHostIdResponse(rsp)
 }
 
+// PutManagedConfigurationWithBodyWithResponse request with arbitrary body returning *PutManagedConfigurationResponse
+func (c *ClientWithResponses) PutManagedConfigurationWithBodyWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutManagedConfigurationResponse, error) {
+	rsp, err := c.PutManagedConfigurationWithBody(ctx, managedConfigurationHostID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutManagedConfigurationResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutManagedConfigurationWithResponse(ctx context.Context, managedConfigurationHostID ManagedConfigurationHostID, params *PutManagedConfigurationParams, body PutManagedConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutManagedConfigurationResponse, error) {
+	rsp, err := c.PutManagedConfiguration(ctx, managedConfigurationHostID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutManagedConfigurationResponse(rsp)
+}
+
 // DeleteManagedConfigurationWithResponse request returning *DeleteManagedConfigurationResponse
 func (c *ClientWithResponses) DeleteManagedConfigurationWithResponse(ctx context.Context, managedConfigurationID ManagedConfigurationID, params *DeleteManagedConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteManagedConfigurationResponse, error) {
 	rsp, err := c.DeleteManagedConfiguration(ctx, managedConfigurationID, params, reqEditors...)
@@ -8283,6 +8939,13 @@ func ParseDeleteAgentConfigurationResponse(rsp *http.Response) (*DeleteAgentConf
 		}
 		response.JSON400 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -8336,6 +8999,67 @@ func ParseGetAgentConfigurationResponse(rsp *http.Response) (*GetAgentConfigurat
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutAgentConfigurationResponse parses an HTTP response from a PutAgentConfigurationWithResponse call
+func ParsePutAgentConfigurationResponse(rsp *http.Response) (*PutAgentConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutAgentConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -9377,6 +10101,13 @@ func ParsePostCollectionsResponse(rsp *http.Response) (*PostCollectionsResponse,
 		}
 		response.JSON409 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -9463,6 +10194,67 @@ func ParseGetCollectionResponse(rsp *http.Response) (*GetCollectionResponse, err
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutCollectionResponse parses an HTTP response from a PutCollectionWithResponse call
+func ParsePutCollectionResponse(rsp *http.Response) (*PutCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Collection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -9847,6 +10639,13 @@ func ParseDeleteEndpointConfigurationResponse(rsp *http.Response) (*DeleteEndpoi
 		}
 		response.JSON400 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -9900,6 +10699,67 @@ func ParseGetEndpointConfigurationResponse(rsp *http.Response) (*GetEndpointConf
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutEndpointConfigurationResponse parses an HTTP response from a PutEndpointConfigurationWithResponse call
+func ParsePutEndpointConfigurationResponse(rsp *http.Response) (*PutEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -10432,6 +11292,13 @@ func ParsePostManagedConfigurationsResponse(rsp *http.Response) (*PostManagedCon
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10464,6 +11331,13 @@ func ParseDeleteManagedConfigurationHostIdResponse(rsp *http.Response) (*DeleteM
 			return nil, err
 		}
 		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -10531,6 +11405,67 @@ func ParseGetManagedConfigurationHostIdResponse(rsp *http.Response) (*GetManaged
 	return response, nil
 }
 
+// ParsePutManagedConfigurationResponse parses an HTTP response from a PutManagedConfigurationWithResponse call
+func ParsePutManagedConfigurationResponse(rsp *http.Response) (*PutManagedConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutManagedConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ManagedConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteManagedConfigurationResponse parses an HTTP response from a DeleteManagedConfigurationWithResponse call
 func ParseDeleteManagedConfigurationResponse(rsp *http.Response) (*DeleteManagedConfigurationResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10551,6 +11486,13 @@ func ParseDeleteManagedConfigurationResponse(rsp *http.Response) (*DeleteManaged
 			return nil, err
 		}
 		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error

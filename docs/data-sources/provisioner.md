@@ -40,16 +40,16 @@ data "smallstep_provisioner" "by_id" {
 
 - `acme` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [ACME protocol](https://smallstep.com/docs/step-ca/acme-basics/#acme-challenges). This object is populated when type is `ACME`. (see [below for nested schema](#nestedatt--acme))
 - `acme_attestation` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#acme) that enables automation with the [device-attest-01 challenge of the ACME protocol](https://smallstep.com/blog/acme-managed-device-attestation-explained/). This object is populated when type is `ACME_ATTESTATION`. (see [below for nested schema](#nestedatt--acme_attestation))
-- `aws` (Attributes) Grant a certificate to an Amazon EC2 instance using the Instance Identity Document. This object is populated when type is `AWS`. (see [below for nested schema](#nestedatt--aws))
-- `azure` (Attributes) Grants certificates to Microsoft Azure instances using the managed identities tokens. This object is populated when type is `AZURE`. (see [below for nested schema](#nestedatt--azure))
+- `aws` (Attributes) The [AWS provisioner](https://smallstep.com/docs/step-ca/provisioners/#aws) grants a certificate to an Amazon EC2 instance using the Instance Identity Document. This object is populated when type is `AWS`. (see [below for nested schema](#nestedatt--aws))
+- `azure` (Attributes) The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens. This object is populated when type is `AZURE`. (see [below for nested schema](#nestedatt--azure))
 - `claims` (Attributes) A set of constraints configuring how this provisioner can be used to issue certificates. (see [below for nested schema](#nestedatt--claims))
 - `created_at` (String) Timestamp of when the provisioner was created in RFC 3339 format. Generated server-side.
-- `gcp` (Attributes) Grant a certificate to a Google Compute Engine instance using its identity token. This object is populated when type is `GCP`. (see [below for nested schema](#nestedatt--gcp))
+- `gcp` (Attributes) The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. This object is populated when type is `GCP`. (see [below for nested schema](#nestedatt--gcp))
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is populated when type is `JWK`. (see [below for nested schema](#nestedatt--jwk))
-- `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
-- `options` (Attributes) Options that apply when issuing certificates with this provisioner (see [below for nested schema](#nestedatt--options))
+- `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
+- `options` (Attributes) Options that apply when issuing certificates with this provisioner. (see [below for nested schema](#nestedatt--options))
 - `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE`
-- `x5c` (Attributes) Authenticate a certificate request with an existing x509 certificate. This object is populated when type is `X5C`. (see [below for nested schema](#nestedatt--x5c))
+- `x5c` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing x509 certificate. This object is populated when type is `X5C`. (see [below for nested schema](#nestedatt--x5c))
 
 <a id="nestedatt--acme"></a>
 ### Nested Schema for `acme`
@@ -58,7 +58,7 @@ Read-Only:
 
 - `challenges` (Set of String) Which ACME challenge types are allowed. Allowed values: `http-01` `dns-01` `tls-alpn-01`
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
-- `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be true for all new provisioners.
+- `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner. Must be `true` for all new provisioners.
 
 
 <a id="nestedatt--acme_attestation"></a>
@@ -66,7 +66,7 @@ Read-Only:
 
 Read-Only:
 
-- `attestation_formats` (Set of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are apple, step, and tpm. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default. Allowed values: `apple` `step` `tpm`
+- `attestation_formats` (Set of String) The allowed attestation formats for the device-attest-01 challenge. Valid values are `apple`, `step`, and `tpm`. The apple format is for Apple devices, and adds trust for Apple's CAs. The step format is for non-TPM devices that can issue attestation certificates, such as YubiKey PIV. It adds trust for Yubico's root CA. The tpm format is for TPMs and does not trust any CAs by default. Allowed values: `apple` `step` `tpm`
 - `attestation_roots` (Set of String) A trust bundle of root certificates in PEM format that will be used to verify attestation certificates. The default value depends on the value of attestationFormats. If provided, this PEM bundle will override the CA trust established by setting attestationFormats to apple or step. At least one root certificate is required when using the tpm attestationFormat.
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
@@ -77,7 +77,7 @@ Read-Only:
 
 Read-Only:
 
-- `accounts` (Set of String) The list of AWS account numbers that are allowed to use this provisioner.
+- `accounts` (Set of String) The list of AWS account IDs that are allowed to use this provisioner.
 - `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
 - `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
 - `instance_age` (String) The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -131,8 +131,8 @@ Read-Only:
 
 Read-Only:
 
-- `encrypted_key` (String) The JWE encrypted private key
-- `key` (String) The public JSON web key
+- `encrypted_key` (String) The JWE encrypted private key.
+- `key` (String) The public JSON web key.
 
 
 <a id="nestedatt--oidc"></a>
@@ -156,7 +156,7 @@ Read-Only:
 Read-Only:
 
 - `ssh` (Attributes) Options that apply when issuing SSH certificates (see [below for nested schema](#nestedatt--options--ssh))
-- `x509` (Attributes) Options that apply when issuing x509 certificates (see [below for nested schema](#nestedatt--options--x509))
+- `x509` (Attributes) Options that apply when issuing x509 certificates. (see [below for nested schema](#nestedatt--options--x509))
 
 <a id="nestedatt--options--ssh"></a>
 ### Nested Schema for `options.ssh`

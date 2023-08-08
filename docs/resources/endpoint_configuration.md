@@ -3,12 +3,12 @@
 page_title: "smallstep_endpoint_configuration Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  Configuration for a managed endpoint
+  Configuration for a managed endpoint. This object is experimental and subject to change.
 ---
 
 # smallstep_endpoint_configuration (Resource)
 
-Configuration for a managed endpoint
+Configuration for a managed endpoint. This object is experimental and subject to change.
 
 ## Example Usage
 
@@ -80,7 +80,7 @@ resource "smallstep_endpoint_configuration" "ssh" {
 ### Required
 
 - `authority_id` (String) UUID identifying the authority that will issue certificates for the endpoint.
-- `certificate_info` (Attributes) Details on a managed certificate (see [below for nested schema](#nestedatt--certificate_info))
+- `certificate_info` (Attributes) Details on a managed certificate. (see [below for nested schema](#nestedatt--certificate_info))
 - `key_info` (Attributes) The attributes of the cryptographic key. (see [below for nested schema](#nestedatt--key_info))
 - `kind` (String) The kind of endpoint this configuration applies to. Allowed values: `DEVICE` `WORKLOAD` `PEOPLE`
 - `name` (String) The name of the endpoint configuration.
@@ -93,14 +93,14 @@ resource "smallstep_endpoint_configuration" "ssh" {
 
 ### Read-Only
 
-- `id` (String) A UUID identifying this endpoint configuration. Generated server-side when the endpoint configuration is created.
+- `id` (String) A UUID identifying this endpoint configuration. Read only.
 
 <a id="nestedatt--certificate_info"></a>
 ### Nested Schema for `certificate_info`
 
 Required:
 
-- `type` (String) The type of certificate Allowed values: `X509` `SSH_USER` `SSH_HOST`
+- `type` (String) The type of certificate. Allowed values: `X509` `SSH_USER` `SSH_HOST`
 
 Optional:
 

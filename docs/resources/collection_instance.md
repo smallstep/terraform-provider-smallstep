@@ -3,12 +3,12 @@
 page_title: "smallstep_collection_instance Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An instance in a collection
+  An instance in a collection.
 ---
 
 # smallstep_collection_instance (Resource)
 
-An instance in a collection
+An instance in a collection.
 
 ## Example Usage
 
@@ -28,13 +28,13 @@ resource "smallstep_collection_instance" "server1" {
 
 - `collection_slug` (String) The collection will be created implicitly if it does not exist.
 If creating this collection with a smallstep_collection resource in the same config you MUST use depends_on to avoid race conditions.
-- `data` (String) The instance data
+- `data` (String) The instance data.
 
 ### Read-Only
 
-- `created_at` (String) Timestamp of when the instance was added to the collection
+- `created_at` (String) Timestamp in RFC3339 format when the instance was added to the collection.
 - `id` (String) The ID of this resource.
-- `updated_at` (String) Timestamp of when the instance was last changed
+- `updated_at` (String) Timestamp in RFC3339 format when the instance was last changed.
 
 ## Import
 

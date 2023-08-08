@@ -3,12 +3,12 @@
 page_title: "smallstep_managed_configuration Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  The agent and managed endpoints used in one host.
+  The agent and managed endpoints used in one host. This object is experimental and subject to change.
 ---
 
 # smallstep_managed_configuration (Resource)
 
-The agent and managed endpoints used in one host.
+The agent and managed endpoints used in one host. This object is experimental and subject to change.
 
 ## Example Usage
 
@@ -47,7 +47,7 @@ resource "smallstep_managed_configuration" "mc" {
 ### Required
 
 - `agent_configuration_id` (String) UUID identifying the agent configuration.
-- `managed_endpoints` (Attributes Set) All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type. (see [below for nested schema](#nestedatt--managed_endpoints))
+- `managed_endpoints` (Attributes Set) All the information used by an agent to grant a certificate to an endpoint. Exactly one of `x509CertificateData` or `sshCertificateData` must be set and must match the endpoint configuration certificate info type. This object is experimental and subject to change. (see [below for nested schema](#nestedatt--managed_endpoints))
 - `name` (String) The name of this managed configuration.
 
 ### Optional
@@ -56,7 +56,7 @@ resource "smallstep_managed_configuration" "mc" {
 
 ### Read-Only
 
-- `id` (String) UUID identifying this managed configuration.
+- `id` (String) UUID identifying this managed configuration. Read only.
 
 <a id="nestedatt--managed_endpoints"></a>
 ### Nested Schema for `managed_endpoints`
@@ -67,12 +67,12 @@ Required:
 
 Optional:
 
-- `ssh_certificate_data` (Attributes) Contains the information to include when granting an SSH certificate to an endpoint. (see [below for nested schema](#nestedatt--managed_endpoints--ssh_certificate_data))
-- `x509_certificate_data` (Attributes) Contains the information to include when granting an x509 certificate to an endpoint. (see [below for nested schema](#nestedatt--managed_endpoints--x509_certificate_data))
+- `ssh_certificate_data` (Attributes) Contains the information to include when granting an SSH certificate to a managed endpoint. (see [below for nested schema](#nestedatt--managed_endpoints--ssh_certificate_data))
+- `x509_certificate_data` (Attributes) Contains the information to include when granting an x509 certificate to a managed endpoint. (see [below for nested schema](#nestedatt--managed_endpoints--x509_certificate_data))
 
 Read-Only:
 
-- `id` (String) UUID identifying this managed endpoint. Generated server-side on creation.
+- `id` (String) UUID identifying this managed endpoint. Read only.
 
 <a id="nestedatt--managed_endpoints--ssh_certificate_data"></a>
 ### Nested Schema for `managed_endpoints.ssh_certificate_data`

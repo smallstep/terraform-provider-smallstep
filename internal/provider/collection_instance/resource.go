@@ -108,7 +108,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	component, props, err := utils.Describe("collection-instance")
+	component, props, err := utils.Describe("collectionInstance")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -128,6 +128,9 @@ If creating this collection with a smallstep_collection resource in the same con
 			"id": schema.StringAttribute{
 				MarkdownDescription: props["id"],
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"collection_slug": schema.StringAttribute{
 				MarkdownDescription: props["collectionSlug"] + collectionWarning,
@@ -139,9 +142,6 @@ If creating this collection with a smallstep_collection resource in the same con
 			"data": schema.StringAttribute{
 				MarkdownDescription: props["data"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: props["createdAt"],
@@ -218,7 +218,58 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	plan := &Model{}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody, diags := toAPI(plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := plan.ID.ValueString()
+	slug := plan.CollectionSlug.ValueString()
+
+	httpResp, err := r.client.PutCollectionInstance(ctx, slug, id, &v20230301.PutCollectionInstanceParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update collection instance %s/%s: %v", slug, id, err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	instance := &v20230301.CollectionInstance{}
+	if err := json.NewDecoder(httpResp.Body).Decode(instance); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal collection instance %s/%s: %v", slug, id, err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, slug, instance, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update collection instance %s/%s resource", slug, id))
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

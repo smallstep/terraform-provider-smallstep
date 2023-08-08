@@ -129,30 +129,18 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"authority_id": schema.StringAttribute{
 				MarkdownDescription: props["authorityID"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"provisioner_name": schema.StringAttribute{
 				MarkdownDescription: props["provisioner"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"attestation_slug": schema.StringAttribute{
 				MarkdownDescription: props["attestationSlug"],
 				Optional:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 		},
 	}
@@ -208,7 +196,51 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	plan := &Model{}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody := toAPI(plan)
+
+	httpResp, err := r.client.PutAgentConfiguration(ctx, plan.ID.ValueString(), &v20230301.PutAgentConfigurationParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update agent configuration %q: %v", plan.ID.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d updating agent configuration %q: %s", httpResp.StatusCode, plan.ID.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	ac := &v20230301.AgentConfiguration{}
+	if err := json.NewDecoder(httpResp.Body).Decode(ac); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal agent configuration %q: %v", plan.ID.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, ac, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update agent configuration %q resource", plan.ID.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

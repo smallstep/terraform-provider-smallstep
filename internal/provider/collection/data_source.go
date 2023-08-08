@@ -122,6 +122,10 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: props["name"],
 				Computed:            true,
 			},
+			"schema_uri": schema.StringAttribute{
+				MarkdownDescription: props["schemaURI"],
+				Optional:            true,
+			},
 			"instance_count": schema.Int64Attribute{
 				MarkdownDescription: props["instanceCount"],
 				Computed:            true,

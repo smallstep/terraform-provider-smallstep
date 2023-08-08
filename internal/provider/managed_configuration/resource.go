@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -158,46 +157,28 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"agent_configuration_id": schema.StringAttribute{
 				MarkdownDescription: props["agentConfigurationID"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"host_id": schema.StringAttribute{
 				MarkdownDescription: props["hostID"],
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"managed_endpoints": schema.SetNestedAttribute{
 				MarkdownDescription: me,
 				Required:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.RequiresReplace(),
-				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							MarkdownDescription: meProps["id"],
 							Computed:            true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
-							},
 						},
 						"endpoint_configuration_id": schema.StringAttribute{
 							MarkdownDescription: meProps["endpointConfigurationID"],
 							Required:            true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.RequiresReplace(),
-							},
 						},
 						"x509_certificate_data": schema.SingleNestedAttribute{
 							MarkdownDescription: x509,
@@ -206,17 +187,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								"common_name": schema.StringAttribute{
 									MarkdownDescription: x509Props["commonName"],
 									Required:            true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.RequiresReplace(),
-									},
 								},
 								"sans": schema.SetAttribute{
 									ElementType:         types.StringType,
 									MarkdownDescription: x509Props["sans"],
 									Required:            true,
-									PlanModifiers: []planmodifier.Set{
-										setplanmodifier.RequiresReplace(),
-									},
 								},
 							},
 						},
@@ -227,17 +202,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								"key_id": schema.StringAttribute{
 									MarkdownDescription: sshProps["keyID"],
 									Required:            true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.RequiresReplace(),
-									},
 								},
 								"principals": schema.SetAttribute{
 									ElementType:         types.StringType,
 									MarkdownDescription: sshProps["principals"],
 									Required:            true,
-									PlanModifiers: []planmodifier.Set{
-										setplanmodifier.RequiresReplace(),
-									},
 								},
 							},
 						},
@@ -302,7 +271,55 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	plan := &Model{}
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody, diags := plan.toAPI(ctx)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	httpResp, err := r.client.PutManagedConfiguration(ctx, plan.ID.ValueString(), &v20230301.PutManagedConfigurationParams{}, reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update managed configuration %q: %v", plan.ID.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d updating managed configuration %q: %s", httpResp.StatusCode, plan.ID.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	mc := &v20230301.ManagedConfiguration{}
+	if err := json.NewDecoder(httpResp.Body).Decode(mc); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal managed configuration %q: %v", plan.ID.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, mc, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update managed configuration %q resource", plan.ID.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

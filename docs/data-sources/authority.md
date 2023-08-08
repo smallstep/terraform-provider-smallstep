@@ -3,12 +3,12 @@
 page_title: "smallstep_authority Data Source - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An X509 authority hosted by Smallstep
+  An X509 authority hosted by Smallstep.
 ---
 
 # smallstep_authority (Data Source)
 
-An X509 authority hosted by Smallstep
+An X509 authority hosted by Smallstep.
 
 ## Example Usage
 
@@ -27,17 +27,17 @@ output "bootstrap_preexisting" {
 
 ### Required
 
-- `id` (String) A UUID identifying this authority
+- `id` (String) A UUID identifying this authority.
 
 ### Read-Only
 
-- `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only)
-- `admin_emails` (Set of String) Users that have admin access to manage the authority
-- `created_at` (String) Timestamp when the authority was created
-- `domain` (String) The domain where the authority can be reached
-- `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format
-- `name` (String) The name of the authority
+- `active_revocation` (Boolean) Whether CRL and OCSP are enabled (advanced authorities only).
+- `admin_emails` (Set of String) Users that have admin access to manage the authority.
+- `created_at` (String) Timestamp when the authority was created.
+- `domain` (String) The domain where the authority can be reached.
+- `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
+- `name` (String) The name of the authority.
 - `type` (String) One of the available authority types
- Allowed values: `devops` `advanced`
+ Allowed values: `devops` `advanced` `managed`
 
 
