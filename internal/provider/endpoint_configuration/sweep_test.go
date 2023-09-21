@@ -32,7 +32,7 @@ func init() {
 			defer resp.Body.Close()
 			if resp.StatusCode != http.StatusOK {
 				body, _ := io.ReadAll(resp.Body)
-				return fmt.Errorf("failed to list authorities: %d: %s", resp.StatusCode, body)
+				return fmt.Errorf("failed to list endpoints: %d: %s", resp.StatusCode, body)
 			}
 			var list []*v20230301.EndpointConfiguration
 			if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
