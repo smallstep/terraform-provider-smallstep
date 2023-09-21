@@ -147,13 +147,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"catalog": schema.StringAttribute{
-				MarkdownDescription: props["catalog"],
-				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
 			"attestor_roots": schema.StringAttribute{
 				MarkdownDescription: props["attestorRoots"],
 				Required:            true,

@@ -20,7 +20,6 @@ type Model struct {
 	Slug                  types.String `tfsdk:"slug"`
 	AttestorIntermediates types.String `tfsdk:"attestor_intermediates"`
 	AttestorRoots         types.String `tfsdk:"attestor_roots"`
-	Catalog               types.String `tfsdk:"catalog"`
 	CreatedAt             types.String `tfsdk:"created_at"`
 }
 
@@ -33,7 +32,6 @@ func fromAPI(ctx context.Context, aa *v20230301.AttestationAuthority, state util
 		Root:          types.StringValue(utils.Deref(aa.Root)),
 		Slug:          types.StringValue(utils.Deref(aa.Slug)),
 		AttestorRoots: types.StringValue(aa.AttestorRoots),
-		Catalog:       types.StringValue(aa.Catalog),
 		CreatedAt:     types.StringValue(aa.CreatedAt.Format(time.RFC3339)),
 	}
 
@@ -47,7 +45,6 @@ func fromAPI(ctx context.Context, aa *v20230301.AttestationAuthority, state util
 func toAPI(model *Model) *v20230301.AttestationAuthority {
 	return &v20230301.AttestationAuthority{
 		Name:                  model.Name.ValueString(),
-		Catalog:               model.Catalog.ValueString(),
 		AttestorRoots:         model.AttestorRoots.ValueString(),
 		AttestorIntermediates: model.AttestorIntermediates.ValueStringPointer(),
 	}

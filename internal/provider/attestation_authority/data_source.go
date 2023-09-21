@@ -128,10 +128,6 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: props["root"],
 				Computed:            true,
 			},
-			"catalog": schema.StringAttribute{
-				MarkdownDescription: props["catalog"],
-				Computed:            true,
-			},
 			"attestor_roots": schema.StringAttribute{
 				MarkdownDescription: props["attestorRoots"],
 				Computed:            true,

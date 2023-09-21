@@ -3,6 +3,9 @@
 BUG FIXES:
 * Hosted provisioner webhooks will have a secret of type null rather than type unknown after creation.
 
+CHANGES:
+* attestation_authority resource and data source no longer has a `catalog` attribute.
+
 ## 0.3.0
 
 FEATURES:

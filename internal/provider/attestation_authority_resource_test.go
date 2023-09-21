@@ -31,12 +31,11 @@ resource "smallstep_collection" "tpms" {
 
 resource "smallstep_attestation_authority" "aa" {
 	name = "tfprovider%s"
-	catalog = %q
 	attestor_roots = %q
 	attestor_intermediates = %q
 	depends_on = [smallstep_collection.tpms]
 }
-`, slug, slug, slug, attestorRoot, attestorIntermediate)
+`, slug, slug, attestorRoot, attestorIntermediate)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -49,7 +48,6 @@ resource "smallstep_attestation_authority" "aa" {
 				Config: config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "catalog", slug),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "name", "tfprovider"+slug),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_roots", attestorRoot),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_intermediates", attestorIntermediate),
@@ -73,11 +71,10 @@ resource "smallstep_collection" "tpms" {
 
 resource "smallstep_attestation_authority" "aa" {
 	name = "tfprovider%s"
-	catalog = %q
 	attestor_roots = %q
 	depends_on = [smallstep_collection.tpms]
 }
-`, slug, slug, slug, attestorRoot)
+`, slug, slug, attestorRoot)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -104,12 +101,11 @@ resource "smallstep_collection" "tpms" {
 
 resource "smallstep_attestation_authority" "aa" {
 	name = "tfprovider%s"
-	catalog = %q
 	attestor_roots = %q
 	attestor_intermediates = ""
 	depends_on = [smallstep_collection.tpms]
 }
-`, slug, slug, slug, attestorRoot)
+`, slug, slug, attestorRoot)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
