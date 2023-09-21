@@ -42,7 +42,7 @@ func TestAccAgentConfigurationResource(t *testing.T) {
 	config1 := fmt.Sprintf(`
 resource "smallstep_authority" "agents" {
 	subdomain = %q
-	name = "Agents Authority"
+	name = "tfprovider-agents-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -57,7 +57,7 @@ resource "smallstep_provisioner" "agents" {
 }
 
 resource "smallstep_endpoint_configuration" "ep1" {
-	name = "My DB"
+	name = "tfprovider My DB"
 	kind = "WORKLOAD"
 
 	# this would generally be a different authority
@@ -135,7 +135,7 @@ resource "smallstep_endpoint_configuration" "ep1" {
 	config2 := fmt.Sprintf(`
 resource "smallstep_authority" "agents" {
 	subdomain = %q
-	name = "Agents Authority"
+	name = "tfprovider-agents-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -150,7 +150,7 @@ resource "smallstep_provisioner" "agents" {
 }
 
 resource "smallstep_endpoint_configuration" "ep1" {
-	name = "SSH"
+	name = "tfprovider SSH"
 	kind = "PEOPLE"
 	authority_id = smallstep_authority.agents.id
 	provisioner_name = smallstep_provisioner.agents.name
@@ -179,7 +179,7 @@ resource "smallstep_endpoint_configuration" "ep1" {
 				Config: config1,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_endpoint_configuration.ep1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "My DB"),
+					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "tfprovider My DB"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "kind", "WORKLOAD"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.type", "X509"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.duration", "168h"),
@@ -215,7 +215,7 @@ resource "smallstep_endpoint_configuration" "ep1" {
 				Config: config2,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_endpoint_configuration.ep1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "SSH"),
+					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "tfprovider SSH"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "kind", "PEOPLE"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.type", "SSH_USER"),
 					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.type", "DEFAULT"),
@@ -233,24 +233,6 @@ resource "smallstep_endpoint_configuration" "ep1" {
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
-			/*
-				{
-					Config: config2,
-					Check: helper.ComposeAggregateTestCheckFunc(
-						helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "name", "Agent 1"),
-					),
-					ConfigPlanChecks: helper.ConfigPlanChecks{
-						PreApply: []plancheck.PlanCheck{
-							plancheck.ExpectResourceAction("smallstep_agent_configuration.agent1", plancheck.ResourceActionUpdate),
-						},
-					},
-				},
-				{
-					ResourceName:      "smallstep_agent_configuration.agent1",
-					ImportState:       true,
-					ImportStateVerify: true,
-				},
-			*/
 		},
 	})
 }

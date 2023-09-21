@@ -48,7 +48,7 @@ func TestAccManagedConfigurationResource(t *testing.T) {
 	config := fmt.Sprintf(`
 resource "smallstep_authority" "authority" {
 	subdomain = %q
-	name = "Managed Workloads Authority"
+	name = "tfprovider-managed-workloads-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -65,13 +65,13 @@ resource "smallstep_provisioner" "provisioner" {
 resource "smallstep_agent_configuration" "agent1" {
 	authority_id = smallstep_authority.authority.id
 	provisioner_name = smallstep_provisioner.provisioner.name
-	name = "Agent1"
+	name = "tfprovider Agent1"
 	attestation_slug = "attestationslug"
 	depends_on = [smallstep_provisioner.provisioner]
 }
 
 resource "smallstep_endpoint_configuration" "ep1" {
-	name = "My DB"
+	name = "tfprovider My DB"
 	kind = "WORKLOAD"
 	authority_id = smallstep_authority.authority.id
 	provisioner_name = smallstep_provisioner.provisioner.name
@@ -88,7 +88,7 @@ resource "smallstep_endpoint_configuration" "ep1" {
 
 resource "smallstep_managed_configuration" "mc" {
 	agent_configuration_id = smallstep_agent_configuration.agent1.id
-	name = "Multiple Endpoints"
+	name = "tfprovider Multiple Endpoints"
 	host_id = %q
 	managed_endpoints = [
 		{
@@ -106,7 +106,7 @@ resource "smallstep_managed_configuration" "mc" {
 	config2 := fmt.Sprintf(`
 resource "smallstep_authority" "authority" {
 	subdomain = %q
-	name = "Managed Workloads Authority"
+	name = "tfprovider-managed-workloads-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -123,14 +123,14 @@ resource "smallstep_provisioner" "provisioner" {
 resource "smallstep_agent_configuration" "agent2" {
 	authority_id = smallstep_authority.authority.id
 	provisioner_name = smallstep_provisioner.provisioner.name
-	name = "Agent1"
+	name = "tfprovider Agent1"
 	attestation_slug = "attestationslug"
 	depends_on = [smallstep_provisioner.provisioner]
 }
 
 
 resource "smallstep_endpoint_configuration" "ep2" {
-	name = "SSH"
+	name = "tfprovider SSH"
 	kind = "PEOPLE"
 	authority_id = smallstep_authority.authority.id
 	provisioner_name = smallstep_provisioner.provisioner.name
@@ -147,7 +147,7 @@ resource "smallstep_endpoint_configuration" "ep2" {
 
 resource "smallstep_managed_configuration" "mc" {
 	agent_configuration_id = smallstep_agent_configuration.agent2.id
-	name = "Updated"
+	name = "tfprovider Updated"
 	host_id = %q
 	managed_endpoints = [
 		{
@@ -174,7 +174,7 @@ resource "smallstep_managed_configuration" "mc" {
 					// managed configuration
 					helper.TestMatchResourceAttr("smallstep_managed_configuration.mc", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "host_id", hostID),
-					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "name", "Multiple Endpoints"),
+					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "name", "tfprovider Multiple Endpoints"),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.#", "1"),
 					helper.TestMatchResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.0.endpoint_configuration_id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.0.x509_certificate_data.common_name", "db"),
@@ -192,7 +192,7 @@ resource "smallstep_managed_configuration" "mc" {
 					// managed configuration
 					helper.TestMatchResourceAttr("smallstep_managed_configuration.mc", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "host_id", hostID2),
-					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "name", "Updated"),
+					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "name", "tfprovider Updated"),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.#", "1"),
 					helper.TestMatchResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.0.endpoint_configuration_id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_managed_configuration.mc", "managed_endpoints.0.ssh_certificate_data.key_id", "abc"),

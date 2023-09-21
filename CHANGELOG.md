@@ -1,3 +1,8 @@
+## 0.4.0
+
+BUG FIXES:
+* Hosted provisioner webhooks will have a secret of type null rather than type unknown after creation.
+
 ## 0.3.0
 
 FEATURES:
