@@ -42,7 +42,7 @@ func TestAccAgentConfigurationResource(t *testing.T) {
 	config1 := fmt.Sprintf(`
 resource "smallstep_authority" "agents" {
 	subdomain = %q
-	name = "Agents Authority"
+	name = "tfprovider-agents-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -59,7 +59,7 @@ resource "smallstep_provisioner" "agents" {
 resource "smallstep_agent_configuration" "agent1" {
 	authority_id = smallstep_authority.agents.id
 	provisioner_name = smallstep_provisioner.agents.name
-	name = "Agent1"
+	name = "tfprovider Agent1"
 	attestation_slug = "anythinggoes"
 	depends_on = [smallstep_provisioner.agents]
 }`, slug, root)
@@ -69,7 +69,7 @@ resource "smallstep_agent_configuration" "agent1" {
 	config2 := fmt.Sprintf(`
 resource "smallstep_authority" "agents" {
 	subdomain = %q
-	name = "Agents Authority"
+	name = "tfprovider-agents-authority"
 	type = "devops"
 	admin_emails = ["andrew@smallstep.com"]
 }
@@ -86,7 +86,7 @@ resource "smallstep_provisioner" "agents" {
 resource "smallstep_agent_configuration" "agent1" {
 	authority_id = smallstep_authority.agents.id
 	provisioner_name = smallstep_provisioner.agents.name
-	name = "Agent 1"
+	name = "tfprovider Agent 1"
 	attestation_slug = "anythinggoes2"
 	depends_on = [smallstep_provisioner.agents]
 }`, slug2, root)
@@ -98,7 +98,7 @@ resource "smallstep_agent_configuration" "agent1" {
 				Config: config1,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_agent_configuration.agent1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "name", "Agent1"),
+					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "name", "tfprovider Agent1"),
 					helper.TestMatchResourceAttr("smallstep_agent_configuration.agent1", "authority_id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "provisioner_name", "Agents"),
 					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "attestation_slug", "anythinggoes"),
@@ -107,7 +107,7 @@ resource "smallstep_agent_configuration" "agent1" {
 			{
 				Config: config2,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "name", "Agent 1"),
+					helper.TestCheckResourceAttr("smallstep_agent_configuration.agent1", "name", "tfprovider Agent 1"),
 				),
 				ConfigPlanChecks: helper.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{

@@ -1054,6 +1054,18 @@ type N412 = Error
 // N500 defines model for 500.
 type N500 = Error
 
+// ListAgentConfigurationsParams defines parameters for ListAgentConfigurations.
+type ListAgentConfigurationsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // PostAgentConfigurationsParams defines parameters for PostAgentConfigurations.
 type PostAgentConfigurationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1385,6 +1397,18 @@ type ListCollectionInstancesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// ListEndpointConfigurationsParams defines parameters for ListEndpointConfigurations.
+type ListEndpointConfigurationsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // PostEndpointConfigurationsParams defines parameters for PostEndpointConfigurations.
 type PostEndpointConfigurationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -1516,6 +1540,18 @@ type PostHostsHostIDTagsParams struct {
 
 // UnregisterSshHostParams defines parameters for UnregisterSshHost.
 type UnregisterSshHostParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListManagedConfigurationsParams defines parameters for ListManagedConfigurations.
+type ListManagedConfigurationsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -2050,6 +2086,9 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// ListAgentConfigurations request
+	ListAgentConfigurations(ctx context.Context, params *ListAgentConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostAgentConfigurations request with any body
 	PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2175,6 +2214,9 @@ type ClientInterface interface {
 	// ListCollectionInstances request
 	ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListEndpointConfigurations request
+	ListEndpointConfigurations(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostEndpointConfigurations request with any body
 	PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2225,6 +2267,9 @@ type ClientInterface interface {
 	// UnregisterSshHost request
 	UnregisterSshHost(ctx context.Context, hostID HostID, params *UnregisterSshHostParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListManagedConfigurations request
+	ListManagedConfigurations(ctx context.Context, params *ListManagedConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostManagedConfigurations request with any body
 	PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2252,6 +2297,18 @@ type ClientInterface interface {
 
 	// GetSshUsers request
 	GetSshUsers(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) ListAgentConfigurations(ctx context.Context, params *ListAgentConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAgentConfigurationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) PostAgentConfigurationsWithBody(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -2806,6 +2863,18 @@ func (c *Client) ListCollectionInstances(ctx context.Context, collectionSlug Col
 	return c.Client.Do(req)
 }
 
+func (c *Client) ListEndpointConfigurations(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEndpointConfigurationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostEndpointConfigurationsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -3022,6 +3091,18 @@ func (c *Client) UnregisterSshHost(ctx context.Context, hostID HostID, params *U
 	return c.Client.Do(req)
 }
 
+func (c *Client) ListManagedConfigurations(ctx context.Context, params *ListManagedConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListManagedConfigurationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) PostManagedConfigurationsWithBody(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostManagedConfigurationsRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -3140,6 +3221,75 @@ func (c *Client) GetSshUsers(ctx context.Context, params *GetSshUsersParams, req
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListAgentConfigurationsRequest generates requests for ListAgentConfigurations
+func NewListAgentConfigurationsRequest(server string, params *ListAgentConfigurationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/agent-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Pagination != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
 }
 
 // NewPostAgentConfigurationsRequest calls the generic PostAgentConfigurations builder with application/json body
@@ -5198,6 +5348,75 @@ func NewListCollectionInstancesRequest(server string, collectionSlug CollectionS
 	return req, nil
 }
 
+// NewListEndpointConfigurationsRequest generates requests for ListEndpointConfigurations
+func NewListEndpointConfigurationsRequest(server string, params *ListEndpointConfigurationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Pagination != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewPostEndpointConfigurationsRequest calls the generic PostEndpointConfigurations builder with application/json body
 func NewPostEndpointConfigurationsRequest(server string, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -6071,6 +6290,75 @@ func NewUnregisterSshHostRequest(server string, hostID HostID, params *Unregiste
 	return req, nil
 }
 
+// NewListManagedConfigurationsRequest generates requests for ListManagedConfigurations
+func NewListManagedConfigurationsRequest(server string, params *ListManagedConfigurationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Pagination != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewPostManagedConfigurationsRequest calls the generic PostManagedConfigurations builder with application/json body
 func NewPostManagedConfigurationsRequest(server string, params *PostManagedConfigurationsParams, body PostManagedConfigurationsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -6607,6 +6895,9 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// ListAgentConfigurations request
+	ListAgentConfigurationsWithResponse(ctx context.Context, params *ListAgentConfigurationsParams, reqEditors ...RequestEditorFn) (*ListAgentConfigurationsResponse, error)
+
 	// PostAgentConfigurations request with any body
 	PostAgentConfigurationsWithBodyWithResponse(ctx context.Context, params *PostAgentConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostAgentConfigurationsResponse, error)
 
@@ -6732,6 +7023,9 @@ type ClientWithResponsesInterface interface {
 	// ListCollectionInstances request
 	ListCollectionInstancesWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*ListCollectionInstancesResponse, error)
 
+	// ListEndpointConfigurations request
+	ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error)
+
 	// PostEndpointConfigurations request with any body
 	PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
 
@@ -6782,6 +7076,9 @@ type ClientWithResponsesInterface interface {
 	// UnregisterSshHost request
 	UnregisterSshHostWithResponse(ctx context.Context, hostID HostID, params *UnregisterSshHostParams, reqEditors ...RequestEditorFn) (*UnregisterSshHostResponse, error)
 
+	// ListManagedConfigurations request
+	ListManagedConfigurationsWithResponse(ctx context.Context, params *ListManagedConfigurationsParams, reqEditors ...RequestEditorFn) (*ListManagedConfigurationsResponse, error)
+
 	// PostManagedConfigurations request with any body
 	PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error)
 
@@ -6809,6 +7106,31 @@ type ClientWithResponsesInterface interface {
 
 	// GetSshUsers request
 	GetSshUsersWithResponse(ctx context.Context, params *GetSshUsersParams, reqEditors ...RequestEditorFn) (*GetSshUsersResponse, error)
+}
+
+type ListAgentConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]AgentConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListAgentConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListAgentConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type PostAgentConfigurationsResponse struct {
@@ -7332,6 +7654,7 @@ type GetWebhookResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *ProvisionerWebhook
+	JSON400      *Error
 	JSON401      *Error
 	JSON404      *Error
 	JSON500      *Error
@@ -7653,6 +7976,31 @@ func (r ListCollectionInstancesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListCollectionInstancesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListEndpointConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]EndpointConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListEndpointConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListEndpointConfigurationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8014,6 +8362,31 @@ func (r UnregisterSshHostResponse) StatusCode() int {
 	return 0
 }
 
+type ListManagedConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ManagedConfiguration
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r ListManagedConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListManagedConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostManagedConfigurationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8215,6 +8588,15 @@ func (r GetSshUsersResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
+}
+
+// ListAgentConfigurationsWithResponse request returning *ListAgentConfigurationsResponse
+func (c *ClientWithResponses) ListAgentConfigurationsWithResponse(ctx context.Context, params *ListAgentConfigurationsParams, reqEditors ...RequestEditorFn) (*ListAgentConfigurationsResponse, error) {
+	rsp, err := c.ListAgentConfigurations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAgentConfigurationsResponse(rsp)
 }
 
 // PostAgentConfigurationsWithBodyWithResponse request with arbitrary body returning *PostAgentConfigurationsResponse
@@ -8618,6 +9000,15 @@ func (c *ClientWithResponses) ListCollectionInstancesWithResponse(ctx context.Co
 	return ParseListCollectionInstancesResponse(rsp)
 }
 
+// ListEndpointConfigurationsWithResponse request returning *ListEndpointConfigurationsResponse
+func (c *ClientWithResponses) ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error) {
+	rsp, err := c.ListEndpointConfigurations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEndpointConfigurationsResponse(rsp)
+}
+
 // PostEndpointConfigurationsWithBodyWithResponse request with arbitrary body returning *PostEndpointConfigurationsResponse
 func (c *ClientWithResponses) PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
 	rsp, err := c.PostEndpointConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
@@ -8776,6 +9167,15 @@ func (c *ClientWithResponses) UnregisterSshHostWithResponse(ctx context.Context,
 	return ParseUnregisterSshHostResponse(rsp)
 }
 
+// ListManagedConfigurationsWithResponse request returning *ListManagedConfigurationsResponse
+func (c *ClientWithResponses) ListManagedConfigurationsWithResponse(ctx context.Context, params *ListManagedConfigurationsParams, reqEditors ...RequestEditorFn) (*ListManagedConfigurationsResponse, error) {
+	rsp, err := c.ListManagedConfigurations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListManagedConfigurationsResponse(rsp)
+}
+
 // PostManagedConfigurationsWithBodyWithResponse request with arbitrary body returning *PostManagedConfigurationsResponse
 func (c *ClientWithResponses) PostManagedConfigurationsWithBodyWithResponse(ctx context.Context, params *PostManagedConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedConfigurationsResponse, error) {
 	rsp, err := c.PostManagedConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
@@ -8862,6 +9262,53 @@ func (c *ClientWithResponses) GetSshUsersWithResponse(ctx context.Context, param
 		return nil, err
 	}
 	return ParseGetSshUsersResponse(rsp)
+}
+
+// ParseListAgentConfigurationsResponse parses an HTTP response from a ListAgentConfigurationsWithResponse call
+func ParseListAgentConfigurationsResponse(rsp *http.Response) (*ListAgentConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListAgentConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []AgentConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParsePostAgentConfigurationsResponse parses an HTTP response from a PostAgentConfigurationsWithResponse call
@@ -9932,6 +10379,13 @@ func ParseGetWebhookResponse(rsp *http.Response) (*GetWebhookResponse, error) {
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10551,6 +11005,53 @@ func ParseListCollectionInstancesResponse(rsp *http.Response) (*ListCollectionIn
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListEndpointConfigurationsResponse parses an HTTP response from a ListEndpointConfigurationsWithResponse call
+func ParseListEndpointConfigurationsResponse(rsp *http.Response) (*ListEndpointConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListEndpointConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -11226,6 +11727,53 @@ func ParseUnregisterSshHostResponse(rsp *http.Response) (*UnregisterSshHostRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Host
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListManagedConfigurationsResponse parses an HTTP response from a ListManagedConfigurationsWithResponse call
+func ParseListManagedConfigurationsResponse(rsp *http.Response) (*ListManagedConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListManagedConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ManagedConfiguration
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

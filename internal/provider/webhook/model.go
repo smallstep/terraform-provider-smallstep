@@ -46,12 +46,17 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 	}
 
 	// secret is only set on the first response to a new webhook and is only set
-	// for EXTERNAL webhooks. If it's nil in the API response use state.
+	// for EXTERNAL webhooks. If it's nil in the API response use state for
+	// external and null for hosted webhooks.
 	if webhook.Secret == nil {
-		secretFromState := types.String{}
-		d := state.GetAttribute(ctx, path.Root("secret"), &secretFromState)
-		diags = append(diags, d...)
-		data.Secret = secretFromState
+		if webhook.ServerType == v20230301.EXTERNAL {
+			secretFromState := types.String{}
+			d := state.GetAttribute(ctx, path.Root("secret"), &secretFromState)
+			diags = append(diags, d...)
+			data.Secret = secretFromState
+		} else {
+			data.Secret = types.StringNull()
+		}
 	} else {
 		data.Secret = types.StringValue(utils.Deref(webhook.Secret))
 	}
