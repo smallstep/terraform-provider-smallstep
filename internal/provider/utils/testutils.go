@@ -252,7 +252,6 @@ func FixAttestationAuthority(t *testing.T, catalog string) *v20230301.Attestatio
 		Name:                  "tfprovider",
 		AttestorRoots:         root,
 		AttestorIntermediates: &intermediate,
-		Catalog:               catalog,
 	}
 
 	resp, err = client.PostAttestationAuthorities(context.Background(), &v20230301.PostAttestationAuthoritiesParams{}, req)
