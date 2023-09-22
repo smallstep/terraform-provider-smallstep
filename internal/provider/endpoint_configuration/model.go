@@ -39,7 +39,7 @@ type CertificateInfoModel struct {
 	Mode     types.Int64  `tfsdk:"mode"`
 }
 
-func (ci CertificateInfoModel) toAPI() v20230301.EndpointCertificateInfo {
+func (ci CertificateInfoModel) ToAPI() v20230301.EndpointCertificateInfo {
 	return v20230301.EndpointCertificateInfo{
 		Type:     v20230301.EndpointCertificateInfoType(ci.Type.ValueString()),
 		Duration: ci.Duration.ValueStringPointer(),
@@ -59,7 +59,7 @@ type HookModel struct {
 	OnError types.List   `tfsdk:"on_error"`
 }
 
-var hookObjectType = types.ObjectType{
+var HookObjectType = types.ObjectType{
 	AttrTypes: map[string]attr.Type{
 		"shell": types.StringType,
 		"before": types.ListType{
@@ -74,7 +74,7 @@ var hookObjectType = types.ObjectType{
 	},
 }
 
-func (h *HookModel) toAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Diagnostics) {
+func (h *HookModel) ToAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if h == nil {
@@ -108,34 +108,34 @@ type HooksModel struct {
 	Renew types.Object `tfsdk:"renew"`
 }
 
-var hooksObjectType = map[string]attr.Type{
-	"sign":  hookObjectType,
-	"renew": hookObjectType,
+var HooksObjectType = map[string]attr.Type{
+	"sign":  HookObjectType,
+	"renew": HookObjectType,
 }
 
-func hookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook, diag.Diagnostics) {
+func HookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook, diag.Diagnostics) {
 	hookModel := &HookModel{}
 	diags := hook.As(ctx, &hookModel, basetypes.ObjectAsOptions{
 		UnhandledUnknownAsEmpty: true,
 	})
 
-	h, d := hookModel.toAPI(ctx)
+	h, d := hookModel.ToAPI(ctx)
 	diags.Append(d...)
 
 	return h, diags
 }
 
-func (h *HooksModel) toAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.Diagnostics) {
+func (h *HooksModel) ToAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if h == nil {
 		return nil, diags
 	}
 
-	sign, d := hookToAPI(ctx, h.Sign)
+	sign, d := HookToAPI(ctx, h.Sign)
 	diags.Append(d...)
 
-	renew, d := hookToAPI(ctx, h.Renew)
+	renew, d := HookToAPI(ctx, h.Renew)
 	diags.Append(d...)
 
 	return &v20230301.EndpointHooks{
@@ -150,7 +150,7 @@ type KeyInfoModel struct {
 	Type    types.String `tfsdk:"type"`
 }
 
-func (ki *KeyInfoModel) toAPI() *v20230301.EndpointKeyInfo {
+func (ki *KeyInfoModel) ToAPI() *v20230301.EndpointKeyInfo {
 	if ki == nil {
 		return nil
 	}
@@ -168,13 +168,13 @@ type ReloadInfoModel struct {
 	Signal  types.Int64  `tfsdk:"signal"`
 }
 
-var reloadInfoType = map[string]attr.Type{
+var ReloadInfoType = map[string]attr.Type{
 	"method":   types.StringType,
 	"pid_file": types.StringType,
 	"signal":   types.Int64Type,
 }
 
-func (ri *ReloadInfoModel) toAPI() *v20230301.EndpointReloadInfo {
+func (ri *ReloadInfoModel) ToAPI() *v20230301.EndpointReloadInfo {
 	if ri == nil {
 		return nil
 	}
@@ -229,13 +229,13 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 	}
 
 	if ec.Hooks != nil {
-		sign, d := hookFromAPI(ctx, ec.Hooks.Sign, path.Root("hooks").AtName("sign"), state)
+		sign, d := HookFromAPI(ctx, ec.Hooks.Sign, path.Root("hooks").AtName("sign"), state)
 		diags.Append(d...)
 
-		renew, d := hookFromAPI(ctx, ec.Hooks.Renew, path.Root("hooks").AtName("renew"), state)
+		renew, d := HookFromAPI(ctx, ec.Hooks.Renew, path.Root("hooks").AtName("renew"), state)
 		diags.Append(d...)
 
-		hooksObj, d := basetypes.NewObjectValue(hooksObjectType, map[string]attr.Value{
+		hooksObj, d := basetypes.NewObjectValue(HooksObjectType, map[string]attr.Value{
 			"sign":  sign,
 			"renew": renew,
 		})
@@ -243,7 +243,7 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 
 		model.Hooks = hooksObj
 	} else {
-		model.Hooks = basetypes.NewObjectNull(hooksObjectType)
+		model.Hooks = basetypes.NewObjectNull(HooksObjectType)
 	}
 
 	if ec.KeyInfo != nil {
@@ -270,7 +270,7 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 		signal, d := utils.ToOptionalInt(ctx, ec.ReloadInfo.Signal, state, path.Root("reload_info").AtName("signal"))
 		diags.Append(d...)
 
-		reloadInfoObject, d := basetypes.NewObjectValue(reloadInfoType, map[string]attr.Value{
+		reloadInfoObject, d := basetypes.NewObjectValue(ReloadInfoType, map[string]attr.Value{
 			"method":   types.StringValue(string(ec.ReloadInfo.Method)),
 			"pid_file": pidFile,
 			"signal":   signal,
@@ -278,7 +278,7 @@ func fromAPI(ctx context.Context, ec *v20230301.EndpointConfiguration, state uti
 		diags.Append(d...)
 		model.ReloadInfo = reloadInfoObject
 	} else {
-		model.ReloadInfo = basetypes.NewObjectNull(reloadInfoType)
+		model.ReloadInfo = basetypes.NewObjectNull(ReloadInfoType)
 	}
 
 	return model, diags
@@ -289,7 +289,7 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.EndpointConfiguration,
 	diags := model.Hooks.As(ctx, &hooksModel, basetypes.ObjectAsOptions{
 		UnhandledUnknownAsEmpty: true,
 	})
-	hooks, d := hooksModel.toAPI(ctx)
+	hooks, d := hooksModel.ToAPI(ctx)
 	diags.Append(d...)
 
 	reloadInfo := &ReloadInfoModel{}
@@ -304,18 +304,18 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.EndpointConfiguration,
 		Kind:            v20230301.EndpointConfigurationKind(model.Kind.ValueString()),
 		AuthorityID:     model.AuthorityID.ValueString(),
 		Provisioner:     model.Provisioner.ValueString(),
-		CertificateInfo: model.CertificateInfo.toAPI(),
-		KeyInfo:         model.KeyInfo.toAPI(),
+		CertificateInfo: model.CertificateInfo.ToAPI(),
+		KeyInfo:         model.KeyInfo.ToAPI(),
 		Hooks:           hooks,
-		ReloadInfo:      reloadInfo.toAPI(),
+		ReloadInfo:      reloadInfo.ToAPI(),
 	}, diags
 }
 
-func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
+func HookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if hook == nil {
-		return basetypes.NewObjectNull(hookObjectType.AttrTypes), diags
+		return basetypes.NewObjectNull(HookObjectType.AttrTypes), diags
 	}
 
 	shell, d := utils.ToOptionalString(ctx, hook.Shell, state, hookPath.AtName("shell"))
@@ -330,7 +330,7 @@ func hookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath pat
 	onError, d := utils.ToOptionalList(ctx, hook.OnError, state, hookPath.AtName("on_error"))
 	diags = append(diags, d...)
 
-	obj, d := basetypes.NewObjectValue(hookObjectType.AttrTypes, map[string]attr.Value{
+	obj, d := basetypes.NewObjectValue(HookObjectType.AttrTypes, map[string]attr.Value{
 		"shell":    shell,
 		"before":   before,
 		"after":    after,

@@ -143,6 +143,10 @@ If creating this collection with a smallstep_collection resource in the same con
 				MarkdownDescription: props["data"],
 				Required:            true,
 			},
+			"out_data": schema.StringAttribute{
+				MarkdownDescription: "The instance data stored after any modifications made server-side. If the instance belongs to a device collection a host ID attribute will be added to the data.",
+				Computed:            true,
+			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: props["createdAt"],
 				Computed:            true,

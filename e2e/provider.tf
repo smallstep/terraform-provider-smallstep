@@ -3,6 +3,11 @@ terraform {
     smallstep = {
       source = "smallstep/smallstep"
     }
+
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 }
 
@@ -15,3 +20,9 @@ provider "smallstep" {
   #   team_id     = "94a7dd82-1360-4493-b1bf-b14a97c45786"
   # }
 }
+#
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-west-1"
+}
+

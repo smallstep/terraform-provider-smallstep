@@ -18,6 +18,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection_instance"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/endpoint_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_configuration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
@@ -178,6 +179,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		agent_configuration.NewResource,
 		endpoint_configuration.NewResource,
 		managed_configuration.NewResource,
+		device_collection.NewResource,
 	}
 }
 
