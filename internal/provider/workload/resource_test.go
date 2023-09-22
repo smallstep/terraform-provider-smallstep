@@ -9,9 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/hashicorp/terraform-plugin-testing/plancheck"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
@@ -23,8 +21,7 @@ func TestMain(m *testing.M) {
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
-		authority.NewResource,
-		provisioner.NewResource,
+		device_collection.NewResource,
 	},
 }
 
@@ -32,35 +29,27 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
+// TODO sans
 func TestAccAgentConfigurationResource(t *testing.T) {
-	root, _ := utils.CACerts(t)
+	dcSlug := utils.Slug(t)
 	slug := utils.Slug(t)
 	config1 := fmt.Sprintf(`
-resource "smallstep_authority" "agents" {
-	subdomain = %q
-	name = "tfprovider-agents-authority"
-	type = "devops"
+resource "smallstep_device_collection" "ec2_east" {
+	slug = %q
+	display_name = "EC2 East"
 	admin_emails = ["andrew@smallstep.com"]
-}
-
-resource "smallstep_provisioner" "agents" {
-	authority_id = smallstep_authority.agents.id
-	name = "Agents"
-	type = "X5C"
-	x5c = {
-		roots = [%q]
+	device_type = "aws-vm"
+	aws_vm = {
+		accounts = ["0123456789"]
 	}
 }
 
-resource "smallstep_endpoint_configuration" "ep1" {
-	name = "tfprovider My DB"
-	kind = "WORKLOAD"
-
-	# this would generally be a different authority
-	authority_id = smallstep_authority.agents.id
-
-	# this would generally be an x5c provisioner
-	provisioner_name = smallstep_provisioner.agents.name
+resource "smallstep_workload" "nginx" {
+	workload_type = "nginx"
+	admin_emails = ["andrew@smallstep.com"]
+	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
+	slug = %q
+	display_name = "tfprovider Nginx"
 
 	certificate_info = {
 		type = "X509"
@@ -118,55 +107,13 @@ resource "smallstep_endpoint_configuration" "ep1" {
 		pub_file = "file.csr"
 	}
 
-
 	reload_info = {
 		method = "SIGNAL"
 		pid_file = "db.pid"
 		signal = 1
 	}
 }
-`, slug, root)
-
-	slug2 := utils.Slug(t)
-	config2 := fmt.Sprintf(`
-resource "smallstep_authority" "agents" {
-	subdomain = %q
-	name = "tfprovider-agents-authority"
-	type = "devops"
-	admin_emails = ["andrew@smallstep.com"]
-}
-
-resource "smallstep_provisioner" "agents" {
-	authority_id = smallstep_authority.agents.id
-	name = "Agents"
-	type = "X5C"
-	x5c = {
-		roots = [%q]
-	}
-}
-
-resource "smallstep_endpoint_configuration" "ep1" {
-	name = "tfprovider SSH"
-	kind = "PEOPLE"
-	authority_id = smallstep_authority.agents.id
-	provisioner_name = smallstep_provisioner.agents.name
-	certificate_info = {
-		type = "SSH_USER"
-	}
-
-	key_info = {
-		type = "DEFAULT"
-		format = "DEFAULT"
-	}
-
-	reload_info = {
-		method = "AUTOMATIC"
-	}
-	hooks = {
-		sign = {}
-	}
-}
-`, slug2, root)
+`, dcSlug, slug)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -174,60 +121,31 @@ resource "smallstep_endpoint_configuration" "ep1" {
 			{
 				Config: config1,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_endpoint_configuration.ep1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "tfprovider My DB"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "kind", "WORKLOAD"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.type", "X509"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.duration", "168h"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.crt_file", "db.crt"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.key_file", "db.key"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.root_file", "ca.crt"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.uid", "1001"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.gid", "999"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.mode", "256"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.renew.shell", "/bin/sh"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.renew.before.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.renew.after.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.renew.on_error.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.sign.shell", "/bin/bash"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.sign.before.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.sign.after.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "hooks.sign.on_error.#", "3"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.type", "ECDSA_P256"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.format", "DER"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.pub_file", "file.csr"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "reload_info.method", "SIGNAL"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "reload_info.pid_file", "db.pid"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "reload_info.signal", "1"),
+					helper.TestMatchResourceAttr("smallstep_workload.nginx", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.duration", "168h"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.crt_file", "db.crt"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.key_file", "db.key"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.root_file", "ca.crt"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.uid", "1001"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.gid", "999"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.mode", "256"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.shell", "/bin/sh"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.before.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.after.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.on_error.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.shell", "/bin/bash"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.before.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.after.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.on_error.#", "3"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.type", "ECDSA_P256"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.format", "DER"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.pub_file", "file.csr"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "SIGNAL"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.pid_file", "db.pid"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.signal", "1"),
 				),
-			},
-			{
-				ResourceName:            "smallstep_endpoint_configuration.ep1",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"certificate_info.duration"},
-			},
-			{
-				Config: config2,
-				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_endpoint_configuration.ep1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "name", "tfprovider SSH"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "kind", "PEOPLE"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "certificate_info.type", "SSH_USER"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.type", "DEFAULT"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "key_info.format", "DEFAULT"),
-					helper.TestCheckResourceAttr("smallstep_endpoint_configuration.ep1", "reload_info.method", "AUTOMATIC"),
-				),
-				ConfigPlanChecks: helper.ConfigPlanChecks{
-					PreApply: []plancheck.PlanCheck{
-						plancheck.ExpectResourceAction("smallstep_endpoint_configuration.ep1", plancheck.ResourceActionUpdate),
-					},
-				},
-			},
-			{
-				ResourceName:      "smallstep_endpoint_configuration.ep1",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

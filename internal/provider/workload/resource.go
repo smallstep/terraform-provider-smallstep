@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -65,7 +68,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read endpoint configuration %q: %v", id, err),
+			fmt.Sprintf("Failed to read workload %q: %v", id, err),
 		)
 		return
 	}
@@ -79,7 +82,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading endpoint configuration %q: %s", httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d reading workload %q: %s", httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -88,7 +91,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err := json.NewDecoder(httpResp.Body).Decode(ac); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal endpoint configuration %q: %v", id, err),
+			fmt.Sprintf("Failed to unmarshal workload %q: %v", id, err),
 		)
 		return
 	}
@@ -99,20 +102,25 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read endpoint configuration %q resource", id))
+	tflog.Trace(ctx, fmt.Sprintf("read workload %q resource", id))
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_info"), remote.CertificateInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key_info"), remote.KeyInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("hooks"), remote.Hooks)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("reload_info"), remote.ReloadInfo)...)
+	// API returns an endpoint configuration. Use plan for everything else.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), state.DeviceCollectionSlug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	component, props, err := utils.Describe("endpointConfiguration")
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI spec",
-			err.Error(),
-		)
-		return
-	}
+	workload, props, err := utils.Describe("workload")
 
 	certInfo, certInfoProps, err := utils.Describe("endpointCertificateInfo")
 	if err != nil {
@@ -160,7 +168,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	}
 
 	resp.Schema = schema.Schema{
-		MarkdownDescription: component,
+		MarkdownDescription: workload,
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -170,22 +178,62 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"name": schema.StringAttribute{
-				MarkdownDescription: props["name"],
+			"display_name": schema.StringAttribute{
+				MarkdownDescription: props["displayName"],
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
-			"kind": schema.StringAttribute{
-				MarkdownDescription: props["kind"],
+			"workload_type": schema.StringAttribute{
+				MarkdownDescription: props["workloadType"],
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
-			"authority_id": schema.StringAttribute{
-				MarkdownDescription: props["authorityID"],
+			"slug": schema.StringAttribute{
+				MarkdownDescription: props["slug"],
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
-			"provisioner_name": schema.StringAttribute{
-				MarkdownDescription: props["provisioner"],
+			"device_collection_slug": schema.StringAttribute{
+				MarkdownDescription: "Slug of the device collection the workload will be added to.",
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
+			"admin_emails": schema.SetAttribute{
+				MarkdownDescription: props["adminEmails"],
+				ElementType:         types.StringType,
+				Required:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.RequiresReplace(),
+				},
+			},
+			"static_sans": schema.SetAttribute{
+				MarkdownDescription: props["staticSANs"],
+				ElementType:         types.StringType,
+				Optional:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.RequiresReplace(),
+				},
+			},
+			"device_metadata_key_sans": schema.SetAttribute{
+				MarkdownDescription: props["deviceMetadataKeySANs"],
+				ElementType:         types.StringType,
+				Optional:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.RequiresReplace(),
+				},
+			},
+
 			"key_info": schema.SingleNestedAttribute{
 				// This object is not required by the API but a default object
 				// will always be returned with both format and type set to
@@ -207,6 +255,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: keyInfoProps["pubFile"],
 					},
 				},
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
+				},
 			},
 			"reload_info": schema.SingleNestedAttribute{
 				Optional:            true,
@@ -225,6 +276,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["signal"],
 					},
+				},
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
 				},
 			},
 			"hooks": schema.SingleNestedAttribute{
@@ -256,6 +310,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								MarkdownDescription: hookProps["onError"],
 							},
 						},
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.RequiresReplace(),
+						},
 					},
 					"renew": schema.SingleNestedAttribute{
 						Optional:            true,
@@ -281,7 +338,13 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								MarkdownDescription: hookProps["onError"],
 							},
 						},
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.RequiresReplace(),
+						},
 					},
+				},
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
 				},
 			},
 			"certificate_info": schema.SingleNestedAttribute{
@@ -321,6 +384,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Optional:            true,
 					},
 				},
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplace(),
+				},
 			},
 		},
 	}
@@ -345,7 +411,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to create endpoint configuration %q: %v", plan.DisplayName.ValueString(), err),
+			fmt.Sprintf("Failed to create workload %q: %v", plan.DisplayName.ValueString(), err),
 		)
 		return
 	}
@@ -354,7 +420,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if httpResp.StatusCode != http.StatusCreated {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d creating endpoint configuration %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d creating workload %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -363,7 +429,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if err := json.NewDecoder(httpResp.Body).Decode(ac); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal endpoint configuration %q: %v", plan.DisplayName.ValueString(), err),
+			fmt.Sprintf("Failed to unmarshal workload %q: %v", plan.DisplayName.ValueString(), err),
 		)
 		return
 	}
@@ -374,9 +440,21 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("create endpoint configuration %q resource", plan.DisplayName.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("create workload %q resource", plan.DisplayName.ValueString()))
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_info"), state.CertificateInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key_info"), state.KeyInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("hooks"), state.Hooks)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("reload_info"), state.ReloadInfo)...)
+	// API returns an endpoint configuration. Use plan for everything else.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), plan.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), plan.WorkloadType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), plan.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), plan.DeviceCollectionSlug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), plan.DeviceMetadataKeySANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), plan.StaticSANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

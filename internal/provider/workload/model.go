@@ -13,7 +13,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-const typeName = "smallstep_endpoint_configuration"
+const typeName = "smallstep_workload"
 
 type Model struct {
 	ID                   types.String                                 `tfsdk:"id"`
@@ -155,11 +155,14 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.Workload, diag.Diagnos
 	return &v20230301.Workload{
 		Id:                    model.ID.ValueStringPointer(),
 		DisplayName:           model.DisplayName.ValueString(),
+		WorkloadType:          model.WorkloadType.ValueString(),
+		Slug:                  model.Slug.ValueString(),
 		CertificateInfo:       &ci,
 		KeyInfo:               model.KeyInfo.ToAPI(),
 		Hooks:                 hooks,
 		ReloadInfo:            reloadInfo.ToAPI(),
 		AdminEmails:           &adminEmails,
 		DeviceMetadataKeySANs: &deviceMetadataKeySANs,
+		StaticSANs:            staticSANs,
 	}, diags
 }

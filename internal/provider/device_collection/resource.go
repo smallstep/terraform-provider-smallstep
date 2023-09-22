@@ -205,8 +205,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Computed:            true,
 			},
 			"admin_emails": schema.SetAttribute{
-				ElementType: types.StringType,
-				Required:    true,
+				MarkdownDescription: props["adminEmails"],
+				ElementType:         types.StringType,
+				Required:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 					setplanmodifier.RequiresReplace(),
