@@ -44,6 +44,14 @@ const (
 	AuthorityTypeManaged  AuthorityType = "managed"
 )
 
+// Defines values for DeviceCollectionDeviceType.
+const (
+	DeviceCollectionDeviceTypeAwsVm   DeviceCollectionDeviceType = "aws-vm"
+	DeviceCollectionDeviceTypeAzureVm DeviceCollectionDeviceType = "azure-vm"
+	DeviceCollectionDeviceTypeGcpVm   DeviceCollectionDeviceType = "gcp-vm"
+	DeviceCollectionDeviceTypeTpm     DeviceCollectionDeviceType = "tpm"
+)
+
 // Defines values for EndpointCertificateInfoType.
 const (
 	EndpointCertificateInfoTypeSSHHOST EndpointCertificateInfoType = "SSH_HOST"
@@ -90,14 +98,6 @@ const (
 const (
 	NewAuthorityTypeAdvanced NewAuthorityType = "advanced"
 	NewAuthorityTypeDevops   NewAuthorityType = "devops"
-)
-
-// Defines values for NewDeviceCollectionDeviceType.
-const (
-	NewDeviceCollectionDeviceTypeAwsVm   NewDeviceCollectionDeviceType = "aws-vm"
-	NewDeviceCollectionDeviceTypeAzureVm NewDeviceCollectionDeviceType = "azure-vm"
-	NewDeviceCollectionDeviceTypeGcpVm   NewDeviceCollectionDeviceType = "gcp-vm"
-	NewDeviceCollectionDeviceTypeTpm     NewDeviceCollectionDeviceType = "tpm"
 )
 
 // Defines values for ProvisionerType.
@@ -384,6 +384,26 @@ type CollectionInstance struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// DeviceCollection Configuration to create a new device collection.
+type DeviceCollection struct {
+	// AdminEmails Users that will have admin access to manage the agents authority, which will be created if it does not already exist. Ignored if the agent authority already exists. Never returned in API responses.
+	AdminEmails *[]string `json:"adminEmails,omitempty"`
+
+	// DeviceType Must match the deviceTypeConfiguration. Cannot be changed.
+	DeviceType              DeviceCollectionDeviceType               `json:"deviceType"`
+	DeviceTypeConfiguration DeviceCollection_DeviceTypeConfiguration `json:"deviceTypeConfiguration"`
+	DisplayName             string                                   `json:"displayName"`
+	Slug                    string                                   `json:"slug"`
+}
+
+// DeviceCollectionDeviceType Must match the deviceTypeConfiguration. Cannot be changed.
+type DeviceCollectionDeviceType string
+
+// DeviceCollection_DeviceTypeConfiguration defines model for DeviceCollection.DeviceTypeConfiguration.
+type DeviceCollection_DeviceTypeConfiguration struct {
+	union json.RawMessage
+}
+
 // DistinguishedName Name used in x509 certificates
 type DistinguishedName struct {
 	CommonName         *string `json:"commonName,omitempty"`
@@ -569,7 +589,7 @@ type GcpDisableCustomSANs = bool
 // GcpProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
 type GcpProjectIDs = []string
 
-// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token.
+// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. At least one service account or project ID must be set.
 type GcpProvisioner struct {
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
 	DisableCustomSANs *GcpDisableCustomSANs `json:"disableCustomSANs,omitempty"`
@@ -581,25 +601,25 @@ type GcpProvisioner struct {
 	InstanceAge *InstanceAge `json:"instanceAge,omitempty"`
 
 	// ProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
-	ProjectIDs GcpProjectIDs `json:"projectIDs"`
+	ProjectIDs *GcpProjectIDs `json:"projectIDs,omitempty"`
 
 	// ServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
-	ServiceAccounts GcpServiceAccounts `json:"serviceAccounts"`
+	ServiceAccounts *GcpServiceAccounts `json:"serviceAccounts,omitempty"`
 }
 
 // GcpServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
 type GcpServiceAccounts = []string
 
-// GcpVM defines model for gcpVM.
+// GcpVM Configuration for the GCP provisioner for device collections of GCP instances. At least one service account or project ID must be set.
 type GcpVM struct {
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
 	DisableCustomSANs *GcpDisableCustomSANs `json:"disableCustomSANs,omitempty"`
 
 	// ProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
-	ProjectIDs GcpProjectIDs `json:"projectIDs"`
+	ProjectIDs *GcpProjectIDs `json:"projectIDs,omitempty"`
 
 	// ServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
-	ServiceAccounts GcpServiceAccounts `json:"serviceAccounts"`
+	ServiceAccounts *GcpServiceAccounts `json:"serviceAccounts,omitempty"`
 }
 
 // Grant A grant gives permission to all users in a group to access a host with a matching tag.
@@ -771,24 +791,6 @@ type NewCollection struct {
 
 	// Slug A lowercase name identifying the collection.
 	Slug string `json:"slug"`
-}
-
-// NewDeviceCollection Configuration to create a new device collection.
-type NewDeviceCollection struct {
-	// AdminEmails Users that will have admin access to manage the agents authority, which will be created if it does not already exist. Ignored if the agent authority already exists.
-	AdminEmails             *[]string                                   `json:"adminEmails,omitempty"`
-	DeviceType              NewDeviceCollectionDeviceType               `json:"deviceType"`
-	DeviceTypeConfiguration NewDeviceCollection_DeviceTypeConfiguration `json:"deviceTypeConfiguration"`
-	DisplayName             string                                      `json:"displayName"`
-	Slug                    string                                      `json:"slug"`
-}
-
-// NewDeviceCollectionDeviceType defines model for NewDeviceCollection.DeviceType.
-type NewDeviceCollectionDeviceType string
-
-// NewDeviceCollection_DeviceTypeConfiguration defines model for NewDeviceCollection.DeviceTypeConfiguration.
-type NewDeviceCollection_DeviceTypeConfiguration struct {
-	union json.RawMessage
 }
 
 // NewEnrollmentToken The body of a request to generate a new device enrollment token.
@@ -1069,9 +1071,9 @@ type User struct {
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
 }
 
-// Workload Request body when adding or updating a workload on a device collection.
+// Workload A workload represents anything that uses a certificate.
 type Workload struct {
-	// AdminEmails Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists.
+	// AdminEmails Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists. Never returned in responses.
 	AdminEmails *[]string `json:"adminEmails,omitempty"`
 
 	// CertificateInfo Details on a managed certificate.
@@ -1080,13 +1082,12 @@ type Workload struct {
 	// DeviceMetadataKeySANs SANs that will be populated from the instance data of the device in the device collection.
 	// For example, if the device instance data in the collection is `{"internal_host": "foo.internal", "external_host", "foo.example.com"}` at the time the workload certificate is issued and this field is set to `["internal_host", "external_host"]`, then the certificate would include the SANs `foo.internal` and `foo.example.com`.
 	DeviceMetadataKeySANs *[]string `json:"deviceMetadataKeySANs,omitempty"`
-	DisplayName           string    `json:"displayName"`
+
+	// DisplayName A friendly name for the workload. Also used as the Common Name if no static SANs are provide.
+	DisplayName string `json:"displayName"`
 
 	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
 	Hooks *EndpointHooks `json:"hooks,omitempty"`
-
-	// Id UUID for the workload.
-	Id *string `json:"id,omitempty"`
 
 	// KeyInfo The attributes of the cryptographic key.
 	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
@@ -1094,12 +1095,12 @@ type Workload struct {
 	// ReloadInfo The properties used to reload a service.
 	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
 
-	// Slug Used as the name for the workload collection and related resources.
+	// Slug Used as the identifier for the workload.
 	Slug string `json:"slug"`
 
 	// StaticSANs SANs that will be added to every certificate issued for this workload. The first will be used as the default Common Name.
-	StaticSANs   []string `json:"staticSANs"`
-	WorkloadType string   `json:"workloadType"`
+	StaticSANs   *[]string `json:"staticSANs,omitempty"`
+	WorkloadType string    `json:"workloadType"`
 }
 
 // X509Issuer A Customized X509 issuer for an authority.
@@ -1195,6 +1196,9 @@ type RequestID = string
 // WebhookNameOrID defines model for webhookNameOrID.
 type WebhookNameOrID = string
 
+// WorkloadSlug defines model for workloadSlug.
+type WorkloadSlug = string
+
 // N400 defines model for 400.
 type N400 = Error
 
@@ -1212,6 +1216,9 @@ type N409 = Error
 
 // N412 defines model for 412.
 type N412 = Error
+
+// N422 defines model for 422.
+type N422 = Error
 
 // N500 defines model for 500.
 type N500 = Error
@@ -1559,8 +1566,12 @@ type ListCollectionInstancesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// PostDeviceCollectionsParams defines parameters for PostDeviceCollections.
-type PostDeviceCollectionsParams struct {
+// DeleteDeviceCollectionParams defines parameters for DeleteDeviceCollection.
+type DeleteDeviceCollectionParams struct {
+	// Purge Delete all workloads and devices in the collection.
+	// The API will return 422 if the device collection is not empty and the purge flag is not set.
+	Purge *bool `form:"purge,omitempty" json:"purge,omitempty"`
+
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1568,8 +1579,44 @@ type PostDeviceCollectionsParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// PostWorkloadsParams defines parameters for PostWorkloads.
-type PostWorkloadsParams struct {
+// GetDeviceCollectionParams defines parameters for GetDeviceCollection.
+type GetDeviceCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutDeviceCollectionParams defines parameters for PutDeviceCollection.
+type PutDeviceCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteWorkloadParams defines parameters for DeleteWorkload.
+type DeleteWorkloadParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetWorkloadParams defines parameters for GetWorkload.
+type GetWorkloadParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutWorkloadParams defines parameters for PutWorkload.
+type PutWorkloadParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1865,11 +1912,11 @@ type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
 // PutCollectionInstanceDataJSONRequestBody defines body for PutCollectionInstanceData for application/json ContentType.
 type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBody
 
-// PostDeviceCollectionsJSONRequestBody defines body for PostDeviceCollections for application/json ContentType.
-type PostDeviceCollectionsJSONRequestBody = NewDeviceCollection
+// PutDeviceCollectionJSONRequestBody defines body for PutDeviceCollection for application/json ContentType.
+type PutDeviceCollectionJSONRequestBody = DeviceCollection
 
-// PostWorkloadsJSONRequestBody defines body for PostWorkloads for application/json ContentType.
-type PostWorkloadsJSONRequestBody = Workload
+// PutWorkloadJSONRequestBody defines body for PutWorkload for application/json ContentType.
+type PutWorkloadJSONRequestBody = Workload
 
 // PostDeviceEnrollmentTokenJSONRequestBody defines body for PostDeviceEnrollmentToken for application/json ContentType.
 type PostDeviceEnrollmentTokenJSONRequestBody = NewEnrollmentToken
@@ -1892,22 +1939,22 @@ type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
 // PutManagedConfigurationJSONRequestBody defines body for PutManagedConfiguration for application/json ContentType.
 type PutManagedConfigurationJSONRequestBody = ManagedConfiguration
 
-// AsAwsVM returns the union data inside the NewDeviceCollection_DeviceTypeConfiguration as a AwsVM
-func (t NewDeviceCollection_DeviceTypeConfiguration) AsAwsVM() (AwsVM, error) {
+// AsAwsVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a AwsVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsAwsVM() (AwsVM, error) {
 	var body AwsVM
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAwsVM overwrites any union data inside the NewDeviceCollection_DeviceTypeConfiguration as the provided AwsVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) FromAwsVM(v AwsVM) error {
+// FromAwsVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided AwsVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromAwsVM(v AwsVM) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAwsVM performs a merge with any union data inside the NewDeviceCollection_DeviceTypeConfiguration, using the provided AwsVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeAwsVM(v AwsVM) error {
+// MergeAwsVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided AwsVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeAwsVM(v AwsVM) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -1918,22 +1965,22 @@ func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeAwsVM(v AwsVM) error 
 	return err
 }
 
-// AsAzureVM returns the union data inside the NewDeviceCollection_DeviceTypeConfiguration as a AzureVM
-func (t NewDeviceCollection_DeviceTypeConfiguration) AsAzureVM() (AzureVM, error) {
+// AsAzureVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a AzureVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsAzureVM() (AzureVM, error) {
 	var body AzureVM
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAzureVM overwrites any union data inside the NewDeviceCollection_DeviceTypeConfiguration as the provided AzureVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) FromAzureVM(v AzureVM) error {
+// FromAzureVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided AzureVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromAzureVM(v AzureVM) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAzureVM performs a merge with any union data inside the NewDeviceCollection_DeviceTypeConfiguration, using the provided AzureVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeAzureVM(v AzureVM) error {
+// MergeAzureVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided AzureVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeAzureVM(v AzureVM) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -1944,22 +1991,22 @@ func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeAzureVM(v AzureVM) er
 	return err
 }
 
-// AsGcpVM returns the union data inside the NewDeviceCollection_DeviceTypeConfiguration as a GcpVM
-func (t NewDeviceCollection_DeviceTypeConfiguration) AsGcpVM() (GcpVM, error) {
+// AsGcpVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a GcpVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsGcpVM() (GcpVM, error) {
 	var body GcpVM
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromGcpVM overwrites any union data inside the NewDeviceCollection_DeviceTypeConfiguration as the provided GcpVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) FromGcpVM(v GcpVM) error {
+// FromGcpVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided GcpVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromGcpVM(v GcpVM) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeGcpVM performs a merge with any union data inside the NewDeviceCollection_DeviceTypeConfiguration, using the provided GcpVM
-func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeGcpVM(v GcpVM) error {
+// MergeGcpVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided GcpVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeGcpVM(v GcpVM) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -1970,22 +2017,22 @@ func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeGcpVM(v GcpVM) error 
 	return err
 }
 
-// AsTpm returns the union data inside the NewDeviceCollection_DeviceTypeConfiguration as a Tpm
-func (t NewDeviceCollection_DeviceTypeConfiguration) AsTpm() (Tpm, error) {
+// AsTpm returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a Tpm
+func (t DeviceCollection_DeviceTypeConfiguration) AsTpm() (Tpm, error) {
 	var body Tpm
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromTpm overwrites any union data inside the NewDeviceCollection_DeviceTypeConfiguration as the provided Tpm
-func (t *NewDeviceCollection_DeviceTypeConfiguration) FromTpm(v Tpm) error {
+// FromTpm overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided Tpm
+func (t *DeviceCollection_DeviceTypeConfiguration) FromTpm(v Tpm) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeTpm performs a merge with any union data inside the NewDeviceCollection_DeviceTypeConfiguration, using the provided Tpm
-func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeTpm(v Tpm) error {
+// MergeTpm performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided Tpm
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeTpm(v Tpm) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -1996,12 +2043,12 @@ func (t *NewDeviceCollection_DeviceTypeConfiguration) MergeTpm(v Tpm) error {
 	return err
 }
 
-func (t NewDeviceCollection_DeviceTypeConfiguration) MarshalJSON() ([]byte, error) {
+func (t DeviceCollection_DeviceTypeConfiguration) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
-func (t *NewDeviceCollection_DeviceTypeConfiguration) UnmarshalJSON(b []byte) error {
+func (t *DeviceCollection_DeviceTypeConfiguration) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -2526,15 +2573,27 @@ type ClientInterface interface {
 	// ListCollectionInstances request
 	ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostDeviceCollections request with any body
-	PostDeviceCollectionsWithBody(ctx context.Context, params *PostDeviceCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteDeviceCollection request
+	DeleteDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostDeviceCollections(ctx context.Context, params *PostDeviceCollectionsParams, body PostDeviceCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetDeviceCollection request
+	GetDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostWorkloads request with any body
-	PostWorkloadsWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutDeviceCollection request with any body
+	PutDeviceCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostWorkloads(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, body PostWorkloadsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWorkload request
+	DeleteWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWorkload request
+	GetWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutWorkload request with any body
+	PutWorkloadWithBody(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostDeviceEnrollmentToken request with any body
 	PostDeviceEnrollmentTokenWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3190,8 +3249,8 @@ func (c *Client) ListCollectionInstances(ctx context.Context, collectionSlug Col
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostDeviceCollectionsWithBody(ctx context.Context, params *PostDeviceCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostDeviceCollectionsRequestWithBody(c.Server, params, contentType, body)
+func (c *Client) DeleteDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteDeviceCollectionRequest(c.Server, collectionSlug, params)
 	if err != nil {
 		return nil, err
 	}
@@ -3202,8 +3261,8 @@ func (c *Client) PostDeviceCollectionsWithBody(ctx context.Context, params *Post
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostDeviceCollections(ctx context.Context, params *PostDeviceCollectionsParams, body PostDeviceCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostDeviceCollectionsRequest(c.Server, params, body)
+func (c *Client) GetDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceCollectionRequest(c.Server, collectionSlug, params)
 	if err != nil {
 		return nil, err
 	}
@@ -3214,8 +3273,8 @@ func (c *Client) PostDeviceCollections(ctx context.Context, params *PostDeviceCo
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostWorkloadsWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostWorkloadsRequestWithBody(c.Server, collectionSlug, params, contentType, body)
+func (c *Client) PutDeviceCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutDeviceCollectionRequestWithBody(c.Server, collectionSlug, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3226,8 +3285,56 @@ func (c *Client) PostWorkloadsWithBody(ctx context.Context, collectionSlug Colle
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostWorkloads(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, body PostWorkloadsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostWorkloadsRequest(c.Server, collectionSlug, params, body)
+func (c *Client) PutDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutDeviceCollectionRequest(c.Server, collectionSlug, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWorkloadRequest(c.Server, collectionSlug, workloadSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWorkloadRequest(c.Server, collectionSlug, workloadSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWorkloadWithBody(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWorkloadRequestWithBody(c.Server, collectionSlug, workloadSlug, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWorkloadRequest(c.Server, collectionSlug, workloadSlug, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5747,27 +5854,23 @@ func NewListCollectionInstancesRequest(server string, collectionSlug CollectionS
 	return req, nil
 }
 
-// NewPostDeviceCollectionsRequest calls the generic PostDeviceCollections builder with application/json body
-func NewPostDeviceCollectionsRequest(server string, params *PostDeviceCollectionsParams, body PostDeviceCollectionsJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
+// NewDeleteDeviceCollectionRequest generates requests for DeleteDeviceCollection
+func NewDeleteDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
 	if err != nil {
 		return nil, err
 	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostDeviceCollectionsRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewPostDeviceCollectionsRequestWithBody generates requests for PostDeviceCollections with any type of body
-func NewPostDeviceCollectionsRequestWithBody(server string, params *PostDeviceCollectionsParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/device-collections")
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -5777,7 +5880,150 @@ func NewPostDeviceCollectionsRequestWithBody(server string, params *PostDeviceCo
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), body)
+	queryValues := queryURL.Query()
+
+	if params.Purge != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "purge", runtime.ParamLocationQuery, *params.Purge); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetDeviceCollectionRequest generates requests for GetDeviceCollection
+func NewGetDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *GetDeviceCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutDeviceCollectionRequest calls the generic PutDeviceCollection builder with application/json body
+func NewPutDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutDeviceCollectionRequestWithBody(server, collectionSlug, params, "application/json", bodyReader)
+}
+
+// NewPutDeviceCollectionRequestWithBody generates requests for PutDeviceCollection with any type of body
+func NewPutDeviceCollectionRequestWithBody(server string, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -5809,19 +6055,8 @@ func NewPostDeviceCollectionsRequestWithBody(server string, params *PostDeviceCo
 	return req, nil
 }
 
-// NewPostWorkloadsRequest calls the generic PostWorkloads builder with application/json body
-func NewPostWorkloadsRequest(server string, collectionSlug CollectionSlug, params *PostWorkloadsParams, body PostWorkloadsJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostWorkloadsRequestWithBody(server, collectionSlug, params, "application/json", bodyReader)
-}
-
-// NewPostWorkloadsRequestWithBody generates requests for PostWorkloads with any type of body
-func NewPostWorkloadsRequestWithBody(server string, collectionSlug CollectionSlug, params *PostWorkloadsParams, contentType string, body io.Reader) (*http.Request, error) {
+// NewDeleteWorkloadRequest generates requests for DeleteWorkload
+func NewDeleteWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -5831,12 +6066,19 @@ func NewPostWorkloadsRequestWithBody(server string, collectionSlug CollectionSlu
 		return nil, err
 	}
 
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/device-collections/%s/workloads", pathParam0)
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -5846,7 +6088,144 @@ func NewPostWorkloadsRequestWithBody(server string, collectionSlug CollectionSlu
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), body)
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetWorkloadRequest generates requests for GetWorkload
+func NewGetWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutWorkloadRequest calls the generic PutWorkload builder with application/json body
+func NewPutWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutWorkloadRequestWithBody(server, collectionSlug, workloadSlug, params, "application/json", bodyReader)
+}
+
+// NewPutWorkloadRequestWithBody generates requests for PutWorkload with any type of body
+func NewPutWorkloadRequestWithBody(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -7629,15 +8008,27 @@ type ClientWithResponsesInterface interface {
 	// ListCollectionInstances request
 	ListCollectionInstancesWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*ListCollectionInstancesResponse, error)
 
-	// PostDeviceCollections request with any body
-	PostDeviceCollectionsWithBodyWithResponse(ctx context.Context, params *PostDeviceCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceCollectionsResponse, error)
+	// DeleteDeviceCollection request
+	DeleteDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*DeleteDeviceCollectionResponse, error)
 
-	PostDeviceCollectionsWithResponse(ctx context.Context, params *PostDeviceCollectionsParams, body PostDeviceCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceCollectionsResponse, error)
+	// GetDeviceCollection request
+	GetDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*GetDeviceCollectionResponse, error)
 
-	// PostWorkloads request with any body
-	PostWorkloadsWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWorkloadsResponse, error)
+	// PutDeviceCollection request with any body
+	PutDeviceCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error)
 
-	PostWorkloadsWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, body PostWorkloadsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWorkloadsResponse, error)
+	PutDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error)
+
+	// DeleteWorkload request
+	DeleteWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*DeleteWorkloadResponse, error)
+
+	// GetWorkload request
+	GetWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*GetWorkloadResponse, error)
+
+	// PutWorkload request with any body
+	PutWorkloadWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error)
+
+	PutWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error)
 
 	// PostDeviceEnrollmentToken request with any body
 	PostDeviceEnrollmentTokenWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceEnrollmentTokenResponse, error)
@@ -8604,18 +8995,17 @@ func (r ListCollectionInstancesResponse) StatusCode() int {
 	return 0
 }
 
-type PostDeviceCollectionsResponse struct {
+type DeleteDeviceCollectionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *Collection
 	JSON400      *Error
 	JSON401      *Error
-	JSON409      *Error
+	JSON422      *Error
 	JSON500      *Error
 }
 
 // Status returns HTTPResponse.Status
-func (r PostDeviceCollectionsResponse) Status() string {
+func (r DeleteDeviceCollectionResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8623,17 +9013,119 @@ func (r PostDeviceCollectionsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostDeviceCollectionsResponse) StatusCode() int {
+func (r DeleteDeviceCollectionResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostWorkloadsResponse struct {
+type GetDeviceCollectionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *EndpointConfiguration
+	JSON200      *DeviceCollection
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutDeviceCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DeviceCollection
+	JSON400      *Error
+	JSON401      *Error
+	JSON409      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutDeviceCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutDeviceCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWorkloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWorkloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Workload
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWorkloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWorkloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Workload
 	JSON400      *Error
 	JSON401      *Error
 	JSON404      *Error
@@ -8642,7 +9134,7 @@ type PostWorkloadsResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r PostWorkloadsResponse) Status() string {
+func (r PutWorkloadResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8650,7 +9142,7 @@ func (r PostWorkloadsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostWorkloadsResponse) StatusCode() int {
+func (r PutWorkloadResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9702,38 +10194,74 @@ func (c *ClientWithResponses) ListCollectionInstancesWithResponse(ctx context.Co
 	return ParseListCollectionInstancesResponse(rsp)
 }
 
-// PostDeviceCollectionsWithBodyWithResponse request with arbitrary body returning *PostDeviceCollectionsResponse
-func (c *ClientWithResponses) PostDeviceCollectionsWithBodyWithResponse(ctx context.Context, params *PostDeviceCollectionsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceCollectionsResponse, error) {
-	rsp, err := c.PostDeviceCollectionsWithBody(ctx, params, contentType, body, reqEditors...)
+// DeleteDeviceCollectionWithResponse request returning *DeleteDeviceCollectionResponse
+func (c *ClientWithResponses) DeleteDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*DeleteDeviceCollectionResponse, error) {
+	rsp, err := c.DeleteDeviceCollection(ctx, collectionSlug, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostDeviceCollectionsResponse(rsp)
+	return ParseDeleteDeviceCollectionResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostDeviceCollectionsWithResponse(ctx context.Context, params *PostDeviceCollectionsParams, body PostDeviceCollectionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceCollectionsResponse, error) {
-	rsp, err := c.PostDeviceCollections(ctx, params, body, reqEditors...)
+// GetDeviceCollectionWithResponse request returning *GetDeviceCollectionResponse
+func (c *ClientWithResponses) GetDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*GetDeviceCollectionResponse, error) {
+	rsp, err := c.GetDeviceCollection(ctx, collectionSlug, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostDeviceCollectionsResponse(rsp)
+	return ParseGetDeviceCollectionResponse(rsp)
 }
 
-// PostWorkloadsWithBodyWithResponse request with arbitrary body returning *PostWorkloadsResponse
-func (c *ClientWithResponses) PostWorkloadsWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWorkloadsResponse, error) {
-	rsp, err := c.PostWorkloadsWithBody(ctx, collectionSlug, params, contentType, body, reqEditors...)
+// PutDeviceCollectionWithBodyWithResponse request with arbitrary body returning *PutDeviceCollectionResponse
+func (c *ClientWithResponses) PutDeviceCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error) {
+	rsp, err := c.PutDeviceCollectionWithBody(ctx, collectionSlug, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostWorkloadsResponse(rsp)
+	return ParsePutDeviceCollectionResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostWorkloadsWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PostWorkloadsParams, body PostWorkloadsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWorkloadsResponse, error) {
-	rsp, err := c.PostWorkloads(ctx, collectionSlug, params, body, reqEditors...)
+func (c *ClientWithResponses) PutDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error) {
+	rsp, err := c.PutDeviceCollection(ctx, collectionSlug, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostWorkloadsResponse(rsp)
+	return ParsePutDeviceCollectionResponse(rsp)
+}
+
+// DeleteWorkloadWithResponse request returning *DeleteWorkloadResponse
+func (c *ClientWithResponses) DeleteWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*DeleteWorkloadResponse, error) {
+	rsp, err := c.DeleteWorkload(ctx, collectionSlug, workloadSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWorkloadResponse(rsp)
+}
+
+// GetWorkloadWithResponse request returning *GetWorkloadResponse
+func (c *ClientWithResponses) GetWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*GetWorkloadResponse, error) {
+	rsp, err := c.GetWorkload(ctx, collectionSlug, workloadSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWorkloadResponse(rsp)
+}
+
+// PutWorkloadWithBodyWithResponse request with arbitrary body returning *PutWorkloadResponse
+func (c *ClientWithResponses) PutWorkloadWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error) {
+	rsp, err := c.PutWorkloadWithBody(ctx, collectionSlug, workloadSlug, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWorkloadResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error) {
+	rsp, err := c.PutWorkload(ctx, collectionSlug, workloadSlug, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWorkloadResponse(rsp)
 }
 
 // PostDeviceEnrollmentTokenWithBodyWithResponse request with arbitrary body returning *PostDeviceEnrollmentTokenResponse
@@ -11778,26 +12306,127 @@ func ParseListCollectionInstancesResponse(rsp *http.Response) (*ListCollectionIn
 	return response, nil
 }
 
-// ParsePostDeviceCollectionsResponse parses an HTTP response from a PostDeviceCollectionsWithResponse call
-func ParsePostDeviceCollectionsResponse(rsp *http.Response) (*PostDeviceCollectionsResponse, error) {
+// ParseDeleteDeviceCollectionResponse parses an HTTP response from a DeleteDeviceCollectionWithResponse call
+func ParseDeleteDeviceCollectionResponse(rsp *http.Response) (*DeleteDeviceCollectionResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostDeviceCollectionsResponse{
+	response := &DeleteDeviceCollectionResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Collection
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON201 = &dest
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceCollectionResponse parses an HTTP response from a GetDeviceCollectionWithResponse call
+func ParseGetDeviceCollectionResponse(rsp *http.Response) (*GetDeviceCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceCollection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutDeviceCollectionResponse parses an HTTP response from a PutDeviceCollectionWithResponse call
+func ParsePutDeviceCollectionResponse(rsp *http.Response) (*PutDeviceCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutDeviceCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceCollection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest Error
@@ -11832,26 +12461,120 @@ func ParsePostDeviceCollectionsResponse(rsp *http.Response) (*PostDeviceCollecti
 	return response, nil
 }
 
-// ParsePostWorkloadsResponse parses an HTTP response from a PostWorkloadsWithResponse call
-func ParsePostWorkloadsResponse(rsp *http.Response) (*PostWorkloadsResponse, error) {
+// ParseDeleteWorkloadResponse parses an HTTP response from a DeleteWorkloadWithResponse call
+func ParseDeleteWorkloadResponse(rsp *http.Response) (*DeleteWorkloadResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostWorkloadsResponse{
+	response := &DeleteWorkloadResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest EndpointConfiguration
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON201 = &dest
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWorkloadResponse parses an HTTP response from a GetWorkloadWithResponse call
+func ParseGetWorkloadResponse(rsp *http.Response) (*GetWorkloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWorkloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Workload
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutWorkloadResponse parses an HTTP response from a PutWorkloadWithResponse call
+func ParsePutWorkloadResponse(rsp *http.Response) (*PutWorkloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutWorkloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Workload
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest Error

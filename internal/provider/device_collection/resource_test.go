@@ -2,7 +2,6 @@ package device_collection
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -27,14 +26,23 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-func TestAccCollectionResource(t *testing.T) {
-	t.Parallel()
-
+func TestAccDeviceCollectionResource(t *testing.T) {
 	slug := utils.Slug(t)
-	config := fmt.Sprintf(`
-resource "smallstep_device_collection" "ec2_west" {
+	awsRequired := fmt.Sprintf(`
+resource "smallstep_device_collection" "aws_required_only" {
 	slug = %q
 	display_name = "EC2 West"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "aws-vm"
+	aws_vm = {
+		accounts = ["0123456789"]
+	}
+}`, slug)
+
+	updated := fmt.Sprintf(`
+resource "smallstep_device_collection" "aws_required_only" {
+	slug = %q
+	display_name = "EC2 East"
 	admin_emails = ["andrew@smallstep.com"]
 	device_type = "aws-vm"
 	aws_vm = {
@@ -46,15 +54,164 @@ resource "smallstep_device_collection" "ec2_west" {
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
 			{
-				Config: config,
+				Config: awsRequired,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestCheckResourceAttr("smallstep_device_collection.ec2_west", "slug", slug),
-					helper.TestCheckResourceAttr("smallstep_device_collection.ec2_west", "display_name", "EC2 West"),
-					helper.TestCheckResourceAttr("smallstep_device_collection.ec2_west", "schema_uri", "https://schema.infra.smallstep.com/managed-workloads/device/aws-vm"),
-					helper.TestCheckResourceAttr("smallstep_device_collection.ec2_west", "instance_count", "0"),
-					helper.TestMatchResourceAttr("smallstep_device_collection.ec2_west", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-					helper.TestMatchResourceAttr("smallstep_device_collection.ec2_west", "updated_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
-					helper.TestCheckResourceAttr("smallstep_device_collection.ec2_west", "aws_vm.accounts.0", "0123456789"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "display_name", "EC2 West"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "aws_vm.accounts.0", "0123456789"),
+				),
+			},
+			{
+				Config: updated,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "display_name", "EC2 East"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	awsOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_device_collection" "aws_optional_empty" {
+	slug = %q
+	display_name = "EC2 West"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "aws-vm"
+	aws_vm = {
+		accounts = ["0123456789"]
+		disable_custom_sans = false
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: awsOptionalEmpty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_optional_empty", "aws_vm.disable_custom_sans", "false"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	awsOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_device_collection" "aws_optional_nonempty" {
+	slug = %q
+	display_name = "EC2 West"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "aws-vm"
+	aws_vm = {
+		accounts = ["0123456789"]
+		disable_custom_sans = true
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: awsOptionalNonempty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.aws_optional_nonempty", "aws_vm.disable_custom_sans", "true"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	gcpRequired := fmt.Sprintf(`
+resource "smallstep_device_collection" "gcp_required_only" {
+	slug = %q
+	display_name = "GCE"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "gcp-vm"
+	gcp_vm = {
+		service_accounts = ["0123456789"]
+		project_ids = ["prod-1"]
+	}
+}`, slug)
+
+	updatedGCPRequired := fmt.Sprintf(`
+resource "smallstep_device_collection" "gcp_required_only" {
+	slug = %q
+	display_name = "Google Compute Engine"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "gcp-vm"
+	gcp_vm = {
+		service_accounts = ["0123456789"]
+		project_ids = ["prod-1"]
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: gcpRequired,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "display_name", "GCE"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "gcp_vm.service_accounts.0", "0123456789"),
+				),
+			},
+			{
+				Config: updatedGCPRequired,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "display_name", "Google Compute Engine"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	gcpOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_device_collection" "gcp_optional_empty" {
+	slug = %q
+	display_name = "GCE"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "gcp-vm"
+	gcp_vm = {
+		service_accounts = ["0123456789"]
+		disable_custom_sans = false
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: gcpOptionalEmpty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_optional_empty", "gcp_vm.disable_custom_sans", "false"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	gcpOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_device_collection" "gcp_optional_nonempty" {
+	slug = %q
+	display_name = "GCE"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "gcp-vm"
+	gcp_vm = {
+		project_ids = ["prod-123"]
+		disable_custom_sans = true
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: gcpOptionalNonempty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_optional_nonempty", "gcp_vm.disable_custom_sans", "true"),
 				),
 			},
 		},

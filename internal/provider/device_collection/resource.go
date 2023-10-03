@@ -64,11 +64,11 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetCollection(ctx, state.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	httpResp, err := r.client.GetDeviceCollection(ctx, state.Slug.ValueString(), &v20230301.GetDeviceCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read collection %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to read device-collection %s: %v", state.Slug.String(), err),
 		)
 		return
 	}
@@ -82,16 +82,16 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d reading device-collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20230301.DeviceCollection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal collection %s: %v", state.Slug.String(), err),
+			fmt.Sprintf("Failed to unmarshal device-collection %s: %v", state.Slug.String(), err),
 		)
 		return
 	}
@@ -102,23 +102,20 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read collection %q resource", collection.Slug))
+	tflog.Trace(ctx, fmt.Sprintf("read device-collection %q resource", collection.Slug))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), remote.Slug)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("instance_count"), remote.InstanceCount)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), remote.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("created_at"), remote.CreatedAt)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("updated_at"), remote.UpdatedAt)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("schema_uri"), remote.SchemaURI)...)
-	// Response is a collection. Use plan for everything else.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), remote.DeviceType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), remote.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), remote.GCPDevice)...)
+	// Not returned from API. Use state.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	component, props, err := utils.Describe("newDeviceCollection")
+	component, props, err := utils.Describe("deviceCollection")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -136,7 +133,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	gcp, _, err := utils.Describe("gcpVM")
+	gcp, gcpProps, err := utils.Describe("gcpVM")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -185,25 +182,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"schema_uri": schema.StringAttribute{
-				MarkdownDescription: props["schemaURI"],
-				Computed:            true,
-			},
-			"instance_count": schema.Int64Attribute{
-				MarkdownDescription: props["instanceCount"],
-				Computed:            true,
-			},
-			"created_at": schema.StringAttribute{
-				MarkdownDescription: props["createdAt"],
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"updated_at": schema.StringAttribute{
-				MarkdownDescription: props["updatedAt"],
-				Computed:            true,
-			},
 			"admin_emails": schema.SetAttribute{
 				MarkdownDescription: props["adminEmails"],
 				ElementType:         types.StringType,
@@ -239,9 +217,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"disable_custom_sans": schema.BoolAttribute{
 						MarkdownDescription: awsProps["disableCustomSANs"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.Bool{
-							boolplanmodifier.RequiresReplace(),
-						},
 					},
 				},
 			},
@@ -259,7 +234,25 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
 				},
-				Attributes: map[string]schema.Attribute{},
+				Attributes: map[string]schema.Attribute{
+					"service_accounts": schema.SetAttribute{
+						MarkdownDescription: gcpProps["serviceAccounts"],
+						ElementType:         types.StringType,
+						Optional:            true,
+					},
+					"project_ids": schema.SetAttribute{
+						MarkdownDescription: gcpProps["projectIDs"],
+						ElementType:         types.StringType,
+						Optional:            true,
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: gcpProps["disableCustomSANs"],
+						Optional:            true,
+						PlanModifiers: []planmodifier.Bool{
+							boolplanmodifier.RequiresReplace(),
+						},
+					},
+				},
 			},
 			"tpm": schema.SingleNestedAttribute{
 				MarkdownDescription: tpm,
@@ -288,7 +281,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PostDeviceCollections(ctx, &v20230301.PostDeviceCollectionsParams{}, *reqBody)
+	httpResp, err := a.client.PutDeviceCollection(ctx, reqBody.Slug, &v20230301.PutDeviceCollectionParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -298,7 +291,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 	defer httpResp.Body.Close()
 
-	if httpResp.StatusCode != http.StatusCreated {
+	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
 			fmt.Sprintf("Received status %d creating device collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
@@ -306,7 +299,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20230301.DeviceCollection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -324,23 +317,99 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	tflog.Trace(ctx, fmt.Sprintf("create collection %q resource", plan.Slug.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("instance_count"), state.InstanceCount)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("created_at"), state.CreatedAt)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("updated_at"), state.UpdatedAt)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("schema_uri"), state.SchemaURI)...)
-	// Response is a collection. Use plan for everything else.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), plan.DeviceType)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), plan.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
+	// Not returned from the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	resp.Diagnostics.AddError("Update not supported", "Device collections must be destroyed and re-created.")
+	var plan Model
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody, d := toAPI(ctx, &plan)
+	resp.Diagnostics.Append(d...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	httpResp, err := r.client.PutDeviceCollection(ctx, reqBody.Slug, &v20230301.PutDeviceCollectionParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to create device collection %q: %v", plan.Slug.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d creating device collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	collection := &v20230301.DeviceCollection{}
+	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal collection %q: %v", plan.Slug.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, collection, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("create collection %q resource", plan.Slug.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
+	// Not returned from the API. Use plan.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	// Not implemented but cannot report an error because this is called in acceptance tests
-	resp.Diagnostics.AddWarning("Delete not supported", "Coming soon.")
+	var plan Model
+
+	resp.Diagnostics.Append(req.State.Get(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	httpResp, err := a.client.DeleteDeviceCollection(ctx, plan.Slug.ValueString(), &v20230301.DeleteDeviceCollectionParams{})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to delete device collection %q: %v", plan.Slug.String(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusNoContent {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d deleting device collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
 }
