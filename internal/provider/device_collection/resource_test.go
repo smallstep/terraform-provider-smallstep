@@ -8,8 +8,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMain(m *testing.M) {
@@ -19,6 +21,7 @@ func TestMain(m *testing.M) {
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
+		attestation_authority.NewResource,
 	},
 }
 
@@ -315,6 +318,136 @@ resource "smallstep_device_collection" "azure_optional_nonempty" {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_nonempty", "azure_vm.disable_custom_sans", "true"),
 					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_nonempty", "azure_vm.audience", "example.com"),
+				),
+			},
+		},
+	})
+
+	attestorRoot, attestorIntermediate := utils.CACerts(t)
+	slug = utils.Slug(t)
+	tpmRequired := fmt.Sprintf(`
+resource "smallstep_attestation_authority" "attest_ca" {
+	name = "tfprovider%s"
+	attestor_roots = %q
+}
+
+resource "smallstep_device_collection" "tpm_required_only" {
+	slug = %q
+	display_name = "TPMs"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "tpm"
+	tpm = {}
+	depends_on = [smallstep_attestation_authority.attest_ca]
+}`, slug, attestorRoot, slug)
+
+	tpmUpdated := fmt.Sprintf(`
+resource "smallstep_attestation_authority" "attest_ca" {
+	name = "tfprovider%s"
+	attestor_roots = %q
+}
+
+resource "smallstep_device_collection" "tpm_required_only" {
+	slug = %q
+	display_name = "TPM Servers"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "tpm"
+	tpm = {
+		require_eab = true
+		force_cn = true
+	}
+	depends_on = [smallstep_attestation_authority.attest_ca]
+}`, slug, attestorRoot, slug)
+
+	helper.Test(t, helper.TestCase{
+		PreCheck: func() {
+			require.NoError(t, utils.SweepAttestationAuthorities())
+		},
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: tpmRequired,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "display_name", "TPMs"),
+				),
+			},
+			{
+				Config: tpmUpdated,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "display_name", "TPM Servers"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	tpmOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_attestation_authority" "attest_ca" {
+	name = "tfprovider%s"
+	attestor_roots = %q
+}
+
+resource "smallstep_device_collection" "tpm_optional_empty" {
+	slug = %q
+	display_name = "TPM Servers"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "tpm"
+	tpm = {
+		force_cn = false
+		require_eab = false
+		attestor_roots = ""
+		attestor_intermediates = ""
+	}
+	depends_on = [smallstep_attestation_authority.attest_ca]
+}`, slug, attestorRoot, slug)
+
+	helper.Test(t, helper.TestCase{
+		PreCheck: func() {
+			require.NoError(t, utils.SweepAttestationAuthorities())
+		},
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: tpmOptionalEmpty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_empty", "tpm.force_cn", "false"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_empty", "tpm.require_eab", "false"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_empty", "tpm.attestor_roots", ""),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_empty", "tpm.attestor_intermediates", ""),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	tpmOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_device_collection" "tpm_optional_nonempty" {
+			slug = %q
+			display_name = "TPM Servers"
+			admin_emails = ["andrew@smallstep.com"]
+			device_type = "tpm"
+			tpm = {
+				attestor_roots = %q
+				attestor_intermediates = %q
+				force_cn = true
+				require_eab = true
+			}
+		}`, slug, attestorRoot, attestorIntermediate)
+
+	helper.Test(t, helper.TestCase{
+		PreCheck: func() {
+			require.NoError(t, utils.SweepAttestationAuthorities())
+		},
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: tpmOptionalNonempty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_nonempty", "tpm.force_cn", "true"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_nonempty", "tpm.require_eab", "true"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_nonempty", "tpm.attestor_roots", attestorRoot),
+					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_optional_nonempty", "tpm.attestor_intermediates", attestorIntermediate),
 				),
 			},
 		},

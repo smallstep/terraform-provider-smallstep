@@ -111,6 +111,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), remote.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), remote.GCPDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
 	// Not returned from API. Use state.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
 }
@@ -152,7 +153,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	tpm, _, err := utils.Describe("tpm")
+	tpm, tpmProps, err := utils.Describe("tpm")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -279,7 +280,24 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
 				},
-				Attributes: map[string]schema.Attribute{},
+				Attributes: map[string]schema.Attribute{
+					"attestor_roots": schema.StringAttribute{
+						MarkdownDescription: tpmProps["attestorRoots"],
+						Optional:            true,
+					},
+					"attestor_intermediates": schema.StringAttribute{
+						MarkdownDescription: tpmProps["attestorIntermediates"],
+						Optional:            true,
+					},
+					"force_cn": schema.BoolAttribute{
+						MarkdownDescription: tpmProps["forceCN"],
+						Optional:            true,
+					},
+					"require_eab": schema.BoolAttribute{
+						MarkdownDescription: tpmProps["requireEAB"],
+						Optional:            true,
+					},
+				},
 			},
 		},
 	}
@@ -342,6 +360,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
 	// Not returned from the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
@@ -403,6 +422,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
 	// Not returned from the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }

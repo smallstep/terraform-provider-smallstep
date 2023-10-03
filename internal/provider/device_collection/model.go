@@ -46,6 +46,10 @@ type AzureDevice struct {
 }
 
 type TPMDevice struct {
+	AttestorIntermediates types.String `tfsdk:"attestor_intermediates"`
+	AttestorRoots         types.String `tfsdk:"attestor_roots"`
+	ForceCN               types.Bool   `tfsdk:"force_cn"`
+	RequireEAB            types.Bool   `tfsdk:"require_eab"`
 }
 
 func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
@@ -149,6 +153,43 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 			ServiceAccounts:   serviceAccounts,
 			ProjectIDs:        projectIDs,
 		}
+	case v20230301.DeviceCollectionDeviceTypeTpm:
+		tpm, err := collection.DeviceTypeConfiguration.AsTpm()
+		if err != nil {
+			diags.AddError("Read TPM Device Configuration", err.Error())
+			return nil, diags
+		}
+
+		forceCN, d := utils.ToOptionalBool(ctx, tpm.ForceCN, state, path.Root("tpm").AtName("force_cn"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		requireEAB, d := utils.ToOptionalBool(ctx, tpm.RequireEAB, state, path.Root("tpm").AtName("require_eab"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		attestorRoots, d := utils.ToOptionalString(ctx, tpm.AttestorRoots, state, path.Root("tpm").AtName("attestor_roots"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		attestorIntermediates, d := utils.ToOptionalString(ctx, tpm.AttestorIntermediates, state, path.Root("tpm").AtName("attestor_intermediates"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		model.TPMDevice = &TPMDevice{
+			AttestorRoots:         attestorRoots,
+			AttestorIntermediates: attestorIntermediates,
+			RequireEAB:            requireEAB,
+			ForceCN:               forceCN,
+		}
 	}
 
 	return model, diags
@@ -228,6 +269,20 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag
 		}
 		if err := dc.DeviceTypeConfiguration.FromGcpVM(gcp); err != nil {
 			diags.AddError("GCP VM", err.Error())
+			return nil, diags
+		}
+	case v20230301.DeviceCollectionDeviceTypeTpm:
+		if model.TPMDevice == nil {
+			diags.AddError("TPM Device", "tpm block is required with device type tpm")
+		}
+		tpm := v20230301.Tpm{
+			AttestorRoots:         model.TPMDevice.AttestorRoots.ValueStringPointer(),
+			AttestorIntermediates: model.TPMDevice.AttestorIntermediates.ValueStringPointer(),
+			ForceCN:               model.TPMDevice.ForceCN.ValueBoolPointer(),
+			RequireEAB:            model.TPMDevice.RequireEAB.ValueBoolPointer(),
+		}
+		if err := dc.DeviceTypeConfiguration.FromTpm(tpm); err != nil {
+			diags.AddError("TPM", err.Error())
 			return nil, diags
 		}
 	default:
