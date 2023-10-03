@@ -216,4 +216,107 @@ resource "smallstep_device_collection" "gcp_optional_nonempty" {
 			},
 		},
 	})
+
+	slug = utils.Slug(t)
+	azureRequired := fmt.Sprintf(`
+resource "smallstep_device_collection" "azure_required_only" {
+	slug = %q
+	display_name = "Azure VMs"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "azure-vm"
+	azure_vm = {
+		resource_groups = ["0123456789"]
+		tenant_id = "7"
+	}
+}`, slug)
+
+	updatedAzureRequired := fmt.Sprintf(`
+resource "smallstep_device_collection" "azure_required_only" {
+	slug = %q
+	display_name = "Azure Instances"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "azure-vm"
+	azure_vm = {
+		resource_groups = ["0123456789"]
+		tenant_id = "7"
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: azureRequired,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "display_name", "Azure VMs"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "azure_vm.tenant_id", "7"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "azure_vm.resource_groups.0", "0123456789"),
+				),
+			},
+			{
+				Config: updatedAzureRequired,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "slug", slug),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "display_name", "Azure Instances"),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	azureOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_device_collection" "azure_optional_empty" {
+	slug = %q
+	display_name = "Azure VMs"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "azure-vm"
+	azure_vm = {
+		tenant_id = "7"
+		resource_groups = ["0123456789"]
+		disable_custom_sans = false
+		audience = ""
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: azureOptionalEmpty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_empty", "azure_vm.disable_custom_sans", "false"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_empty", "azure_vm.audience", ""),
+				),
+			},
+		},
+	})
+
+	slug = utils.Slug(t)
+	azureOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_device_collection" "azure_optional_nonempty" {
+	slug = %q
+	display_name = "Azure VMs"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "azure-vm"
+	azure_vm = {
+		tenant_id = "7"
+		resource_groups = ["0123456789"]
+		disable_custom_sans = true
+		audience = "example.com"
+	}
+}`, slug)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: azureOptionalNonempty,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_nonempty", "azure_vm.disable_custom_sans", "true"),
+					helper.TestCheckResourceAttr("smallstep_device_collection.azure_optional_nonempty", "azure_vm.audience", "example.com"),
+				),
+			},
+		},
+	})
 }

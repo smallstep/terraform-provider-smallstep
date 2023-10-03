@@ -39,6 +39,10 @@ type GCPDevice struct {
 }
 
 type AzureDevice struct {
+	TenantID          types.String `tfsdk:"tenant_id"`
+	ResourceGroups    types.Set    `tfsdk:"resource_groups"`
+	DisableCustomSANs types.Bool   `tfsdk:"disable_custom_sans"`
+	Audience          types.String `tfsdk:"audience"`
 }
 
 type TPMDevice struct {
@@ -80,6 +84,40 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 		model.AWSDevice = &AWSDevice{
 			Accounts:          accountsSet,
 			DisableCustomSANs: disableCustomSANs,
+		}
+	case v20230301.DeviceCollectionDeviceTypeAzureVm:
+		azure, err := collection.DeviceTypeConfiguration.AsAzureVM()
+		if err != nil {
+			diags.AddError("Read Azure Device Configuration", err.Error())
+			return nil, diags
+		}
+
+		disableCustomSANs, d := utils.ToOptionalBool(ctx, azure.DisableCustomSANs, state, path.Root("azure_vm").AtName("disable_custom_sans"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		var resourceGroups []attr.Value
+		for _, rg := range azure.ResourceGroups {
+			resourceGroups = append(resourceGroups, types.StringValue(rg))
+		}
+		resourceGroupsSet, diags := types.SetValue(types.StringType, resourceGroups)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		audience, d := utils.ToOptionalString(ctx, azure.Audience, state, path.Root("azure_vm").AtName("audience"))
+		diags.Append(d...)
+		if diags.HasError() {
+			return nil, diags
+		}
+
+		model.AzureDevice = &AzureDevice{
+			TenantID:          types.StringValue(azure.TenantID),
+			ResourceGroups:    resourceGroupsSet,
+			DisableCustomSANs: disableCustomSANs,
+			Audience:          audience,
 		}
 	case v20230301.DeviceCollectionDeviceTypeGcpVm:
 		gcp, err := collection.DeviceTypeConfiguration.AsGcpVM()
@@ -144,6 +182,24 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag
 
 		if err := dc.DeviceTypeConfiguration.FromAwsVM(aws); err != nil {
 			diags.AddError("AWS VM", err.Error())
+			return nil, diags
+		}
+	case v20230301.DeviceCollectionDeviceTypeAzureVm:
+		if model.AzureDevice == nil {
+			diags.AddError("Azure Device", "azure_vm is required with device type azure-vm")
+			return nil, diags
+		}
+		azure := v20230301.AzureVM{
+			TenantID:          model.AzureDevice.TenantID.ValueString(),
+			ResourceGroups:    []string{},
+			DisableCustomSANs: model.AzureDevice.DisableCustomSANs.ValueBoolPointer(),
+			Audience:          model.AzureDevice.Audience.ValueStringPointer(),
+		}
+		d := model.AzureDevice.ResourceGroups.ElementsAs(ctx, &azure.ResourceGroups, false)
+		diags.Append(d...)
+
+		if err := dc.DeviceTypeConfiguration.FromAzureVM(azure); err != nil {
+			diags.AddError("Azure VM", err.Error())
 			return nil, diags
 		}
 	case v20230301.DeviceCollectionDeviceTypeGcpVm:

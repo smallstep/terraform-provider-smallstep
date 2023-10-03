@@ -109,6 +109,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), remote.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), remote.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), remote.GCPDevice)...)
 	// Not returned from API. Use state.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
@@ -142,7 +143,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	azure, _, err := utils.Describe("azureVM")
+	azure, azureProps, err := utils.Describe("azureVM")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -226,7 +227,25 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
 				},
-				Attributes: map[string]schema.Attribute{},
+				Attributes: map[string]schema.Attribute{
+					"resource_groups": schema.SetAttribute{
+						MarkdownDescription: azureProps["resourceGroups"],
+						ElementType:         types.StringType,
+						Required:            true,
+					},
+					"disable_custom_sans": schema.BoolAttribute{
+						MarkdownDescription: azureProps["disableCustomSANs"],
+						Optional:            true,
+					},
+					"tenant_id": schema.StringAttribute{
+						MarkdownDescription: azureProps["tenantID"],
+						Required:            true,
+					},
+					"audience": schema.StringAttribute{
+						MarkdownDescription: azureProps["audience"],
+						Optional:            true,
+					},
+				},
 			},
 			"gcp_vm": schema.SingleNestedAttribute{
 				MarkdownDescription: gcp,
@@ -321,6 +340,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
 	// Not returned from the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
@@ -381,6 +401,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
 	// Not returned from the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
