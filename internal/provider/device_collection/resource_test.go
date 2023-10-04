@@ -327,7 +327,7 @@ resource "smallstep_device_collection" "azure_optional_nonempty" {
 	slug = utils.Slug(t)
 	tpmRequired := fmt.Sprintf(`
 resource "smallstep_attestation_authority" "attest_ca" {
-	name = "tfprovider%s"
+	name = %q
 	attestor_roots = %q
 }
 
@@ -342,7 +342,7 @@ resource "smallstep_device_collection" "tpm_required_only" {
 
 	tpmUpdated := fmt.Sprintf(`
 resource "smallstep_attestation_authority" "attest_ca" {
-	name = "tfprovider%s"
+	name = %q
 	attestor_roots = %q
 }
 
@@ -384,7 +384,7 @@ resource "smallstep_device_collection" "tpm_required_only" {
 	slug = utils.Slug(t)
 	tpmOptionalEmpty := fmt.Sprintf(`
 resource "smallstep_attestation_authority" "attest_ca" {
-	name = "tfprovider%s"
+	name = %q
 	attestor_roots = %q
 }
 

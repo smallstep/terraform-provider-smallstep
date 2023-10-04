@@ -62,13 +62,14 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	id := state.ID.ValueString()
+	dcSlug := state.DeviceCollectionSlug.ValueString()
+	workloadSlug := state.Slug.ValueString()
 
-	httpResp, err := r.client.GetEndpointConfiguration(ctx, id, &v20230301.GetEndpointConfigurationParams{})
+	httpResp, err := r.client.GetWorkload(ctx, dcSlug, workloadSlug, &v20230301.GetWorkloadParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read workload %q: %v", id, err),
+			fmt.Sprintf("Failed to read workload %q: %v", workloadSlug, err),
 		)
 		return
 	}
@@ -82,40 +83,40 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading workload %q: %s", httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Received status %d reading workload %q: %s", httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	ac := &v20230301.EndpointConfiguration{}
-	if err := json.NewDecoder(httpResp.Body).Decode(ac); err != nil {
+	workload := &v20230301.Workload{}
+	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal workload %q: %v", id, err),
+			fmt.Sprintf("Failed to unmarshal workload %q: %v", workloadSlug, err),
 		)
 		return
 	}
 
-	remote, d := fromAPI(ctx, ac, req.State)
+	remote, d := fromAPI(ctx, workload, req.State)
 	resp.Diagnostics.Append(d...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read workload %q resource", id))
+	tflog.Trace(ctx, fmt.Sprintf("read workload %q resource", workloadSlug))
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_info"), remote.CertificateInfo)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key_info"), remote.KeyInfo)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("hooks"), remote.Hooks)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("reload_info"), remote.ReloadInfo)...)
-	// API returns an endpoint configuration. Use plan for everything else.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), remote.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), remote.WorkloadType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), remote.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), remote.DeviceMetadataKeySANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), remote.StaticSANs)...)
+	// Not returned from API. Use state.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), state.DeviceCollectionSlug)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
 }
 
@@ -172,11 +173,8 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				MarkdownDescription: props["id"],
+				MarkdownDescription: "Internal use only.",
 				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"display_name": schema.StringAttribute{
 				MarkdownDescription: props["displayName"],
@@ -276,6 +274,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["signal"],
 					},
+					"unit_name": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: reloadInfoProps["unitName"],
+					},
 				},
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
@@ -358,6 +360,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"duration": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["duration"],
 						Optional:            true,
+						Computed:            true,
 					},
 					"crt_file": schema.StringAttribute{
 						MarkdownDescription: certInfoProps["crtFile"],
@@ -406,8 +409,9 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 	dcSlug := plan.DeviceCollectionSlug.ValueString()
+	slug := plan.Slug.ValueString()
 
-	httpResp, err := a.client.PostWorkloads(ctx, dcSlug, &v20230301.PostWorkloadsParams{}, *reqBody)
+	httpResp, err := a.client.PutWorkload(ctx, dcSlug, slug, &v20230301.PutWorkloadParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -417,7 +421,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 	defer httpResp.Body.Close()
 
-	if httpResp.StatusCode != http.StatusCreated {
+	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
 			fmt.Sprintf("Received status %d creating workload %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
@@ -425,8 +429,8 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	ac := &v20230301.EndpointConfiguration{}
-	if err := json.NewDecoder(httpResp.Body).Decode(ac); err != nil {
+	workload := &v20230301.Workload{}
+	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
 			fmt.Sprintf("Failed to unmarshal workload %q: %v", plan.DisplayName.ValueString(), err),
@@ -434,7 +438,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	state, diags := fromAPI(ctx, ac, req.Plan)
+	state, diags := fromAPI(ctx, workload, req.Plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -442,25 +446,118 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 	tflog.Trace(ctx, fmt.Sprintf("create workload %q resource", plan.DisplayName.ValueString()))
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_info"), state.CertificateInfo)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key_info"), state.KeyInfo)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("hooks"), state.Hooks)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("reload_info"), state.ReloadInfo)...)
-	// API returns an endpoint configuration. Use plan for everything else.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), plan.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), plan.WorkloadType)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), plan.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
+	// Not returned by the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), plan.DeviceCollectionSlug)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), plan.DeviceMetadataKeySANs)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), plan.StaticSANs)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	resp.Diagnostics.AddError("Update not supported", "Workloads must be destroyed and re-created.")
+	plan := &Model{}
+	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	reqBody, diags := toAPI(ctx, plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	dcSlug := plan.DeviceCollectionSlug.ValueString()
+	slug := plan.Slug.ValueString()
+
+	httpResp, err := r.client.PutWorkload(ctx, dcSlug, slug, &v20230301.PutWorkloadParams{}, *reqBody)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to update workload %q: %v", plan.DisplayName.ValueString(), err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d updating workload %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	workload := &v20230301.Workload{}
+	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal workload %q: %v", plan.DisplayName.ValueString(), err),
+		)
+		return
+	}
+
+	state, diags := fromAPI(ctx, workload, req.Plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Trace(ctx, fmt.Sprintf("update workload %q resource", plan.DisplayName.ValueString()))
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_info"), state.CertificateInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("key_info"), state.KeyInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("hooks"), state.Hooks)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("reload_info"), state.ReloadInfo)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
+	// Not returned by the API. Use plan.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), plan.DeviceCollectionSlug)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	resp.Diagnostics.AddWarning("Delete not supported", "Coming soon.")
+	state := &Model{}
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	dcSlug := state.DeviceCollectionSlug.ValueString()
+	workloadSlug := state.Slug.ValueString()
+
+	httpResp, err := a.client.DeleteWorkload(ctx, dcSlug, workloadSlug, &v20230301.DeleteWorkloadParams{})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to delete workload %q: %v", workloadSlug, err),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode == http.StatusNoContent {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Received status %d deleting workload %q: %s", httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
 }

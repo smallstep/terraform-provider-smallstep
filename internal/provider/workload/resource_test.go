@@ -2,7 +2,6 @@ package workload
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -29,10 +28,10 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-// TODO sans
 func TestAccAgentConfigurationResource(t *testing.T) {
 	dcSlug := utils.Slug(t)
-	slug := utils.Slug(t)
+	slug1 := utils.Slug(t)
+	slug2 := utils.Slug(t)
 	config1 := fmt.Sprintf(`
 resource "smallstep_device_collection" "ec2_east" {
 	slug = %q
@@ -44,7 +43,26 @@ resource "smallstep_device_collection" "ec2_east" {
 	}
 }
 
+resource "smallstep_workload" "generic" {
+	depends_on = [smallstep_device_collection.ec2_east]
+	workload_type = "generic"
+	admin_emails = ["andrew@smallstep.com"]
+	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
+	slug = %q
+	display_name = "tfprovider generic"
+
+	certificate_info = {
+		type = "X509"
+	}
+	key_info = {
+		format = "DER"
+		type = "ECDSA_P256"
+	}
+	static_sans = ["host.internal"]
+}
+
 resource "smallstep_workload" "nginx" {
+	depends_on = [smallstep_device_collection.ec2_east]
 	workload_type = "nginx"
 	admin_emails = ["andrew@smallstep.com"]
 	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
@@ -113,7 +131,94 @@ resource "smallstep_workload" "nginx" {
 		signal = 1
 	}
 }
-`, dcSlug, slug)
+`, dcSlug, slug1, slug2)
+
+	config2 := fmt.Sprintf(`
+resource "smallstep_device_collection" "ec2_east" {
+	slug = %q
+	display_name = "EC2 East"
+	admin_emails = ["andrew@smallstep.com"]
+	device_type = "aws-vm"
+	aws_vm = {
+		accounts = ["0123456789"]
+	}
+}
+
+resource "smallstep_workload" "generic" {
+	depends_on = [smallstep_device_collection.ec2_east]
+	workload_type = "generic"
+	admin_emails = ["andrew@smallstep.com"]
+	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
+	slug = %q
+	display_name = "tfprovider generic"
+
+	certificate_info = {
+		type = "X509"
+	}
+	key_info = {
+		format = "DER"
+		type = "ECDSA_P256"
+	}
+	device_metadata_key_sans = ["internal_host"]
+}
+
+resource "smallstep_workload" "nginx" {
+	depends_on = [smallstep_device_collection.ec2_east]
+	workload_type = "nginx"
+	admin_emails = ["andrew@smallstep.com"]
+	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
+	slug = %q
+	display_name = "tfprovider Nginx"
+
+	certificate_info = {
+		type = "X509"
+		duration = "167h"
+		crt_file = "pg.crt"
+		key_file = "pg.key"
+		root_file = "pg_ca.crt"
+		uid = 1002
+		gid = 998
+		mode = 7
+	}
+
+	hooks = {
+		renew = {
+			shell = "/bin/zsh"
+			before = [
+				"echo renewing 4",
+			]
+			after = [
+				"echo renewed 4",
+			]
+			on_error = [
+				"echo failed renew 4",
+			]
+		}
+		sign = {
+			shell = "/bin/fish"
+			before = [
+				"echo signing 4",
+			]
+			after = [
+				"echo signed 4",
+			]
+			on_error = [
+				"echo failed sign 4",
+			]
+		}
+	}
+
+	key_info = {
+		format = "DEFAULT"
+		type = "ECDSA_P384"
+		pub_file = ""
+	}
+
+	reload_info = {
+		method = "DBUS"
+		unit_name = "postgres.service"
+	}
+}`, dcSlug, slug1, slug2)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -121,7 +226,6 @@ resource "smallstep_workload" "nginx" {
 			{
 				Config: config1,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_workload.nginx", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.duration", "168h"),
@@ -145,6 +249,47 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "SIGNAL"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.pid_file", "db.pid"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.signal", "1"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.0", "host.internal"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "0"),
+				),
+			},
+		},
+	})
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: config2,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.duration", "167h"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.crt_file", "pg.crt"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.key_file", "pg.key"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.root_file", "pg_ca.crt"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.uid", "1002"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.gid", "998"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.mode", "7"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.shell", "/bin/zsh"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.before.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.after.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.renew.on_error.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.shell", "/bin/fish"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.before.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.after.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "hooks.sign.on_error.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.type", "ECDSA_P384"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.format", "DEFAULT"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.pub_file", ""),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "DBUS"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.unit_name", "postgres.service"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "0"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.0", "internal_host"),
 				),
 			},
 		},

@@ -677,20 +677,12 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			return nil, diags
 		}
 
-		var serviceAccounts []attr.Value
-		for _, sa := range gcp.ServiceAccounts {
-			serviceAccounts = append(serviceAccounts, types.StringValue(sa))
-		}
-		serviceAccountsSet, diags := types.SetValue(types.StringType, serviceAccounts)
+		serviceAccountsSet, diags := utils.ToOptionalSet(ctx, gcp.ServiceAccounts, state, path.Root("gcp").AtName("service_accounts"))
 		if diags.HasError() {
 			return nil, diags
 		}
 
-		var projectIDs []attr.Value
-		for _, projectID := range gcp.ProjectIDs {
-			projectIDs = append(projectIDs, types.StringValue(projectID))
-		}
-		projectIDsSet, diags := types.SetValue(types.StringType, projectIDs)
+		projectIDsSet, diags := utils.ToOptionalSet(ctx, gcp.ProjectIDs, state, path.Root("gcp").AtName("project_ids"))
 		if diags.HasError() {
 			return nil, diags
 		}
