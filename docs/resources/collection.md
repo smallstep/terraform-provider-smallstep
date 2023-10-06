@@ -27,7 +27,7 @@ resource "smallstep_collection" "tpms" {
 
 ### Optional
 
-- `display_name` (String)
+- `display_name` (String) A user-friendly name for the collection.
 - `schema_uri` (String) Reference to a schema that all instances in the collection must conform to.
 
 ### Read-Only

@@ -212,17 +212,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: props["staticSANs"],
 				ElementType:         types.StringType,
 				Optional:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"device_metadata_key_sans": schema.SetAttribute{
 				MarkdownDescription: props["deviceMetadataKeySANs"],
 				ElementType:         types.StringType,
 				Optional:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
 			},
 
 			"key_info": schema.SingleNestedAttribute{

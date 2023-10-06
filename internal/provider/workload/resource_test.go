@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
@@ -30,8 +31,8 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 
 func TestAccWorkloadResource(t *testing.T) {
 	dcSlug := utils.Slug(t)
-	slug1 := utils.Slug(t)
-	slug2 := utils.Slug(t)
+	genericSlug := utils.Slug(t)
+	nginxSlug := utils.Slug(t)
 	config1 := fmt.Sprintf(`
 resource "smallstep_device_collection" "ec2_east" {
 	slug = %q
@@ -131,7 +132,7 @@ resource "smallstep_workload" "nginx" {
 		signal = 1
 	}
 }
-`, dcSlug, slug1, slug2)
+`, dcSlug, genericSlug, nginxSlug)
 
 	config2 := fmt.Sprintf(`
 resource "smallstep_device_collection" "ec2_east" {
@@ -218,7 +219,7 @@ resource "smallstep_workload" "nginx" {
 		method = "DBUS"
 		unit_name = "postgres.service"
 	}
-}`, dcSlug, slug1, slug2)
+}`, dcSlug, genericSlug, nginxSlug)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -255,14 +256,14 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "0"),
 				),
 			},
-		},
-	})
-
-	helper.Test(t, helper.TestCase{
-		ProtoV6ProviderFactories: providerFactories,
-		Steps: []helper.TestStep{
 			{
 				Config: config2,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_workload.nginx", plancheck.ResourceActionUpdate),
+						plancheck.ExpectResourceAction("smallstep_workload.generic", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),

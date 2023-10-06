@@ -129,7 +129,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				},
 			},
 			"display_name": schema.StringAttribute{
-				MarkdownDescription: props["name"],
+				MarkdownDescription: props["displayName"],
 				Optional:            true,
 			},
 			"schema_uri": schema.StringAttribute{

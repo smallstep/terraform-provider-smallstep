@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
@@ -66,6 +67,11 @@ resource "smallstep_device_collection" "aws_required_only" {
 			},
 			{
 				Config: updated,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_device_collection.aws_required_only", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "slug", slug),
 					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "display_name", "EC2 East"),
@@ -162,6 +168,11 @@ resource "smallstep_device_collection" "gcp_required_only" {
 			},
 			{
 				Config: updatedGCPRequired,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_device_collection.gcp_required_only", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "slug", slug),
 					helper.TestCheckResourceAttr("smallstep_device_collection.gcp_required_only", "display_name", "Google Compute Engine"),
@@ -259,6 +270,11 @@ resource "smallstep_device_collection" "azure_required_only" {
 			},
 			{
 				Config: updatedAzureRequired,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_device_collection.azure_required_only", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "slug", slug),
 					helper.TestCheckResourceAttr("smallstep_device_collection.azure_required_only", "display_name", "Azure Instances"),
@@ -373,6 +389,11 @@ resource "smallstep_device_collection" "tpm_required_only" {
 			},
 			{
 				Config: tpmUpdated,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_device_collection.tpm_required_only", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "slug", slug),
 					helper.TestCheckResourceAttr("smallstep_device_collection.tpm_required_only", "display_name", "TPM Servers"),
