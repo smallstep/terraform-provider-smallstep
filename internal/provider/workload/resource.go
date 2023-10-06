@@ -208,7 +208,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"static_sans": schema.SetAttribute{
+			"static_sans": schema.ListAttribute{
 				MarkdownDescription: props["staticSANs"],
 				ElementType:         types.StringType,
 				Optional:            true,
