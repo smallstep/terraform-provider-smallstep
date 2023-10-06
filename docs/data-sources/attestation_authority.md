@@ -29,7 +29,6 @@ data "smallstep_attestation_authority" "aa" {
 
 - `attestor_intermediates` (String) The pem-encoded list of intermediate certificates used to build a chain of trust to verify the attestation certificates submitted by devices.
 - `attestor_roots` (String) The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
-- `catalog` (String) The slug of a collection that holds the list of devices belonging to the team.
 - `created_at` (String) Timestamp in RFC3339 format when the attestation authority was created.
 - `name` (String) The name of the attestation authority.
 - `root` (String) The pem-encoded root certificate of this attestation authority. This is generated server-side when the attestation authority is created. This certificate should be used in the `attestationRoots` field of an ACME_ATTESTATION provisioner with the `tpm` format.

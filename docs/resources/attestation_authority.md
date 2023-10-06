@@ -32,7 +32,6 @@ resource "smallstep_attestation_authority" "aa" {
 ### Required
 
 - `attestor_roots` (String) The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
-- `catalog` (String) The slug of a collection that holds the list of devices belonging to the team.
 - `name` (String) The name of the attestation authority.
 
 ### Optional

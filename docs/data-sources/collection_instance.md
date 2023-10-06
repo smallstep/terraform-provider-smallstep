@@ -31,6 +31,7 @@ data "smallstep_collection_instance" "tpm1" {
 - `created_at` (String) Timestamp in RFC3339 format when the instance was added to the collection.
 - `data` (String) The instance data.
 - `id` (String) The ID of this resource.
+- `out_data` (String) The instance data.
 - `updated_at` (String) Timestamp in RFC3339 format when the instance was last changed.
 
 
