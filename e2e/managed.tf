@@ -16,6 +16,19 @@ resource "smallstep_collection_instance" "my_ec2" {
   depends_on = [resource.smallstep_device_collection.ec2_west]
 }
 
-output "outdata" {
-  value = resource.smallstep_collection_instance.my_ec2.out_data
+resource "smallstep_workload" "generic" {
+	depends_on = [smallstep_device_collection.ec2_west]
+	workload_type = "generic"
+	admin_emails = ["andrew@smallstep.com"]
+	device_collection_slug = resource.smallstep_device_collection.ec2_west.slug
+	slug = "workloade2e"
+	display_name = "Generic Workload"
+
+	certificate_info = {
+		type = "X509"
+	}
+	key_info = {
+		format = "DEFAULT"
+		type = "ECDSA_P256"
+	}
 }

@@ -46,7 +46,7 @@ resource "smallstep_attestation_authority" "aa" {
 				Config: config,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "name", slug)
+					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "name", slug),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_roots", attestorRoot),
 					resource.TestCheckResourceAttr("smallstep_attestation_authority.aa", "attestor_intermediates", attestorIntermediate),
 					resource.TestMatchResourceAttr("smallstep_attestation_authority.aa", "root", regexp.MustCompile(`^-----BEGIN CERTIFICATE-----`)),

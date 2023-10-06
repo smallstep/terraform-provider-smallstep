@@ -28,7 +28,7 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-func TestAccAgentConfigurationResource(t *testing.T) {
+func TestAccWorkloadResource(t *testing.T) {
 	dcSlug := utils.Slug(t)
 	slug1 := utils.Slug(t)
 	slug2 := utils.Slug(t)

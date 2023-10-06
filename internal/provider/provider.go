@@ -20,6 +20,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/workload"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -174,6 +175,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		attestation_authority.NewResource,
 		webhook.NewResource,
 		device_collection.NewResource,
+		workload.NewResource,
 	}
 }
 

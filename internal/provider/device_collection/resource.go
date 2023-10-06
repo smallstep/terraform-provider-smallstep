@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
@@ -190,7 +189,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Required:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					setplanmodifier.RequiresReplace(),
 				},
 			},
 			"device_type": schema.StringAttribute{
@@ -204,7 +202,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: aws,
 				Optional:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
 					objectplanmodifier.UseStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
@@ -212,9 +209,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: awsProps["accounts"],
 						ElementType:         types.StringType,
 						Required:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.RequiresReplace(),
-						},
 					},
 					"disable_custom_sans": schema.BoolAttribute{
 						MarkdownDescription: awsProps["disableCustomSANs"],
@@ -225,9 +219,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"azure_vm": schema.SingleNestedAttribute{
 				MarkdownDescription: azure,
 				Optional:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
 				Attributes: map[string]schema.Attribute{
 					"resource_groups": schema.SetAttribute{
 						MarkdownDescription: azureProps["resourceGroups"],
@@ -251,9 +242,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"gcp_vm": schema.SingleNestedAttribute{
 				MarkdownDescription: gcp,
 				Optional:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
 				Attributes: map[string]schema.Attribute{
 					"service_accounts": schema.SetAttribute{
 						MarkdownDescription: gcpProps["serviceAccounts"],
@@ -268,18 +256,12 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"disable_custom_sans": schema.BoolAttribute{
 						MarkdownDescription: gcpProps["disableCustomSANs"],
 						Optional:            true,
-						PlanModifiers: []planmodifier.Bool{
-							boolplanmodifier.RequiresReplace(),
-						},
 					},
 				},
 			},
 			"tpm": schema.SingleNestedAttribute{
 				MarkdownDescription: tpm,
 				Optional:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
 				Attributes: map[string]schema.Attribute{
 					"attestor_roots": schema.StringAttribute{
 						MarkdownDescription: tpmProps["attestorRoots"],

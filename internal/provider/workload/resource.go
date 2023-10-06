@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -179,9 +178,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"display_name": schema.StringAttribute{
 				MarkdownDescription: props["displayName"],
 				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"workload_type": schema.StringAttribute{
 				MarkdownDescription: props["workloadType"],
@@ -210,7 +206,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Required:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					setplanmodifier.RequiresReplace(),
 				},
 			},
 			"static_sans": schema.SetAttribute{
@@ -219,7 +214,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					setplanmodifier.RequiresReplace(),
 				},
 			},
 			"device_metadata_key_sans": schema.SetAttribute{
@@ -228,7 +222,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
-					setplanmodifier.RequiresReplace(),
 				},
 			},
 
@@ -253,9 +246,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: keyInfoProps["pubFile"],
 					},
 				},
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
 			},
 			"reload_info": schema.SingleNestedAttribute{
 				Optional:            true,
@@ -278,9 +268,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["unitName"],
 					},
-				},
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
 				},
 			},
 			"hooks": schema.SingleNestedAttribute{
@@ -312,9 +299,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								MarkdownDescription: hookProps["onError"],
 							},
 						},
-						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.RequiresReplace(),
-						},
 					},
 					"renew": schema.SingleNestedAttribute{
 						Optional:            true,
@@ -340,13 +324,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								MarkdownDescription: hookProps["onError"],
 							},
 						},
-						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.RequiresReplace(),
-						},
 					},
-				},
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
 				},
 			},
 			"certificate_info": schema.SingleNestedAttribute{
@@ -386,9 +364,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: certInfoProps["mode"],
 						Optional:            true,
 					},
-				},
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
 				},
 			},
 		},
