@@ -44,7 +44,7 @@ data "smallstep_provisioner" "by_id" {
 - `azure` (Attributes) The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens. This object is populated when type is `AZURE`. (see [below for nested schema](#nestedatt--azure))
 - `claims` (Attributes) A set of constraints configuring how this provisioner can be used to issue certificates. (see [below for nested schema](#nestedatt--claims))
 - `created_at` (String) Timestamp of when the provisioner was created in RFC 3339 format. Generated server-side.
-- `gcp` (Attributes) The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. This object is populated when type is `GCP`. (see [below for nested schema](#nestedatt--gcp))
+- `gcp` (Attributes) The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. At least one service account or project ID must be set. This object is populated when type is `GCP`. (see [below for nested schema](#nestedatt--gcp))
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is populated when type is `JWK`. (see [below for nested schema](#nestedatt--jwk))
 - `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
 - `options` (Attributes) Options that apply when issuing certificates with this provisioner. (see [below for nested schema](#nestedatt--options))
@@ -77,7 +77,7 @@ Read-Only:
 
 Read-Only:
 
-- `accounts` (Set of String) The list of AWS account IDs that are allowed to use this provisioner.
+- `accounts` (Set of String) The list of AWS account IDs that are allowed to use an AWS cloud provisioner.
 - `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
 - `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
 - `instance_age` (String) The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -122,8 +122,8 @@ Read-Only:
 - `disable_custom_sans` (Boolean) By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
 - `disable_trust_on_first_use` (Boolean) By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
 - `instance_age` (String) The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
-- `project_ids` (Set of String) The list of project identifiers that are allowed to use this provisioner.
-- `service_accounts` (Set of String) The list of service accounts that are allowed to use this provisioner.
+- `project_ids` (Set of String) The list of project identifiers that are allowed to use a GCP cloud provisioner.
+- `service_accounts` (Set of String) The list of service accounts that are allowed to use a GCP cloud provisioner.
 
 
 <a id="nestedatt--jwk"></a>

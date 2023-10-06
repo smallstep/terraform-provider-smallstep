@@ -18,6 +18,7 @@ type Model struct {
 	CollectionSlug types.String `tfsdk:"collection_slug"`
 	ID             types.String `tfsdk:"id"`
 	Data           types.String `tfsdk:"data"`
+	OutData        types.String `tfsdk:"out_data"`
 	CreatedAt      types.String `tfsdk:"created_at"`
 	UpdatedAt      types.String `tfsdk:"updated_at"`
 }
@@ -37,14 +38,15 @@ func fromAPI(ctx context.Context, slug string, instance *v20230301.CollectionIns
 		diags.AddError("Marshal Instance Data", err.Error())
 		return nil, diags
 	}
+	model.OutData = types.StringValue(string(apiDataJSON))
 
 	dataFromState := types.String{}
 	d := state.GetAttribute(ctx, path.Root("data"), &dataFromState)
 	diags = append(diags, d...)
-	if utils.IsJSONEqual(dataFromState.ValueString(), string(apiDataJSON)) {
-		model.Data = dataFromState
+	if dataFromState.IsNull() {
+		model.Data = model.OutData
 	} else {
-		model.Data = types.StringValue(string(apiDataJSON))
+		model.Data = dataFromState
 	}
 
 	return model, diags

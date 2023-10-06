@@ -34,6 +34,7 @@ If creating this collection with a smallstep_collection resource in the same con
 
 - `created_at` (String) Timestamp in RFC3339 format when the instance was added to the collection.
 - `id` (String) The ID of this resource.
+- `out_data` (String) The instance data stored after any modifications made server-side. If the instance belongs to a device collection a host ID attribute will be added to the data.
 - `updated_at` (String) Timestamp in RFC3339 format when the instance was last changed.
 
 ## Import

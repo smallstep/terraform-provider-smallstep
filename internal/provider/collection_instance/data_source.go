@@ -125,6 +125,10 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				MarkdownDescription: props["data"],
 				Computed:            true,
 			},
+			"out_data": schema.StringAttribute{
+				MarkdownDescription: props["data"],
+				Computed:            true,
+			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: props["createdAt"],
 				Computed:            true,

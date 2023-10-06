@@ -30,7 +30,6 @@ data "smallstep_attestation_authority" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "id", *aa.Id),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "name", aa.Name),
-					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "catalog", aa.Catalog),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "slug", *aa.Slug),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "root", *aa.Root),
 					resource.TestCheckResourceAttr("data.smallstep_attestation_authority.test", "attestor_roots", aa.AttestorRoots),

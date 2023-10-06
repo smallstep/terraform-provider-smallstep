@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -252,7 +251,6 @@ func FixAttestationAuthority(t *testing.T, catalog string) *v20230301.Attestatio
 		Name:                  "tfprovider",
 		AttestorRoots:         root,
 		AttestorIntermediates: &intermediate,
-		Catalog:               catalog,
 	}
 
 	resp, err = client.PostAttestationAuthorities(context.Background(), &v20230301.PostAttestationAuthoritiesParams{}, req)
@@ -294,10 +292,6 @@ func SweepAttestationAuthorities() error {
 	}
 
 	for _, aa := range list {
-		// API e2e tests create one named "foo"
-		if !strings.HasPrefix(aa.Name, "tfprovider") && aa.Name != "foo" {
-			continue
-		}
 		resp, err := client.DeleteAttestationAuthority(context.Background(), *aa.Id, &v20230301.DeleteAttestationAuthorityParams{})
 		if err != nil {
 			return err

@@ -1,7 +1,17 @@
 ## 0.4.0
 
+FEATURES:
+* Add smallstep_device_collection resource.
+* Add smallstep_workload resource.
+
 BUG FIXES:
 * Hosted provisioner webhooks will have a secret of type null rather than type unknown after creation.
+
+CHANGES:
+* attestation_authority resource and data source no longer has a `catalog` attribute.
+* Remove smallstep_managed_configuration resource and data source.
+* Remove smallstep_endpoint_configuration resource and data source.
+* Remove smallstep_agent_configuration resource and data source.
 
 ## 0.3.0
 

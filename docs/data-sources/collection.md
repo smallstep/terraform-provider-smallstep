@@ -32,7 +32,7 @@ data "smallstep_collection" "tpms" {
 ### Read-Only
 
 - `created_at` (String) Timestamp in RFC3339 format when the collections was created
-- `display_name` (String)
+- `display_name` (String) A user-friendly name for the collection.
 - `id` (String) Internal use only
 - `instance_count` (Number) The number of instances in the collection.
 - `updated_at` (String) Timestamp in RFC3339 format when the collections was last updated

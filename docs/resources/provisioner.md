@@ -129,7 +129,7 @@ resource "smallstep_provisioner" "my_azure" {
 - `aws` (Attributes) The [AWS provisioner](https://smallstep.com/docs/step-ca/provisioners/#aws) grants a certificate to an Amazon EC2 instance using the Instance Identity Document. This object is required when type is `AWS` and is otherwise ignored. (see [below for nested schema](#nestedatt--aws))
 - `azure` (Attributes) The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens. This object is required when type is `AZURE` and is otherwise ignored. (see [below for nested schema](#nestedatt--azure))
 - `claims` (Attributes) A set of constraints configuring how this provisioner can be used to issue certificates. (see [below for nested schema](#nestedatt--claims))
-- `gcp` (Attributes) The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. This object is required when type is `GCP` and is otherwise ignored. (see [below for nested schema](#nestedatt--gcp))
+- `gcp` (Attributes) The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. At least one service account or project ID must be set. This object is required when type is `GCP` and is otherwise ignored. (see [below for nested schema](#nestedatt--gcp))
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is required when type is `JWK` and is otherwise ignored. (see [below for nested schema](#nestedatt--jwk))
 - `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate. This object is required when type is `OIDC` and is otherwise ignored. (see [below for nested schema](#nestedatt--oidc))
 - `options` (Attributes) Options that apply when issuing certificates with this provisioner. (see [below for nested schema](#nestedatt--options))
@@ -172,7 +172,7 @@ Optional:
 
 Required:
 
-- `accounts` (Set of String) The list of AWS account IDs that are allowed to use this provisioner.
+- `accounts` (Set of String) The list of AWS account IDs that are allowed to use an AWS cloud provisioner.
 
 Optional:
 
@@ -220,8 +220,8 @@ Optional:
 
 Required:
 
-- `project_ids` (Set of String) The list of project identifiers that are allowed to use this provisioner.
-- `service_accounts` (Set of String) The list of service accounts that are allowed to use this provisioner.
+- `project_ids` (Set of String) The list of project identifiers that are allowed to use a GCP cloud provisioner.
+- `service_accounts` (Set of String) The list of service accounts that are allowed to use a GCP cloud provisioner.
 
 Optional:
 

@@ -25,9 +25,9 @@ const (
 
 // Defines values for AcmeAttestationProvisionerAttestationFormats.
 const (
-	Apple AcmeAttestationProvisionerAttestationFormats = "apple"
-	Step  AcmeAttestationProvisionerAttestationFormats = "step"
-	Tpm   AcmeAttestationProvisionerAttestationFormats = "tpm"
+	AcmeAttestationProvisionerAttestationFormatsApple AcmeAttestationProvisionerAttestationFormats = "apple"
+	AcmeAttestationProvisionerAttestationFormatsStep  AcmeAttestationProvisionerAttestationFormats = "step"
+	AcmeAttestationProvisionerAttestationFormatsTpm   AcmeAttestationProvisionerAttestationFormats = "tpm"
 )
 
 // Defines values for AcmeProvisionerChallenges.
@@ -42,6 +42,14 @@ const (
 	AuthorityTypeAdvanced AuthorityType = "advanced"
 	AuthorityTypeDevops   AuthorityType = "devops"
 	AuthorityTypeManaged  AuthorityType = "managed"
+)
+
+// Defines values for DeviceCollectionDeviceType.
+const (
+	DeviceCollectionDeviceTypeAwsVm   DeviceCollectionDeviceType = "aws-vm"
+	DeviceCollectionDeviceTypeAzureVm DeviceCollectionDeviceType = "azure-vm"
+	DeviceCollectionDeviceTypeGcpVm   DeviceCollectionDeviceType = "gcp-vm"
+	DeviceCollectionDeviceTypeTpm     DeviceCollectionDeviceType = "tpm"
 )
 
 // Defines values for EndpointCertificateInfoType.
@@ -82,6 +90,7 @@ const (
 const (
 	AUTOMATIC EndpointReloadInfoMethod = "AUTOMATIC"
 	CUSTOM    EndpointReloadInfoMethod = "CUSTOM"
+	DBUS      EndpointReloadInfoMethod = "DBUS"
 	SIGNAL    EndpointReloadInfoMethod = "SIGNAL"
 )
 
@@ -199,9 +208,6 @@ type AttestationAuthority struct {
 	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by devices.
 	AttestorRoots string `json:"attestorRoots"`
 
-	// Catalog The slug of a collection that holds the list of devices belonging to the team.
-	Catalog string `json:"catalog"`
-
 	// CreatedAt Timestamp in RFC3339 format when the attestation authority was created.
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
@@ -241,6 +247,9 @@ type Authority struct {
 	// Name The name of the authority.
 	Name string `json:"name"`
 
+	// Root The root certificate in pem format.
+	Root *string `json:"root,omitempty"`
+
 	// Type One of the available authority types
 	Type AuthorityType `json:"type"`
 }
@@ -260,37 +269,79 @@ type AuthorityCsr struct {
 // AuthorityType One of the available authority types
 type AuthorityType string
 
+// AwsAccounts The list of AWS account IDs that are allowed to use an AWS cloud provisioner.
+type AwsAccounts = []string
+
+// AwsDisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
+type AwsDisableCustomSANs = bool
+
 // AwsProvisioner The [AWS provisioner](https://smallstep.com/docs/step-ca/provisioners/#aws) grants a certificate to an Amazon EC2 instance using the Instance Identity Document.
 type AwsProvisioner struct {
-	// Accounts The list of AWS account IDs that are allowed to use this provisioner.
-	Accounts []string `json:"accounts"`
+	// Accounts The list of AWS account IDs that are allowed to use an AWS cloud provisioner.
+	Accounts AwsAccounts `json:"accounts"`
 
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
-	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+	DisableCustomSANs *AwsDisableCustomSANs `json:"disableCustomSANs,omitempty"`
 
 	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
 	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
 
 	// InstanceAge The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
-	InstanceAge *string `json:"instanceAge,omitempty"`
+	InstanceAge *InstanceAge `json:"instanceAge,omitempty"`
 }
+
+// AwsVM Configuration for an AWS provisioner for a device collection of AWS VMs.
+type AwsVM struct {
+	// Accounts The list of AWS account IDs that are allowed to use an AWS cloud provisioner.
+	Accounts AwsAccounts `json:"accounts"`
+
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid. These are the private IP and the DNS ip-<private-ip>.<region>.compute.internal.
+	DisableCustomSANs *AwsDisableCustomSANs `json:"disableCustomSANs,omitempty"`
+}
+
+// AzureAudience Defaults to https://management.azure.com/ but it can be changed if necessary.
+type AzureAudience = string
+
+// AzureDisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the token will be valid, in Azure only the virtual machine name is available.
+type AzureDisableCustomSANs = bool
 
 // AzureProvisioner The [Azure provisioner](https://smallstep.com/docs/step-ca/provisioners/#azure) grants certificates to Microsoft Azure instances using the managed identities tokens.
 type AzureProvisioner struct {
 	// Audience Defaults to https://management.azure.com/ but it can be changed if necessary.
-	Audience *string `json:"audience,omitempty"`
+	Audience *AzureAudience `json:"audience,omitempty"`
 
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the token will be valid, in Azure only the virtual machine name is available.
-	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+	DisableCustomSANs *AzureDisableCustomSANs `json:"disableCustomSANs,omitempty"`
 
 	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to true this limit is not set and different tokens can be used to get different certificates.
 	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
 
 	// ResourceGroups The list of resource group names that are allowed to use this provisioner.
-	ResourceGroups []string `json:"resourceGroups"`
+	ResourceGroups AzureResourceGroups `json:"resourceGroups"`
 
 	// TenantID The Azure account tenant ID for this provisioner. This ID is the Directory ID available in the Azure Active Directory properties.
-	TenantID string `json:"tenantID"`
+	TenantID AzureTenantID `json:"tenantID"`
+}
+
+// AzureResourceGroups The list of resource group names that are allowed to use this provisioner.
+type AzureResourceGroups = []string
+
+// AzureTenantID The Azure account tenant ID for this provisioner. This ID is the Directory ID available in the Azure Active Directory properties.
+type AzureTenantID = string
+
+// AzureVM defines model for azureVM.
+type AzureVM struct {
+	// Audience Defaults to https://management.azure.com/ but it can be changed if necessary.
+	Audience *AzureAudience `json:"audience,omitempty"`
+
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the token will be valid, in Azure only the virtual machine name is available.
+	DisableCustomSANs *AzureDisableCustomSANs `json:"disableCustomSANs,omitempty"`
+
+	// ResourceGroups The list of resource group names that are allowed to use this provisioner.
+	ResourceGroups AzureResourceGroups `json:"resourceGroups"`
+
+	// TenantID The Azure account tenant ID for this provisioner. This ID is the Directory ID available in the Azure Active Directory properties.
+	TenantID AzureTenantID `json:"tenantID"`
 }
 
 // BasicAuth Configures provisioner webhook requests to include an Authorization header with these credentials. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers. At most one of `bearerToken` and `basicAuth` may be set.
@@ -331,6 +382,26 @@ type CollectionInstance struct {
 
 	// UpdatedAt Timestamp in RFC3339 format when the instance was last changed.
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// DeviceCollection Configuration to create a new device collection.
+type DeviceCollection struct {
+	// AdminEmails Users that will have admin access to manage the agents authority, which will be created if it does not already exist. Ignored if the agent authority already exists. Never returned in API responses.
+	AdminEmails *[]string `json:"adminEmails,omitempty"`
+
+	// DeviceType Must match the deviceTypeConfiguration. Cannot be changed.
+	DeviceType              DeviceCollectionDeviceType               `json:"deviceType"`
+	DeviceTypeConfiguration DeviceCollection_DeviceTypeConfiguration `json:"deviceTypeConfiguration"`
+	DisplayName             string                                   `json:"displayName"`
+	Slug                    string                                   `json:"slug"`
+}
+
+// DeviceCollectionDeviceType Must match the deviceTypeConfiguration. Cannot be changed.
+type DeviceCollectionDeviceType string
+
+// DeviceCollection_DeviceTypeConfiguration defines model for DeviceCollection.DeviceTypeConfiguration.
+type DeviceCollection_DeviceTypeConfiguration struct {
+	union json.RawMessage
 }
 
 // DistinguishedName Name used in x509 certificates
@@ -460,7 +531,7 @@ type EndpointKeyInfoType string
 
 // EndpointReloadInfo The properties used to reload a service.
 type EndpointReloadInfo struct {
-	// Method Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+	// Method Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in `pidFile`. `DBUS` will use the systemd system bus to issue a `try-reload-or-restart` job for unit specified by `unitName`.
 	Method EndpointReloadInfoMethod `json:"method"`
 
 	// PidFile File that holds the pid of the process to signal. Required when method is SIGNAL.
@@ -468,9 +539,12 @@ type EndpointReloadInfo struct {
 
 	// Signal The signal to send to a process when a certificate should be reloaded. Required when method is SIGNAL.
 	Signal *int `json:"signal,omitempty"`
+
+	// UnitName The systemd unit name to reload when a certificate should be reloaded. Required when method is DBUS.
+	UnitName *string `json:"unitName,omitempty"`
 }
 
-// EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in pidFile.
+// EndpointReloadInfoMethod Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in `pidFile`. `DBUS` will use the systemd system bus to issue a `try-reload-or-restart` job for unit specified by `unitName`.
 type EndpointReloadInfoMethod string
 
 // EndpointSSHCertificateData Contains the information to include when granting an SSH certificate to a managed endpoint.
@@ -491,28 +565,61 @@ type EndpointX509CertificateData struct {
 	Sans []string `json:"sans"`
 }
 
+// EnrollmentToken A JWT that can be used to enroll devices with the Smallstep Agent
+type EnrollmentToken struct {
+	// Id The unique identifier of the token
+	Id *string `json:"id,omitempty"`
+
+	// Secret The JWT itself; this value cannot be retrieved after initially generated and should be kept secret
+	Secret *string `json:"secret,omitempty"`
+
+	// Title The name of the token
+	Title *string `json:"title,omitempty"`
+}
+
 // Error defines model for error.
 type Error struct {
 	// Message A description of the error.
 	Message string `json:"message"`
 }
 
-// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token.
+// GcpDisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
+type GcpDisableCustomSANs = bool
+
+// GcpProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
+type GcpProjectIDs = []string
+
+// GcpProvisioner The [GCP provisioner](https://smallstep.com/docs/step-ca/provisioners/#gcp) grants a certificate to a Google Compute Engine instance using its identity token. At least one service account or project ID must be set.
 type GcpProvisioner struct {
 	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
-	DisableCustomSANs *bool `json:"disableCustomSANs,omitempty"`
+	DisableCustomSANs *GcpDisableCustomSANs `json:"disableCustomSANs,omitempty"`
 
 	// DisableTrustOnFirstUse By default only one certificate will be granted per instance, but if the option is set to `true` this limit is not set and different tokens can be used to get different certificates.
 	DisableTrustOnFirstUse *bool `json:"disableTrustOnFirstUse,omitempty"`
 
 	// InstanceAge The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
-	InstanceAge *string `json:"instanceAge,omitempty"`
+	InstanceAge *InstanceAge `json:"instanceAge,omitempty"`
 
-	// ProjectIDs The list of project identifiers that are allowed to use this provisioner.
-	ProjectIDs []string `json:"projectIDs"`
+	// ProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
+	ProjectIDs *GcpProjectIDs `json:"projectIDs,omitempty"`
 
-	// ServiceAccounts The list of service accounts that are allowed to use this provisioner.
-	ServiceAccounts []string `json:"serviceAccounts"`
+	// ServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
+	ServiceAccounts *GcpServiceAccounts `json:"serviceAccounts,omitempty"`
+}
+
+// GcpServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
+type GcpServiceAccounts = []string
+
+// GcpVM Configuration for the GCP provisioner for device collections of GCP instances. At least one service account or project ID must be set.
+type GcpVM struct {
+	// DisableCustomSANs By default custom SANs are valid, but if this option is set to `true` only the SANs available in the instance identity document will be valid, these are the DNS `<instance-name>.c.<project-id>.internal` and `<instance-name>.<zone>.c.<project-id>.internal`.
+	DisableCustomSANs *GcpDisableCustomSANs `json:"disableCustomSANs,omitempty"`
+
+	// ProjectIDs The list of project identifiers that are allowed to use a GCP cloud provisioner.
+	ProjectIDs *GcpProjectIDs `json:"projectIDs,omitempty"`
+
+	// ServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
+	ServiceAccounts *GcpServiceAccounts `json:"serviceAccounts,omitempty"`
 }
 
 // Grant A grant gives permission to all users in a group to access a host with a matching tag.
@@ -572,6 +679,9 @@ type Host struct {
 	// UpdatedAt Timestamp in RFC3339 format when the host was last updated.
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
+
+// InstanceAge The maximum age of an instance that should be allowed to obtain a certificate. Limits certificate issuance to new instances to mitigate the risk of credential-misuse from instances that don't need a certificate. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+type InstanceAge = string
 
 // JwkProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT).
 type JwkProvisioner struct {
@@ -681,6 +791,12 @@ type NewCollection struct {
 
 	// Slug A lowercase name identifying the collection.
 	Slug string `json:"slug"`
+}
+
+// NewEnrollmentToken The body of a request to generate a new device enrollment token.
+type NewEnrollmentToken struct {
+	// Title The name of the device enrollment token
+	Title *string `json:"title,omitempty"`
 }
 
 // NewGrant The body of a request to add a grant to a group.
@@ -919,6 +1035,21 @@ type Tag struct {
 	Value *string `json:"value,omitempty"`
 }
 
+// Tpm Configuration for a device collection of machines with TPMs.
+type Tpm struct {
+	// AttestorIntermediates The pem-encoded list of intermediate certificates used to build a chain of trust to verify the attestation certificates submitted by agents. Ignored if the team already has an attestation authority.
+	AttestorIntermediates *string `json:"attestorIntermediates,omitempty"`
+
+	// AttestorRoots The pem-encoded list of certificates used to verify the attestation certificates submitted by agents. Ignored if the team already has an attestation authority. Required if the team does not already have an attestation authority.
+	AttestorRoots *string `json:"attestorRoots,omitempty"`
+
+	// ForceCN Force one of the SANs to become the Common Name, if a Common Name is not provided.
+	ForceCN *bool `json:"forceCN,omitempty"`
+
+	// RequireEAB Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
+	RequireEAB *bool `json:"requireEAB,omitempty"`
+}
+
 // User SSH Users are synced from the team's Identity Provider, or from the default Smallstep directory if no external Identity Provider has been configured.
 type User struct {
 	// Active Whether the user has been deactivated in the team's Identity Provider.
@@ -938,6 +1069,38 @@ type User struct {
 	// Id A UUID identifying the user.
 	Id         *string      `json:"id,omitempty"`
 	PosixUsers *[]PosixUser `json:"posixUsers,omitempty"`
+}
+
+// Workload A workload represents anything that uses a certificate.
+type Workload struct {
+	// AdminEmails Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists. Never returned in responses.
+	AdminEmails *[]string `json:"adminEmails,omitempty"`
+
+	// CertificateInfo Details on a managed certificate.
+	CertificateInfo *EndpointCertificateInfo `json:"certificateInfo,omitempty"`
+
+	// DeviceMetadataKeySANs SANs that will be populated from the instance data of the device in the device collection.
+	// For example, if the device instance data in the collection is `{"internal_host": "foo.internal", "external_host", "foo.example.com"}` at the time the workload certificate is issued and this field is set to `["internal_host", "external_host"]`, then the certificate would include the SANs `foo.internal` and `foo.example.com`.
+	DeviceMetadataKeySANs *[]string `json:"deviceMetadataKeySANs,omitempty"`
+
+	// DisplayName A friendly name for the workload. Also used as the Common Name if no static SANs are provide.
+	DisplayName string `json:"displayName"`
+
+	// Hooks The collection of commands to run when a certificate for a managed endpoint is signed or renewed.
+	Hooks *EndpointHooks `json:"hooks,omitempty"`
+
+	// KeyInfo The attributes of the cryptographic key.
+	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
+
+	// ReloadInfo The properties used to reload a service.
+	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
+
+	// Slug Used as the identifier for the workload.
+	Slug string `json:"slug"`
+
+	// StaticSANs SANs that will be added to every certificate issued for this workload. The first will be used as the default Common Name.
+	StaticSANs   *[]string `json:"staticSANs,omitempty"`
+	WorkloadType string    `json:"workloadType"`
 }
 
 // X509Issuer A Customized X509 issuer for an authority.
@@ -1033,6 +1196,9 @@ type RequestID = string
 // WebhookNameOrID defines model for webhookNameOrID.
 type WebhookNameOrID = string
 
+// WorkloadSlug defines model for workloadSlug.
+type WorkloadSlug = string
+
 // N400 defines model for 400.
 type N400 = Error
 
@@ -1050,6 +1216,9 @@ type N409 = Error
 
 // N412 defines model for 412.
 type N412 = Error
+
+// N422 defines model for 422.
+type N422 = Error
 
 // N500 defines model for 500.
 type N500 = Error
@@ -1397,6 +1566,73 @@ type ListCollectionInstancesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// DeleteDeviceCollectionParams defines parameters for DeleteDeviceCollection.
+type DeleteDeviceCollectionParams struct {
+	// Purge Delete all workloads and devices in the collection.
+	// The API will return 422 if the device collection is not empty and the purge flag is not set.
+	Purge *bool `form:"purge,omitempty" json:"purge,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetDeviceCollectionParams defines parameters for GetDeviceCollection.
+type GetDeviceCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutDeviceCollectionParams defines parameters for PutDeviceCollection.
+type PutDeviceCollectionParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteWorkloadParams defines parameters for DeleteWorkload.
+type DeleteWorkloadParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetWorkloadParams defines parameters for GetWorkload.
+type GetWorkloadParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutWorkloadParams defines parameters for PutWorkload.
+type PutWorkloadParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostDeviceEnrollmentTokenParams defines parameters for PostDeviceEnrollmentToken.
+type PostDeviceEnrollmentTokenParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // ListEndpointConfigurationsParams defines parameters for ListEndpointConfigurations.
 type ListEndpointConfigurationsParams struct {
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1676,6 +1912,15 @@ type PutCollectionInstanceJSONRequestBody PutCollectionInstanceJSONBody
 // PutCollectionInstanceDataJSONRequestBody defines body for PutCollectionInstanceData for application/json ContentType.
 type PutCollectionInstanceDataJSONRequestBody = PutCollectionInstanceDataJSONBody
 
+// PutDeviceCollectionJSONRequestBody defines body for PutDeviceCollection for application/json ContentType.
+type PutDeviceCollectionJSONRequestBody = DeviceCollection
+
+// PutWorkloadJSONRequestBody defines body for PutWorkload for application/json ContentType.
+type PutWorkloadJSONRequestBody = Workload
+
+// PostDeviceEnrollmentTokenJSONRequestBody defines body for PostDeviceEnrollmentToken for application/json ContentType.
+type PostDeviceEnrollmentTokenJSONRequestBody = NewEnrollmentToken
+
 // PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
 type PostEndpointConfigurationsJSONRequestBody = EndpointConfiguration
 
@@ -1693,6 +1938,120 @@ type PostManagedConfigurationsJSONRequestBody = ManagedConfiguration
 
 // PutManagedConfigurationJSONRequestBody defines body for PutManagedConfiguration for application/json ContentType.
 type PutManagedConfigurationJSONRequestBody = ManagedConfiguration
+
+// AsAwsVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a AwsVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsAwsVM() (AwsVM, error) {
+	var body AwsVM
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAwsVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided AwsVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromAwsVM(v AwsVM) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAwsVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided AwsVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeAwsVM(v AwsVM) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsAzureVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a AzureVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsAzureVM() (AzureVM, error) {
+	var body AzureVM
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAzureVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided AzureVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromAzureVM(v AzureVM) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAzureVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided AzureVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeAzureVM(v AzureVM) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsGcpVM returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a GcpVM
+func (t DeviceCollection_DeviceTypeConfiguration) AsGcpVM() (GcpVM, error) {
+	var body GcpVM
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGcpVM overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided GcpVM
+func (t *DeviceCollection_DeviceTypeConfiguration) FromGcpVM(v GcpVM) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGcpVM performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided GcpVM
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeGcpVM(v GcpVM) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+// AsTpm returns the union data inside the DeviceCollection_DeviceTypeConfiguration as a Tpm
+func (t DeviceCollection_DeviceTypeConfiguration) AsTpm() (Tpm, error) {
+	var body Tpm
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTpm overwrites any union data inside the DeviceCollection_DeviceTypeConfiguration as the provided Tpm
+func (t *DeviceCollection_DeviceTypeConfiguration) FromTpm(v Tpm) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTpm performs a merge with any union data inside the DeviceCollection_DeviceTypeConfiguration, using the provided Tpm
+func (t *DeviceCollection_DeviceTypeConfiguration) MergeTpm(v Tpm) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JsonMerge(b, t.union)
+	t.union = merged
+	return err
+}
+
+func (t DeviceCollection_DeviceTypeConfiguration) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeviceCollection_DeviceTypeConfiguration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsOidcProvisioner returns the union data inside the Provisioner as a OidcProvisioner
 func (t Provisioner) AsOidcProvisioner() (OidcProvisioner, error) {
@@ -2213,6 +2572,33 @@ type ClientInterface interface {
 
 	// ListCollectionInstances request
 	ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteDeviceCollection request
+	DeleteDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDeviceCollection request
+	GetDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutDeviceCollection request with any body
+	PutDeviceCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWorkload request
+	DeleteWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWorkload request
+	GetWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutWorkload request with any body
+	PutWorkloadWithBody(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostDeviceEnrollmentToken request with any body
+	PostDeviceEnrollmentTokenWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostDeviceEnrollmentToken(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, body PostDeviceEnrollmentTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListEndpointConfigurations request
 	ListEndpointConfigurations(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2853,6 +3239,126 @@ func (c *Client) PutCollectionInstanceData(ctx context.Context, collectionSlug C
 
 func (c *Client) ListCollectionInstances(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListCollectionInstancesRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteDeviceCollectionRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceCollectionRequest(c.Server, collectionSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutDeviceCollectionWithBody(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutDeviceCollectionRequestWithBody(c.Server, collectionSlug, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutDeviceCollection(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutDeviceCollectionRequest(c.Server, collectionSlug, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWorkloadRequest(c.Server, collectionSlug, workloadSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWorkloadRequest(c.Server, collectionSlug, workloadSlug, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWorkloadWithBody(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWorkloadRequestWithBody(c.Server, collectionSlug, workloadSlug, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWorkload(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWorkloadRequest(c.Server, collectionSlug, workloadSlug, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostDeviceEnrollmentTokenWithBody(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostDeviceEnrollmentTokenRequestWithBody(c.Server, collectionSlug, instanceID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostDeviceEnrollmentToken(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, body PostDeviceEnrollmentTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostDeviceEnrollmentTokenRequest(c.Server, collectionSlug, instanceID, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5348,6 +5854,485 @@ func NewListCollectionInstancesRequest(server string, collectionSlug CollectionS
 	return req, nil
 }
 
+// NewDeleteDeviceCollectionRequest generates requests for DeleteDeviceCollection
+func NewDeleteDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Purge != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "purge", runtime.ParamLocationQuery, *params.Purge); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetDeviceCollectionRequest generates requests for GetDeviceCollection
+func NewGetDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *GetDeviceCollectionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutDeviceCollectionRequest calls the generic PutDeviceCollection builder with application/json body
+func NewPutDeviceCollectionRequest(server string, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutDeviceCollectionRequestWithBody(server, collectionSlug, params, "application/json", bodyReader)
+}
+
+// NewPutDeviceCollectionRequestWithBody generates requests for PutDeviceCollection with any type of body
+func NewPutDeviceCollectionRequestWithBody(server string, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewDeleteWorkloadRequest generates requests for DeleteWorkload
+func NewDeleteWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewGetWorkloadRequest generates requests for GetWorkload
+func NewGetWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPutWorkloadRequest calls the generic PutWorkload builder with application/json body
+func NewPutWorkloadRequest(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutWorkloadRequestWithBody(server, collectionSlug, workloadSlug, params, "application/json", bodyReader)
+}
+
+// NewPutWorkloadRequestWithBody generates requests for PutWorkload with any type of body
+func NewPutWorkloadRequestWithBody(server string, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "workloadSlug", runtime.ParamLocationPath, workloadSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/workloads/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
+// NewPostDeviceEnrollmentTokenRequest calls the generic PostDeviceEnrollmentToken builder with application/json body
+func NewPostDeviceEnrollmentTokenRequest(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, body PostDeviceEnrollmentTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostDeviceEnrollmentTokenRequestWithBody(server, collectionSlug, instanceID, params, "application/json", bodyReader)
+}
+
+// NewPostDeviceEnrollmentTokenRequestWithBody generates requests for PostDeviceEnrollmentToken with any type of body
+func NewPostDeviceEnrollmentTokenRequestWithBody(server string, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "collectionSlug", runtime.ParamLocationPath, collectionSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "instanceID", runtime.ParamLocationPath, instanceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/device-collections/%s/%s/enrollment-token", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params.XRequestId != nil {
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("X-Request-Id", headerParam0)
+	}
+
+	if params.Accept != nil {
+		var headerParam1 string
+
+		headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Accept", headerParam1)
+	}
+
+	return req, nil
+}
+
 // NewListEndpointConfigurationsRequest generates requests for ListEndpointConfigurations
 func NewListEndpointConfigurationsRequest(server string, params *ListEndpointConfigurationsParams) (*http.Request, error) {
 	var err error
@@ -7023,6 +8008,33 @@ type ClientWithResponsesInterface interface {
 	// ListCollectionInstances request
 	ListCollectionInstancesWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *ListCollectionInstancesParams, reqEditors ...RequestEditorFn) (*ListCollectionInstancesResponse, error)
 
+	// DeleteDeviceCollection request
+	DeleteDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*DeleteDeviceCollectionResponse, error)
+
+	// GetDeviceCollection request
+	GetDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*GetDeviceCollectionResponse, error)
+
+	// PutDeviceCollection request with any body
+	PutDeviceCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error)
+
+	PutDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error)
+
+	// DeleteWorkload request
+	DeleteWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*DeleteWorkloadResponse, error)
+
+	// GetWorkload request
+	GetWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*GetWorkloadResponse, error)
+
+	// PutWorkload request with any body
+	PutWorkloadWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error)
+
+	PutWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error)
+
+	// PostDeviceEnrollmentToken request with any body
+	PostDeviceEnrollmentTokenWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceEnrollmentTokenResponse, error)
+
+	PostDeviceEnrollmentTokenWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, body PostDeviceEnrollmentTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceEnrollmentTokenResponse, error)
+
 	// ListEndpointConfigurations request
 	ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error)
 
@@ -7268,7 +8280,6 @@ type PostAttestationAuthoritiesResponse struct {
 	JSON400      *Error
 	JSON401      *Error
 	JSON409      *Error
-	JSON412      *Error
 	JSON500      *Error
 }
 
@@ -7886,6 +8897,7 @@ type PutCollectionInstanceResponse struct {
 	JSON200      *CollectionInstance
 	JSON400      *Error
 	JSON401      *Error
+	JSON412      *Error
 	JSON500      *Error
 }
 
@@ -7937,6 +8949,7 @@ type PutCollectionInstanceDataResponse struct {
 	JSON200      *interface{}
 	JSON400      *Error
 	JSON401      *Error
+	JSON412      *Error
 	JSON500      *Error
 }
 
@@ -7976,6 +8989,187 @@ func (r ListCollectionInstancesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListCollectionInstancesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteDeviceCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON422      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteDeviceCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteDeviceCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDeviceCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DeviceCollection
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutDeviceCollectionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DeviceCollection
+	JSON400      *Error
+	JSON401      *Error
+	JSON409      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutDeviceCollectionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutDeviceCollectionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *Error
+	JSON401      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWorkloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWorkloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Workload
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWorkloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWorkloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutWorkloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Workload
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PutWorkloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutWorkloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostDeviceEnrollmentTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *EnrollmentToken
+	JSON400      *Error
+	JSON401      *Error
+	JSON404      *Error
+	JSON412      *Error
+	JSON500      *Error
+}
+
+// Status returns HTTPResponse.Status
+func (r PostDeviceEnrollmentTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostDeviceEnrollmentTokenResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9000,6 +10194,93 @@ func (c *ClientWithResponses) ListCollectionInstancesWithResponse(ctx context.Co
 	return ParseListCollectionInstancesResponse(rsp)
 }
 
+// DeleteDeviceCollectionWithResponse request returning *DeleteDeviceCollectionResponse
+func (c *ClientWithResponses) DeleteDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *DeleteDeviceCollectionParams, reqEditors ...RequestEditorFn) (*DeleteDeviceCollectionResponse, error) {
+	rsp, err := c.DeleteDeviceCollection(ctx, collectionSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteDeviceCollectionResponse(rsp)
+}
+
+// GetDeviceCollectionWithResponse request returning *GetDeviceCollectionResponse
+func (c *ClientWithResponses) GetDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *GetDeviceCollectionParams, reqEditors ...RequestEditorFn) (*GetDeviceCollectionResponse, error) {
+	rsp, err := c.GetDeviceCollection(ctx, collectionSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDeviceCollectionResponse(rsp)
+}
+
+// PutDeviceCollectionWithBodyWithResponse request with arbitrary body returning *PutDeviceCollectionResponse
+func (c *ClientWithResponses) PutDeviceCollectionWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error) {
+	rsp, err := c.PutDeviceCollectionWithBody(ctx, collectionSlug, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutDeviceCollectionResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutDeviceCollectionWithResponse(ctx context.Context, collectionSlug CollectionSlug, params *PutDeviceCollectionParams, body PutDeviceCollectionJSONRequestBody, reqEditors ...RequestEditorFn) (*PutDeviceCollectionResponse, error) {
+	rsp, err := c.PutDeviceCollection(ctx, collectionSlug, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutDeviceCollectionResponse(rsp)
+}
+
+// DeleteWorkloadWithResponse request returning *DeleteWorkloadResponse
+func (c *ClientWithResponses) DeleteWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *DeleteWorkloadParams, reqEditors ...RequestEditorFn) (*DeleteWorkloadResponse, error) {
+	rsp, err := c.DeleteWorkload(ctx, collectionSlug, workloadSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWorkloadResponse(rsp)
+}
+
+// GetWorkloadWithResponse request returning *GetWorkloadResponse
+func (c *ClientWithResponses) GetWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *GetWorkloadParams, reqEditors ...RequestEditorFn) (*GetWorkloadResponse, error) {
+	rsp, err := c.GetWorkload(ctx, collectionSlug, workloadSlug, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWorkloadResponse(rsp)
+}
+
+// PutWorkloadWithBodyWithResponse request with arbitrary body returning *PutWorkloadResponse
+func (c *ClientWithResponses) PutWorkloadWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error) {
+	rsp, err := c.PutWorkloadWithBody(ctx, collectionSlug, workloadSlug, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWorkloadResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutWorkloadWithResponse(ctx context.Context, collectionSlug CollectionSlug, workloadSlug WorkloadSlug, params *PutWorkloadParams, body PutWorkloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWorkloadResponse, error) {
+	rsp, err := c.PutWorkload(ctx, collectionSlug, workloadSlug, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWorkloadResponse(rsp)
+}
+
+// PostDeviceEnrollmentTokenWithBodyWithResponse request with arbitrary body returning *PostDeviceEnrollmentTokenResponse
+func (c *ClientWithResponses) PostDeviceEnrollmentTokenWithBodyWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceEnrollmentTokenResponse, error) {
+	rsp, err := c.PostDeviceEnrollmentTokenWithBody(ctx, collectionSlug, instanceID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostDeviceEnrollmentTokenResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostDeviceEnrollmentTokenWithResponse(ctx context.Context, collectionSlug CollectionSlug, instanceID InstanceID, params *PostDeviceEnrollmentTokenParams, body PostDeviceEnrollmentTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceEnrollmentTokenResponse, error) {
+	rsp, err := c.PostDeviceEnrollmentToken(ctx, collectionSlug, instanceID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostDeviceEnrollmentTokenResponse(rsp)
+}
+
 // ListEndpointConfigurationsWithResponse request returning *ListEndpointConfigurationsResponse
 func (c *ClientWithResponses) ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error) {
 	rsp, err := c.ListEndpointConfigurations(ctx, params, reqEditors...)
@@ -9608,13 +10889,6 @@ func ParsePostAttestationAuthoritiesResponse(rsp *http.Response) (*PostAttestati
 			return nil, err
 		}
 		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
-		var dest Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON412 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
@@ -10851,6 +12125,13 @@ func ParsePutCollectionInstanceResponse(rsp *http.Response) (*PutCollectionInsta
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10952,6 +12233,13 @@ func ParsePutCollectionInstanceDataResponse(rsp *http.Response) (*PutCollectionI
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -11005,6 +12293,377 @@ func ParseListCollectionInstancesResponse(rsp *http.Response) (*ListCollectionIn
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteDeviceCollectionResponse parses an HTTP response from a DeleteDeviceCollectionWithResponse call
+func ParseDeleteDeviceCollectionResponse(rsp *http.Response) (*DeleteDeviceCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteDeviceCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceCollectionResponse parses an HTTP response from a GetDeviceCollectionWithResponse call
+func ParseGetDeviceCollectionResponse(rsp *http.Response) (*GetDeviceCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceCollection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutDeviceCollectionResponse parses an HTTP response from a PutDeviceCollectionWithResponse call
+func ParsePutDeviceCollectionResponse(rsp *http.Response) (*PutDeviceCollectionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutDeviceCollectionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceCollection
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWorkloadResponse parses an HTTP response from a DeleteWorkloadWithResponse call
+func ParseDeleteWorkloadResponse(rsp *http.Response) (*DeleteWorkloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWorkloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWorkloadResponse parses an HTTP response from a GetWorkloadWithResponse call
+func ParseGetWorkloadResponse(rsp *http.Response) (*GetWorkloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWorkloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Workload
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutWorkloadResponse parses an HTTP response from a PutWorkloadWithResponse call
+func ParsePutWorkloadResponse(rsp *http.Response) (*PutWorkloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutWorkloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Workload
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostDeviceEnrollmentTokenResponse parses an HTTP response from a PostDeviceEnrollmentTokenWithResponse call
+func ParsePostDeviceEnrollmentTokenResponse(rsp *http.Response) (*PostDeviceEnrollmentTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostDeviceEnrollmentTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest EnrollmentToken
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Error

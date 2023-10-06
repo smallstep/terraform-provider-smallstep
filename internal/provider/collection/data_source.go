@@ -119,7 +119,7 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 				Required:            true,
 			},
 			"display_name": schema.StringAttribute{
-				MarkdownDescription: props["name"],
+				MarkdownDescription: props["displayName"],
 				Computed:            true,
 			},
 			"schema_uri": schema.StringAttribute{
