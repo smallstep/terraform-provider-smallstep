@@ -1,3 +1,8 @@
+## 0.4.1
+
+BUG FIXES:
+* smallstep_workload.static_sans is a list of strings not a set since the first is used as the Common Name.
+
 ## 0.4.0
 
 FEATURES:
