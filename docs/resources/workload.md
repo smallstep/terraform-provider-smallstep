@@ -91,7 +91,7 @@ resource "smallstep_workload" "redis" {
 For example, if the device instance data in the collection is `{"internal_host": "foo.internal", "external_host", "foo.example.com"}` at the time the workload certificate is issued and this field is set to `["internal_host", "external_host"]`, then the certificate would include the SANs `foo.internal` and `foo.example.com`.
 - `hooks` (Attributes) The collection of commands to run when a certificate for a managed endpoint is signed or renewed. (see [below for nested schema](#nestedatt--hooks))
 - `reload_info` (Attributes) The properties used to reload a service. (see [below for nested schema](#nestedatt--reload_info))
-- `static_sans` (Set of String) SANs that will be added to every certificate issued for this workload. The first will be used as the default Common Name.
+- `static_sans` (List of String) SANs that will be added to every certificate issued for this workload. The first will be used as the default Common Name.
 
 ### Read-Only
 

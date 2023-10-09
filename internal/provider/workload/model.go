@@ -28,7 +28,7 @@ type Model struct {
 	Hooks                 types.Object `tfsdk:"hooks"`
 	AdminEmails           types.Set    `tfsdk:"admin_emails"`
 	DeviceMetadataKeySANs types.Set    `tfsdk:"device_metadata_key_sans"`
-	StaticSANs            types.Set    `tfsdk:"static_sans"`
+	StaticSANs            types.List   `tfsdk:"static_sans"`
 }
 
 func fromAPI(ctx context.Context, workload *v20230301.Workload, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
@@ -72,7 +72,7 @@ func fromAPI(ctx context.Context, workload *v20230301.Workload, state utils.Attr
 		},
 	}
 
-	model.StaticSANs, d = utils.ToOptionalSet(ctx, workload.StaticSANs, state, path.Root("static_sans"))
+	model.StaticSANs, d = utils.ToOptionalList(ctx, workload.StaticSANs, state, path.Root("static_sans"))
 	diags.Append(d...)
 	if diags.HasError() {
 		return nil, diags
