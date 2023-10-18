@@ -1,3 +1,8 @@
+## 0.4.2
+
+CHANGES:
+* Add more examples to smallstep_device_collection and smallstep_workload docs.
+
 ## 0.4.1
 
 BUG FIXES:

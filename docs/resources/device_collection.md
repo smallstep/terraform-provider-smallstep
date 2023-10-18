@@ -12,6 +12,52 @@ Configuration to create a new device collection.
 
 ## Example Usage
 
+### GCP VM Device Collection with GCE Instance
+
+```terraform
+resource "smallstep_device_collection" "gcp" {
+  slug         = "gce"
+  display_name = "GCE"
+  device_type  = "gcp-vm"
+  gcp_vm = {
+    service_accounts = ["pki@prod-1234.iam.gserviceaccount.com"]
+  }
+  admin_emails = ["admin@example.com"]
+}
+
+data "google_compute_instance" "dbserver" {
+  name = "dbserver"
+  zone = "us-central1-b"
+}
+
+resource "smallstep_collection_instance" "dbserver" {
+  depends_on      = [smallstep_device_collection.gcp]
+  collection_slug = smallstep_device_collection.gcp.slug
+  id              = data.google_compute_instance.dbserver.instance_id
+  data = jsonencode({
+    "hostname"   = data.google_compute_instance.dbserver.name
+    "private_ip" = data.google_compute_instance.dbserver.network_interface.0.network_ip
+    "public_ip"  = data.google_compute_instance.dbserver.network_interface.0.access_config[0].nat_ip
+  })
+}
+```
+
+### TPM Device Collection
+
+```terraform
+resource "smallstep_device_collection" "tpm" {
+  slug         = "tmpservers"
+  display_name = "TPM Servers"
+  admin_emails = ["admin@example.com"]
+  device_type  = "tpm"
+  tpm = {
+    attestor_roots = file("${path.module}/root.crt")
+  }
+}
+```
+
+### EC2 Device Collection
+
 ```terraform
 resource "smallstep_device_collection" "aws" {
   slug         = "ec2west"
@@ -23,19 +69,11 @@ resource "smallstep_device_collection" "aws" {
     disable_custom_sans = false
   }
 }
+```
 
-resource "smallstep_device_collection" "gcp" {
-  slug         = "gce"
-  display_name = "GCE"
-  admin_emails = ["admin@example.com"]
-  device_type  = "gcp-vm"
-  gcp_vm = {
-    service_accounts    = ["pki@prod-1234.iam.gserviceaccount.com"]
-    project_ids         = ["prod-1234"]
-    disable_custom_sans = false
-  }
-}
+### Azure VM Device Collection
 
+```terraform
 resource "smallstep_device_collection" "azure" {
   slug         = "azure"
   display_name = "Azure VMs"
@@ -46,19 +84,6 @@ resource "smallstep_device_collection" "azure" {
     resource_groups     = ["0123456789"]
     disable_custom_sans = false
     audience            = ""
-  }
-}
-
-resource "smallstep_device_collection" "tpm" {
-  slug         = "tmpservers"
-  display_name = "TPM Servers"
-  admin_emails = ["admin@example.com"]
-  device_type  = "tpm"
-  tpm = {
-    attestor_roots         = "-----BEGIN..."
-    attestor_intermediates = "-----BEGIN..."
-    force_cn               = false
-    require_eab            = false
   }
 }
 ```
@@ -129,5 +154,3 @@ Optional:
 - `attestor_roots` (String) The pem-encoded list of certificates used to verify the attestation certificates submitted by agents. Ignored if the team already has an attestation authority. Required if the team does not already have an attestation authority.
 - `force_cn` (Boolean) Force one of the SANs to become the Common Name, if a Common Name is not provided.
 - `require_eab` (Boolean) Only ACME clients that have been preconfigured with valid EAB credentials will be able to create an account with this provisioner.
-
-
