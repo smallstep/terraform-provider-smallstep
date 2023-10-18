@@ -2,7 +2,7 @@
 
 ## Usage
 
-Documentation for using the Smallstep provider can be found [here](https://registry.terraform.io/providers/smallstep/smallstep)
+The Terraform Registry has [Documentation for using the Smallstep provider](https://registry.terraform.io/providers/smallstep/smallstep/latest/docs).
 
 ## Developing
 
