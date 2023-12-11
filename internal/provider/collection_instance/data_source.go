@@ -72,9 +72,10 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading collection instance %s/%s: %s", httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading collection instance %s/%s: %s", reqID, httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}

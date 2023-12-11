@@ -87,11 +87,10 @@ func init() {
 					return err
 				}
 				defer resp.Body.Close()
-				if resp.StatusCode != http.StatusNoContent {
-					body, _ := io.ReadAll(resp.Body)
-					return fmt.Errorf("failed to delete collection %q: %d: %s", collection.Slug, resp.StatusCode, body)
+				// special-purpose collections such as workloads won't delete successfully
+				if resp.StatusCode == http.StatusNoContent {
+					log.Printf("Successfully swept collection %s\n", collection.Slug)
 				}
-				log.Printf("Successfully swept collection %s\n", collection.Slug)
 			}
 
 			return nil

@@ -80,9 +80,10 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading workload %q: %s", httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading workload %q: %s", reqID, httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -391,9 +392,10 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d creating workload %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d creating workload %q: %s", reqID, httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -457,9 +459,10 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d updating workload %q: %s", httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d updating workload %q: %s", reqID, httpResp.StatusCode, plan.DisplayName.ValueString(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -523,9 +526,10 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting workload %q: %s", httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d deleting workload %q: %s", reqID, httpResp.StatusCode, workloadSlug, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
