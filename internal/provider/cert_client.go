@@ -62,6 +62,7 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 		if err != nil {
 			return err
 		}
+		post.Header.Set("X-Smallstep-Api-Version", "2023-03-01")
 		post.Header.Set("Content-Type", "application/json")
 		transport := http.DefaultTransport.(*http.Transport).Clone()
 		transport.TLSClientConfig = &tls.Config{
@@ -117,6 +118,7 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 
 	apiClient, err := v20230301.NewClient(server, v20230301.WithRequestEditorFn(v20230301.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		m.RLock()
+		r.Header.Set("X-Smallstep-Api-Version", "2023-03-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 		m.RUnlock()
 		return nil
