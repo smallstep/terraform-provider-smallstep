@@ -80,9 +80,10 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading collection instance %s/%s: %s", httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading collection instance %s/%s: %s", reqID, httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -194,9 +195,10 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -249,9 +251,10 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d: %s", httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -299,9 +302,10 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusNoContent {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting collection instance %s/%s: %s", httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d deleting collection instance %s/%s: %s", reqID, httpResp.StatusCode, slug, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}

@@ -76,9 +76,10 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d reading collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading collection %s: %s", reqID, httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -180,9 +181,10 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusCreated {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d creating collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d creating collection %q: %s", reqID, httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -228,9 +230,10 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d updating collection %q: %s", httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d updating collection %q: %s", reqID, httpResp.StatusCode, plan.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -305,9 +308,10 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusNoContent {
+		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Received status %d deleting collection %s: %s", httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %s received status %d deleting collection %s: %s", reqID, httpResp.StatusCode, state.Slug.String(), utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
