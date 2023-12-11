@@ -93,6 +93,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
+	data.Root = types.StringValue(utils.Deref(authority.Root))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 	data.ActiveRevocation = types.BoolValue(utils.Deref(authority.ActiveRevocation))
 	var adminEmails []attr.Value
@@ -145,6 +146,10 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			},
 			"fingerprint": schema.StringAttribute{
 				MarkdownDescription: properties["fingerprint"],
+				Computed:            true,
+			},
+			"root": schema.StringAttribute{
+				MarkdownDescription: properties["root"],
 				Computed:            true,
 			},
 			"created_at": schema.StringAttribute{

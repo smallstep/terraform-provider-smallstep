@@ -17,6 +17,7 @@ type DataModel struct {
 	Type             types.String `tfsdk:"type"`
 	Domain           types.String `tfsdk:"domain"`
 	Fingerprint      types.String `tfsdk:"fingerprint"`
+	Root             types.String `tfsdk:"root"`
 	CreatedAt        types.String `tfsdk:"created_at"`
 	ActiveRevocation types.Bool   `tfsdk:"active_revocation"`
 	AdminEmails      types.Set    `tfsdk:"admin_emails"`
@@ -29,6 +30,7 @@ type ResourceModel struct {
 	Subdomain          types.String     `tfsdk:"subdomain"`
 	Domain             types.String     `tfsdk:"domain"`
 	Fingerprint        types.String     `tfsdk:"fingerprint"`
+	Root               types.String     `tfsdk:"root"`
 	CreatedAt          types.String     `tfsdk:"created_at"`
 	ActiveRevocation   types.Bool       `tfsdk:"active_revocation"`
 	AdminEmails        types.Set        `tfsdk:"admin_emails"`

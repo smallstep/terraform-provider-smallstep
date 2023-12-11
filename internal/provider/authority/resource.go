@@ -228,6 +228,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: properties["fingerprint"],
 				Computed:            true,
 			},
+			"root": schema.StringAttribute{
+				MarkdownDescription: properties["root"],
+				Computed:            true,
+			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: properties["createdAt"],
 				Computed:            true,
@@ -352,6 +356,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	data.ID = types.StringValue(authority.Id)
 	data.Domain = types.StringValue(authority.Domain)
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
+	data.Root = types.StringValue(utils.Deref(authority.Root))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 
 	tflog.Trace(ctx, fmt.Sprintf("create authority %q resource", data.ID.ValueString()))
@@ -406,6 +411,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
 	data.Fingerprint = types.StringValue(utils.Deref(authority.Fingerprint))
+	data.Root = types.StringValue(utils.Deref(authority.Root))
 	data.CreatedAt = types.StringValue(authority.CreatedAt.Format(time.RFC3339))
 
 	activeRevocation, diags := utils.ToOptionalBool(ctx, authority.ActiveRevocation, req.State, path.Root("active_revocation"))
@@ -434,7 +440,10 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Update not supported. All changes require replacement.
+	resp.Diagnostics.AddError(
+		"Update not supported",
+		"All changes require replacement",
+	)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
