@@ -37,6 +37,7 @@ output "bootstrap_preexisting" {
 - `domain` (String) The domain where the authority can be reached.
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
 - `name` (String) The name of the authority.
+- `root` (String) The root certificate in pem format.
 - `type` (String) One of the available authority types
  Allowed values: `devops` `advanced` `managed`
 

@@ -95,6 +95,7 @@ resource "smallstep_authority" "advanced" {
 - `domain` (String) The domain where the authority can be reached.
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
 - `id` (String) A UUID identifying this authority.
+- `root` (String) The root certificate in pem format.
 
 <a id="nestedatt--intermediate_issuer"></a>
 ### Nested Schema for `intermediate_issuer`
