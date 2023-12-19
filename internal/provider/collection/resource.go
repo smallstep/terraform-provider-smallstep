@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -24,7 +24,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -38,12 +38,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -60,7 +60,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetCollection(ctx, state.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	httpResp, err := r.client.GetCollection(ctx, state.Slug.ValueString(), &v20231101.GetCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -84,7 +84,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20231101.Collection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -170,7 +170,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	b, _ := json.Marshal(reqBody)
 	tflog.Trace(ctx, string(b))
 
-	httpResp, err := a.client.PostCollections(ctx, &v20230301.PostCollectionsParams{}, *reqBody)
+	httpResp, err := a.client.PostCollections(ctx, &v20231101.PostCollectionsParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -189,7 +189,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20231101.Collection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -219,7 +219,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 
 	reqBody := toAPI(plan)
 
-	httpResp, err := r.client.PutCollection(ctx, plan.Slug.ValueString(), &v20230301.PutCollectionParams{}, *reqBody)
+	httpResp, err := r.client.PutCollection(ctx, plan.Slug.ValueString(), &v20231101.PutCollectionParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -238,7 +238,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20231101.Collection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -268,7 +268,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	}
 
 	// Lookup the collection to ensure it's empty before deleting
-	getResp, err := a.client.GetCollection(ctx, state.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	getResp, err := a.client.GetCollection(ctx, state.Slug.ValueString(), &v20231101.GetCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -280,7 +280,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if getResp.StatusCode == http.StatusNotFound {
 		return
 	}
-	collection := &v20230301.Collection{}
+	collection := &v20231101.Collection{}
 	if err := json.NewDecoder(getResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -297,7 +297,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 
 	}
 
-	httpResp, err := a.client.DeleteCollection(ctx, state.Slug.ValueString(), &v20230301.DeleteCollectionParams{})
+	httpResp, err := a.client.DeleteCollection(ctx, state.Slug.ValueString(), &v20231101.DeleteCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

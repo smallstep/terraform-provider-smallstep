@@ -19,7 +19,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
@@ -52,7 +52,7 @@ func init() {
 				return err
 			}
 
-			resp, err := client.ListCollections(ctx, &v20230301.ListCollectionsParams{})
+			resp, err := client.ListCollections(ctx, &v20231101.ListCollectionsParams{})
 			if err != nil {
 				return err
 			}
@@ -61,7 +61,7 @@ func init() {
 				body, _ := io.ReadAll(resp.Body)
 				return fmt.Errorf("failed to list collections: %d: %s", resp.StatusCode, body)
 			}
-			var list []*v20230301.Collection
+			var list []*v20231101.Collection
 			if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
 				return err
 			}
@@ -82,7 +82,7 @@ func init() {
 				if collection.CreatedAt.After(time.Now().Add(age * -1)) {
 					continue
 				}
-				resp, err := client.DeleteCollection(ctx, collection.Slug, &v20230301.DeleteCollectionParams{})
+				resp, err := client.DeleteCollection(ctx, collection.Slug, &v20231101.DeleteCollectionParams{})
 				if err != nil {
 					return err
 				}

@@ -58,8 +58,13 @@ resource "smallstep_workload" "generic" {
 	key_info = {
 		format = "DER"
 		type = "ECDSA_P256"
+		protection = "NONE"
 	}
-	static_sans = ["host.internal"]
+	certificate_data = {
+		common_name = {
+			static = "host.internal"
+		}
+	}
 }
 
 resource "smallstep_workload" "nginx" {
@@ -124,12 +129,19 @@ resource "smallstep_workload" "nginx" {
 		format = "DER"
 		type = "ECDSA_P256"
 		pub_file = "file.csr"
+		protection = "HARDWARE"
 	}
 
 	reload_info = {
 		method = "SIGNAL"
 		pid_file = "db.pid"
 		signal = 1
+	}
+
+	certificate_data = {
+		common_name = {
+			static = "nginx.internal"
+		}
 	}
 }
 `, dcSlug, genericSlug, nginxSlug)
@@ -159,8 +171,14 @@ resource "smallstep_workload" "generic" {
 	key_info = {
 		format = "DER"
 		type = "ECDSA_P256"
+		protection = "NONE"
 	}
-	device_metadata_key_sans = ["internal_host"]
+
+	certificate_data = {
+		common_name = {
+			static = "generic.internal"
+		}
+	}
 }
 
 resource "smallstep_workload" "nginx" {
@@ -219,6 +237,12 @@ resource "smallstep_workload" "nginx" {
 		method = "DBUS"
 		unit_name = "postgres.service"
 	}
+
+	certificate_data = {
+		common_name = {
+			static = "nginx"
+		}
+	}
 }`, dcSlug, genericSlug, nginxSlug)
 
 	helper.Test(t, helper.TestCase{
@@ -251,9 +275,9 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.pid_file", "db.pid"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.signal", "1"),
 
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "1"),
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.0", "host.internal"),
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "0"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "1"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.0", "host.internal"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "0"),
 				),
 			},
 			{
@@ -288,9 +312,9 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "DBUS"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.unit_name", "postgres.service"),
 
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "0"),
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "1"),
-					helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.0", "internal_host"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "0"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "1"),
+					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.0", "internal_host"),
 				),
 			},
 		},

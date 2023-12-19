@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -23,7 +23,7 @@ type Model struct {
 	CreatedAt             types.String `tfsdk:"created_at"`
 }
 
-func fromAPI(ctx context.Context, aa *v20230301.AttestationAuthority, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, aa *v20231101.AttestationAuthority, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	model := &Model{
@@ -42,8 +42,8 @@ func fromAPI(ctx context.Context, aa *v20230301.AttestationAuthority, state util
 	return model, diags
 }
 
-func toAPI(model *Model) *v20230301.AttestationAuthority {
-	return &v20230301.AttestationAuthority{
+func toAPI(model *Model) *v20231101.AttestationAuthority {
+	return &v20231101.AttestationAuthority{
 		Name:                  model.Name.ValueString(),
 		AttestorRoots:         model.AttestorRoots.ValueString(),
 		AttestorIntermediates: model.AttestorIntermediates.ValueStringPointer(),

@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -23,7 +23,7 @@ type Model struct {
 	UpdatedAt      types.String `tfsdk:"updated_at"`
 }
 
-func fromAPI(ctx context.Context, slug string, instance *v20230301.CollectionInstance, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, slug string, instance *v20231101.CollectionInstance, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	model := &Model{
@@ -51,10 +51,10 @@ func fromAPI(ctx context.Context, slug string, instance *v20230301.CollectionIns
 
 	return model, diags
 }
-func toAPI(model *Model) (*v20230301.PutCollectionInstanceJSONRequestBody, diag.Diagnostics) {
+func toAPI(model *Model) (*v20231101.PutCollectionInstanceJSONRequestBody, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	instance := &v20230301.PutCollectionInstanceJSONRequestBody{}
+	instance := &v20231101.PutCollectionInstanceJSONRequestBody{}
 
 	if err := json.Unmarshal([]byte(model.Data.ValueString()), &instance.Data); err != nil {
 		diags.AddError("Parse Instance Data", err.Error())

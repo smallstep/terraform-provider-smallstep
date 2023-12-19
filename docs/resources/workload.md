@@ -114,10 +114,12 @@ resource "smallstep_workload" "redis" {
 - `admin_emails` (Set of String) Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists. Never returned in responses.
 - `certificate_info` (Attributes) Details on a managed certificate. (see [below for nested schema](#nestedatt--certificate_info))
 - `device_collection_slug` (String) Slug of the device collection the workload will be added to.
-- `display_name` (String) A friendly name for the workload. Also used as the Common Name if no static SANs are provide.
+- `display_name` (String) A friendly name for the workload. Also used as the Common Name, if no static SANs are provided.
 - `key_info` (Attributes) The attributes of the cryptographic key. (see [below for nested schema](#nestedatt--key_info))
 - `slug` (String) Used as the identifier for the workload.
-- `workload_type` (String)
+- `workload_type` (String) The type of workload being deployed.
+Possible values are `etcd` `generic` `git` `grafana` `haproxy` `httpd` `kafka` `mysql` `nginx` `nodejs` `postgres` `redis` `tomcat` and `zookeeper`. 
+Use `generic` for a basic certificate workload.
 
 ### Optional
 
@@ -154,7 +156,8 @@ Optional:
 
 Required:
 
-- `format` (String) The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `DER`
+- `format` (String) The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `DER` `TSS2`
+- `protection` (String) Whether to use a hardware module to store the private key for a workload certificate. If set to `NONE` the key will be stored on disk. If set to `DEFAULT` the store will be stored on disk unless the key format is `TSS2`. Allowed values: `DEFAULT` `NONE` `HARDWARE` `HARDWARE_WITH_FALLBACK` `HARDWARE_ATTESTED` `HARDWARE_ATTESTED_WITH_FALLBACK`
 - `type` (String) The key type used. The current DEFAULT type is ECDSA_P256. Allowed values: `DEFAULT` `ECDSA_P256` `ECDSA_P384` `ECDSA_P521` `RSA_2048` `RSA_3072` `RSA_4096` `ED25519`
 
 Optional:
