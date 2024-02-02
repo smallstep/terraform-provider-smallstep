@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"go.step.sm/crypto/jose"
 )
@@ -148,14 +148,14 @@ type AzureModel struct {
 	DisableTrustOnFirstUse types.Bool   `tfsdk:"disable_trust_on_first_use"`
 }
 
-func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
-	p := &v20230301.Provisioner{
+func toAPI(ctx context.Context, m *Model) (*v20231101.Provisioner, error) {
+	p := &v20231101.Provisioner{
 		Id:   m.ID.ValueStringPointer(),
 		Name: m.Name.ValueString(),
-		Type: v20230301.ProvisionerType(m.Type.ValueString()),
+		Type: v20231101.ProvisionerType(m.Type.ValueString()),
 	}
 	if m.Claims != nil {
-		p.Claims = &v20230301.ProvisionerClaims{
+		p.Claims = &v20231101.ProvisionerClaims{
 			DisableRenewal:             m.Claims.DisableRenewal.ValueBoolPointer(),
 			AllowRenewalAfterExpiry:    m.Claims.AllowRenewalAfterExpiry.ValueBoolPointer(),
 			EnableSSHCA:                m.Claims.EnableSSHCA.ValueBoolPointer(),
@@ -172,9 +172,9 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 	}
 
 	if m.Options != nil {
-		p.Options = &v20230301.ProvisionerOptions{}
+		p.Options = &v20231101.ProvisionerOptions{}
 		if m.Options.X509 != nil {
-			p.Options.X509 = &v20230301.X509Options{
+			p.Options.X509 = &v20231101.X509Options{
 				Template: m.Options.X509.Template.ValueStringPointer(),
 			}
 			if !m.Options.X509.TemplateData.IsNull() {
@@ -187,7 +187,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			}
 		}
 		if m.Options.SSH != nil {
-			p.Options.Ssh = &v20230301.SshOptions{
+			p.Options.Ssh = &v20231101.SshOptions{
 				Template: m.Options.SSH.Template.ValueStringPointer(),
 			}
 			if !m.Options.SSH.TemplateData.IsNull() {
@@ -204,7 +204,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 	switch {
 	case m.JWK != nil:
 		ek := m.JWK.EncryptedKey.ValueString()
-		jwk := v20230301.JwkProvisioner{
+		jwk := v20231101.JwkProvisioner{
 			Key:          map[string]any{},
 			EncryptedKey: &ek,
 		}
@@ -223,7 +223,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.OIDC != nil:
-		oidc := v20230301.OidcProvisioner{
+		oidc := v20231101.OidcProvisioner{
 			ClientID:              m.OIDC.ClientID.ValueString(),
 			ClientSecret:          m.OIDC.ClientSecret.ValueString(),
 			ConfigurationEndpoint: m.OIDC.ConfigurationEndpoint.ValueString(),
@@ -256,7 +256,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.ACME != nil:
-		acme := v20230301.AcmeProvisioner{
+		acme := v20231101.AcmeProvisioner{
 			ForceCN:    m.ACME.ForceCN.ValueBoolPointer(),
 			RequireEAB: m.ACME.RequireEAB.ValueBool(),
 		}
@@ -270,7 +270,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.ACMEAttestation != nil:
-		attest := v20230301.AcmeAttestationProvisioner{
+		attest := v20231101.AcmeAttestationProvisioner{
 			ForceCN:    m.ACMEAttestation.ForceCN.ValueBoolPointer(),
 			RequireEAB: m.ACMEAttestation.RequireEAB.ValueBoolPointer(),
 		}
@@ -291,7 +291,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.X5C != nil:
-		x5c := v20230301.X5cProvisioner{}
+		x5c := v20231101.X5cProvisioner{}
 		diagnostics := m.X5C.Roots.ElementsAs(ctx, &x5c.Roots, false)
 		if err := utils.DiagnosticsToErr(diagnostics); err != nil {
 			return nil, err
@@ -301,7 +301,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.AWS != nil:
-		aws := v20230301.AwsProvisioner{
+		aws := v20231101.AwsProvisioner{
 			DisableTrustOnFirstUse: m.AWS.DisableTrustOnFirstUse.ValueBoolPointer(),
 			DisableCustomSANs:      m.AWS.DisableCustomSANs.ValueBoolPointer(),
 			InstanceAge:            m.AWS.InstanceAge.ValueStringPointer(),
@@ -315,7 +315,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.GCP != nil:
-		gcp := v20230301.GcpProvisioner{
+		gcp := v20231101.GcpProvisioner{
 			DisableTrustOnFirstUse: m.GCP.DisableTrustOnFirstUse.ValueBoolPointer(),
 			DisableCustomSANs:      m.GCP.DisableCustomSANs.ValueBoolPointer(),
 			InstanceAge:            m.GCP.InstanceAge.ValueStringPointer(),
@@ -335,7 +335,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 			return nil, err
 		}
 	case m.Azure != nil:
-		azure := v20230301.AzureProvisioner{
+		azure := v20231101.AzureProvisioner{
 			TenantID:               m.Azure.TenantID.ValueString(),
 			Audience:               m.Azure.Audience.ValueStringPointer(),
 			DisableTrustOnFirstUse: m.Azure.DisableTrustOnFirstUse.ValueBoolPointer(),
@@ -355,7 +355,7 @@ func toAPI(ctx context.Context, m *Model) (*v20230301.Provisioner, error) {
 	return p, nil
 }
 
-func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityID string, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, provisioner *v20231101.Provisioner, authorityID string, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	data := &Model{
@@ -460,7 +460,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 	}
 
 	switch provisioner.Type {
-	case v20230301.JWK:
+	case v20231101.JWK:
 		jwk, err := provisioner.AsJwkProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -485,7 +485,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 		data.JWK.EncryptedKey = encryptedKey
 
-	case v20230301.OIDC:
+	case v20231101.OIDC:
 		oidc, err := provisioner.AsOidcProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -536,7 +536,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 		data.OIDC.TenantID = tenantID
 
-	case v20230301.ACME:
+	case v20231101.ACME:
 		acme, err := provisioner.AsAcmeProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -560,7 +560,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 		data.ACME.Challenges = challengesSet
 
-	case v20230301.ACMEATTESTATION:
+	case v20231101.ACMEATTESTATION:
 		attest, err := provisioner.AsAcmeAttestationProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -604,7 +604,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 		}
 		data.ACMEAttestation.AttestationRoots = attestationRoots
 
-	case v20230301.X5C:
+	case v20231101.X5C:
 		x5c, err := provisioner.AsX5cProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -626,7 +626,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			Roots: rootsSet,
 		}
 
-	case v20230301.AWS:
+	case v20231101.AWS:
 		aws, err := provisioner.AsAwsProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -667,7 +667,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			DisableCustomSANs:      disableCustomSANs,
 		}
 
-	case v20230301.GCP:
+	case v20231101.GCP:
 		gcp, err := provisioner.AsGcpProvisioner()
 		if err != nil {
 			diags.AddError(
@@ -710,7 +710,7 @@ func fromAPI(ctx context.Context, provisioner *v20230301.Provisioner, authorityI
 			DisableTrustOnFirstUse: disableTOFU,
 		}
 
-	case v20230301.AZURE:
+	case v20231101.AZURE:
 		azure, err := provisioner.AsAzureProvisioner()
 		if err != nil {
 			diags.AddError(

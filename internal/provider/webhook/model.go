@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -33,7 +33,7 @@ type BasicAuthModel struct {
 	Password types.String `tfsdk:"password"`
 }
 
-func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, webhook *v20231101.ProvisionerWebhook, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	data := &Model{
@@ -49,7 +49,7 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 	// for EXTERNAL webhooks. If it's nil in the API response use state for
 	// external and null for hosted webhooks.
 	if webhook.Secret == nil {
-		if webhook.ServerType == v20230301.EXTERNAL {
+		if webhook.ServerType == v20231101.EXTERNAL {
 			secretFromState := types.String{}
 			d := state.GetAttribute(ctx, path.Root("secret"), &secretFromState)
 			diags = append(diags, d...)
@@ -86,22 +86,22 @@ func fromAPI(ctx context.Context, webhook *v20230301.ProvisionerWebhook, state u
 	return data, diags
 }
 
-func toAPI(model *Model) *v20230301.ProvisionerWebhook {
-	webhook := &v20230301.ProvisionerWebhook{
+func toAPI(model *Model) *v20231101.ProvisionerWebhook {
+	webhook := &v20231101.ProvisionerWebhook{
 		Id:                   model.ID.ValueStringPointer(),
 		Name:                 model.Name.ValueString(),
 		BearerToken:          model.BearerToken.ValueStringPointer(),
-		CertType:             v20230301.ProvisionerWebhookCertType(model.CertType.ValueString()),
+		CertType:             v20231101.ProvisionerWebhookCertType(model.CertType.ValueString()),
 		DisableTLSClientAuth: model.DisableTLSClientAuth.ValueBoolPointer(),
 		CollectionSlug:       model.CollectionSlug.ValueStringPointer(),
-		Kind:                 v20230301.ProvisionerWebhookKind(model.Kind.ValueString()),
+		Kind:                 v20231101.ProvisionerWebhookKind(model.Kind.ValueString()),
 		Secret:               model.Secret.ValueStringPointer(),
-		ServerType:           v20230301.ProvisionerWebhookServerType(model.ServerType.ValueString()),
+		ServerType:           v20231101.ProvisionerWebhookServerType(model.ServerType.ValueString()),
 		Url:                  model.URL.ValueStringPointer(),
 	}
 
 	if model.BasicAuth != nil {
-		webhook.BasicAuth = &v20230301.BasicAuth{
+		webhook.BasicAuth = &v20231101.BasicAuth{
 			Username: model.BasicAuth.Username.ValueString(),
 			Password: model.BasicAuth.Password.ValueString(),
 		}

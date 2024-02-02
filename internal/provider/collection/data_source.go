@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -21,7 +21,7 @@ func NewDataSource() datasource.DataSource {
 
 // DataSource implements data.smallstep_collection
 type DataSource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -35,12 +35,12 @@ func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequ
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -58,7 +58,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.GetCollection(ctx, config.Slug.ValueString(), &v20230301.GetCollectionParams{})
+	httpResp, err := a.client.GetCollection(ctx, config.Slug.ValueString(), &v20231101.GetCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -77,7 +77,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		return
 	}
 
-	collection := &v20230301.Collection{}
+	collection := &v20231101.Collection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

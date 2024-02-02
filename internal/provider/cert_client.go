@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -30,7 +30,7 @@ type createTokenResp struct {
 // Uses a client cert to get an API token and returns a client using that token.
 // Renews the token just before its 1 hour expiry in case of long running
 // terraform applies.
-func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key string) (*v20230301.Client, error) {
+func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key string) (*v20231101.Client, error) {
 	if _, err := uuid.Parse(teamID); err != nil {
 		return nil, fmt.Errorf("team-id argument must be a valid UUID")
 	}
@@ -62,7 +62,7 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 		if err != nil {
 			return err
 		}
-		post.Header.Set("X-Smallstep-Api-Version", "2023-03-01")
+		post.Header.Set("X-Smallstep-Api-Version", "2023-11-01")
 		post.Header.Set("Content-Type", "application/json")
 		transport := http.DefaultTransport.(*http.Transport).Clone()
 		transport.TLSClientConfig = &tls.Config{
@@ -116,9 +116,9 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 		}
 	}()
 
-	apiClient, err := v20230301.NewClient(server, v20230301.WithRequestEditorFn(v20230301.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+	apiClient, err := v20231101.NewClient(server, v20231101.WithRequestEditorFn(v20231101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		m.RLock()
-		r.Header.Set("X-Smallstep-Api-Version", "2023-03-01")
+		r.Header.Set("X-Smallstep-Api-Version", "2023-11-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 		m.RUnlock()
 		return nil

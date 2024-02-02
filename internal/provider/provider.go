@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
@@ -153,8 +153,8 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 		token = data.BearerToken.ValueString()
 	}
 
-	client, err := v20230301.NewClient(server, v20230301.WithRequestEditorFn(v20230301.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
-		r.Header.Set("X-Smallstep-Api-Version", "2023-03-01")
+	client, err := v20231101.NewClient(server, v20231101.WithRequestEditorFn(v20231101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+		r.Header.Set("X-Smallstep-Api-Version", "2023-11-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
 	})))

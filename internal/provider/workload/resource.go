@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -26,7 +26,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -40,12 +40,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -64,7 +64,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	dcSlug := state.DeviceCollectionSlug.ValueString()
 	workloadSlug := state.Slug.ValueString()
 
-	httpResp, err := r.client.GetWorkload(ctx, dcSlug, workloadSlug, &v20230301.GetWorkloadParams{})
+	httpResp, err := r.client.GetWorkload(ctx, dcSlug, workloadSlug, &v20231101.GetWorkloadParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -88,7 +88,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	workload := &v20230301.Workload{}
+	workload := &v20231101.Workload{}
 	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -113,8 +113,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), remote.WorkloadType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), remote.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), remote.DeviceMetadataKeySANs)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), remote.StaticSANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_data"), remote.CertificateData)...)
 	// Not returned from API. Use state.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), state.DeviceCollectionSlug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
@@ -130,6 +129,14 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			err.Error(),
 		)
 		return
+	}
+
+	certData, _, err := utils.Describe("x509Fields")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI spec",
+			err.Error(),
+		)
 	}
 
 	_, hookProps, err := utils.Describe("endpointHook")
@@ -209,20 +216,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"static_sans": schema.ListAttribute{
-				MarkdownDescription: props["staticSANs"],
-				ElementType:         types.StringType,
-				Optional:            true,
-			},
-			"device_metadata_key_sans": schema.SetAttribute{
-				MarkdownDescription: props["deviceMetadataKeySANs"],
-				ElementType:         types.StringType,
-				Optional:            true,
-			},
 
 			"key_info": schema.SingleNestedAttribute{
 				// This object is not required by the API but a default object
-				// will always be returned with both format and type set to
+				// will always be returned with format, type and protection set to
 				// "DEFAULT". To avoid "inconsistent result after apply" errors
 				// require these fields to be set explicitly in terraform.
 				Required:            true,
@@ -239,6 +236,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"pub_file": schema.StringAttribute{
 						Optional:            true,
 						MarkdownDescription: keyInfoProps["pubFile"],
+					},
+					"protection": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: keyInfoProps["protection"],
 					},
 				},
 			},
@@ -262,6 +263,132 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"unit_name": schema.StringAttribute{
 						Optional:            true,
 						MarkdownDescription: reloadInfoProps["unitName"],
+					},
+				},
+			},
+			"certificate_data": schema.SingleNestedAttribute{
+				Optional:            false,
+				Computed:            false,
+				Required:            true,
+				MarkdownDescription: certData,
+				Attributes: map[string]schema.Attribute{
+					"common_name": schema.SingleNestedAttribute{
+						Optional: false,
+						Required: true,
+						// TODO
+						// MarkdownDescription:
+						Attributes: map[string]schema.Attribute{
+							"static": schema.StringAttribute{
+								Optional: true,
+							},
+							"device_metadata": schema.StringAttribute{
+								Optional: true,
+							},
+						},
+					},
+					"sans": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"organization": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"organizational_unit": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"locality": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"country": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"province": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"street_address": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
+					},
+					"postal_code": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"static": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+							"device_metadata": schema.ListAttribute{
+								ElementType: types.StringType,
+								Optional:    true,
+							},
+						},
 					},
 				},
 			},
@@ -368,7 +495,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	plan := &Model{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -381,7 +507,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	dcSlug := plan.DeviceCollectionSlug.ValueString()
 	slug := plan.Slug.ValueString()
 
-	httpResp, err := a.client.PutWorkload(ctx, dcSlug, slug, &v20230301.PutWorkloadParams{}, *reqBody)
+	httpResp, err := a.client.PutWorkload(ctx, dcSlug, slug, &v20231101.PutWorkloadParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -390,7 +516,6 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 	defer httpResp.Body.Close()
-
 	if httpResp.StatusCode != http.StatusOK {
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
@@ -400,7 +525,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	workload := &v20230301.Workload{}
+	workload := &v20231101.Workload{}
 	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -425,8 +550,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_data"), state.CertificateData)...)
 	// Not returned by the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), plan.DeviceCollectionSlug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
@@ -448,7 +572,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	dcSlug := plan.DeviceCollectionSlug.ValueString()
 	slug := plan.Slug.ValueString()
 
-	httpResp, err := r.client.PutWorkload(ctx, dcSlug, slug, &v20230301.PutWorkloadParams{}, *reqBody)
+	httpResp, err := r.client.PutWorkload(ctx, dcSlug, slug, &v20231101.PutWorkloadParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -467,7 +591,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	workload := &v20230301.Workload{}
+	workload := &v20231101.Workload{}
 	if err := json.NewDecoder(httpResp.Body).Decode(workload); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -492,8 +616,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("workload_type"), state.WorkloadType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_metadata_key_sans"), state.DeviceMetadataKeySANs)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("static_sans"), state.StaticSANs)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("certificate_data"), state.CertificateData)...)
 	// Not returned by the API. Use plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_collection_slug"), plan.DeviceCollectionSlug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
@@ -510,7 +633,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	dcSlug := state.DeviceCollectionSlug.ValueString()
 	workloadSlug := state.Slug.ValueString()
 
-	httpResp, err := a.client.DeleteWorkload(ctx, dcSlug, workloadSlug, &v20230301.DeleteWorkloadParams{})
+	httpResp, err := a.client.DeleteWorkload(ctx, dcSlug, workloadSlug, &v20231101.DeleteWorkloadParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

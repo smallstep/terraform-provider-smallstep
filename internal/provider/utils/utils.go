@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
-	apiserver "github.com/smallstep/terraform-provider-smallstep/internal/apiserver/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 )
 
 // APIErrorMsg attempts to parse .Message from the API JSON response.
@@ -16,7 +15,7 @@ func APIErrorMsg(r io.Reader) string {
 	if err != nil {
 		return "Failed to read Smallstep API response"
 	}
-	e := &v20230301.Error{}
+	e := &v20231101.Error{}
 	if err := json.Unmarshal(body, e); err != nil {
 		return string(body)
 	}
@@ -28,8 +27,8 @@ type dereferencable interface {
 		bool |
 		int |
 		[]string |
-		v20230301.EndpointKeyInfoType |
-		v20230301.EndpointKeyInfoFormat
+		v20231101.EndpointKeyInfoType |
+		v20231101.EndpointKeyInfoFormat
 }
 
 // Deref gets the default value for a pointer type. This makes it easier to work
@@ -49,7 +48,7 @@ func ToIntPointer(i64 *int64) *int {
 	return &i
 }
 
-func ToStringPointer[In Str, Out Str](str *In) *Out {
+func ToStringPointer[Out ~string](str *string) *Out {
 	if str == nil {
 		return nil
 	}
@@ -61,7 +60,7 @@ func ToStringPointer[In Str, Out Str](str *In) *Out {
 // OpenAPI spec. This ensures the terraform attribute documentation is kept in
 // sync with the API spec.
 func Describe(component string) (string, map[string]string, error) {
-	spec, err := apiserver.GetSwagger()
+	spec, err := v20231101.GetSwagger()
 
 	if err != nil {
 		return "", nil, err

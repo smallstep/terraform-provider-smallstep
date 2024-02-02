@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -23,7 +23,7 @@ type CertificateInfoModel struct {
 	Mode     types.Int64  `tfsdk:"mode"`
 }
 
-func (ci CertificateInfoModel) ToAPI() v20230301.EndpointCertificateInfo {
+func (ci CertificateInfoModel) ToAPI() v20231101.EndpointCertificateInfo {
 	d := ci.Duration.ValueStringPointer()
 	// duration defaults to 24h if not set, which means the schema must
 	// mark it as both computed and optional. With the computed flag it
@@ -34,8 +34,8 @@ func (ci CertificateInfoModel) ToAPI() v20230301.EndpointCertificateInfo {
 	if ci.Duration.IsUnknown() {
 		d = nil
 	}
-	return v20230301.EndpointCertificateInfo{
-		Type:     v20230301.EndpointCertificateInfoType(ci.Type.ValueString()),
+	return v20231101.EndpointCertificateInfo{
+		Type:     v20231101.EndpointCertificateInfoType(ci.Type.ValueString()),
 		Duration: d,
 		CrtFile:  ci.CrtFile.ValueStringPointer(),
 		KeyFile:  ci.KeyFile.ValueStringPointer(),
@@ -68,7 +68,7 @@ var HookObjectType = types.ObjectType{
 	},
 }
 
-func (h *HookModel) ToAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Diagnostics) {
+func (h *HookModel) ToAPI(ctx context.Context) (*v20231101.EndpointHook, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if h == nil {
@@ -89,7 +89,7 @@ func (h *HookModel) ToAPI(ctx context.Context) (*v20230301.EndpointHook, diag.Di
 		diags.Append(h.OnError.ElementsAs(ctx, &onError, false)...)
 	}
 
-	return &v20230301.EndpointHook{
+	return &v20231101.EndpointHook{
 		Shell:   h.Shell.ValueStringPointer(),
 		Before:  before,
 		After:   after,
@@ -107,7 +107,7 @@ var HooksObjectType = map[string]attr.Type{
 	"renew": HookObjectType,
 }
 
-func HookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook, diag.Diagnostics) {
+func HookToAPI(ctx context.Context, hook types.Object) (*v20231101.EndpointHook, diag.Diagnostics) {
 	hookModel := &HookModel{}
 	diags := hook.As(ctx, &hookModel, basetypes.ObjectAsOptions{
 		UnhandledUnknownAsEmpty: true,
@@ -119,7 +119,7 @@ func HookToAPI(ctx context.Context, hook types.Object) (*v20230301.EndpointHook,
 	return h, diags
 }
 
-func (h *HooksModel) ToAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.Diagnostics) {
+func (h *HooksModel) ToAPI(ctx context.Context) (*v20231101.EndpointHooks, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if h == nil {
@@ -132,27 +132,29 @@ func (h *HooksModel) ToAPI(ctx context.Context) (*v20230301.EndpointHooks, diag.
 	renew, d := HookToAPI(ctx, h.Renew)
 	diags.Append(d...)
 
-	return &v20230301.EndpointHooks{
+	return &v20231101.EndpointHooks{
 		Sign:  sign,
 		Renew: renew,
 	}, diags
 }
 
 type KeyInfoModel struct {
-	Format  types.String `tfsdk:"format"`
-	PubFile types.String `tfsdk:"pub_file"`
-	Type    types.String `tfsdk:"type"`
+	Format     types.String `tfsdk:"format"`
+	PubFile    types.String `tfsdk:"pub_file"`
+	Type       types.String `tfsdk:"type"`
+	Protection types.String `tfsdk:"protection"`
 }
 
-func (ki *KeyInfoModel) ToAPI() *v20230301.EndpointKeyInfo {
+func (ki *KeyInfoModel) ToAPI() *v20231101.EndpointKeyInfo {
 	if ki == nil {
 		return nil
 	}
 
-	return &v20230301.EndpointKeyInfo{
-		Format:  utils.ToStringPointer[string, v20230301.EndpointKeyInfoFormat](ki.Format.ValueStringPointer()),
-		PubFile: ki.PubFile.ValueStringPointer(),
-		Type:    utils.ToStringPointer[string, v20230301.EndpointKeyInfoType](ki.Type.ValueStringPointer()),
+	return &v20231101.EndpointKeyInfo{
+		Format:     utils.ToStringPointer[v20231101.EndpointKeyInfoFormat](ki.Format.ValueStringPointer()),
+		PubFile:    ki.PubFile.ValueStringPointer(),
+		Type:       utils.ToStringPointer[v20231101.EndpointKeyInfoType](ki.Type.ValueStringPointer()),
+		Protection: utils.ToStringPointer[v20231101.EndpointKeyInfoProtection](ki.Protection.ValueStringPointer()),
 	}
 }
 
@@ -170,20 +172,20 @@ var ReloadInfoType = map[string]attr.Type{
 	"unit_name": types.StringType,
 }
 
-func (ri *ReloadInfoModel) ToAPI() *v20230301.EndpointReloadInfo {
+func (ri *ReloadInfoModel) ToAPI() *v20231101.EndpointReloadInfo {
 	if ri == nil {
 		return nil
 	}
 
-	return &v20230301.EndpointReloadInfo{
-		Method:   v20230301.EndpointReloadInfoMethod(ri.Method.ValueString()),
+	return &v20231101.EndpointReloadInfo{
+		Method:   v20231101.EndpointReloadInfoMethod(ri.Method.ValueString()),
 		PidFile:  ri.PIDFile.ValueStringPointer(),
 		Signal:   utils.ToIntPointer(ri.Signal.ValueInt64Pointer()),
 		UnitName: ri.UnitName.ValueStringPointer(),
 	}
 }
 
-func HookFromAPI(ctx context.Context, hook *v20230301.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
+func HookFromAPI(ctx context.Context, hook *v20231101.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if hook == nil {

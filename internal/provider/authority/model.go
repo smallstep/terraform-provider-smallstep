@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 )
 
 // type name for both resources and data sources
@@ -47,7 +47,7 @@ type X509IssuerModel struct {
 	Subject         *DistinguishedNameModel `tfsdk:"subject"`
 }
 
-func (issuer *X509IssuerModel) AsAPI(ctx context.Context) (*v20230301.X509Issuer, diag.Diagnostics) {
+func (issuer *X509IssuerModel) AsAPI(ctx context.Context) (*v20231101.X509Issuer, diag.Diagnostics) {
 	if issuer == nil {
 		return nil, diag.Diagnostics{}
 	}
@@ -59,9 +59,9 @@ func (issuer *X509IssuerModel) AsAPI(ctx context.Context) (*v20230301.X509Issuer
 
 	maxPathLength := int(issuer.MaxPathLength.ValueInt64())
 
-	return &v20230301.X509Issuer{
+	return &v20231101.X509Issuer{
 		Duration:        issuer.Duration.ValueStringPointer(),
-		KeyVersion:      v20230301.X509IssuerKeyVersion(issuer.KeyVersion.ValueString()),
+		KeyVersion:      v20231101.X509IssuerKeyVersion(issuer.KeyVersion.ValueString()),
 		MaxPathLength:   &maxPathLength,
 		Name:            issuer.Name.ValueString(),
 		NameConstraints: nameConstraints,
@@ -81,7 +81,7 @@ type NameConstraintsModel struct {
 	PermittedURIDomains     types.Set  `tfsdk:"permitted_uri_domains"`
 }
 
-func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20230301.NameConstraints, diag.Diagnostics) {
+func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20231101.NameConstraints, diag.Diagnostics) {
 	var d diag.Diagnostics
 
 	if nc == nil {
@@ -109,7 +109,7 @@ func (nc *NameConstraintsModel) AsAPI(ctx context.Context) (*v20230301.NameConst
 		return nil, d
 	}
 
-	return &v20230301.NameConstraints{
+	return &v20231101.NameConstraints{
 		Critical:                nc.Critical.ValueBoolPointer(),
 		ExcludedDNSDomains:      excludedDNSDomains,
 		ExcludedEmailAddresses:  excludedEmailAddresses,
@@ -135,12 +135,12 @@ type DistinguishedNameModel struct {
 	StreetAddress      types.String `tfsdk:"street_address"`
 }
 
-func (dn *DistinguishedNameModel) AsAPI() *v20230301.DistinguishedName {
+func (dn *DistinguishedNameModel) AsAPI() *v20231101.DistinguishedName {
 	if dn == nil {
 		return nil
 	}
 
-	return &v20230301.DistinguishedName{
+	return &v20231101.DistinguishedName{
 		CommonName:         dn.CommonName.ValueStringPointer(),
 		Country:            dn.Country.ValueStringPointer(),
 		EmailAddress:       dn.EmailAddress.ValueStringPointer(),

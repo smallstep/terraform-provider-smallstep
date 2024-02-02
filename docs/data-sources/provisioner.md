@@ -48,7 +48,7 @@ data "smallstep_provisioner" "by_id" {
 - `jwk` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT). This object is populated when type is `JWK`. (see [below for nested schema](#nestedatt--jwk))
 - `oidc` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that is configured to trust and accept an OAuth provider's ID tokens for authentication. By default, the issued certificate will use the subject (sub) claim from the identity token as its subject. The value of the token's email claim is also included as an email SAN in the certificate. This object is populated when type is `OIDC`. (see [below for nested schema](#nestedatt--oidc))
 - `options` (Attributes) Options that apply when issuing certificates with this provisioner. (see [below for nested schema](#nestedatt--options))
-- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE`
+- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE` `SCEP`
 - `x5c` (Attributes) A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing x509 certificate. This object is populated when type is `X5C`. (see [below for nested schema](#nestedatt--x5c))
 
 <a id="nestedatt--acme"></a>

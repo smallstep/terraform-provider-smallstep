@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
 )
 
 // These helpers handle conversion from API types to terraform types for
@@ -63,13 +62,7 @@ func ToOptionalList(ctx context.Context, remote *[]string, priorState AttributeG
 	return types.ListValue(types.StringType, values)
 }
 
-type Str interface {
-	string |
-		v20230301.EndpointKeyInfoFormat |
-		v20230301.EndpointKeyInfoType
-}
-
-func ToOptionalString[S Str](ctx context.Context, remote *S, priorState AttributeGetter, p path.Path) (types.String, diag.Diagnostics) {
+func ToOptionalString[S ~string](ctx context.Context, remote *S, priorState AttributeGetter, p path.Path) (types.String, diag.Diagnostics) {
 	if remote == nil || *remote == "" {
 		stringFromState := types.String{}
 		diags := priorState.GetAttribute(ctx, p, &stringFromState)
