@@ -68,8 +68,6 @@ type CertificateDataModel struct {
 	StreetAddress      types.Object `tfsdk:"street_address"`
 	PostalCode         types.Object `tfsdk:"postal_code"`
 	Country            types.Object `tfsdk:"country"`
-	// PreserveSubject    types.Bool   `tfsdk:"preserve_subject"`
-	// PreseveSANs        types.Bool   `tfsdk:"preserve_sans"`
 }
 
 var certificateDataType = types.ObjectType{
@@ -83,8 +81,6 @@ var certificateDataType = types.ObjectType{
 		"street_address":      certificateFieldListType,
 		"postal_code":         certificateFieldListType,
 		"country":             certificateFieldListType,
-		// "preserve_subject":    types.BoolType,
-		// "preserve_sans":       types.BoolType,
 	},
 }
 
@@ -245,14 +241,6 @@ func fromAPI(ctx context.Context, workload *v20231101.Workload, state utils.Attr
 	country, d := CertificateFieldListFromAPI(ctx, x509Fields.Country, state, path.Root("certificate_data").AtName("country"))
 	diags.Append(d...)
 
-	/*
-		preserveSubject, d := utils.ToOptionalBool(ctx, x509Fields.PreserveSubject, state, path.Root("certificate_data").AtName("preserve_subject"))
-		diags.Append(d...)
-
-		preserveSANs, d := utils.ToOptionalBool(ctx, x509Fields.PreserveSANs, state, path.Root("certificate_data").AtName("preserve_sans"))
-		diags.Append(d...)
-	*/
-
 	certData, d := basetypes.NewObjectValue(certificateDataType.AttrTypes, map[string]attr.Value{
 		"common_name":         cn,
 		"sans":                sans,
@@ -263,8 +251,6 @@ func fromAPI(ctx context.Context, workload *v20231101.Workload, state utils.Attr
 		"street_address":      street,
 		"postal_code":         postal,
 		"country":             country,
-		// "preserve_subject":    preserveSubject,
-		// "preserve_sans":       preserveSANs,
 	})
 	diags.Append(d...)
 	if diags.HasError() {
@@ -386,11 +372,15 @@ func toAPI(ctx context.Context, model *Model) (*v20231101.Workload, diag.Diagnos
 	provinceCFL, d := toCertificateFieldList(ctx, province)
 	diags.Append(d...)
 
+	sansCFL, d := toCertificateFieldList(ctx, sans)
+	diags.Append(d...)
+
 	streetCFL, d := toCertificateFieldList(ctx, street)
 	diags.Append(d...)
 
 	err := workload.FromX509Fields(v20231101.X509Fields{
 		CommonName:         cnField,
+		Sans:               sansCFL,
 		Country:            countryCFL,
 		Locality:           localityCFL,
 		Organization:       orgCFL,
@@ -433,7 +423,7 @@ func CertificateFieldListFromAPI(ctx context.Context, cfl *v20231101.Certificate
 	var diags diag.Diagnostics
 
 	if cfl == nil {
-		return basetypes.NewObjectNull(HooksObjectType), diags
+		return basetypes.NewObjectNull(certificateFieldListType.AttrTypes), diags
 	}
 
 	static, d := utils.ToOptionalList(ctx, cfl.Static, state, p.AtName("static"))
@@ -442,7 +432,7 @@ func CertificateFieldListFromAPI(ctx context.Context, cfl *v20231101.Certificate
 	deviceMetadata, d := utils.ToOptionalList(ctx, cfl.DeviceMetadata, state, p.AtName("device_metadata"))
 	diags.Append(d...)
 
-	obj, d := basetypes.NewObjectValue(HooksObjectType, map[string]attr.Value{
+	obj, d := basetypes.NewObjectValue(certificateFieldListType.AttrTypes, map[string]attr.Value{
 		"static":          static,
 		"device_metadata": deviceMetadata,
 	})

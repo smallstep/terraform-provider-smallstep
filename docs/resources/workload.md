@@ -112,6 +112,7 @@ resource "smallstep_workload" "redis" {
 ### Required
 
 - `admin_emails` (Set of String) Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists. Never returned in responses.
+- `certificate_data` (Attributes) (see [below for nested schema](#nestedatt--certificate_data))
 - `certificate_info` (Attributes) Details on a managed certificate. (see [below for nested schema](#nestedatt--certificate_info))
 - `device_collection_slug` (String) Slug of the device collection the workload will be added to.
 - `display_name` (String) A friendly name for the workload. Also used as the Common Name, if no static SANs are provided.
@@ -123,15 +124,112 @@ Use `generic` for a basic certificate workload.
 
 ### Optional
 
-- `device_metadata_key_sans` (Set of String) SANs that will be populated from the instance data of the device in the device collection.
-For example, if the device instance data in the collection is `{"internal_host": "foo.internal", "external_host", "foo.example.com"}` at the time the workload certificate is issued and this field is set to `["internal_host", "external_host"]`, then the certificate would include the SANs `foo.internal` and `foo.example.com`.
 - `hooks` (Attributes) The collection of commands to run when a certificate for a managed endpoint is signed or renewed. (see [below for nested schema](#nestedatt--hooks))
 - `reload_info` (Attributes) The properties used to reload a service. (see [below for nested schema](#nestedatt--reload_info))
-- `static_sans` (List of String) SANs that will be added to every certificate issued for this workload. The first will be used as the default Common Name.
 
 ### Read-Only
 
 - `id` (String) Internal use only.
+
+<a id="nestedatt--certificate_data"></a>
+### Nested Schema for `certificate_data`
+
+Required:
+
+- `common_name` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--common_name))
+
+Optional:
+
+- `country` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--country))
+- `locality` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--locality))
+- `organization` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--organization))
+- `organizational_unit` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--organizational_unit))
+- `postal_code` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--postal_code))
+- `province` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--province))
+- `sans` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--sans))
+- `street_address` (Attributes) (see [below for nested schema](#nestedatt--certificate_data--street_address))
+
+<a id="nestedatt--certificate_data--common_name"></a>
+### Nested Schema for `certificate_data.common_name`
+
+Optional:
+
+- `device_metadata` (String)
+- `static` (String)
+
+
+<a id="nestedatt--certificate_data--country"></a>
+### Nested Schema for `certificate_data.country`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--locality"></a>
+### Nested Schema for `certificate_data.locality`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--organization"></a>
+### Nested Schema for `certificate_data.organization`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--organizational_unit"></a>
+### Nested Schema for `certificate_data.organizational_unit`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--postal_code"></a>
+### Nested Schema for `certificate_data.postal_code`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--province"></a>
+### Nested Schema for `certificate_data.province`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--sans"></a>
+### Nested Schema for `certificate_data.sans`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
+<a id="nestedatt--certificate_data--street_address"></a>
+### Nested Schema for `certificate_data.street_address`
+
+Optional:
+
+- `device_metadata` (List of String)
+- `static` (List of String)
+
+
 
 <a id="nestedatt--certificate_info"></a>
 ### Nested Schema for `certificate_info`
@@ -156,12 +254,12 @@ Optional:
 
 Required:
 
-- `format` (String) The format used to encode the private key. For X509 keys the default format is SEC 1 for ECDSA keys, PKCS#1 for RSA keys and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `DER` `TSS2`
-- `protection` (String) Whether to use a hardware module to store the private key for a workload certificate. If set to `NONE` the key will be stored on disk. If set to `DEFAULT` the store will be stored on disk unless the key format is `TSS2`. Allowed values: `DEFAULT` `NONE` `HARDWARE` `HARDWARE_WITH_FALLBACK` `HARDWARE_ATTESTED` `HARDWARE_ATTESTED_WITH_FALLBACK`
+- `format` (String) The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where tss2 will be used. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `TSS2` `CLASSIC`
 - `type` (String) The key type used. The current DEFAULT type is ECDSA_P256. Allowed values: `DEFAULT` `ECDSA_P256` `ECDSA_P384` `ECDSA_P521` `RSA_2048` `RSA_3072` `RSA_4096` `ED25519`
 
 Optional:
 
+- `protection` (String) Whether to use a hardware module to store the private key for a workload certificate. If set to `NONE` no hardware module will be used. If set to `DEFAULT` a hardware module will only be used with format `TSS2`. `HARDWARE_WITH_FALLBACK` can only be used with the key format `DEFAULT`. Allowed values: `DEFAULT` `NONE` `HARDWARE` `HARDWARE_WITH_FALLBACK` `HARDWARE_ATTESTED`
 - `pub_file` (String) A CSR or SSH public key to use instead of generating one.
 
 

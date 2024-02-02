@@ -64,6 +64,30 @@ resource "smallstep_workload" "generic" {
 		common_name = {
 			static = "host.internal"
 		}
+		sans = {
+			static = ["host.internal"]
+		}
+		organization = {
+			static = ["generic static org"]
+		}
+		organizational_unit = {
+			static = ["generic static ou"]
+		}
+		locality = {
+			static = ["generic static locality"]
+		}
+		postal_code = {
+			static = ["generic static postal"]
+		}
+		country = {
+			static = ["generic static country"]
+		}
+		street_address = {
+			static = ["generic static street"]
+		}
+		province = {
+			static = ["generic static province"]
+		}
 	}
 }
 
@@ -176,7 +200,31 @@ resource "smallstep_workload" "generic" {
 
 	certificate_data = {
 		common_name = {
-			static = "generic.internal"
+			device_metadata = "host"
+		}
+		sans = {
+			device_metadata = ["sans"]
+		}
+		organization = {
+			device_metadata = ["org"]
+		}
+		organizational_unit = {
+			device_metadata = ["ou"]
+		}
+		locality = {
+			device_metadata = ["locality"]
+		}
+		postal_code = {
+			device_metadata = ["postal"]
+		}
+		country = {
+			device_metadata = ["country"]
+		}
+		street_address = {
+			device_metadata = ["street"]
+		}
+		province = {
+			device_metadata = ["province"]
 		}
 	}
 }
@@ -274,10 +322,31 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "SIGNAL"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.pid_file", "db.pid"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.signal", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_data.common_name.static", "nginx.internal"),
 
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "1"),
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.0", "host.internal"),
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "0"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.static.0", "host.internal"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organization.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organization.static.0", "generic static org"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organizational_unit.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organizational_unit.static.0", "generic static ou"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.locality.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.locality.static.0", "generic static locality"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.postal_code.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.postal_code.static.0", "generic static postal"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.country.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.country.static.0", "generic static country"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.street_address.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.street_address.static.0", "generic static street"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.province.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.province.static.0", "generic static province"),
 				),
 			},
 			{
@@ -311,10 +380,33 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "key_info.pub_file", ""),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.method", "DBUS"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.unit_name", "postgres.service"),
+					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_data.common_name.static", "nginx"),
 
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "static_sans.#", "0"),
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.#", "1"),
-					// helper.TestCheckResourceAttr("smallstep_workload.generic", "device_metadata_key_sans.0", "internal_host"),
+					helper.TestCheckNoResourceAttr("smallstep_workload.generic", "certificate_data.sans.static"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.device_metadata.0", "sans"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organization.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organization.device_metadata.0", "org"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organizational_unit.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.organizational_unit.device_metadata.0", "ou"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.locality.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.locality.device_metadata.0", "locality"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.postal_code.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.postal_code.device_metadata.0", "postal"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.country.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.country.device_metadata.0", "country"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.street_address.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.street_address.device_metadata.0", "street"),
+
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.province.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.province.device_metadata.0", "province"),
 				),
 			},
 		},
