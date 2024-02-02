@@ -221,15 +221,29 @@ func fromAPI(ctx context.Context, workload *v20231101.Workload, state utils.Attr
 		}
 	}
 
-	// TODO
-	sans := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	org := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	ou := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	locality := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	province := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	street := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	postal := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
-	country := basetypes.NewObjectNull(certificateFieldListType.AttrTypes)
+	sans, d := CertificateFieldListFromAPI(ctx, x509Fields.Sans, state, path.Root("certificate_data").AtName("sans"))
+	diags.Append(d...)
+
+	org, d := CertificateFieldListFromAPI(ctx, x509Fields.Organization, state, path.Root("certificate_data").AtName("organization"))
+	diags.Append(d...)
+
+	ou, d := CertificateFieldListFromAPI(ctx, x509Fields.OrganizationalUnit, state, path.Root("certificate_data").AtName("organizational_unit"))
+	diags.Append(d...)
+
+	locality, d := CertificateFieldListFromAPI(ctx, x509Fields.Locality, state, path.Root("certificate_data").AtName("locality"))
+	diags.Append(d...)
+
+	province, d := CertificateFieldListFromAPI(ctx, x509Fields.Province, state, path.Root("certificate_data").AtName("province"))
+	diags.Append(d...)
+
+	street, d := CertificateFieldListFromAPI(ctx, x509Fields.StreetAddress, state, path.Root("certificate_data").AtName("street_address"))
+	diags.Append(d...)
+
+	postal, d := CertificateFieldListFromAPI(ctx, x509Fields.PostalCode, state, path.Root("certificate_data").AtName("postal_code"))
+	diags.Append(d...)
+
+	country, d := CertificateFieldListFromAPI(ctx, x509Fields.Country, state, path.Root("certificate_data").AtName("country"))
+	diags.Append(d...)
 
 	/*
 		preserveSubject, d := utils.ToOptionalBool(ctx, x509Fields.PreserveSubject, state, path.Root("certificate_data").AtName("preserve_subject"))
@@ -415,19 +429,24 @@ func toCertificateFieldList(ctx context.Context, cfl *CertificateFieldList) (*v2
 	}, diags
 }
 
-/*
-func fromCertificateFieldList(ctx context.Context, cfl *CertificateFieldList, state utils.AttributeGetter, p path.Path) (*v20231101.CertificateFieldList, diag.Diagnostics) {
+func CertificateFieldListFromAPI(ctx context.Context, cfl *v20231101.CertificateFieldList, state utils.AttributeGetter, p path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	static, d := utils.ToOptionalList(ctx, &cfl.Static, state, p.At("static"))
-	diags.Append(d...)
-
-	deviceMetadata, d := utils.ToOptionalList(ctx, cfl.DeviceMetdata, state, p.At("device_metadata"))
-	diags.Append(d...)
-
-	return &v20231101.CertificateFieldList{
-		Static:         static,
-		DeviceMetadata: deviceMetadata,
+	if cfl == nil {
+		return basetypes.NewObjectNull(HooksObjectType), diags
 	}
+
+	static, d := utils.ToOptionalList(ctx, cfl.Static, state, p.AtName("static"))
+	diags.Append(d...)
+
+	deviceMetadata, d := utils.ToOptionalList(ctx, cfl.DeviceMetadata, state, p.AtName("device_metadata"))
+	diags.Append(d...)
+
+	obj, d := basetypes.NewObjectValue(HooksObjectType, map[string]attr.Value{
+		"static":          static,
+		"device_metadata": deviceMetadata,
+	})
+	diags.Append(d...)
+
+	return obj, diags
 }
-*/
