@@ -120,7 +120,7 @@ resource "smallstep_provisioner" "my_azure" {
 
 - `authority_id` (String) The UUID of the authority this provisioner is attached to
 - `name` (String) The name of the provisioner.
-- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE`
+- `type` (String) The type of provisioner. Allowed values: `OIDC` `JWK` `ACME` `ACME_ATTESTATION` `X5C` `AWS` `GCP` `AZURE` `SCEP`
 
 ### Optional
 

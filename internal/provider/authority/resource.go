@@ -18,7 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -30,7 +30,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -279,12 +279,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -314,18 +314,18 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	reqBody := v20230301.PostAuthoritiesJSONRequestBody{
+	reqBody := v20231101.PostAuthoritiesJSONRequestBody{
 		Name:               data.Name.ValueString(),
 		ActiveRevocation:   data.ActiveRevocation.ValueBoolPointer(),
 		AdminEmails:        adminEmails,
 		IntermediateIssuer: intermediate,
 		RootIssuer:         root,
 		Subdomain:          data.Subdomain.ValueString(),
-		Type:               v20230301.NewAuthorityType(data.Type.ValueString()),
+		Type:               v20231101.NewAuthorityType(data.Type.ValueString()),
 	}
 	b, _ := json.Marshal(reqBody)
 	tflog.Debug(ctx, string(b))
-	httpResp, err := a.client.PostAuthorities(ctx, &v20230301.PostAuthoritiesParams{}, reqBody)
+	httpResp, err := a.client.PostAuthorities(ctx, &v20231101.PostAuthoritiesParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -344,7 +344,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	authority := &v20230301.Authority{}
+	authority := &v20231101.Authority{}
 	if err := json.NewDecoder(httpResp.Body).Decode(authority); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -374,7 +374,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := a.client.GetAuthority(ctx, data.ID.ValueString(), &v20230301.GetAuthorityParams{})
+	httpResp, err := a.client.GetAuthority(ctx, data.ID.ValueString(), &v20231101.GetAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -398,7 +398,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	authority := &v20230301.Authority{}
+	authority := &v20231101.Authority{}
 	if err := json.NewDecoder(httpResp.Body).Decode(authority); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -455,7 +455,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.DeleteAuthority(ctx, data.ID.ValueString(), &v20230301.DeleteAuthorityParams{})
+	httpResp, err := a.client.DeleteAuthority(ctx, data.ID.ValueString(), &v20231101.DeleteAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

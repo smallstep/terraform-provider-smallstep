@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -24,7 +24,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -38,12 +38,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -62,7 +62,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 
 	id := state.ID.ValueString()
 
-	httpResp, err := r.client.GetAttestationAuthority(ctx, id, &v20230301.GetAttestationAuthorityParams{})
+	httpResp, err := r.client.GetAttestationAuthority(ctx, id, &v20231101.GetAttestationAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -86,7 +86,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	aa := &v20230301.AttestationAuthority{}
+	aa := &v20231101.AttestationAuthority{}
 	if err := json.NewDecoder(httpResp.Body).Decode(aa); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -187,7 +187,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	b, _ := json.Marshal(reqBody)
 	tflog.Trace(ctx, string(b))
 
-	httpResp, err := a.client.PostAttestationAuthorities(ctx, &v20230301.PostAttestationAuthoritiesParams{}, *reqBody)
+	httpResp, err := a.client.PostAttestationAuthorities(ctx, &v20231101.PostAttestationAuthoritiesParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -205,7 +205,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	aa := &v20230301.AttestationAuthority{}
+	aa := &v20231101.AttestationAuthority{}
 	if err := json.NewDecoder(httpResp.Body).Decode(aa); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -240,7 +240,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 
 	id := state.ID.ValueString()
 
-	httpResp, err := a.client.DeleteAttestationAuthority(ctx, id, &v20230301.DeleteAttestationAuthorityParams{})
+	httpResp, err := a.client.DeleteAttestationAuthority(ctx, id, &v20231101.DeleteAttestationAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

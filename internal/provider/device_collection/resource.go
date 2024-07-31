@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -26,7 +26,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20230301.Client
+	client *v20231101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -40,12 +40,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20230301.Client)
+	client, ok := req.ProviderData.(*v20231101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20230301.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -62,7 +62,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetDeviceCollection(ctx, state.Slug.ValueString(), &v20230301.GetDeviceCollectionParams{})
+	httpResp, err := r.client.GetDeviceCollection(ctx, state.Slug.ValueString(), &v20231101.GetDeviceCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -86,7 +86,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	collection := &v20230301.DeviceCollection{}
+	collection := &v20231101.DeviceCollection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -294,7 +294,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PutDeviceCollection(ctx, reqBody.Slug, &v20230301.PutDeviceCollectionParams{}, *reqBody)
+	httpResp, err := a.client.PutDeviceCollection(ctx, reqBody.Slug, &v20231101.PutDeviceCollectionParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -313,7 +313,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.DeviceCollection{}
+	collection := &v20231101.DeviceCollection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -357,7 +357,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.PutDeviceCollection(ctx, reqBody.Slug, &v20230301.PutDeviceCollectionParams{}, *reqBody)
+	httpResp, err := r.client.PutDeviceCollection(ctx, reqBody.Slug, &v20231101.PutDeviceCollectionParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -376,7 +376,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	collection := &v20230301.DeviceCollection{}
+	collection := &v20231101.DeviceCollection{}
 	if err := json.NewDecoder(httpResp.Body).Decode(collection); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -414,7 +414,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.DeleteDeviceCollection(ctx, plan.Slug.ValueString(), &v20230301.DeleteDeviceCollectionParams{})
+	httpResp, err := a.client.DeleteDeviceCollection(ctx, plan.Slug.ValueString(), &v20231101.DeleteDeviceCollectionParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

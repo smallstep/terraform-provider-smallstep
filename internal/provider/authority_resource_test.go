@@ -15,7 +15,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -30,7 +30,7 @@ func init() {
 				return err
 			}
 
-			resp, err := client.GetAuthorities(ctx, &v20230301.GetAuthoritiesParams{})
+			resp, err := client.GetAuthorities(ctx, &v20231101.GetAuthoritiesParams{})
 			if err != nil {
 				return err
 			}
@@ -39,7 +39,7 @@ func init() {
 				body, _ := io.ReadAll(resp.Body)
 				return fmt.Errorf("failed to list authorities: %d: %s", resp.StatusCode, body)
 			}
-			var list []*v20230301.Authority
+			var list []*v20231101.Authority
 			if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func init() {
 				if authority.CreatedAt.After(time.Now().Add(age * -1)) {
 					continue
 				}
-				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20230301.DeleteAuthorityParams{})
+				resp, err := client.DeleteAuthority(ctx, authority.Id, &v20231101.DeleteAuthorityParams{})
 				if err != nil {
 					return err
 				}

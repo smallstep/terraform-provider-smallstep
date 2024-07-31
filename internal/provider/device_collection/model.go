@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20230301 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20230301"
+	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -52,7 +52,7 @@ type TPMDevice struct {
 	RequireEAB            types.Bool   `tfsdk:"require_eab"`
 }
 
-func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, collection *v20231101.DeviceCollection, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	model := &Model{
@@ -63,7 +63,7 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 	}
 
 	switch collection.DeviceType {
-	case v20230301.DeviceCollectionDeviceTypeAwsVm:
+	case v20231101.DeviceCollectionDeviceTypeAwsVm:
 		aws, err := collection.DeviceTypeConfiguration.AsAwsVM()
 		if err != nil {
 			diags.AddError("Read AWS Device Configuration", err.Error())
@@ -89,7 +89,7 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 			Accounts:          accountsSet,
 			DisableCustomSANs: disableCustomSANs,
 		}
-	case v20230301.DeviceCollectionDeviceTypeAzureVm:
+	case v20231101.DeviceCollectionDeviceTypeAzureVm:
 		azure, err := collection.DeviceTypeConfiguration.AsAzureVM()
 		if err != nil {
 			diags.AddError("Read Azure Device Configuration", err.Error())
@@ -123,7 +123,7 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 			DisableCustomSANs: disableCustomSANs,
 			Audience:          audience,
 		}
-	case v20230301.DeviceCollectionDeviceTypeGcpVm:
+	case v20231101.DeviceCollectionDeviceTypeGcpVm:
 		gcp, err := collection.DeviceTypeConfiguration.AsGcpVM()
 		if err != nil {
 			diags.AddError("Read GCP Device Configuration", err.Error())
@@ -153,7 +153,7 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 			ServiceAccounts:   serviceAccounts,
 			ProjectIDs:        projectIDs,
 		}
-	case v20230301.DeviceCollectionDeviceTypeTpm:
+	case v20231101.DeviceCollectionDeviceTypeTpm:
 		tpm, err := collection.DeviceTypeConfiguration.AsTpm()
 		if err != nil {
 			diags.AddError("Read TPM Device Configuration", err.Error())
@@ -195,26 +195,26 @@ func fromAPI(ctx context.Context, collection *v20230301.DeviceCollection, state 
 	return model, diags
 }
 
-func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag.Diagnostics) {
+func toAPI(ctx context.Context, model *Model) (*v20231101.DeviceCollection, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	var adminEmails []string
 	diags.Append(model.AdminEmails.ElementsAs(ctx, &adminEmails, false)...)
 
-	dc := &v20230301.DeviceCollection{
+	dc := &v20231101.DeviceCollection{
 		Slug:        model.Slug.ValueString(),
 		DisplayName: model.DisplayName.ValueString(),
 		AdminEmails: &adminEmails,
-		DeviceType:  v20230301.DeviceCollectionDeviceType(model.DeviceType.ValueString()),
+		DeviceType:  v20231101.DeviceCollectionDeviceType(model.DeviceType.ValueString()),
 	}
 
 	switch dc.DeviceType {
-	case v20230301.DeviceCollectionDeviceTypeAwsVm:
+	case v20231101.DeviceCollectionDeviceTypeAwsVm:
 		if model.AWSDevice == nil {
 			diags.AddError("AWS Device", "aws_vm is required with device type aws-vm")
 			return nil, diags
 		}
-		aws := v20230301.AwsVM{
+		aws := v20231101.AwsVM{
 			Accounts:          []string{},
 			DisableCustomSANs: model.AWSDevice.DisableCustomSANs.ValueBoolPointer(),
 		}
@@ -225,12 +225,12 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag
 			diags.AddError("AWS VM", err.Error())
 			return nil, diags
 		}
-	case v20230301.DeviceCollectionDeviceTypeAzureVm:
+	case v20231101.DeviceCollectionDeviceTypeAzureVm:
 		if model.AzureDevice == nil {
 			diags.AddError("Azure Device", "azure_vm is required with device type azure-vm")
 			return nil, diags
 		}
-		azure := v20230301.AzureVM{
+		azure := v20231101.AzureVM{
 			TenantID:          model.AzureDevice.TenantID.ValueString(),
 			ResourceGroups:    []string{},
 			DisableCustomSANs: model.AzureDevice.DisableCustomSANs.ValueBoolPointer(),
@@ -243,12 +243,12 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag
 			diags.AddError("Azure VM", err.Error())
 			return nil, diags
 		}
-	case v20230301.DeviceCollectionDeviceTypeGcpVm:
+	case v20231101.DeviceCollectionDeviceTypeGcpVm:
 		if model.GCPDevice == nil {
 			diags.AddError("GCP Device", "gcp_vm is required with device type gcp-vm")
 			return nil, diags
 		}
-		gcp := v20230301.GcpVM{
+		gcp := v20231101.GcpVM{
 			DisableCustomSANs: model.GCPDevice.DisableCustomSANs.ValueBoolPointer(),
 			ProjectIDs:        nil,
 			ServiceAccounts:   nil,
@@ -271,11 +271,11 @@ func toAPI(ctx context.Context, model *Model) (*v20230301.DeviceCollection, diag
 			diags.AddError("GCP VM", err.Error())
 			return nil, diags
 		}
-	case v20230301.DeviceCollectionDeviceTypeTpm:
+	case v20231101.DeviceCollectionDeviceTypeTpm:
 		if model.TPMDevice == nil {
 			diags.AddError("TPM Device", "tpm block is required with device type tpm")
 		}
-		tpm := v20230301.Tpm{
+		tpm := v20231101.Tpm{
 			AttestorRoots:         model.TPMDevice.AttestorRoots.ValueStringPointer(),
 			AttestorIntermediates: model.TPMDevice.AttestorIntermediates.ValueStringPointer(),
 			ForceCN:               model.TPMDevice.ForceCN.ValueBoolPointer(),
