@@ -299,7 +299,7 @@ Optional:
 
 Required:
 
-- `method` (String) Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in `pidFile`. `DBUS` will use the systemd system bus to issue a `try-reload-or-restart` job for unit specified by `unitName`. Allowed values: `AUTOMATIC` `CUSTOM` `SIGNAL` `DBUS`
+- `method` (String) Ways an endpoint can reload a certificate. `AUTOMATIC` means the process is able to detect and reload new certificates automatically. `CUSTOM` means a custom command must be run to trigger the workload to reload the certificates. `SIGNAL` will configure the agent to send a signal to the process in `pidFile`. `DBUS` will use the systemd system bus to issue a `try-reload-or-restart` job for unit specified by `unitName`. `PLATFORM` uses a method specific to the operating system. Allowed values: `AUTOMATIC` `CUSTOM` `SIGNAL` `DBUS` `PLATFORM`
 
 Optional:
 

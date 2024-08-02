@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -20,6 +21,8 @@ import (
 	"go.step.sm/crypto/pemutil"
 	"go.step.sm/crypto/randutil"
 )
+
+var UUID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
 func SmallstepAPIClientFromEnv() (*v20231101.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
