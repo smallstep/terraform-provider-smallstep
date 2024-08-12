@@ -238,7 +238,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read workload %q: %v", state.ID.ValueString(), err),
+			fmt.Sprintf("Failed to read account %q: %v", state.ID.ValueString(), err),
 		)
 		return
 	}

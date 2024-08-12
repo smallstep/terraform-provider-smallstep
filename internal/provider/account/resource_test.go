@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
@@ -22,6 +23,9 @@ var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
 	},
+	DataSourceFactories: []func() datasource.DataSource{
+		NewDataSource,
+	},
 }
 
 var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
@@ -29,6 +33,7 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 }
 
 func TestAccWorkloadResource(t *testing.T) {
+	t.Parallel()
 	const browsers = `
 resource "smallstep_account" "browsers" {
 	name = "Browsers"

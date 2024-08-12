@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
@@ -177,6 +178,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		webhook.NewResource,
 		device_collection.NewResource,
 		workload.NewResource,
+		account.NewResource,
 	}
 }
 
@@ -188,6 +190,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		collection_instance.NewDataSource,
 		attestation_authority.NewDataSource,
 		webhook.NewDataSource,
+		account.NewDataSource,
 	}
 }
 
