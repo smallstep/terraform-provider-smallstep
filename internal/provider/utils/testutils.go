@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -20,6 +21,8 @@ import (
 	"go.step.sm/crypto/pemutil"
 	"go.step.sm/crypto/randutil"
 )
+
+var UUID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
 func SmallstepAPIClientFromEnv() (*v20231101.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
@@ -165,6 +168,39 @@ func NewWebhook(t *testing.T, provisionerID, authorityID string) *v20231101.Prov
 	wh.Secret = nil
 
 	return wh
+}
+
+func NewAccount(t *testing.T) (*v20231101.Account, *v20231101.WifiAccount) {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	req := v20231101.Account{
+		Name: "WiFi",
+		Type: v20231101.Wifi,
+	}
+	ip := "1.2.3.4"
+	err = req.FromWifiAccount(v20231101.WifiAccount{
+		Ssid:                  "CorpNet",
+		NetworkAccessServerIP: &ip,
+	})
+	require.NoError(t, err)
+
+	resp, err := client.PostAccounts(context.Background(), &v20231101.PostAccountsParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusCreated, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	account := &v20231101.Account{}
+	err = json.Unmarshal(body, account)
+	require.NoError(t, err)
+
+	wifi, err := account.AsWifiAccount()
+	require.NoError(t, err)
+
+	return account, &wifi
 }
 
 func NewCollection(t *testing.T) *v20231101.Collection {
