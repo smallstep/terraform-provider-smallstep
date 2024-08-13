@@ -19,6 +19,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection_instance"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection_account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/workload"
@@ -179,6 +180,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		device_collection.NewResource,
 		workload.NewResource,
 		account.NewResource,
+		device_collection_account.NewResource,
 	}
 }
 
@@ -191,6 +193,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		attestation_authority.NewDataSource,
 		webhook.NewDataSource,
 		account.NewDataSource,
+		device_collection_account.NewDataSource,
 	}
 }
 

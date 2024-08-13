@@ -118,10 +118,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		MarkdownDescription: component,
 
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				MarkdownDescription: "Internal use only",
-				Computed:            true,
-			},
 			"slug": schema.StringAttribute{
 				MarkdownDescription: props["slug"],
 				Required:            true,

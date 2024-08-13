@@ -32,7 +32,7 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-func TestAccWorkloadResource(t *testing.T) {
+func TestAccAccountResource(t *testing.T) {
 	t.Parallel()
 	const browsers = `
 resource "smallstep_account" "browsers" {

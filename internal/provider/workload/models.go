@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
@@ -23,7 +24,18 @@ type CertificateInfoModel struct {
 	Mode     types.Int64  `tfsdk:"mode"`
 }
 
-func (ci CertificateInfoModel) ToAPI() v20231101.EndpointCertificateInfo {
+var certInfoAttrTypes = map[string]attr.Type{
+	"type":      types.StringType,
+	"crt_file":  types.StringType,
+	"key_file":  types.StringType,
+	"root_file": types.StringType,
+	"duration":  types.StringType,
+	"gid":       types.Int64Type,
+	"uid":       types.Int64Type,
+	"mode":      types.Int64Type,
+}
+
+func (ci CertificateInfoModel) ToAPI() *v20231101.EndpointCertificateInfo {
 	d := ci.Duration.ValueStringPointer()
 	// duration defaults to 24h if not set, which means the schema must
 	// mark it as both computed and optional. With the computed flag it
@@ -34,7 +46,7 @@ func (ci CertificateInfoModel) ToAPI() v20231101.EndpointCertificateInfo {
 	if ci.Duration.IsUnknown() {
 		d = nil
 	}
-	return v20231101.EndpointCertificateInfo{
+	return &v20231101.EndpointCertificateInfo{
 		Type:     v20231101.EndpointCertificateInfoType(ci.Type.ValueString()),
 		Duration: d,
 		CrtFile:  ci.CrtFile.ValueStringPointer(),
@@ -145,6 +157,13 @@ type KeyInfoModel struct {
 	Protection types.String `tfsdk:"protection"`
 }
 
+var keyInfoAttrTypes = map[string]attr.Type{
+	"format":     types.StringType,
+	"pub_file":   types.StringType,
+	"type":       types.StringType,
+	"protection": types.StringType,
+}
+
 func (ki *KeyInfoModel) ToAPI() *v20231101.EndpointKeyInfo {
 	if ki == nil {
 		return nil
@@ -158,6 +177,42 @@ func (ki *KeyInfoModel) ToAPI() *v20231101.EndpointKeyInfo {
 	}
 }
 
+func NewKeyInfoResourceSchema() (schema.SingleNestedAttribute, error) {
+	keyInfo, keyInfoProps, err := utils.Describe("endpointKeyInfo")
+	if err != nil {
+		return schema.SingleNestedAttribute{}, err
+	}
+
+	out := schema.SingleNestedAttribute{
+		// This object is not required by the API but a default object
+		// will always be returned with format, type and protection set to
+		// "DEFAULT". To avoid "inconsistent result after apply" errors
+		// require these fields to be set explicitly in terraform.
+		Required:            true,
+		MarkdownDescription: keyInfo,
+		Attributes: map[string]schema.Attribute{
+			"type": schema.StringAttribute{
+				Required:            true,
+				MarkdownDescription: keyInfoProps["type"],
+			},
+			"format": schema.StringAttribute{
+				Required:            true,
+				MarkdownDescription: keyInfoProps["format"],
+			},
+			"pub_file": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: keyInfoProps["pubFile"],
+			},
+			"protection": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: keyInfoProps["protection"],
+			},
+		},
+	}
+
+	return out, nil
+}
+
 type ReloadInfoModel struct {
 	Method   types.String `tfsdk:"method"`
 	PIDFile  types.String `tfsdk:"pid_file"`
@@ -165,7 +220,7 @@ type ReloadInfoModel struct {
 	UnitName types.String `tfsdk:"unit_name"`
 }
 
-var ReloadInfoType = map[string]attr.Type{
+var reloadInfoAttrTypes = map[string]attr.Type{
 	"method":    types.StringType,
 	"pid_file":  types.StringType,
 	"signal":    types.Int64Type,
@@ -183,6 +238,221 @@ func (ri *ReloadInfoModel) ToAPI() *v20231101.EndpointReloadInfo {
 		Signal:   utils.ToIntPointer(ri.Signal.ValueInt64Pointer()),
 		UnitName: ri.UnitName.ValueStringPointer(),
 	}
+}
+
+func NewReloadInfoResourceSchema() (schema.SingleNestedAttribute, error) {
+	reloadInfo, reloadInfoProps, err := utils.Describe("endpointReloadInfo")
+	if err != nil {
+		return schema.SingleNestedAttribute{}, err
+	}
+
+	out := schema.SingleNestedAttribute{
+		Optional:            true,
+		Computed:            true,
+		MarkdownDescription: reloadInfo,
+		Attributes: map[string]schema.Attribute{
+			"method": schema.StringAttribute{
+				Required:            true,
+				MarkdownDescription: reloadInfoProps["method"],
+			},
+			"pid_file": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: reloadInfoProps["pidFile"],
+			},
+			"signal": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: reloadInfoProps["signal"],
+			},
+			"unit_name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: reloadInfoProps["unitName"],
+			},
+		},
+	}
+
+	return out, nil
+}
+
+func NewCertificateInfoResourceSchema() (schema.SingleNestedAttribute, error) {
+	certInfo, certInfoProps, err := utils.Describe("endpointCertificateInfo")
+	if err != nil {
+		return schema.SingleNestedAttribute{}, err
+	}
+
+	out := schema.SingleNestedAttribute{
+		Required:            true,
+		MarkdownDescription: certInfo,
+		Attributes: map[string]schema.Attribute{
+			"type": schema.StringAttribute{
+				MarkdownDescription: certInfoProps["type"],
+				Required:            true,
+			},
+			"duration": schema.StringAttribute{
+				MarkdownDescription: certInfoProps["duration"],
+				Optional:            true,
+				Computed:            true,
+			},
+			"crt_file": schema.StringAttribute{
+				MarkdownDescription: certInfoProps["crtFile"],
+				Optional:            true,
+			},
+			"key_file": schema.StringAttribute{
+				MarkdownDescription: certInfoProps["keyFile"],
+				Optional:            true,
+			},
+			"root_file": schema.StringAttribute{
+				MarkdownDescription: certInfoProps["rootFile"],
+				Optional:            true,
+			},
+			"uid": schema.Int64Attribute{
+				MarkdownDescription: certInfoProps["uid"],
+				Optional:            true,
+			},
+			"gid": schema.Int64Attribute{
+				MarkdownDescription: certInfoProps["gid"],
+				Optional:            true,
+			},
+			"mode": schema.Int64Attribute{
+				MarkdownDescription: certInfoProps["mode"],
+				Optional:            true,
+			},
+		},
+	}
+
+	return out, nil
+}
+
+func NewCertificateDataResourceSchema() (schema.SingleNestedAttribute, error) {
+	certData, _, err := utils.Describe("x509Fields")
+	if err != nil {
+		return schema.SingleNestedAttribute{}, err
+	}
+
+	out := schema.SingleNestedAttribute{
+		Optional:            false,
+		Computed:            false,
+		Required:            true,
+		MarkdownDescription: certData,
+		Attributes: map[string]schema.Attribute{
+			"common_name": schema.SingleNestedAttribute{
+				Optional: false,
+				Required: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.StringAttribute{
+						Optional: true,
+					},
+					"device_metadata": schema.StringAttribute{
+						Optional: true,
+					},
+				},
+			},
+			"sans": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"organization": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"organizational_unit": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"locality": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"country": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"province": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"street_address": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+			"postal_code": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"static": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+					"device_metadata": schema.ListAttribute{
+						ElementType: types.StringType,
+						Optional:    true,
+					},
+				},
+			},
+		},
+	}
+	return out, nil
 }
 
 func HookFromAPI(ctx context.Context, hook *v20231101.EndpointHook, hookPath path.Path, state utils.AttributeGetter) (types.Object, diag.Diagnostics) {
