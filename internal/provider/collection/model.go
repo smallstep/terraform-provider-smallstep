@@ -20,8 +20,6 @@ type Model struct {
 	CreatedAt     types.String `tfsdk:"created_at"`
 	UpdatedAt     types.String `tfsdk:"updated_at"`
 	SchemaURI     types.String `tfsdk:"schema_uri"`
-	// https://developer.hashicorp.com/terraform/plugin/framework/acctests#implement-id-attribute
-	ID types.String `tfsdk:"id"`
 }
 
 func fromAPI(ctx context.Context, collection *v20231101.Collection, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
@@ -40,7 +38,6 @@ func fromAPI(ctx context.Context, collection *v20231101.Collection, state utils.
 		SchemaURI:     schemaURI,
 		CreatedAt:     types.StringValue(collection.CreatedAt.Format(time.RFC3339)),
 		UpdatedAt:     types.StringValue(collection.UpdatedAt.Format(time.RFC3339)),
-		ID:            types.StringValue(collection.Slug),
 	}
 
 	return model, diags

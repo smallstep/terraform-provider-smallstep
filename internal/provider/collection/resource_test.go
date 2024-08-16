@@ -142,10 +142,11 @@ resource "smallstep_collection" "employees" {
 				},
 			},
 			{
-				ResourceName:      "smallstep_collection.employees",
-				ImportState:       true,
-				ImportStateId:     slug,
-				ImportStateVerify: true,
+				ResourceName:                         "smallstep_collection.employees",
+				ImportState:                          true,
+				ImportStateId:                        slug,
+				ImportStateVerify:                    true,
+				ImportStateVerifyIdentifierAttribute: "slug",
 			},
 		},
 	})

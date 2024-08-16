@@ -27,11 +27,11 @@ var UUID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 func SmallstepAPIClientFromEnv() (*v20231101.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
 	if token == "" {
-		return nil, errors.New("Missing environment variable SMALLSTEP_API_TOKEN")
+		return nil, errors.New("missing environment variable SMALLSTEP_API_TOKEN")
 	}
 	server := os.Getenv("SMALLSTEP_API_URL")
 	if server == "" {
-		return nil, errors.New("Missing environment variable SMALLSTEP_API_URL")
+		return nil, errors.New("missing environment variable SMALLSTEP_API_URL")
 	}
 
 	client, err := v20231101.NewClient(server, v20231101.WithRequestEditorFn(v20231101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
@@ -253,6 +253,79 @@ func NewCollectionInstance(t *testing.T, slug string) *v20231101.CollectionInsta
 	require.NoError(t, err)
 
 	return instance
+}
+
+func NewTPMDeviceCollection(t *testing.T) *v20231101.DeviceCollection {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	slug := Slug(t)
+	displayName := "Collection " + slug
+
+	req := v20231101.DeviceCollection{
+		Slug:        slug,
+		DisplayName: displayName,
+		DeviceType:  v20231101.DeviceCollectionDeviceTypeTpm,
+	}
+	root, intermediate := CACerts(t)
+	req.DeviceTypeConfiguration.FromTpm(v20231101.Tpm{
+		AttestorRoots:         &root,
+		AttestorIntermediates: &intermediate,
+	})
+
+	resp, err := client.PutDeviceCollection(context.Background(), slug, &v20231101.PutDeviceCollectionParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	dc := &v20231101.DeviceCollection{}
+	err = json.Unmarshal(body, dc)
+	require.NoError(t, err)
+
+	return dc
+}
+
+func NewDeviceCollectionAccount(t *testing.T) (*v20231101.DeviceCollectionAccount, string) {
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	authority := NewAuthority(t)
+	dc := NewTPMDeviceCollection(t)
+	account, _ := NewAccount(t)
+	slug := Slug(t)
+
+	req := v20231101.DeviceCollectionAccount{
+		AuthorityID: &authority.Id,
+		AccountID:   *account.Id,
+		Slug:        slug,
+		DisplayName: "tcacc " + slug,
+		CertificateInfo: &v20231101.EndpointCertificateInfo{
+			Type: "X509",
+		},
+	}
+	cn := &v20231101.CertificateField{}
+	cn.FromCertificateFieldStatic(v20231101.CertificateFieldStatic{Static: "testacc"})
+	err = req.FromX509Fields(v20231101.X509Fields{
+		CommonName: cn,
+	})
+	require.NoError(t, err)
+
+	resp, err := client.PutDeviceCollectionAccount(context.Background(), dc.Slug, slug, &v20231101.PutDeviceCollectionAccountParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusOK, resp.StatusCode, "got %d: %s", resp.StatusCode, body)
+
+	dca := &v20231101.DeviceCollectionAccount{}
+	err = json.Unmarshal(body, dca)
+	require.NoError(t, err)
+
+	return dca, dc.Slug
 }
 
 func Slug(t *testing.T) string {

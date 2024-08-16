@@ -121,8 +121,6 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	workload, props, err := utils.Describe("workload")
-
-	certInfo, certInfoProps, err := utils.Describe("endpointCertificateInfo")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -131,7 +129,16 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	certData, _, err := utils.Describe("x509Fields")
+	certInfo, err := NewCertificateInfoResourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI spec",
+			err.Error(),
+		)
+		return
+	}
+
+	certData, err := NewCertificateDataResourceSchema()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -157,7 +164,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	keyInfo, keyInfoProps, err := utils.Describe("endpointKeyInfo")
+	keyInfo, err := NewKeyInfoResourceSchema()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -166,7 +173,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	reloadInfo, reloadInfoProps, err := utils.Describe("endpointReloadInfo")
+	reloadInfo, err := NewReloadInfoResourceSchema()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI spec",
@@ -216,182 +223,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					setplanmodifier.UseStateForUnknown(),
 				},
 			},
-
-			"key_info": schema.SingleNestedAttribute{
-				// This object is not required by the API but a default object
-				// will always be returned with format, type and protection set to
-				// "DEFAULT". To avoid "inconsistent result after apply" errors
-				// require these fields to be set explicitly in terraform.
-				Required:            true,
-				MarkdownDescription: keyInfo,
-				Attributes: map[string]schema.Attribute{
-					"type": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: keyInfoProps["type"],
-					},
-					"format": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: keyInfoProps["format"],
-					},
-					"pub_file": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: keyInfoProps["pubFile"],
-					},
-					"protection": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: keyInfoProps["protection"],
-					},
-				},
-			},
-			"reload_info": schema.SingleNestedAttribute{
-				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: reloadInfo,
-				Attributes: map[string]schema.Attribute{
-					"method": schema.StringAttribute{
-						Required:            true,
-						MarkdownDescription: reloadInfoProps["method"],
-					},
-					"pid_file": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: reloadInfoProps["pidFile"],
-					},
-					"signal": schema.Int64Attribute{
-						Optional:            true,
-						MarkdownDescription: reloadInfoProps["signal"],
-					},
-					"unit_name": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: reloadInfoProps["unitName"],
-					},
-				},
-			},
-			"certificate_data": schema.SingleNestedAttribute{
-				Optional:            false,
-				Computed:            false,
-				Required:            true,
-				MarkdownDescription: certData,
-				Attributes: map[string]schema.Attribute{
-					"common_name": schema.SingleNestedAttribute{
-						Optional: false,
-						Required: true,
-						// TODO
-						// MarkdownDescription:
-						Attributes: map[string]schema.Attribute{
-							"static": schema.StringAttribute{
-								Optional: true,
-							},
-							"device_metadata": schema.StringAttribute{
-								Optional: true,
-							},
-						},
-					},
-					"sans": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"organization": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"organizational_unit": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"locality": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"country": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"province": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"street_address": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-					"postal_code": schema.SingleNestedAttribute{
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"static": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-							"device_metadata": schema.ListAttribute{
-								ElementType: types.StringType,
-								Optional:    true,
-							},
-						},
-					},
-				},
-			},
+			"key_info":         keyInfo,
+			"reload_info":      reloadInfo,
+			"certificate_data": certData,
+			"certificate_info": certInfo,
 			"hooks": schema.SingleNestedAttribute{
 				Optional:            true,
 				Computed:            true,
@@ -446,45 +281,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								MarkdownDescription: hookProps["onError"],
 							},
 						},
-					},
-				},
-			},
-			"certificate_info": schema.SingleNestedAttribute{
-				Required:            true,
-				MarkdownDescription: certInfo,
-				Attributes: map[string]schema.Attribute{
-					"type": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["type"],
-						Required:            true,
-					},
-					"duration": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["duration"],
-						Optional:            true,
-						Computed:            true,
-					},
-					"crt_file": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["crtFile"],
-						Optional:            true,
-					},
-					"key_file": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["keyFile"],
-						Optional:            true,
-					},
-					"root_file": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["rootFile"],
-						Optional:            true,
-					},
-					"uid": schema.Int64Attribute{
-						MarkdownDescription: certInfoProps["uid"],
-						Optional:            true,
-					},
-					"gid": schema.Int64Attribute{
-						MarkdownDescription: certInfoProps["gid"],
-						Optional:            true,
-					},
-					"mode": schema.Int64Attribute{
-						MarkdownDescription: certInfoProps["mode"],
-						Optional:            true,
 					},
 				},
 			},

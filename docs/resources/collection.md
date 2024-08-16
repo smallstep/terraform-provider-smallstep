@@ -33,7 +33,6 @@ resource "smallstep_collection" "tpms" {
 ### Read-Only
 
 - `created_at` (String) Timestamp in RFC3339 format when the collections was created
-- `id` (String) Internal use only
 - `instance_count` (Number) The number of instances in the collection.
 - `updated_at` (String) Timestamp in RFC3339 format when the collections was last updated
 
