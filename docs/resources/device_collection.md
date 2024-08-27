@@ -93,7 +93,7 @@ resource "smallstep_device_collection" "azure" {
 
 ### Required
 
-- `admin_emails` (Set of String) Users that will have admin access to manage the agents authority, which will be created if it does not already exist. Ignored if the agent authority already exists. Never returned in API responses.
+- `authority_id` (String) A UUID identifying the authority to issue certificates for the agent running on devices in the collection.
 - `device_type` (String) Must match the deviceTypeConfiguration. Cannot be changed. Allowed values: `aws-vm` `azure-vm` `gcp-vm` `tpm`
 - `display_name` (String)
 - `slug` (String)
@@ -104,10 +104,6 @@ resource "smallstep_device_collection" "azure" {
 - `azure_vm` (Attributes) (see [below for nested schema](#nestedatt--azure_vm))
 - `gcp_vm` (Attributes) Configuration for the GCP provisioner for device collections of GCP instances. At least one service account or project ID must be set. (see [below for nested schema](#nestedatt--gcp_vm))
 - `tpm` (Attributes) Configuration for a device collection of machines with TPMs. (see [below for nested schema](#nestedatt--tpm))
-
-### Read-Only
-
-- `id` (String) Internal use only
 
 <a id="nestedatt--aws_vm"></a>
 ### Nested Schema for `aws_vm`
