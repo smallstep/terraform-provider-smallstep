@@ -10,6 +10,7 @@ import (
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 	"github.com/stretchr/testify/require"
@@ -23,6 +24,7 @@ var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
 		attestation_authority.NewResource,
+		authority.NewResource,
 	},
 }
 
@@ -33,10 +35,17 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 func TestAccDeviceCollectionResource(t *testing.T) {
 	slug := utils.Slug(t)
 	awsRequired := fmt.Sprintf(`
+resource "smallstep_authority" "agent" {
+        name = "Agent"
+        subdomain = "agent"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "aws_required_only" {
 	slug = %q
 	display_name = "EC2 West"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.agent.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
@@ -44,10 +53,17 @@ resource "smallstep_device_collection" "aws_required_only" {
 }`, slug)
 
 	updated := fmt.Sprintf(`
+resource "smallstep_authority" "agent" {
+        name = "Agent"
+        subdomain = "agent"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "aws_required_only" {
 	slug = %q
 	display_name = "EC2 East"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.agent.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
@@ -63,6 +79,7 @@ resource "smallstep_device_collection" "aws_required_only" {
 					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "slug", slug),
 					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "display_name", "EC2 West"),
 					helper.TestCheckResourceAttr("smallstep_device_collection.aws_required_only", "aws_vm.accounts.0", "0123456789"),
+					helper.TestMatchResourceAttr("smallstep_device_collection.aws_required_only", "authority_id", utils.UUID),
 				),
 			},
 			{
@@ -82,10 +99,17 @@ resource "smallstep_device_collection" "aws_required_only" {
 
 	slug = utils.Slug(t)
 	awsOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_authority" "aws" {
+        name = "AWS"
+        subdomain = "aws"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "aws_optional_empty" {
 	slug = %q
 	display_name = "EC2 West"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.aws.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
@@ -107,10 +131,17 @@ resource "smallstep_device_collection" "aws_optional_empty" {
 
 	slug = utils.Slug(t)
 	awsOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_authority" "aws" {
+        name = "AWS"
+        subdomain = "aws"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "aws_optional_nonempty" {
 	slug = %q
 	display_name = "EC2 West"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.aws.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
@@ -132,10 +163,17 @@ resource "smallstep_device_collection" "aws_optional_nonempty" {
 
 	slug = utils.Slug(t)
 	gcpRequired := fmt.Sprintf(`
+resource "smallstep_authority" "gcp" {
+        name = "GCP"
+        subdomain = "gcp"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "gcp_required_only" {
 	slug = %q
 	display_name = "GCE"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.gcp.id
 	device_type = "gcp-vm"
 	gcp_vm = {
 		service_accounts = ["0123456789"]
@@ -144,10 +182,17 @@ resource "smallstep_device_collection" "gcp_required_only" {
 }`, slug)
 
 	updatedGCPRequired := fmt.Sprintf(`
+resource "smallstep_authority" "gcp" {
+        name = "GCP"
+        subdomain = "gcp"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "gcp_required_only" {
 	slug = %q
 	display_name = "Google Compute Engine"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.gcp.id
 	device_type = "gcp-vm"
 	gcp_vm = {
 		service_accounts = ["0123456789"]
@@ -183,10 +228,17 @@ resource "smallstep_device_collection" "gcp_required_only" {
 
 	slug = utils.Slug(t)
 	gcpOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_authority" "gcp" {
+        name = "GCP"
+        subdomain = "gcp2"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "gcp_optional_empty" {
 	slug = %q
 	display_name = "GCE"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.gcp.id
 	device_type = "gcp-vm"
 	gcp_vm = {
 		service_accounts = ["0123456789"]
@@ -208,10 +260,17 @@ resource "smallstep_device_collection" "gcp_optional_empty" {
 
 	slug = utils.Slug(t)
 	gcpOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_authority" "gcp" {
+        name = "GCP"
+        subdomain = "gcp3"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "gcp_optional_nonempty" {
 	slug = %q
 	display_name = "GCE"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.gcp.id
 	device_type = "gcp-vm"
 	gcp_vm = {
 		project_ids = ["prod-123"]
@@ -233,10 +292,17 @@ resource "smallstep_device_collection" "gcp_optional_nonempty" {
 
 	slug = utils.Slug(t)
 	azureRequired := fmt.Sprintf(`
+resource "smallstep_authority" "azure" {
+        name = "Azure"
+        subdomain = "azure"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "azure_required_only" {
 	slug = %q
 	display_name = "Azure VMs"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.azure.id
 	device_type = "azure-vm"
 	azure_vm = {
 		resource_groups = ["0123456789"]
@@ -245,10 +311,17 @@ resource "smallstep_device_collection" "azure_required_only" {
 }`, slug)
 
 	updatedAzureRequired := fmt.Sprintf(`
+resource "smallstep_authority" "azure" {
+        name = "Azure"
+        subdomain = "azure"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "azure_required_only" {
 	slug = %q
 	display_name = "Azure Instances"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.azure.id
 	device_type = "azure-vm"
 	azure_vm = {
 		resource_groups = ["0123456789"]
@@ -285,10 +358,17 @@ resource "smallstep_device_collection" "azure_required_only" {
 
 	slug = utils.Slug(t)
 	azureOptionalEmpty := fmt.Sprintf(`
+resource "smallstep_authority" "azure" {
+        name = "Azure Agents"
+        subdomain = "azure"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "azure_optional_empty" {
 	slug = %q
 	display_name = "Azure VMs"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.azure.id
 	device_type = "azure-vm"
 	azure_vm = {
 		tenant_id = "7"
@@ -313,10 +393,17 @@ resource "smallstep_device_collection" "azure_optional_empty" {
 
 	slug = utils.Slug(t)
 	azureOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_authority" "azure" {
+        name = "Azure Agents"
+        subdomain = "azure2"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "azure_optional_nonempty" {
 	slug = %q
 	display_name = "Azure VMs"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.azure.id
 	device_type = "azure-vm"
 	azure_vm = {
 		tenant_id = "7"
@@ -347,10 +434,17 @@ resource "smallstep_attestation_authority" "attest_ca" {
 	attestor_roots = %q
 }
 
+resource "smallstep_authority" "linux_agents" {
+        name = "Linux Agents"
+        subdomain = "linux"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "tpm_required_only" {
 	slug = %q
 	display_name = "TPMs"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.linux_agents.id
 	device_type = "tpm"
 	tpm = {}
 	depends_on = [smallstep_attestation_authority.attest_ca]
@@ -362,10 +456,17 @@ resource "smallstep_attestation_authority" "attest_ca" {
 	attestor_roots = %q
 }
 
+resource "smallstep_authority" "linux_agents" {
+        name = "Linux Agents"
+        subdomain = "linux"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "tpm_required_only" {
 	slug = %q
 	display_name = "TPM Servers"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.linux_agents.id
 	device_type = "tpm"
 	tpm = {
 		require_eab = true
@@ -409,10 +510,17 @@ resource "smallstep_attestation_authority" "attest_ca" {
 	attestor_roots = %q
 }
 
+resource "smallstep_authority" "linux_agents" {
+        name = "Linux Agents"
+        subdomain = "linux2"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "tpm_optional_empty" {
 	slug = %q
 	display_name = "TPM Servers"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.linux_agents.id
 	device_type = "tpm"
 	tpm = {
 		force_cn = false
@@ -443,10 +551,17 @@ resource "smallstep_device_collection" "tpm_optional_empty" {
 
 	slug = utils.Slug(t)
 	tpmOptionalNonempty := fmt.Sprintf(`
+resource "smallstep_authority" "linux_agents" {
+        name = "Linux Agents"
+        subdomain = "linux3"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "tpm_optional_nonempty" {
 			slug = %q
 			display_name = "TPM Servers"
-			admin_emails = ["andrew@smallstep.com"]
+			authority_id = smallstep_authority.linux_agents.id
 			device_type = "tpm"
 			tpm = {
 				attestor_roots = %q

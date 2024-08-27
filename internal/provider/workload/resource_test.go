@@ -2,13 +2,16 @@ package workload
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
@@ -22,6 +25,10 @@ var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
 		device_collection.NewResource,
+		authority.NewResource,
+	},
+	DataSourceFactories: []func() datasource.DataSource{
+		authority.NewDataSource,
 	},
 }
 
@@ -33,24 +40,39 @@ func TestAccWorkloadResource(t *testing.T) {
 	dcSlug := utils.Slug(t)
 	genericSlug := utils.Slug(t)
 	nginxSlug := utils.Slug(t)
+	caDomain := os.Getenv("SMALLSTEP_CA_DOMAIN")
+	if caDomain == "" {
+		caDomain = ".step-e2e.ca.smallstep.com"
+	}
+	workloadsDomain := "workloads" + caDomain
 	config1 := fmt.Sprintf(`
+resource "smallstep_authority" "agent" {
+        name = "Agent"
+        subdomain = "agent"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "ec2_east" {
 	slug = %q
 	display_name = "EC2 East"
-	admin_emails = ["andrew@smallstep.com"]
 	device_type = "aws-vm"
+	authority_id = smallstep_authority.agent.id
 	aws_vm = {
 		accounts = ["0123456789"]
 	}
 }
 
+data "smallstep_authority" "workloads" {
+	domain = %q
+}
+
 resource "smallstep_workload" "generic" {
 	depends_on = [smallstep_device_collection.ec2_east]
-	workload_type = "generic"
-	admin_emails = ["andrew@smallstep.com"]
 	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
 	slug = %q
 	display_name = "tfprovider generic"
+	authority_id = data.smallstep_authority.workloads.id
 
 	certificate_info = {
 		type = "X509"
@@ -94,10 +116,10 @@ resource "smallstep_workload" "generic" {
 resource "smallstep_workload" "nginx" {
 	depends_on = [smallstep_device_collection.ec2_east]
 	workload_type = "nginx"
-	admin_emails = ["andrew@smallstep.com"]
 	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
 	slug = %q
 	display_name = "tfprovider Nginx"
+	authority_id = data.smallstep_authority.workloads.id
 
 	certificate_info = {
 		type = "X509"
@@ -168,26 +190,36 @@ resource "smallstep_workload" "nginx" {
 		}
 	}
 }
-`, dcSlug, genericSlug, nginxSlug)
+`, dcSlug, workloadsDomain, genericSlug, nginxSlug)
 
 	config2 := fmt.Sprintf(`
+resource "smallstep_authority" "agent" {
+        name = "Agent"
+        subdomain = "agent"
+        type = "devops"
+        admin_emails = ["andrew@smallstep.com"]
+}
+
 resource "smallstep_device_collection" "ec2_east" {
 	slug = %q
 	display_name = "EC2 East"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = smallstep_authority.agent.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
 	}
 }
 
+data "smallstep_authority" "workloads" {
+	domain = %q
+}
+
 resource "smallstep_workload" "generic" {
 	depends_on = [smallstep_device_collection.ec2_east]
-	workload_type = "generic"
-	admin_emails = ["andrew@smallstep.com"]
 	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
 	slug = %q
 	display_name = "tfprovider generic"
+	authority_id = data.smallstep_authority.workloads.id
 
 	certificate_info = {
 		type = "X509"
@@ -232,10 +264,10 @@ resource "smallstep_workload" "generic" {
 resource "smallstep_workload" "nginx" {
 	depends_on = [smallstep_device_collection.ec2_east]
 	workload_type = "nginx"
-	admin_emails = ["andrew@smallstep.com"]
 	device_collection_slug = resource.smallstep_device_collection.ec2_east.slug
 	slug = %q
 	display_name = "tfprovider Nginx"
+	authority_id = data.smallstep_authority.workloads.id
 
 	certificate_info = {
 		type = "X509"
@@ -291,7 +323,7 @@ resource "smallstep_workload" "nginx" {
 			static = "nginx"
 		}
 	}
-}`, dcSlug, genericSlug, nginxSlug)
+}`, dcSlug, workloadsDomain, genericSlug, nginxSlug)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -300,6 +332,7 @@ resource "smallstep_workload" "nginx" {
 				Config: config1,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
+					helper.TestMatchResourceAttr("smallstep_workload.nginx", "authority_id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.duration", "168h"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.crt_file", "db.crt"),
@@ -324,6 +357,7 @@ resource "smallstep_workload" "nginx" {
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "reload_info.signal", "1"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_data.common_name.static", "nginx.internal"),
 
+					helper.TestCheckResourceAttr("smallstep_workload.generic", "workload_type", "generic"),
 					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.static.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_workload.generic", "certificate_data.sans.static.0", "host.internal"),
 
@@ -359,6 +393,7 @@ resource "smallstep_workload" "nginx" {
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "display_name", "tfprovider Nginx"),
+					helper.TestMatchResourceAttr("smallstep_workload.nginx", "authority_id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.type", "X509"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.duration", "167h"),
 					helper.TestCheckResourceAttr("smallstep_workload.nginx", "certificate_info.crt_file", "pg.crt"),

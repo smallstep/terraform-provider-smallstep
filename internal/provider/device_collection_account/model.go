@@ -45,7 +45,7 @@ func toAPI(ctx context.Context, model *Model) (*v20231101.DeviceCollectionAccoun
 	dca := &v20231101.DeviceCollectionAccount{
 		Slug:            model.Slug.ValueString(),
 		AccountID:       model.AccountID.ValueString(),
-		AuthorityID:     model.AuthorityID.ValueStringPointer(),
+		AuthorityID:     model.AuthorityID.ValueString(),
 		DisplayName:     model.DisplayName.ValueString(),
 		CertificateInfo: certInfo.ToAPI(),
 		KeyInfo:         keyInfo.ToAPI(),
@@ -75,7 +75,7 @@ func fromAPI(ctx context.Context, dca *v20231101.DeviceCollectionAccount, dcSlug
 		AccountID:            types.StringValue(dca.AccountID),
 		DeviceCollectionSlug: types.StringValue(dcSlug),
 		DisplayName:          types.StringValue(dca.DisplayName),
-		AuthorityID:          types.StringValue(utils.Deref(dca.AuthorityID)),
+		AuthorityID:          types.StringValue(dca.AuthorityID),
 	}
 
 	x509Fields, err := dca.AsX509Fields()

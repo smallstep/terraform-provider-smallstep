@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -105,14 +104,12 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), remote.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), remote.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), remote.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("authority_id"), remote.AuthorityID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), remote.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), remote.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), remote.GCPDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
-	// Not returned from API. Use state.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), state.AdminEmails)...)
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -165,10 +162,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		MarkdownDescription: component,
 
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				MarkdownDescription: "Internal use only",
-				Computed:            true,
-			},
 			"slug": schema.StringAttribute{
 				MarkdownDescription: props["slug"],
 				Required:            true,
@@ -176,17 +169,13 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
+			"authority_id": schema.StringAttribute{
+				MarkdownDescription: props["authorityID"],
+				Required:            true,
+			},
 			"display_name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
 				Required:            true,
-			},
-			"admin_emails": schema.SetAttribute{
-				MarkdownDescription: props["adminEmails"],
-				ElementType:         types.StringType,
-				Required:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"device_type": schema.StringAttribute{
 				MarkdownDescription: props["deviceType"],
@@ -332,14 +321,12 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("authority_id"), state.AuthorityID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
-	// Not returned from the API. Use plan.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -395,14 +382,12 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("slug"), state.Slug)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("display_name"), state.DisplayName)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), state.ID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("authority_id"), state.AuthorityID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("device_type"), state.DeviceType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("aws_vm"), state.AWSDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("azure_vm"), state.AzureDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("gcp_vm"), state.GCPDevice)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tpm"), state.TPMDevice)...)
-	// Not returned from the API. Use plan.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_emails"), plan.AdminEmails)...)
 }
 
 func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

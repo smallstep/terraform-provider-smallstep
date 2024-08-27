@@ -16,15 +16,13 @@ const collectionTypeName = "smallstep_device_collection"
 
 type Model struct {
 	Slug        types.String `tfsdk:"slug"`
+	AuthorityID types.String `tfsdk:"authority_id"`
 	DisplayName types.String `tfsdk:"display_name"`
-	AdminEmails types.Set    `tfsdk:"admin_emails"`
 	DeviceType  types.String `tfsdk:"device_type"`
 	AWSDevice   *AWSDevice   `tfsdk:"aws_vm"`
 	GCPDevice   *GCPDevice   `tfsdk:"gcp_vm"`
 	AzureDevice *AzureDevice `tfsdk:"azure_vm"`
 	TPMDevice   *TPMDevice   `tfsdk:"tpm"`
-	// https://developer.hashicorp.com/terraform/plugin/framework/acctests#implement-id-attribute
-	ID types.String `tfsdk:"id"`
 }
 
 type AWSDevice struct {
@@ -56,10 +54,10 @@ func fromAPI(ctx context.Context, collection *v20231101.DeviceCollection, state 
 	var diags diag.Diagnostics
 
 	model := &Model{
-		ID:          types.StringValue(collection.Slug),
 		Slug:        types.StringValue(collection.Slug),
 		DisplayName: types.StringValue(collection.DisplayName),
 		DeviceType:  types.StringValue(string(collection.DeviceType)),
+		AuthorityID: types.StringValue(collection.AuthorityID),
 	}
 
 	switch collection.DeviceType {
@@ -198,14 +196,11 @@ func fromAPI(ctx context.Context, collection *v20231101.DeviceCollection, state 
 func toAPI(ctx context.Context, model *Model) (*v20231101.DeviceCollection, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	var adminEmails []string
-	diags.Append(model.AdminEmails.ElementsAs(ctx, &adminEmails, false)...)
-
 	dc := &v20231101.DeviceCollection{
 		Slug:        model.Slug.ValueString(),
 		DisplayName: model.DisplayName.ValueString(),
-		AdminEmails: &adminEmails,
 		DeviceType:  v20231101.DeviceCollectionDeviceType(model.DeviceType.ValueString()),
+		AuthorityID: model.AuthorityID.ValueString(),
 	}
 
 	switch dc.DeviceType {

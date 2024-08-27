@@ -31,12 +31,10 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-func TestAccAccountResource(t *testing.T) {
-	t.Parallel()
-
-	dc := utils.NewTPMDeviceCollection(t)
-	account, _ := utils.NewAccount(t)
+func TestAccDeviceCollectionAccountResource(t *testing.T) {
 	authority := utils.NewAuthority(t)
+	dc := utils.NewTPMDeviceCollection(t, authority.Id)
+	account, _ := utils.NewAccount(t)
 	slug := utils.Slug(t)
 
 	config := fmt.Sprintf(`
