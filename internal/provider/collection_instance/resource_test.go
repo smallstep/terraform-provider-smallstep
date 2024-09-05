@@ -2,6 +2,7 @@ package collection_instance
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
@@ -29,6 +31,7 @@ var provider = &testprovider.SmallstepTestProvider{
 	},
 	DataSourceFactories: []func() datasource.DataSource{
 		NewDataSource,
+		authority.NewDataSource,
 	},
 }
 
@@ -38,11 +41,20 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 
 func TestAccDeviceInstance(t *testing.T) {
 	slug := utils.Slug(t)
+	caDomain := os.Getenv("SMALLSTEP_CA_DOMAIN")
+	if caDomain == "" {
+		caDomain = ".step-e2e.ca.smallstep.com"
+	}
+	agentsDomain := "agents" + caDomain
 	config1 := fmt.Sprintf(`
+data "smallstep_authority" "agents" {
+	domain = %q
+}
+
 resource "smallstep_device_collection" "ec2_east" {
 	slug = %q
 	display_name = "EC2 East"
-	admin_emails = ["andrew@smallstep.com"]
+	authority_id = data.smallstep_authority.agents.id
 	device_type = "aws-vm"
 	aws_vm = {
 		accounts = ["0123456789"]
@@ -54,7 +66,7 @@ resource "smallstep_collection_instance" "thing1" {
 	collection_slug = smallstep_device_collection.ec2_east.slug
 	id = "i-%s"
 	data = "{\"name\":\"thing1\"}"
-}`, slug, slug)
+}`, agentsDomain, slug, slug)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,

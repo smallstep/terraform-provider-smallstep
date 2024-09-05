@@ -255,7 +255,7 @@ func NewCollectionInstance(t *testing.T, slug string) *v20231101.CollectionInsta
 	return instance
 }
 
-func NewTPMDeviceCollection(t *testing.T) *v20231101.DeviceCollection {
+func NewTPMDeviceCollection(t *testing.T, authorityID string) *v20231101.DeviceCollection {
 	client, err := SmallstepAPIClientFromEnv()
 	require.NoError(t, err)
 
@@ -266,6 +266,7 @@ func NewTPMDeviceCollection(t *testing.T) *v20231101.DeviceCollection {
 		Slug:        slug,
 		DisplayName: displayName,
 		DeviceType:  v20231101.DeviceCollectionDeviceTypeTpm,
+		AuthorityID: authorityID,
 	}
 	root, intermediate := CACerts(t)
 	req.DeviceTypeConfiguration.FromTpm(v20231101.Tpm{
@@ -293,12 +294,12 @@ func NewDeviceCollectionAccount(t *testing.T) (*v20231101.DeviceCollectionAccoun
 	require.NoError(t, err)
 
 	authority := NewAuthority(t)
-	dc := NewTPMDeviceCollection(t)
+	dc := NewTPMDeviceCollection(t, authority.Id)
 	account, _ := NewAccount(t)
 	slug := Slug(t)
 
 	req := v20231101.DeviceCollectionAccount{
-		AuthorityID: &authority.Id,
+		AuthorityID: authority.Id,
 		AccountID:   *account.Id,
 		Slug:        slug,
 		DisplayName: "tcacc " + slug,

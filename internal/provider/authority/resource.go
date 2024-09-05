@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -374,11 +375,16 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := a.client.GetAuthority(ctx, data.ID.ValueString(), &v20231101.GetAuthorityParams{})
+	id := data.ID.ValueString()
+	if id == "" {
+		id = data.Domain.ValueString()
+	}
+
+	httpResp, err := a.client.GetAuthority(ctx, id, &v20231101.GetAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read authority %q: %v", data.ID, err),
+			fmt.Sprintf("Failed to read authority %q: %v", id, err),
 		)
 		return
 	}
@@ -402,11 +408,12 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err := json.NewDecoder(httpResp.Body).Decode(authority); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal authority %q: %v", data.ID.ValueString(), err),
+			fmt.Sprintf("Failed to unmarshal authority %q: %v", id, err),
 		)
 		return
 	}
 
+	data.ID = types.StringValue(authority.Id)
 	data.Name = types.StringValue(authority.Name)
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
@@ -434,7 +441,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		data.Subdomain = types.StringValue(parts[0])
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read authority %q resource", data.ID.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("read authority %q resource", id))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
@@ -476,5 +483,9 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 }
 
 func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	if _, err := uuid.Parse(req.ID); err != nil {
+		resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("domain"), req.ID)...)
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 }

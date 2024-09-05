@@ -111,25 +111,21 @@ resource "smallstep_workload" "redis" {
 
 ### Required
 
-- `admin_emails` (Set of String) Users that will have admin access to manage the workloads authority, which will be created if it does not already exist. Ignored if the workloads authority already exists. Never returned in responses.
+- `authority_id` (String) A UUID identifying the authority to issue certificates for the workload.
 - `certificate_data` (Attributes) (see [below for nested schema](#nestedatt--certificate_data))
 - `certificate_info` (Attributes) Details on a managed certificate. (see [below for nested schema](#nestedatt--certificate_info))
 - `device_collection_slug` (String) Slug of the device collection the workload will be added to.
 - `display_name` (String) A friendly name for the workload. Also used as the Common Name, if no static SANs are provided.
 - `key_info` (Attributes) The attributes of the cryptographic key. (see [below for nested schema](#nestedatt--key_info))
 - `slug` (String) Used as the identifier for the workload.
-- `workload_type` (String) The type of workload being deployed.
-Possible values are `etcd` `generic` `git` `grafana` `haproxy` `httpd` `kafka` `mysql` `nginx` `nodejs` `postgres` `redis` `tomcat` and `zookeeper`. 
-Use `generic` for a basic certificate workload.
 
 ### Optional
 
 - `hooks` (Attributes) The collection of commands to run when a certificate for a managed endpoint is signed or renewed. (see [below for nested schema](#nestedatt--hooks))
 - `reload_info` (Attributes) The properties used to reload a service. (see [below for nested schema](#nestedatt--reload_info))
-
-### Read-Only
-
-- `id` (String) Internal use only.
+- `workload_type` (String) The type of workload being deployed.
+Possible values are `etcd` `generic` `git` `grafana` `haproxy` `httpd` `kafka` `mysql` `nginx` `nodejs` `postgres` `redis` `tomcat` and `zookeeper`. 
+Use `generic` for a basic certificate workload.
 
 <a id="nestedatt--certificate_data"></a>
 ### Nested Schema for `certificate_data`

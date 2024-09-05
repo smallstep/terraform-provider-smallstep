@@ -56,16 +56,20 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	httpResp, err := a.client.GetAuthority(ctx, data.ID.ValueString(), &v20231101.GetAuthorityParams{})
+	id := data.ID.ValueString()
+	if id == "" {
+		id = data.Domain.ValueString()
+	}
+
+	httpResp, err := a.client.GetAuthority(ctx, id, &v20231101.GetAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read authority %s: %v", data.ID.String(), err),
+			fmt.Sprintf("Failed to read authority %s: %v", id, err),
 		)
 		return
 	}
@@ -75,7 +79,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d reading authority %s: %s", reqID, httpResp.StatusCode, data.ID.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading authority %s: %s", reqID, httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -89,6 +93,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		return
 	}
 
+	data.ID = types.StringValue(authority.Id)
 	data.Name = types.StringValue(authority.Name)
 	data.Type = types.StringValue(string(authority.Type))
 	data.Domain = types.StringValue(authority.Domain)
@@ -130,7 +135,13 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				MarkdownDescription: properties["id"],
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+			},
+			"domain": schema.StringAttribute{
+				MarkdownDescription: properties["domain"],
+				Optional:            true,
+				Computed:            true,
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: properties["name"],
@@ -138,10 +149,6 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			},
 			"type": schema.StringAttribute{
 				MarkdownDescription: properties["type"],
-				Computed:            true,
-			},
-			"domain": schema.StringAttribute{
-				MarkdownDescription: properties["domain"],
 				Computed:            true,
 			},
 			"fingerprint": schema.StringAttribute{

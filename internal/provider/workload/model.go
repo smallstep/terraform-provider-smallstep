@@ -15,16 +15,15 @@ import (
 const typeName = "smallstep_workload"
 
 type Model struct {
-	ID                   types.String `tfsdk:"id"`
 	WorkloadType         types.String `tfsdk:"workload_type"`
 	DisplayName          types.String `tfsdk:"display_name"`
 	Slug                 types.String `tfsdk:"slug"`
 	DeviceCollectionSlug types.String `tfsdk:"device_collection_slug"`
+	AuthorityID          types.String `tfsdk:"authority_id"`
 	CertificateInfo      types.Object `tfsdk:"certificate_info"`
 	KeyInfo              types.Object `tfsdk:"key_info"`
 	ReloadInfo           types.Object `tfsdk:"reload_info"`
 	Hooks                types.Object `tfsdk:"hooks"`
-	AdminEmails          types.Set    `tfsdk:"admin_emails"`
 	CertificateData      types.Object `tfsdk:"certificate_data"`
 }
 
@@ -192,11 +191,14 @@ func fromAPI(ctx context.Context, workload *v20231101.Workload, state utils.Attr
 	reloadInfo, ds := ReloadInfoFromAPI(ctx, workload.ReloadInfo, state)
 	diags.Append(ds...)
 
+	workloadType, d := utils.ToOptionalString(ctx, workload.WorkloadType, state, path.Root("workload_type"))
+	diags.Append(d...)
+
 	model := &Model{
-		ID:              types.StringValue(workload.Slug),
 		Slug:            types.StringValue(workload.Slug),
-		WorkloadType:    types.StringValue(workload.WorkloadType),
+		WorkloadType:    workloadType,
 		DisplayName:     types.StringValue(workload.DisplayName),
+		AuthorityID:     types.StringValue(workload.AuthorityID),
 		CertificateInfo: certInfo,
 		KeyInfo:         keyInfo,
 		ReloadInfo:      reloadInfo,
@@ -409,9 +411,6 @@ func toAPI(ctx context.Context, model *Model) (*v20231101.Workload, diag.Diagnos
 	})
 	diags.Append(d...)
 
-	var adminEmails []string
-	diags.Append(model.AdminEmails.ElementsAs(ctx, &adminEmails, false)...)
-
 	ci := &CertificateInfoModel{}
 	d = model.CertificateInfo.As(ctx, &ci, basetypes.ObjectAsOptions{})
 	diags.Append(d...)
@@ -422,13 +421,13 @@ func toAPI(ctx context.Context, model *Model) (*v20231101.Workload, diag.Diagnos
 
 	workload := &v20231101.Workload{
 		DisplayName:     model.DisplayName.ValueString(),
-		WorkloadType:    model.WorkloadType.ValueString(),
+		WorkloadType:    model.WorkloadType.ValueStringPointer(),
 		Slug:            model.Slug.ValueString(),
+		AuthorityID:     model.AuthorityID.ValueString(),
 		CertificateInfo: ci.ToAPI(),
 		KeyInfo:         keyInfo.ToAPI(),
 		Hooks:           hooks,
 		ReloadInfo:      reloadInfo.ToAPI(),
-		AdminEmails:     &adminEmails,
 	}
 
 	certDataModel := &CertificateDataModel{}
