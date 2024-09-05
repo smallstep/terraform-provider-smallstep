@@ -1,3 +1,13 @@
+## 0.5.0
+
+FEATURES:
+* Add smallstep_device_collection_account resource and data source.
+* Add smallstep_account resource and data source.
+* Add support for hardware protected keys.
+
+CHANGES:
+* Use Smallstep API version v2023-11-01.
+
 ## 0.4.2
 
 CHANGES:
