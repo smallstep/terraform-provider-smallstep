@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -40,7 +40,7 @@ func NewDataSource() datasource.DataSource {
 
 // DataSource implements data.smallstep_provisioner_webhook
 type DataSource struct {
-	client *v20231101.Client
+	client *v20250101.Client
 }
 
 func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -54,12 +54,12 @@ func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequ
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20231101.Client)
+	client, ok := req.ProviderData.(*v20250101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -83,7 +83,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	if config.ID.IsNull() {
 		idOrName = config.Name.ValueString()
 	}
-	httpResp, err := a.client.GetWebhook(ctx, authorityID, provisionerID, idOrName, &v20231101.GetWebhookParams{})
+	httpResp, err := a.client.GetWebhook(ctx, authorityID, provisionerID, idOrName, &v20250101.GetWebhookParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -102,7 +102,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		return
 	}
 
-	webhook := &v20231101.ProvisionerWebhook{}
+	webhook := &v20250101.ProvisionerWebhook{}
 	if err := json.NewDecoder(httpResp.Body).Decode(webhook); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
