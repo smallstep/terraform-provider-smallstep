@@ -1,1 +1,0 @@
-terraform import smallstep_collection.devices devices
