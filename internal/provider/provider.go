@@ -12,17 +12,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/account"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/attestation_authority"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection_instance"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device_collection_account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/workload"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -155,7 +148,7 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 		token = data.BearerToken.ValueString()
 	}
 
-	client, err := v20231101.NewClient(server, v20231101.WithRequestEditorFn(v20231101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+	client, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		r.Header.Set("X-Smallstep-Api-Version", "2023-11-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
@@ -173,14 +166,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 	return []func() resource.Resource{
 		authority.NewResource,
 		provisioner.NewResource,
-		collection.NewResource,
-		collection_instance.NewResource,
-		attestation_authority.NewResource,
 		webhook.NewResource,
-		device_collection.NewResource,
-		workload.NewResource,
-		account.NewResource,
-		device_collection_account.NewResource,
 	}
 }
 
@@ -188,12 +174,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 	return []func() datasource.DataSource{
 		authority.NewDataSource,
 		provisioner.NewDataSource,
-		collection.NewDataSource,
-		collection_instance.NewDataSource,
-		attestation_authority.NewDataSource,
 		webhook.NewDataSource,
-		account.NewDataSource,
-		device_collection_account.NewDataSource,
 	}
 }
 
