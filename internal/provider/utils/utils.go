@@ -38,6 +38,10 @@ func Deref[T dereferencable](v *T) (r T) {
 	return
 }
 
+func Ref[T any](v T) *T {
+	return &v
+}
+
 func ToIntPointer(i64 *int64) *int {
 	if i64 == nil {
 		return nil
