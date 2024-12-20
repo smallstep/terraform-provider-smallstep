@@ -9,6 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
@@ -49,9 +52,12 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"id": schema.StringAttribute{
 				MarkdownDescription: props["id"],
 				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"permanent_identifier": schema.StringAttribute{
-				MarkdownDescription: props["permanent_identifier"],
+				MarkdownDescription: props["permanentIdentifier"],
 				Required:            true,
 			},
 			"serial": schema.StringAttribute{
@@ -83,11 +89,13 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: props["metadata"],
 				Optional:            true,
 				Computed:            true,
+				ElementType:         types.StringType,
 			},
 			"tags": schema.SetAttribute{
 				MarkdownDescription: props["tags"],
 				Optional:            true,
 				Computed:            true,
+				ElementType:         types.StringType,
 			},
 			"user": schema.SingleNestedAttribute{
 				MarkdownDescription: deviceUser,
@@ -104,6 +112,26 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						Required:            true,
 					},
 				},
+			},
+			"connected": schema.BoolAttribute{
+				MarkdownDescription: props["connected"],
+				Computed:            true,
+			},
+			"high_assurance": schema.BoolAttribute{
+				MarkdownDescription: props["highAssurance"],
+				Computed:            true,
+			},
+			"enrolled_at": schema.StringAttribute{
+				MarkdownDescription: props["enrolledAt"],
+				Computed:            true,
+			},
+			"approved_at": schema.StringAttribute{
+				MarkdownDescription: props["approvedAt"],
+				Computed:            true,
+			},
+			"last_seen": schema.StringAttribute{
+				MarkdownDescription: props["lastSeen"],
+				Computed:            true,
 			},
 		},
 	}
@@ -141,11 +169,20 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetAccount(ctx, state.ID.ValueString(), &v20250101.GetAccountParams{})
+	deviceID := state.ID.ValueString()
+	if deviceID == "" {
+		resp.Diagnostics.AddError(
+			"Invalid Delete Device Request",
+			"Device ID is required",
+		)
+		return
+	}
+
+	httpResp, err := r.client.GetDevice(ctx, deviceID, &v20250101.GetDeviceParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read account %q: %v", state.ID.ValueString(), err),
+			fmt.Sprintf("Failed to read device %q: %v", state.ID.ValueString(), err),
 		)
 		return
 	}
@@ -159,21 +196,21 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d reading account %s: %s", reqID, httpResp.StatusCode, state.ID.String(), utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading device %s: %s", reqID, httpResp.StatusCode, deviceID, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	account := &v20250101.Account{}
-	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
+	device := &v20250101.Device{}
+	if err := json.NewDecoder(httpResp.Body).Decode(device); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal account %s: %v", state.ID.String(), err),
+			fmt.Sprintf("Failed to unmarshal device %s: %v", deviceID, err),
 		)
 		return
 	}
 
-	remote, d := fromAPI(ctx, account, req.State)
+	remote, d := fromAPI(ctx, device, req.State)
 	resp.Diagnostics.Append(d...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -195,11 +232,11 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PostAccounts(ctx, &v20250101.PostAccountsParams{}, *reqBody)
+	httpResp, err := a.client.PostDevices(ctx, &v20250101.PostDevicesParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to create account: %v", err),
+			fmt.Sprintf("Failed to create device: %v", err),
 		)
 		return
 	}
@@ -209,21 +246,21 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d creating account: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d creating device: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	account := &v20250101.Account{}
-	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
+	device := &v20250101.Device{}
+	if err := json.NewDecoder(httpResp.Body).Decode(device); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal account: %v", err),
+			fmt.Sprintf("Failed to unmarshal device: %v", err),
 		)
 		return
 	}
 
-	model, diags := fromAPI(ctx, account, req.Plan)
+	model, diags := fromAPI(ctx, device, req.Plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -234,55 +271,60 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	plan := &Model{}
-	diags := req.Plan.Get(ctx, plan)
-	if diags.HasError() {
+	resp.Diagnostics.AddError(
+		"Update not supported",
+		"All changes require replacement",
+	)
+	/*
+		plan := &Model{}
+		diags := req.Plan.Get(ctx, plan)
+		if diags.HasError() {
+			resp.Diagnostics.Append(diags...)
+			return
+		}
+		var deviceID string
+		req.State.GetAttribute(ctx, path.Root("id"), &deviceID)
+
+		patch, diags := toAPI(ctx, plan)
+		if diags.HasError() {
+			resp.Diagnostics.Append(diags...)
+			return
+		}
+
+		httpResp, err := r.client.PatchDevice(ctx, deviceID, &v20250101.PatchDeviceParams{}, *patch)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Smallstep API Client Error",
+				err.Error(),
+			)
+			return
+		}
+		defer httpResp.Body.Close()
+
+		if httpResp.StatusCode != http.StatusOK {
+			reqID := httpResp.Header.Get("X-Request-Id")
+			resp.Diagnostics.AddError(
+				"Smallstep API Response Error",
+				fmt.Sprintf("Request %q received status %d updating device: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			)
+			return
+		}
+
+		device := &v20250101.Device{}
+		if err := json.NewDecoder(httpResp.Body).Decode(device); err != nil {
+			resp.Diagnostics.AddError(
+				"Smallstep API Client Error",
+				fmt.Sprintf("Failed to parse device update response: %v", err),
+			)
+			return
+		}
+
+		model, diags := fromAPI(ctx, device, req.Plan)
 		resp.Diagnostics.Append(diags...)
-		return
-	}
-	var accountID string
-	req.State.GetAttribute(ctx, path.Root("id"), &accountID)
 
-	account, diags := toAPI(ctx, plan)
-	if diags.HasError() {
+		diags = resp.State.Set(ctx, model)
 		resp.Diagnostics.Append(diags...)
-		return
-	}
-	account.Id = &accountID
-
-	httpResp, err := r.client.PutAccount(ctx, accountID, &v20250101.PutAccountParams{}, *account)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			err.Error(),
-		)
-		return
-	}
-	defer httpResp.Body.Close()
-
-	if httpResp.StatusCode != http.StatusOK {
-		reqID := httpResp.Header.Get("X-Request-Id")
-		resp.Diagnostics.AddError(
-			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d updating account: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
-		)
-		return
-	}
-
-	account = &v20250101.Account{}
-	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to parse account update response: %v", err),
-		)
-		return
-	}
-
-	model, diags := fromAPI(ctx, account, req.Plan)
-	resp.Diagnostics.Append(diags...)
-
-	diags = resp.State.Set(ctx, model)
-	resp.Diagnostics.Append(diags...)
+	*/
 }
 
 func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -293,20 +335,20 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	accountID := state.ID.ValueString()
-	if accountID == "" {
+	deviceID := state.ID.ValueString()
+	if deviceID == "" {
 		resp.Diagnostics.AddError(
-			"Invalid Delete Account Request",
-			"Account ID is required",
+			"Invalid Delete Device Request",
+			"Device ID is required",
 		)
 		return
 	}
 
-	httpResp, err := r.client.DeleteAccount(ctx, accountID, &v20250101.DeleteAccountParams{})
+	httpResp, err := r.client.DeleteDevice(ctx, deviceID, &v20250101.DeleteDeviceParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to delete account: %v", err),
+			fmt.Sprintf("Failed to delete device: %v", err),
 		)
 		return
 	}
@@ -316,7 +358,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d updating account: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d updating device: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}

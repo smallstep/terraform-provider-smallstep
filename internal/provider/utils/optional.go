@@ -23,6 +23,9 @@ func ToOptionalSet(ctx context.Context, remote *[]string, priorState AttributeGe
 		if diags.HasError() {
 			return types.Set{}, diags
 		}
+		if setFromState.IsUnknown() {
+			return types.SetNull(types.StringType), diags
+		}
 		if setFromState.IsNull() || len(setFromState.Elements()) == 0 {
 			return setFromState, diags
 		}
@@ -69,6 +72,9 @@ func ToOptionalString[S ~string](ctx context.Context, remote *S, priorState Attr
 		if diags.HasError() {
 			return types.String{}, diags
 		}
+		if stringFromState.IsUnknown() {
+			return types.StringNull(), diags
+		}
 		if stringFromState.IsNull() || stringFromState.ValueString() == "" {
 			return stringFromState, diags
 		}
@@ -87,6 +93,9 @@ func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGette
 		diags := priorState.GetAttribute(ctx, p, &boolFromState)
 		if diags.HasError() {
 			return types.Bool{}, diags
+		}
+		if boolFromState.IsUnknown() {
+			return types.BoolNull(), diags
 		}
 		if boolFromState.IsNull() || boolFromState.ValueBool() == false {
 			return boolFromState, diags

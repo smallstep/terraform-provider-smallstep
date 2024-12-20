@@ -80,7 +80,7 @@ func Describe(component string) (string, map[string]string, error) {
 		if s == nil || s.Value == nil {
 			continue
 		}
-		if len(s.Value.Properties) > 0 {
+		if props == nil {
 			props = s.Value.Properties
 			continue
 		}

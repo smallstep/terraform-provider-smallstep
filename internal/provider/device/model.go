@@ -115,16 +115,24 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 		metadata, d := types.MapValue(types.StringType, meta)
 		diags.Append(d...)
 		model.Metadata = metadata
+	} else {
+		model.Metadata = types.MapNull(types.StringType)
 	}
 
 	if device.ApprovedAt != nil {
 		model.ApprovedAt = types.StringValue((*device.ApprovedAt).Format(time.RFC3339))
+	} else {
+		model.ApprovedAt = types.StringNull()
 	}
 	if device.EnrolledAt != nil {
 		model.EnrolledAt = types.StringValue((*device.EnrolledAt).Format(time.RFC3339))
+	} else {
+		model.EnrolledAt = types.StringNull()
 	}
 	if device.LastSeen != nil {
 		model.LastSeen = types.StringValue((*device.LastSeen).Format(time.RFC3339))
+	} else {
+		model.LastSeen = types.StringNull()
 	}
 
 	return model, diags
@@ -136,41 +144,44 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 
 	d := &v20250101.DeviceRequest{
 		PermanentIdentifier: m.PermanentIdentifier.ValueString(),
-		DisplayId:           m.DisplayID.ValueStringPointer(),
-		DisplayName:         m.DisplayName.ValueStringPointer(),
-		Serial:              m.Serial.ValueStringPointer(),
 	}
 
-	if os := m.OS.ValueStringPointer(); os != nil {
-		d.Os = utils.Ref(v20250101.DeviceRequestOs(m.OS.ValueString()))
+	if !m.DisplayID.IsNull() && !m.DisplayID.IsUnknown() {
+		d.DisplayId = m.DisplayID.ValueStringPointer()
 	}
-	if ownership := m.Ownership.ValueStringPointer(); ownership != nil {
-		d.Ownership = utils.Ref(v20250101.DeviceRequestOwnership(m.Ownership.ValueString()))
+	if !m.DisplayName.IsNull() && !m.DisplayName.IsUnknown() {
+		d.DisplayName = m.DisplayName.ValueStringPointer()
 	}
-
-	if !m.Metadata.IsNull() {
+	if !m.Serial.IsNull() && !m.Serial.IsUnknown() {
+		d.Serial = m.Serial.ValueStringPointer()
+	}
+	if !m.OS.IsNull() && !m.OS.IsUnknown() {
+		d.Os = utils.Ref(v20250101.DeviceOS(m.OS.ValueString()))
+	}
+	if !m.Ownership.IsNull() && !m.Ownership.IsUnknown() {
+		d.Ownership = utils.Ref(v20250101.DeviceOwnership(m.Ownership.ValueString()))
+	}
+	if !m.Metadata.IsNull() && !m.Ownership.IsUnknown() {
 		meta := map[string]types.String{}
 		diag := m.Metadata.ElementsAs(ctx, &meta, false)
 		diags.Append(diag...)
 
-		var metadata []v20250101.DeviceMetadata
+		var metadata []v20250101.DeviceMetadataItem
 		for k, v := range meta {
-			metadata = append(metadata, v20250101.DeviceMetadata{
+			metadata = append(metadata, v20250101.DeviceMetadataItem{
 				Key:   k,
 				Value: v.ValueString(),
 			})
 		}
 		d.Metadata = &metadata
 	}
-
-	if !m.Tags.IsNull() {
+	if !m.Tags.IsNull() && !m.Tags.IsUnknown() {
 		var tags []string
 		diag := m.Tags.ElementsAs(ctx, &tags, false)
 		diags.Append(diag...)
 		d.Tags = &tags
 	}
-
-	if !m.User.IsNull() {
+	if !m.User.IsNull() && !m.User.IsUnknown() {
 		user := &UserModel{}
 		diag := m.User.As(ctx, &user, basetypes.ObjectAsOptions{
 			UnhandledUnknownAsEmpty: true,

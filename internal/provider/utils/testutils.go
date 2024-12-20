@@ -34,7 +34,7 @@ func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
 	}
 
 	client, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
-		r.Header.Set("X-Smallstep-Api-Version", "2023-11-01")
+		r.Header.Set("X-Smallstep-Api-Version", "2025-01-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
 	})))
