@@ -271,60 +271,105 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	resp.Diagnostics.AddError(
-		"Update not supported",
-		"All changes require replacement",
-	)
-	/*
-		plan := &Model{}
-		diags := req.Plan.Get(ctx, plan)
-		if diags.HasError() {
-			resp.Diagnostics.Append(diags...)
-			return
-		}
-		var deviceID string
-		req.State.GetAttribute(ctx, path.Root("id"), &deviceID)
-
-		patch, diags := toAPI(ctx, plan)
-		if diags.HasError() {
-			resp.Diagnostics.Append(diags...)
-			return
-		}
-
-		httpResp, err := r.client.PatchDevice(ctx, deviceID, &v20250101.PatchDeviceParams{}, *patch)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Smallstep API Client Error",
-				err.Error(),
-			)
-			return
-		}
-		defer httpResp.Body.Close()
-
-		if httpResp.StatusCode != http.StatusOK {
-			reqID := httpResp.Header.Get("X-Request-Id")
-			resp.Diagnostics.AddError(
-				"Smallstep API Response Error",
-				fmt.Sprintf("Request %q received status %d updating device: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
-			)
-			return
-		}
-
-		device := &v20250101.Device{}
-		if err := json.NewDecoder(httpResp.Body).Decode(device); err != nil {
-			resp.Diagnostics.AddError(
-				"Smallstep API Client Error",
-				fmt.Sprintf("Failed to parse device update response: %v", err),
-			)
-			return
-		}
-
-		model, diags := fromAPI(ctx, device, req.Plan)
+	plan := &Model{}
+	diags := req.Plan.Get(ctx, plan)
+	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
+		return
+	}
+	var deviceID string
+	req.State.GetAttribute(ctx, path.Root("id"), &deviceID)
 
-		diags = resp.State.Set(ctx, model)
+	resource, diags := toAPI(ctx, plan)
+	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
-	*/
+		return
+	}
+
+	patch := v20250101.DevicePatch{}
+	var remove []v20250101.DevicePatchRemove
+
+	if resource.DisplayId == nil {
+		remove = append(remove, v20250101.DisplayId)
+	} else {
+		patch.DisplayId = resource.DisplayId
+	}
+
+	if resource.DisplayName == nil {
+		remove = append(remove, v20250101.DisplayName)
+	} else {
+		patch.DisplayName = resource.DisplayName
+	}
+
+	if resource.Metadata == nil {
+		remove = append(remove, v20250101.Metadata)
+	} else {
+		patch.Metadata = resource.Metadata
+	}
+
+	if resource.Os == nil {
+		remove = append(remove, v20250101.Os)
+	} else {
+		patch.Os = resource.Os
+	}
+
+	if resource.Ownership == nil {
+		remove = append(remove, v20250101.Ownership)
+	} else {
+		patch.Ownership = resource.Ownership
+	}
+
+	if resource.Serial == nil {
+		remove = append(remove, v20250101.Serial)
+	} else {
+		patch.Serial = resource.Serial
+	}
+
+	if resource.Tags == nil {
+		remove = append(remove, v20250101.Tags)
+	} else {
+		patch.Tags = resource.Tags
+	}
+
+	if resource.User == nil || resource.User.Email == "" {
+		remove = append(remove, v20250101.UserEmail)
+	} else {
+		patch.UserEmail = &resource.User.Email
+	}
+
+	httpResp, err := r.client.PatchDevice(ctx, deviceID, &v20250101.PatchDeviceParams{}, patch)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			err.Error(),
+		)
+		return
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		reqID := httpResp.Header.Get("X-Request-Id")
+		resp.Diagnostics.AddError(
+			"Smallstep API Response Error",
+			fmt.Sprintf("Request %q received status %d updating device: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+		)
+		return
+	}
+
+	device := &v20250101.Device{}
+	if err := json.NewDecoder(httpResp.Body).Decode(device); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to parse device update response: %v", err),
+		)
+		return
+	}
+
+	model, diags := fromAPI(ctx, device, req.Plan)
+	resp.Diagnostics.Append(diags...)
+
+	diags = resp.State.Set(ctx, model)
+	resp.Diagnostics.Append(diags...)
 }
 
 func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

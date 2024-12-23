@@ -161,7 +161,7 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 	if !m.Ownership.IsNull() && !m.Ownership.IsUnknown() {
 		d.Ownership = utils.Ref(v20250101.DeviceOwnership(m.Ownership.ValueString()))
 	}
-	if !m.Metadata.IsNull() && !m.Ownership.IsUnknown() {
+	if !m.Metadata.IsNull() && !m.Metadata.IsUnknown() {
 		meta := map[string]types.String{}
 		diag := m.Metadata.ElementsAs(ctx, &meta, false)
 		diags.Append(diag...)
