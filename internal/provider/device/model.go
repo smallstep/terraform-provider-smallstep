@@ -116,7 +116,20 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 		diags.Append(d...)
 		model.Metadata = metadata
 	} else {
-		model.Metadata = types.MapNull(types.StringType)
+		// see comment in utils/optional.go
+		metadataFromState := types.Map{}
+		d := state.GetAttribute(ctx, path.Root("metadata"), &metadataFromState)
+		diags.Append(d...)
+		switch {
+		case metadataFromState.IsUnknown():
+			model.Metadata = types.MapNull(types.StringType)
+		case metadataFromState.IsNull():
+			model.Metadata = metadataFromState
+		case len(metadataFromState.Elements()) == 0:
+			model.Metadata = metadataFromState
+		default:
+			model.Metadata = types.MapNull(types.StringType)
+		}
 	}
 
 	if device.ApprovedAt != nil {
@@ -173,7 +186,9 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 				Value: v.ValueString(),
 			})
 		}
-		d.Metadata = &metadata
+		if len(metadata) > 0 {
+			d.Metadata = &metadata
+		}
 	}
 	if !m.Tags.IsNull() && !m.Tags.IsUnknown() {
 		var tags []string

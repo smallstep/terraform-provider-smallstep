@@ -28,36 +28,12 @@ var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"smallstep": providerserver.NewProtocol6WithError(provider),
 }
 
-func TestAccAuthorityResource(t *testing.T) {
-	t.Parallel()
-
-	permanentID := uuid.NewString()
-
-	emptyConfig := fmt.Sprintf(`
+const minConfig = `
 resource "smallstep_device" "laptop1" {
 	permanent_identifier = %q
-}`, permanentID)
+}`
 
-	helper.Test(t, helper.TestCase{
-		ProtoV6ProviderFactories: providerFactories,
-		Steps: []helper.TestStep{
-			{
-				Config: emptyConfig,
-				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
-					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID),
-				),
-			},
-			{
-				ResourceName:      "smallstep_device.laptop1",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
-		},
-	})
-
-	permanentID2 := uuid.NewString()
-	fullConfig := fmt.Sprintf(`
+const maxConfig = `
 resource "smallstep_device" "laptop1" {
 	permanent_identifier = %q
 	display_id = "9 9"
@@ -72,13 +48,110 @@ resource "smallstep_device" "laptop1" {
 	user = {
 		email = "user@example.com"
 	}
-}`, permanentID2)
+}`
 
+const emptyConfig = `
+resource "smallstep_device" "laptop1" {
+	permanent_identifier = %q
+	display_id = ""
+	display_name = ""
+	serial = ""
+	tags = []
+	metadata = {}
+}
+`
+
+func TestAccDeviceResource(t *testing.T) {
+	permanentID := uuid.NewString()
+
+	// min -> max
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
 			{
-				Config: fullConfig,
+				Config: fmt.Sprintf(minConfig, permanentID),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_id"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_name"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "serial"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "tags"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_device.laptop1",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: fmt.Sprintf(maxConfig, permanentID),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "metadata.k1", "v1"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+				),
+			},
+		},
+	})
+
+	// min -> empty
+	permanentID1 := uuid.NewString()
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: fmt.Sprintf(minConfig, permanentID1),
+			},
+			{
+				Config: fmt.Sprintf(emptyConfig, permanentID1),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID1),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", ""),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "metadata.%", "0"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.%", "0"),
+				),
+			},
+		},
+	})
+
+	permanentID2 := uuid.NewString()
+
+	// max -> min
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: fmt.Sprintf(maxConfig, permanentID2),
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID2),
@@ -101,39 +174,34 @@ resource "smallstep_device" "laptop1" {
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
+			{
+				Config: fmt.Sprintf(minConfig, permanentID2),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID2),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_id"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_name"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "serial"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user.email"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "tags"),
+				),
+			},
 		},
 	})
 
 	permanentID3 := uuid.NewString()
-	config1 := fmt.Sprintf(`
-resource "smallstep_device" "laptop1" {
-	permanent_identifier = %q
-}`, permanentID3)
-	config2 := fmt.Sprintf(`
-resource "smallstep_device" "laptop1" {
-	permanent_identifier = %q
-	display_id = "9 9"
-	display_name = "Employee Laptop"
-	serial = "678"
-	tags = ["ubuntu"]
-	metadata = {
-		k1 = "v1"
-	}
-	os = "Windows"
-	ownership = "company"
-	user = {
-		email = "user@example.com"
-	}
-}`, permanentID3)
 
+	// max -> empty
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
 			{
-				Config: config1,
-			},
-			{
-				Config: config2,
+				Config: fmt.Sprintf(maxConfig, permanentID3),
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID3),
@@ -155,6 +223,109 @@ resource "smallstep_device" "laptop1" {
 				ResourceName:      "smallstep_device.laptop1",
 				ImportState:       true,
 				ImportStateVerify: true,
+			},
+			{
+				Config: fmt.Sprintf(emptyConfig, permanentID3),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID3),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", ""),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "metadata.%", "0"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.%", "0"),
+				),
+			},
+		},
+	})
+
+	permanentID4 := uuid.NewString()
+
+	// empty -> min
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: fmt.Sprintf(emptyConfig, permanentID4),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID4),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", ""),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "metadata.%", "0"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.%", "0"),
+				),
+			},
+			{
+				ResourceName:            "smallstep_device.laptop1",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"display_id", "display_name", "serial"},
+			},
+			{
+				Config: fmt.Sprintf(minConfig, permanentID4),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID4),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_id"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_name"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "serial"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "os"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "ownership"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "tags"),
+				),
+			},
+		},
+	})
+
+	// empty -> max
+	permanentID5 := uuid.NewString()
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: fmt.Sprintf(emptyConfig, permanentID5),
+			},
+			{
+				Config: fmt.Sprintf(maxConfig, permanentID5),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID5),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "metadata.k1", "v1"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
+				),
 			},
 		},
 	})

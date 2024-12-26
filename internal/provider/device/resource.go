@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
@@ -24,6 +27,59 @@ func NewResource() resource.Resource {
 
 type Resource struct {
 	client *v20250101.Client
+}
+
+func (r *Resource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		// Delete
+		return
+	}
+	// Attributes that may either be set by API or synced from an MDM are marked as
+	// optional and computed. When one of these attributes is removed from the
+	// config the plan keeps the old value instead of setting it to null. We have
+	// to modify the plan and change the attribute to null.
+	optionalComputedStrings := []path.Path{
+		path.Root("display_id"),
+		path.Root("display_name"),
+		path.Root("serial"),
+		path.Root("os"),
+		path.Root("ownership"),
+	}
+	for _, p := range optionalComputedStrings {
+		config := types.String{}
+		diags := req.Config.GetAttribute(ctx, p, &config)
+		resp.Diagnostics.Append(diags...)
+		if !config.IsNull() {
+			continue
+		}
+
+		resp.Plan.SetAttribute(ctx, p, config)
+	}
+
+	email := types.String{}
+	diags := req.Config.GetAttribute(ctx, path.Root("user").AtName("email"), &email)
+	resp.Diagnostics.Append(diags...)
+	if email.IsNull() {
+		user := basetypes.NewObjectNull(userAttrTypes)
+		diags = resp.Plan.SetAttribute(ctx, path.Root("user"), user)
+		resp.Diagnostics.Append(diags...)
+	}
+
+	tags := types.Set{}
+	diags = req.Config.GetAttribute(ctx, path.Root("tags"), &tags)
+	resp.Diagnostics.Append(diags...)
+	if tags.IsNull() {
+		diags = resp.Plan.SetAttribute(ctx, path.Root("tags"), tags)
+		resp.Diagnostics.Append(diags...)
+	}
+
+	metadata := types.Map{}
+	diags = req.Config.GetAttribute(ctx, path.Root("metadata"), &metadata)
+	resp.Diagnostics.Append(diags...)
+	if metadata.IsNull() || len(metadata.Elements()) == 0 {
+		diags = resp.Plan.SetAttribute(ctx, path.Root("metadata"), metadata)
+		resp.Diagnostics.Append(diags...)
+	}
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -61,7 +117,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Required:            true,
 			},
 			"serial": schema.StringAttribute{
-				MarkdownDescription: props["permanent_identifier"],
+				MarkdownDescription: props["serial"],
 				Optional:            true,
 				Computed:            true,
 			},
@@ -110,6 +166,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"email": schema.StringAttribute{
 						MarkdownDescription: userProps["email"],
 						Required:            true,
+						Validators: []validator.String{
+							stringvalidator.LengthBetween(1, 256),
+						},
 					},
 				},
 			},
@@ -335,6 +394,10 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		remove = append(remove, v20250101.UserEmail)
 	} else {
 		patch.UserEmail = &resource.User.Email
+	}
+
+	if len(remove) > 0 {
+		patch.Remove = &remove
 	}
 
 	httpResp, err := r.client.PatchDevice(ctx, deviceID, &v20250101.PatchDeviceParams{}, patch)
