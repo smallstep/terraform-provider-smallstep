@@ -65,18 +65,6 @@ const (
 	User    DeviceOwnership = "user"
 )
 
-// Defines values for DevicePatchRemove.
-const (
-	DisplayId   DevicePatchRemove = "displayId"
-	DisplayName DevicePatchRemove = "displayName"
-	Metadata    DevicePatchRemove = "metadata"
-	Os          DevicePatchRemove = "os"
-	Ownership   DevicePatchRemove = "ownership"
-	Serial      DevicePatchRemove = "serial"
-	Tags        DevicePatchRemove = "tags"
-	UserEmail   DevicePatchRemove = "userEmail"
-)
-
 // Defines values for NewAuthorityType.
 const (
 	NewAuthorityTypeAdvanced NewAuthorityType = "advanced"
@@ -369,7 +357,7 @@ type Device struct {
 	// LastSeen Timestamp in RFC3339 format when the device last connected to Smallstep. Read only.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
 
-	// Metadata A set of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+	// Metadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 	Metadata *DeviceMetadata `json:"metadata,omitempty"`
 
 	// Os The device operating system.
@@ -393,7 +381,7 @@ type Device struct {
 	// Tags A set of tags that can be used to group devices.
 	Tags *DeviceTags `json:"tags,omitempty"`
 
-	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
+	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until a user has been assigned to it.
 	User *DeviceUser `json:"user,omitempty"`
 }
 
@@ -407,14 +395,8 @@ type DeviceDisplayId = string
 // Setting this value explicitly will mask any MDM-derived value.
 type DeviceDisplayName = string
 
-// DeviceMetadata A set of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
-type DeviceMetadata = []DeviceMetadataItem
-
-// DeviceMetadataItem defines model for deviceMetadataItem.
-type DeviceMetadataItem struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
+// DeviceMetadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+type DeviceMetadata = map[string]interface{}
 
 // DeviceOS The device operating system.
 // This field may be populated with a value derived from data synced from your team's MDMs.
@@ -427,53 +409,80 @@ type DeviceOS string
 type DeviceOwnership string
 
 // DevicePatch Data that can be modified on an existing device.
+//
+// Some device fields may be populated with a value derived from data synced from your team's MDMs.
+// Any data that is explicitly set by API or with the Smallstep dashboard will mask MDM-derived values.
+// Use this list to specify fields that should be unset. If the device includes data synced from an MDM
+// this will result in the fields being populated with values derived from the MDM data. Otherwise the
+// removed fields will be empty.
 type DevicePatch struct {
-	// DisplayId An opaque identifier that may be used to link this device to an external inventory.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	DisplayId *DeviceDisplayId `json:"displayId,omitempty"`
+	DisplayId   *DevicePatch_DisplayId   `json:"displayId,omitempty"`
+	DisplayName *DevicePatch_DisplayName `json:"displayName,omitempty"`
+	Metadata    *DevicePatch_Metadata    `json:"metadata,omitempty"`
+	Os          *DevicePatch_Os          `json:"os,omitempty"`
+	Ownership   *DevicePatch_Ownership   `json:"ownership,omitempty"`
+	Serial      *DevicePatch_Serial      `json:"serial,omitempty"`
+	Tags        *DevicePatch_Tags        `json:"tags,omitempty"`
 
-	// DisplayName A friendly name for the device.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	DisplayName *DeviceDisplayName `json:"displayName,omitempty"`
-
-	// Metadata A set of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
-	Metadata *DeviceMetadata `json:"metadata,omitempty"`
-
-	// Os The device operating system.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	Os *DeviceOS `json:"os,omitempty"`
-
-	// Ownership Whether the device is owned by the user or the company.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	Ownership *DeviceOwnership `json:"ownership,omitempty"`
-
-	// Remove Some device fields may be populated with a value derived from data synced from your team's MDMs.
-	// Any data that is explicitly set by API or with the Smallstep dashboard will mask MDM-derived values.
-	// Use this list to specify fields that should be unset. If the device includes data synced from an MDM
-	// this will result in the fields being populated with values derived from the MDM data. Otherwise the
-	// removed fields will be empty.
-	Remove *[]DevicePatchRemove `json:"remove,omitempty"`
-
-	// Serial The serial number of the device.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	Serial *DeviceSerial `json:"serial,omitempty"`
-
-	// Tags A set of tags that can be used to group devices.
-	Tags *DeviceTags `json:"tags,omitempty"`
-
-	// UserEmail The email of the user the device is assigned to.
-	// This field may be populated with a value derived from data synced from your team's MDMs.
-	// Setting this value explicitly will mask any MDM-derived value.
-	UserEmail *string `json:"userEmail,omitempty"`
+	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
+	User *DeviceUserPatch `json:"user,omitempty"`
 }
 
-// DevicePatchRemove defines model for DevicePatch.Remove.
-type DevicePatchRemove string
+// DevicePatchDisplayId1 defines model for .
+type DevicePatchDisplayId1 = interface{}
+
+// DevicePatch_DisplayId defines model for DevicePatch.DisplayId.
+type DevicePatch_DisplayId struct {
+	union json.RawMessage
+}
+
+// DevicePatchDisplayName1 defines model for .
+type DevicePatchDisplayName1 = interface{}
+
+// DevicePatch_DisplayName defines model for DevicePatch.DisplayName.
+type DevicePatch_DisplayName struct {
+	union json.RawMessage
+}
+
+// DevicePatchMetadata1 defines model for .
+type DevicePatchMetadata1 = interface{}
+
+// DevicePatch_Metadata defines model for DevicePatch.Metadata.
+type DevicePatch_Metadata struct {
+	union json.RawMessage
+}
+
+// DevicePatchOs1 defines model for .
+type DevicePatchOs1 = interface{}
+
+// DevicePatch_Os defines model for DevicePatch.Os.
+type DevicePatch_Os struct {
+	union json.RawMessage
+}
+
+// DevicePatchOwnership1 defines model for .
+type DevicePatchOwnership1 = interface{}
+
+// DevicePatch_Ownership defines model for DevicePatch.Ownership.
+type DevicePatch_Ownership struct {
+	union json.RawMessage
+}
+
+// DevicePatchSerial1 defines model for .
+type DevicePatchSerial1 = interface{}
+
+// DevicePatch_Serial defines model for DevicePatch.Serial.
+type DevicePatch_Serial struct {
+	union json.RawMessage
+}
+
+// DevicePatchTags1 defines model for .
+type DevicePatchTags1 = interface{}
+
+// DevicePatch_Tags defines model for DevicePatch.Tags.
+type DevicePatch_Tags struct {
+	union json.RawMessage
+}
 
 // DeviceRequest Data that can be added to a device record.
 type DeviceRequest struct {
@@ -487,7 +496,7 @@ type DeviceRequest struct {
 	// Setting this value explicitly will mask any MDM-derived value.
 	DisplayName *DeviceDisplayName `json:"displayName,omitempty"`
 
-	// Metadata A set of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+	// Metadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 	Metadata *DeviceMetadata `json:"metadata,omitempty"`
 
 	// Os The device operating system.
@@ -511,7 +520,7 @@ type DeviceRequest struct {
 	// Tags A set of tags that can be used to group devices.
 	Tags *DeviceTags `json:"tags,omitempty"`
 
-	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
+	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until a user has been assigned to it.
 	User *DeviceUser `json:"user,omitempty"`
 }
 
@@ -523,7 +532,7 @@ type DeviceSerial = string
 // DeviceTags A set of tags that can be used to group devices.
 type DeviceTags = []string
 
-// DeviceUser The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
+// DeviceUser The user that a device is assigned to. A device cannot be approved for high-assurance certificates until a user has been assigned to it.
 type DeviceUser struct {
 	// DisplayName Full name of the user the device is assigned to. Synced from team's identity provider. Read only.
 	DisplayName *string `json:"displayName,omitempty"`
@@ -532,6 +541,27 @@ type DeviceUser struct {
 	// This field may be populated with a value derived from data synced from your team's MDMs.
 	// Setting this value explicitly will mask any MDM-derived value.
 	Email string `json:"email"`
+}
+
+// DeviceUserPatch The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
+type DeviceUserPatch struct {
+	// Email Email of the user the device is assigned to.
+	// This field may be populated with a value derived from data synced from your team's MDMs.
+	// Setting this value explicitly will mask any MDM-derived value.
+	Email DeviceUserPatch_Email `json:"email"`
+}
+
+// DeviceUserPatchEmail0 defines model for .
+type DeviceUserPatchEmail0 = interface{}
+
+// DeviceUserPatchEmail1 defines model for .
+type DeviceUserPatchEmail1 = string
+
+// DeviceUserPatch_Email Email of the user the device is assigned to.
+// This field may be populated with a value derived from data synced from your team's MDMs.
+// Setting this value explicitly will mask any MDM-derived value.
+type DeviceUserPatch_Email struct {
+	union json.RawMessage
 }
 
 // DistinguishedName Name used in x509 certificates
@@ -1312,6 +1342,502 @@ type PatchDeviceJSONRequestBody = DevicePatch
 
 // PutPlatformJSONRequestBody defines body for PutPlatform for application/json ContentType.
 type PutPlatformJSONRequestBody = NewPlatform
+
+// AsDeviceDisplayId returns the union data inside the DevicePatch_DisplayId as a DeviceDisplayId
+func (t DevicePatch_DisplayId) AsDeviceDisplayId() (DeviceDisplayId, error) {
+	var body DeviceDisplayId
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceDisplayId overwrites any union data inside the DevicePatch_DisplayId as the provided DeviceDisplayId
+func (t *DevicePatch_DisplayId) FromDeviceDisplayId(v DeviceDisplayId) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceDisplayId performs a merge with any union data inside the DevicePatch_DisplayId, using the provided DeviceDisplayId
+func (t *DevicePatch_DisplayId) MergeDeviceDisplayId(v DeviceDisplayId) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchDisplayId1 returns the union data inside the DevicePatch_DisplayId as a DevicePatchDisplayId1
+func (t DevicePatch_DisplayId) AsDevicePatchDisplayId1() (DevicePatchDisplayId1, error) {
+	var body DevicePatchDisplayId1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchDisplayId1 overwrites any union data inside the DevicePatch_DisplayId as the provided DevicePatchDisplayId1
+func (t *DevicePatch_DisplayId) FromDevicePatchDisplayId1(v DevicePatchDisplayId1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchDisplayId1 performs a merge with any union data inside the DevicePatch_DisplayId, using the provided DevicePatchDisplayId1
+func (t *DevicePatch_DisplayId) MergeDevicePatchDisplayId1(v DevicePatchDisplayId1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_DisplayId) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_DisplayId) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceDisplayName returns the union data inside the DevicePatch_DisplayName as a DeviceDisplayName
+func (t DevicePatch_DisplayName) AsDeviceDisplayName() (DeviceDisplayName, error) {
+	var body DeviceDisplayName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceDisplayName overwrites any union data inside the DevicePatch_DisplayName as the provided DeviceDisplayName
+func (t *DevicePatch_DisplayName) FromDeviceDisplayName(v DeviceDisplayName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceDisplayName performs a merge with any union data inside the DevicePatch_DisplayName, using the provided DeviceDisplayName
+func (t *DevicePatch_DisplayName) MergeDeviceDisplayName(v DeviceDisplayName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchDisplayName1 returns the union data inside the DevicePatch_DisplayName as a DevicePatchDisplayName1
+func (t DevicePatch_DisplayName) AsDevicePatchDisplayName1() (DevicePatchDisplayName1, error) {
+	var body DevicePatchDisplayName1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchDisplayName1 overwrites any union data inside the DevicePatch_DisplayName as the provided DevicePatchDisplayName1
+func (t *DevicePatch_DisplayName) FromDevicePatchDisplayName1(v DevicePatchDisplayName1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchDisplayName1 performs a merge with any union data inside the DevicePatch_DisplayName, using the provided DevicePatchDisplayName1
+func (t *DevicePatch_DisplayName) MergeDevicePatchDisplayName1(v DevicePatchDisplayName1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_DisplayName) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_DisplayName) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceMetadata returns the union data inside the DevicePatch_Metadata as a DeviceMetadata
+func (t DevicePatch_Metadata) AsDeviceMetadata() (DeviceMetadata, error) {
+	var body DeviceMetadata
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceMetadata overwrites any union data inside the DevicePatch_Metadata as the provided DeviceMetadata
+func (t *DevicePatch_Metadata) FromDeviceMetadata(v DeviceMetadata) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceMetadata performs a merge with any union data inside the DevicePatch_Metadata, using the provided DeviceMetadata
+func (t *DevicePatch_Metadata) MergeDeviceMetadata(v DeviceMetadata) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchMetadata1 returns the union data inside the DevicePatch_Metadata as a DevicePatchMetadata1
+func (t DevicePatch_Metadata) AsDevicePatchMetadata1() (DevicePatchMetadata1, error) {
+	var body DevicePatchMetadata1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchMetadata1 overwrites any union data inside the DevicePatch_Metadata as the provided DevicePatchMetadata1
+func (t *DevicePatch_Metadata) FromDevicePatchMetadata1(v DevicePatchMetadata1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchMetadata1 performs a merge with any union data inside the DevicePatch_Metadata, using the provided DevicePatchMetadata1
+func (t *DevicePatch_Metadata) MergeDevicePatchMetadata1(v DevicePatchMetadata1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_Metadata) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_Metadata) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceOS returns the union data inside the DevicePatch_Os as a DeviceOS
+func (t DevicePatch_Os) AsDeviceOS() (DeviceOS, error) {
+	var body DeviceOS
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceOS overwrites any union data inside the DevicePatch_Os as the provided DeviceOS
+func (t *DevicePatch_Os) FromDeviceOS(v DeviceOS) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceOS performs a merge with any union data inside the DevicePatch_Os, using the provided DeviceOS
+func (t *DevicePatch_Os) MergeDeviceOS(v DeviceOS) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchOs1 returns the union data inside the DevicePatch_Os as a DevicePatchOs1
+func (t DevicePatch_Os) AsDevicePatchOs1() (DevicePatchOs1, error) {
+	var body DevicePatchOs1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchOs1 overwrites any union data inside the DevicePatch_Os as the provided DevicePatchOs1
+func (t *DevicePatch_Os) FromDevicePatchOs1(v DevicePatchOs1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchOs1 performs a merge with any union data inside the DevicePatch_Os, using the provided DevicePatchOs1
+func (t *DevicePatch_Os) MergeDevicePatchOs1(v DevicePatchOs1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_Os) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_Os) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceOwnership returns the union data inside the DevicePatch_Ownership as a DeviceOwnership
+func (t DevicePatch_Ownership) AsDeviceOwnership() (DeviceOwnership, error) {
+	var body DeviceOwnership
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceOwnership overwrites any union data inside the DevicePatch_Ownership as the provided DeviceOwnership
+func (t *DevicePatch_Ownership) FromDeviceOwnership(v DeviceOwnership) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceOwnership performs a merge with any union data inside the DevicePatch_Ownership, using the provided DeviceOwnership
+func (t *DevicePatch_Ownership) MergeDeviceOwnership(v DeviceOwnership) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchOwnership1 returns the union data inside the DevicePatch_Ownership as a DevicePatchOwnership1
+func (t DevicePatch_Ownership) AsDevicePatchOwnership1() (DevicePatchOwnership1, error) {
+	var body DevicePatchOwnership1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchOwnership1 overwrites any union data inside the DevicePatch_Ownership as the provided DevicePatchOwnership1
+func (t *DevicePatch_Ownership) FromDevicePatchOwnership1(v DevicePatchOwnership1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchOwnership1 performs a merge with any union data inside the DevicePatch_Ownership, using the provided DevicePatchOwnership1
+func (t *DevicePatch_Ownership) MergeDevicePatchOwnership1(v DevicePatchOwnership1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_Ownership) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_Ownership) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceSerial returns the union data inside the DevicePatch_Serial as a DeviceSerial
+func (t DevicePatch_Serial) AsDeviceSerial() (DeviceSerial, error) {
+	var body DeviceSerial
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceSerial overwrites any union data inside the DevicePatch_Serial as the provided DeviceSerial
+func (t *DevicePatch_Serial) FromDeviceSerial(v DeviceSerial) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceSerial performs a merge with any union data inside the DevicePatch_Serial, using the provided DeviceSerial
+func (t *DevicePatch_Serial) MergeDeviceSerial(v DeviceSerial) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchSerial1 returns the union data inside the DevicePatch_Serial as a DevicePatchSerial1
+func (t DevicePatch_Serial) AsDevicePatchSerial1() (DevicePatchSerial1, error) {
+	var body DevicePatchSerial1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchSerial1 overwrites any union data inside the DevicePatch_Serial as the provided DevicePatchSerial1
+func (t *DevicePatch_Serial) FromDevicePatchSerial1(v DevicePatchSerial1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchSerial1 performs a merge with any union data inside the DevicePatch_Serial, using the provided DevicePatchSerial1
+func (t *DevicePatch_Serial) MergeDevicePatchSerial1(v DevicePatchSerial1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_Serial) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_Serial) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceTags returns the union data inside the DevicePatch_Tags as a DeviceTags
+func (t DevicePatch_Tags) AsDeviceTags() (DeviceTags, error) {
+	var body DeviceTags
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceTags overwrites any union data inside the DevicePatch_Tags as the provided DeviceTags
+func (t *DevicePatch_Tags) FromDeviceTags(v DeviceTags) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceTags performs a merge with any union data inside the DevicePatch_Tags, using the provided DeviceTags
+func (t *DevicePatch_Tags) MergeDeviceTags(v DeviceTags) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDevicePatchTags1 returns the union data inside the DevicePatch_Tags as a DevicePatchTags1
+func (t DevicePatch_Tags) AsDevicePatchTags1() (DevicePatchTags1, error) {
+	var body DevicePatchTags1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDevicePatchTags1 overwrites any union data inside the DevicePatch_Tags as the provided DevicePatchTags1
+func (t *DevicePatch_Tags) FromDevicePatchTags1(v DevicePatchTags1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDevicePatchTags1 performs a merge with any union data inside the DevicePatch_Tags, using the provided DevicePatchTags1
+func (t *DevicePatch_Tags) MergeDevicePatchTags1(v DevicePatchTags1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DevicePatch_Tags) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DevicePatch_Tags) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDeviceUserPatchEmail0 returns the union data inside the DeviceUserPatch_Email as a DeviceUserPatchEmail0
+func (t DeviceUserPatch_Email) AsDeviceUserPatchEmail0() (DeviceUserPatchEmail0, error) {
+	var body DeviceUserPatchEmail0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceUserPatchEmail0 overwrites any union data inside the DeviceUserPatch_Email as the provided DeviceUserPatchEmail0
+func (t *DeviceUserPatch_Email) FromDeviceUserPatchEmail0(v DeviceUserPatchEmail0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceUserPatchEmail0 performs a merge with any union data inside the DeviceUserPatch_Email, using the provided DeviceUserPatchEmail0
+func (t *DeviceUserPatch_Email) MergeDeviceUserPatchEmail0(v DeviceUserPatchEmail0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDeviceUserPatchEmail1 returns the union data inside the DeviceUserPatch_Email as a DeviceUserPatchEmail1
+func (t DeviceUserPatch_Email) AsDeviceUserPatchEmail1() (DeviceUserPatchEmail1, error) {
+	var body DeviceUserPatchEmail1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDeviceUserPatchEmail1 overwrites any union data inside the DeviceUserPatch_Email as the provided DeviceUserPatchEmail1
+func (t *DeviceUserPatch_Email) FromDeviceUserPatchEmail1(v DeviceUserPatchEmail1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDeviceUserPatchEmail1 performs a merge with any union data inside the DeviceUserPatch_Email, using the provided DeviceUserPatchEmail1
+func (t *DeviceUserPatch_Email) MergeDeviceUserPatchEmail1(v DeviceUserPatchEmail1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DeviceUserPatch_Email) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DeviceUserPatch_Email) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsAwsPlatform returns the union data inside the NewPlatform_PlatformConfiguration as a AwsPlatform
 func (t NewPlatform_PlatformConfiguration) AsAwsPlatform() (AwsPlatform, error) {
@@ -6048,171 +6574,171 @@ var swaggerSpec = []string{
 	"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",
-	"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",
+	"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",
+	"Eh4/Pv6/AAAA//8kOJ/+KxEBAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
