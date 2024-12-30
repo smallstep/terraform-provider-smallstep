@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
@@ -17,11 +18,9 @@ var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
 	},
-	/*
-		DataSourceFactories: []func() datasource.DataSource{
-			NewDataSource,
-		},
-	*/
+	DataSourceFactories: []func() datasource.DataSource{
+		NewDataSource,
+	},
 }
 
 var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){

@@ -174,3 +174,50 @@ func Slug(t *testing.T) string {
 	require.NoError(t, err)
 	return "tfprovider" + slug
 }
+
+func NewDevice(t *testing.T) *v20250101.Device {
+	t.Helper()
+
+	deviceName, err := randutil.Alphanumeric(12)
+	require.NoError(t, err)
+	permanentID, err := randutil.Alphanumeric(12)
+	require.NoError(t, err)
+	displayID, err := randutil.Alphanumeric(12)
+	require.NoError(t, err)
+	serial, err := randutil.Alphanumeric(12)
+	require.NoError(t, err)
+
+	req := v20250101.DeviceRequest{
+		PermanentIdentifier: permanentID,
+		DisplayId:           Ref(displayID),
+		DisplayName:         Ref(deviceName),
+		Metadata: &v20250101.DeviceMetadata{
+			"k1": "v1",
+		},
+		Tags:      Ref([]string{"ubuntu"}),
+		Os:        Ref(v20250101.Linux),
+		Ownership: Ref(v20250101.User),
+		Serial:    Ref(serial),
+		User: &v20250101.DeviceUser{
+			Email: "employee@example.com",
+		},
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PostDevices(context.Background(), &v20250101.PostDevicesParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 201, resp.StatusCode, string(body))
+
+	device := &v20250101.Device{}
+	err = json.Unmarshal(body, device)
+	require.NoError(t, err)
+
+	return device
+}

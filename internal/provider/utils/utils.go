@@ -31,7 +31,7 @@ type dereferencable interface {
 
 // Deref gets the default value for a pointer type. This makes it easier to work
 // with the generated API client code, which uses pointers for optional fields.
-func Deref[T dereferencable](v *T) (r T) {
+func Deref[T any](v *T) (r T) {
 	if v != nil {
 		r = *v
 	}
