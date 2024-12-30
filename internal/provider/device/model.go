@@ -110,12 +110,7 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 	if device.Metadata != nil {
 		meta := map[string]attr.Value{}
 		for k, v := range *device.Metadata {
-			s, ok := v.(string)
-			if !ok {
-				diags.AddError("Invalid device metadata", k+" is not a string")
-				continue
-			}
-			meta[k] = types.StringValue(s)
+			meta[k] = types.StringValue(v)
 		}
 		metadata, d := types.MapValue(types.StringType, meta)
 		diags.Append(d...)
@@ -185,7 +180,7 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 		diags.Append(diag...)
 
 		if len(meta) > 0 {
-			metadata := map[string]any{}
+			metadata := v20250101.DeviceMetadata{}
 			for k, v := range meta {
 				metadata[k] = v.ValueString()
 			}
