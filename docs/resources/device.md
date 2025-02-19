@@ -22,7 +22,7 @@ resource "smallstep_device" "laptop1" {
   metadata = {
     k1 = "v1"
   }
-  os        = "Ubuntu"
+  os        = "Linux"
   ownership = "company"
   user = {
     email = "user@example.com"
