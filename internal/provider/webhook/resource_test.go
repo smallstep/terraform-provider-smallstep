@@ -126,6 +126,7 @@ resource "smallstep_provisioner_webhook" "hosted" {
 	kind = "ENRICHING"
 	cert_type = "X509"
 	server_type = "HOSTED_ATTESTATION"
+	collection_slug = "default"
 }`, authority.Id)
 
 	helper.Test(t, helper.TestCase{

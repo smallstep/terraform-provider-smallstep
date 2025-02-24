@@ -9,12 +9,17 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
+
+func TestMain(m *testing.M) {
+	resource.TestMain(m)
+}
 
 func init() {
 	resource.AddTestSweepers("smallstep_authority", &resource.Sweeper{

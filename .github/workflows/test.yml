@@ -68,7 +68,7 @@ jobs:
         # list whatever Terraform versions here you would like to support
         # limited to a single version because each team may only have 1 attestation authority
         terraform:
-          - '1.4.*'
+          - '1.10.*'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
@@ -82,10 +82,11 @@ jobs:
       - run: go mod download
       - env:
           TF_ACC: "1"
+          TF_ACC_LOG: INFO
           SMALLSTEP_API_URL: https://gateway.smallstep.com/api
           SMALLSTEP_API_TOKEN: ${{ secrets.SMALLSTEP_API_TOKEN }}
         run: |
-          go test -v -cover ./internal/provider/ -timeout 20m
+          go test -v -cover ./... -timeout 20m
         timeout-minutes: 20
   sweep:
     runs-on: ubuntu-latest
