@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/collection"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
@@ -19,7 +18,6 @@ import (
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
-		collection.NewResource,
 		provisioner.NewResource,
 	},
 	DataSourceFactories: []func() datasource.DataSource{
@@ -111,12 +109,7 @@ resource "smallstep_provisioner_webhook" "basic" {
 		},
 	})
 
-	slug := "tfprovider" + utils.Slug(t)
 	hostedConfig := fmt.Sprintf(`
-resource "smallstep_collection" "tpms" {
-	slug = %q
-}
-
 resource "smallstep_provisioner" "agents" {
   authority_id = %q
   name = "Agents"
@@ -133,9 +126,8 @@ resource "smallstep_provisioner_webhook" "hosted" {
 	kind = "ENRICHING"
 	cert_type = "X509"
 	server_type = "HOSTED_ATTESTATION"
-	collection_slug = smallstep_collection.tpms.slug
-	depends_on = [smallstep_collection.tpms]
-}`, slug, authority.Id)
+	collection_slug = "default"
+}`, authority.Id)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,

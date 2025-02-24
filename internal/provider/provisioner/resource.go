@@ -19,7 +19,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -31,7 +31,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the provisioner resource implementation.
 type Resource struct {
-	client *v20231101.Client
+	client *v20250101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -647,12 +647,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20231101.Client)
+	client, ok := req.ProviderData.(*v20250101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -681,7 +681,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	b, _ := json.Marshal(p)
 	tflog.Trace(ctx, string(b))
 
-	httpResp, err := a.client.PostAuthorityProvisioners(ctx, plan.AuthorityID.ValueString(), &v20231101.PostAuthorityProvisionersParams{}, *p)
+	httpResp, err := a.client.PostAuthorityProvisioners(ctx, plan.AuthorityID.ValueString(), &v20250101.PostAuthorityProvisionersParams{}, *p)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -700,7 +700,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	provisioner := &v20231101.Provisioner{}
+	provisioner := &v20250101.Provisioner{}
 	if err := json.NewDecoder(httpResp.Body).Decode(provisioner); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -747,7 +747,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.GetProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20231101.GetProvisionerParams{})
+	httpResp, err := a.client.GetProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.GetProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -771,7 +771,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	provisioner := &v20231101.Provisioner{}
+	provisioner := &v20250101.Provisioner{}
 	if err := json.NewDecoder(httpResp.Body).Decode(provisioner); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -822,7 +822,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20231101.DeleteProvisionerParams{})
+	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

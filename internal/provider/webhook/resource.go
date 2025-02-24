@@ -16,7 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	v20231101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20231101"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -28,7 +28,7 @@ func NewResource() resource.Resource {
 
 // Resource defines the resource implementation.
 type Resource struct {
-	client *v20231101.Client
+	client *v20250101.Client
 }
 
 func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -42,12 +42,12 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20231101.Client)
+	client, ok := req.ProviderData.(*v20250101.Client)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20231101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
@@ -70,7 +70,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if idOrName == "" {
 		idOrName = state.Name.ValueString()
 	}
-	httpResp, err := r.client.GetWebhook(ctx, authorityID, provisionerID, idOrName, &v20231101.GetWebhookParams{})
+	httpResp, err := r.client.GetWebhook(ctx, authorityID, provisionerID, idOrName, &v20250101.GetWebhookParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -94,7 +94,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	webhook := &v20231101.ProvisionerWebhook{}
+	webhook := &v20250101.ProvisionerWebhook{}
 	if err := json.NewDecoder(httpResp.Body).Decode(webhook); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -272,7 +272,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	authorityID := plan.AuthorityID.ValueString()
 	provisionerID := plan.ProvisionerID.ValueString()
 
-	httpResp, err := a.client.PostWebhooks(ctx, authorityID, provisionerID, &v20231101.PostWebhooksParams{}, *reqBody)
+	httpResp, err := a.client.PostWebhooks(ctx, authorityID, provisionerID, &v20250101.PostWebhooksParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -291,7 +291,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	webhook := &v20231101.ProvisionerWebhook{}
+	webhook := &v20250101.ProvisionerWebhook{}
 	if err := json.NewDecoder(httpResp.Body).Decode(webhook); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -311,7 +311,6 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	tflog.Trace(ctx, fmt.Sprintf("create webhook %q resource", plan.ID.ValueString()))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
-
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -331,7 +330,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20231101.DeleteProvisionerParams{})
+	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

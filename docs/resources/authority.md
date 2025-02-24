@@ -110,7 +110,7 @@ Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) X509 certificate name constraints. (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
+- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--intermediate_issuer--subject))
 
 <a id="nestedatt--intermediate_issuer--name_constraints"></a>
@@ -160,7 +160,7 @@ Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) X509 certificate name constraints. (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
+- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
 - `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--root_issuer--subject))
 
 <a id="nestedatt--root_issuer--name_constraints"></a>
