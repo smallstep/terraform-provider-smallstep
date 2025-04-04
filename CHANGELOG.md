@@ -1,3 +1,16 @@
+## 0.6.0
+
+FEATURES:
+* Add smallstep_device resource and data source.
+
+CHANGES:
+* Use Smallstep API version v2025-01-01.
+* Remove smallstep_attestation_authority resource and data source.
+* Remove smallstep_collection resource and data source.
+* Remove smallstep_collection_instance resource and data source.
+* Remove smallstep_device_collection resource and data source.
+* Remove smallstep_device_collection_account resource and data source.
+
 ## 0.5.0
 
 FEATURES:

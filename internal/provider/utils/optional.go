@@ -42,7 +42,7 @@ func ToOptionalSet(ctx context.Context, remote *[]string, priorState AttributeGe
 	return types.SetValue(types.StringType, values)
 }
 
-func ToOptionalList(ctx context.Context, remote *[]string, priorState AttributeGetter, p path.Path) (types.List, diag.Diagnostics) {
+func ToOptionalList[S ~string](ctx context.Context, remote *[]S, priorState AttributeGetter, p path.Path) (types.List, diag.Diagnostics) {
 	if remote == nil || len(*remote) == 0 {
 		listFromState := types.List{}
 		diags := priorState.GetAttribute(ctx, p, &listFromState)
@@ -60,7 +60,7 @@ func ToOptionalList(ctx context.Context, remote *[]string, priorState AttributeG
 
 	values := make([]attr.Value, len(*remote))
 	for i, s := range *remote {
-		values[i] = types.StringValue(s)
+		values[i] = types.StringValue(string(s))
 	}
 	return types.ListValue(types.StringType, values)
 }
