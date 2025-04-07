@@ -61,7 +61,6 @@ const fullX509Config = `
 	resource "smallstep_account" "generic" {
 		name = "Generic Client Certificate"
 		certificate = {
-			type = "X509"
 			duration = "168h"
 			crt_file = "db.crt"
 			key_file = "db.key"
@@ -197,6 +196,89 @@ const fullX509ConfigUpdated = `
 		}
 	}
 `
+
+const sshMinConfig = `
+	resource "smallstep_account" "ssh" {
+		name = "SSH User Certificate"
+		certificate = {
+			ssh = {
+				key_id = {
+					static = "123"
+				}
+			}
+		}
+	}
+`
+
+const sshFullConfig = `
+	resource "smallstep_account" "ssh" {
+		name = "SSH User Certificate"
+		certificate = {
+			ssh = {
+				key_id = {
+					device_metadata = "key"
+				}
+				principals = {
+					static = ["eng"]
+					device_metadata = ["role"]
+				}
+			}
+		}
+	}
+`
+
+func TestAccAccountSSH(t *testing.T) {
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: sshMinConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static", "123"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.device_metadata"),
+				),
+			},
+			{
+				Config: sshFullConfig,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.ssh", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata", "key"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static.0", "eng"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.device_metadata.0", "role"),
+				),
+			},
+			{
+				Config: sshMinConfig,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.ssh", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
+					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static", "123"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.device_metadata"),
+				),
+			},
+		},
+	})
+}
 
 func TestAccAccountRename(t *testing.T) {
 	helper.Test(t, helper.TestCase{
