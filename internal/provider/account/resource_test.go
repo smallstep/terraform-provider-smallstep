@@ -40,6 +40,13 @@ const minConfigRename = `
 	}
 `
 
+const browserConfig = `
+	resource "smallstep_account" "browser" {
+		name = "Browser Certificate"
+		browser = {}
+	}
+`
+
 // key and reload have some required properties when they aren't null
 // TODO can I handle them the same way I did x509?
 const emptyConfig = `
@@ -567,6 +574,23 @@ func TestAccAccountX509FullUpdate(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_account.generic", "policy.source.1", "End-User"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "policy.tags.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "policy.tags.0", "foo"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAccountBrowser(t *testing.T) {
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: browserConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.browser", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_account.browser", "name", "Browser Certificate"),
+					helper.TestMatchResourceAttr("smallstep_account.browser", "certificate.authority_id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestCheckResourceAttr("smallstep_account.browser", "browser.%", "0"),
 				),
 			},
 		},
