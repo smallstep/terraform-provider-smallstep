@@ -787,3 +787,97 @@ resource "smallstep_account" "ethernet" {
 		},
 	})
 }
+
+func TestAccAccountVPN(t *testing.T) {
+	root, _ := utils.CACerts(t)
+
+	const vpn = `
+resource "smallstep_account" "vpn" {
+	name = "VPN"
+	vpn = {
+		autojoin = true
+		connection_type = "IPSec"
+		remote_address = "vpn.example.com"
+		vendor = "F5"
+	}
+}
+`
+	vpn2 := fmt.Sprintf(`
+resource "smallstep_account" "vpn" {
+	name = "VPN"
+	vpn = {
+		autojoin = false
+		connection_type = "IKEv2"
+		remote_address = "ike.example.com"
+		ike = {
+			ca_chain = %q
+			eap = true
+			remote_id = "foo"
+		}
+	}
+}
+`, root)
+
+	const vpn3 = `
+resource "smallstep_account" "vpn" {
+	name = "VPN"
+	vpn = {
+		connection_type = "SSL"
+		remote_address = "ssl.example.com"
+		vendor = "Cisco"
+	}
+}
+`
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: vpn,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.vpn", plancheck.ResourceActionCreate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.autojoin", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.connection_type", "IPSec"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.remote_address", "vpn.example.com"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.vendor", "F5"),
+					helper.TestCheckNoResourceAttr("smallstep_account.vpn", "vpn.ike"),
+				),
+			},
+			{
+				Config: vpn2,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.vpn", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.autojoin", "false"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.connection_type", "IKEv2"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.remote_address", "ike.example.com"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.ike.ca_chain", root),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.ike.eap", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.ike.remote_id", "foo"),
+				),
+			},
+			{
+				Config: vpn3,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.vpn", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.connection_type", "SSL"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.remote_address", "ssl.example.com"),
+					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.vendor", "Cisco"),
+					helper.TestCheckNoResourceAttr("smallstep_account.vpn", "vpn.ike"),
+					helper.TestCheckNoResourceAttr("smallstep_account.vpn", "vpn.autojoin"),
+				),
+			},
+		},
+	})
+}
