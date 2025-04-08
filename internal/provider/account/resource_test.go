@@ -726,3 +726,64 @@ resource "smallstep_account" "wifi_byoradius" {
 		},
 	})
 }
+
+func TestAccAccountEthernet(t *testing.T) {
+	root, _ := utils.CACerts(t)
+
+	const ethernet1 = `
+resource "smallstep_account" "ethernet" {
+	name = "Ethernet Hosted Radius"
+	ethernet = {
+		autojoin = true
+		external_radius_server = false
+		network_access_server_ip = "1.2.3.4"
+	}
+}
+`
+
+	ethernet2 := fmt.Sprintf(`
+resource "smallstep_account" "ethernet" {
+	name = "Ethernet BYORadius"
+	ethernet = {
+		autojoin = false
+		external_radius_server = true
+		ca_chain = %q
+	}
+}
+`, root)
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: ethernet1,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.ethernet", plancheck.ResourceActionCreate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.ethernet", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "name", "Ethernet Hosted Radius"),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.autojoin", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.external_radius_server", "false"),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.network_access_server_ip", "1.2.3.4"),
+					helper.TestMatchResourceAttr("smallstep_account.ethernet", "ethernet.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+				),
+			},
+			{
+				Config: ethernet2,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.ethernet", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.autojoin", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_account.ethernet", "ethernet.network_access_server_ip"),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.ca_chain", root),
+					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.external_radius_server", "true"),
+				),
+			},
+		},
+	})
+}
