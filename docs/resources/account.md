@@ -393,4 +393,10 @@ Optional:
 - `hidden` (Boolean) Whether or not the SSID is broadcast by the access points.
 - `network_access_server_ip` (String) The public IP address of your network equipment that clients connect to.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+terraform import smallstep_account.wifi b1161f78-d251-401e-b17c-fe38fc26ae7b
+```
