@@ -82,4 +82,10 @@ Optional:
 
 - `display_name` (String) Full name of the user the device is assigned to. Synced from team's identity provider. Read only.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+terraform import smallstep_device.laptop_12 b1161f78-d251-401e-b17c-fe38fc26ae7b
+```

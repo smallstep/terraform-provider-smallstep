@@ -117,15 +117,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	assurance, _, err := utils.Describe("deviceAssurance")
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI Device Assurance Schema",
-			err.Error(),
-		)
-		return
-	}
-
 	x509, _, err := utils.Describe("x509Fields")
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -364,12 +355,12 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:    true,
 				Attributes: map[string]schema.Attribute{
 					"assurance": schema.ListAttribute{
-						MarkdownDescription: assurance,
+						MarkdownDescription: policyProps["assurance"],
 						ElementType:         types.StringType,
 						Optional:            true,
 					},
 					"ownership": schema.ListAttribute{
-						MarkdownDescription: policyProps["deviceOwnership"],
+						MarkdownDescription: policyProps["ownership"],
 						ElementType:         types.StringType,
 						Optional:            true,
 					},

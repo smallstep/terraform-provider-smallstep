@@ -75,7 +75,6 @@ resource "smallstep_account" "wifi_hosted_radius" {
 `
 
 // key and reload have some required properties when they aren't null
-// TODO can I handle them the same way I did x509?
 const emptyConfig = `
 	resource "smallstep_account" "generic" {
 		name = "Generic Client Certificate"
