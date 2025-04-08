@@ -262,7 +262,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						},
 					},
 					"authority_id": schema.StringAttribute{
-						MarkdownDescription: certInfoProps["authorityId"],
+						MarkdownDescription: certInfoProps["authorityID"],
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.String{

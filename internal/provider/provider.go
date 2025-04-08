@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
@@ -169,6 +170,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		provisioner.NewResource,
 		webhook.NewResource,
 		device.NewResource,
+		account.NewResource,
 	}
 }
 

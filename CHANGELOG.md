@@ -2,6 +2,7 @@
 
 FEATURES:
 * Add smallstep_device resource and data source.
+* Add smallstep_account resource.
 
 CHANGES:
 * Use Smallstep API version v2025-01-01.
