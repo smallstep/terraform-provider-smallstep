@@ -1,6 +1,7 @@
 package account
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
 
@@ -45,6 +47,31 @@ const browserConfig = `
 		name = "Browser Certificate"
 		browser = {}
 	}
+`
+
+const wifiHostedRadiusConfig = `
+resource "smallstep_account" "wifi_hosted_radius" {
+	name = "WiFi Hosted Radius"
+	wifi = {
+		autojoin = true
+		external_radius_server = false
+		hidden = true
+		network_access_server_ip = "0.0.0.1"
+		ssid = "corpnet"
+	}
+}
+`
+
+const wifiHostedRadiusConfigUpdated = `
+resource "smallstep_account" "wifi_hosted_radius" {
+	name = "WiFi Hosted Radius"
+	wifi = {
+		autojoin = false
+		external_radius_server = false
+		network_access_server_ip = "0.0.0.2"
+		ssid = "Corp Net"
+	}
+}
 `
 
 // key and reload have some required properties when they aren't null
@@ -591,6 +618,109 @@ func TestAccAccountBrowser(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_account.browser", "name", "Browser Certificate"),
 					helper.TestMatchResourceAttr("smallstep_account.browser", "certificate.authority_id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_account.browser", "browser.%", "0"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAccountWiFiHostedRadius(t *testing.T) {
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: wifiHostedRadiusConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "name", "WiFi Hosted Radius"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.autojoin", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.external_radius_server", "false"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.1"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "corpnet"),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+				),
+			},
+			{
+				Config: wifiHostedRadiusConfigUpdated,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.wifi_hosted_radius", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.autojoin", "false"),
+					helper.TestCheckNoResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.2"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "Corp Net"),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAccountWifiExternalRadius(t *testing.T) {
+	root, _ := utils.CACerts(t)
+	wifiExternalRadius := fmt.Sprintf(`
+resource "smallstep_account" "wifi_byoradius" {
+	name = "WiFi Hosted Radius"
+	wifi = {
+		external_radius_server = true
+		ca_chain = %q
+		network_access_server_ip = "1.2.3.4"
+		ssid = "corpnet"
+	}
+}
+`, root)
+	root2, _ := utils.CACerts(t)
+	wifiExternalRadius2 := fmt.Sprintf(`
+resource "smallstep_account" "wifi_byoradius" {
+	name = "WiFi Hosted Radius"
+	wifi = {
+		external_radius_server = true
+		ca_chain = %q
+		network_access_server_ip = "1.2.3.4"
+		ssid = "corpnet"
+		hidden = true
+		autojoin = true
+	}
+}
+`, root2)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: wifiExternalRadius,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.wifi_byoradius", plancheck.ResourceActionCreate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "name", "WiFi Hosted Radius"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.external_radius_server", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.network_access_server_ip", "1.2.3.4"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.ca_chain", root),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.ssid", "corpnet"),
+					helper.TestCheckNoResourceAttr("smallstep_account.wifi_byoradius", "wifi.autojoin"),
+					helper.TestCheckNoResourceAttr("smallstep_account.wifi_byoradius", "wifi.hidden"),
+				),
+			},
+			{
+				Config: wifiExternalRadius2,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.wifi_byoradius", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.ca_chain", root2),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.hidden", "true"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.autojoin", "true"),
 				),
 			},
 		},

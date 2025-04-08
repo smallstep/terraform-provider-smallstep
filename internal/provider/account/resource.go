@@ -715,7 +715,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	if err != nil {
 		panic(err)
 	}
-	// println(string(body))
+	// println("Updated: " + string(body))
 	if err := json.Unmarshal(body, account); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
