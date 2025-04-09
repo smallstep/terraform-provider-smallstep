@@ -976,7 +976,7 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 	case v20250101.Wifi:
 		wifi, err := account.Configuration.AsWifiAccount()
 		if err != nil {
-			diags.AddError("Account Wifi Parse Error", err.Error())
+			diags.AddError("Account WiFi Parse Error", err.Error())
 			break
 		}
 
@@ -1035,14 +1035,4 @@ func ikeObjectFromAPI(ctx context.Context, ike *v20250101.IkeV2Config, state uti
 	diags.Append(ds...)
 
 	return obj, diags
-}
-
-func isX509Unknown(account *v20250101.Account) bool {
-	if account.CertificateInfo == nil {
-		return true
-	}
-	if account.CertificateInfo.Type != v20250101.EndpointCertificateInfoTypeX509 {
-		return false
-	}
-	return account.CertificateInfo.Details == nil
 }

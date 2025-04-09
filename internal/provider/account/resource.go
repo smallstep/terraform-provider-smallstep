@@ -288,7 +288,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				},
 			},
 			"key": schema.SingleNestedAttribute{
-				// TOOD still?
 				// This object is not required by the API but a default object
 				// will always be returned with format, type and protection set to
 				// "DEFAULT". To avoid "inconsistent result after apply" errors
@@ -555,24 +554,13 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	}
 
 	account := &v20250101.Account{}
-	/*
-		if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
-			resp.Diagnostics.AddError(
-				"Smallstep API Client Error",
-				fmt.Sprintf("Failed to unmarshal account %s: %v", accountID, err),
-			)
-			return
-		}
-	*/
-	// TODO remove
-	body, err := io.ReadAll(httpResp.Body)
-	if err != nil {
-		panic(err)
+	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal account %s: %v", accountID, err),
+		)
+		return
 	}
-	if err := json.Unmarshal(body, account); err != nil {
-		panic(err)
-	}
-	// println("Read: " + string(body))
 
 	remote, d := accountFromAPI(ctx, account, req.State)
 	resp.Diagnostics.Append(d...)

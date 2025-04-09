@@ -5,30 +5,10 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
-
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
-	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
-
-var provider = &testprovider.SmallstepTestProvider{
-	ResourceFactories: []func() resource.Resource{
-		NewResource,
-	},
-	/*
-		DataSourceFactories: []func() datasource.DataSource{
-			NewDataSource,
-		},
-	*/
-}
-
-var providerFactories = map[string]func() (tfprotov6.ProviderServer, error){
-	"smallstep": providerserver.NewProtocol6WithError(provider),
-}
 
 const minConfig = `
 	resource "smallstep_account" "generic" {
@@ -875,6 +855,31 @@ resource "smallstep_account" "vpn" {
 					helper.TestCheckResourceAttr("smallstep_account.vpn", "vpn.vendor", "Cisco"),
 					helper.TestCheckNoResourceAttr("smallstep_account.vpn", "vpn.ike"),
 					helper.TestCheckNoResourceAttr("smallstep_account.vpn", "vpn.autojoin"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAccountAuthority(t *testing.T) {
+	authority := utils.NewAuthority(t)
+	config := fmt.Sprintf(`
+resource "smallstep_account" "custom_authority" {
+	name = "Custom Authority"
+	certificate = {
+		authority_id = %q
+	}
+}
+`, authority.Id)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: config,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_account.custom_authority", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_account.custom_authority", "certificate.authority_id", authority.Id),
 				),
 			},
 		},

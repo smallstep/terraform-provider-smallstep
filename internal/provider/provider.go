@@ -180,6 +180,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		provisioner.NewDataSource,
 		webhook.NewDataSource,
 		device.NewDataSource,
+		account.NewDataSource,
 	}
 }
 
