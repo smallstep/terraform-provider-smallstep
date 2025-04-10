@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
@@ -604,24 +603,13 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 
 	account := &v20250101.Account{}
-	/*
-		if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
-			resp.Diagnostics.AddError(
-				"Smallstep API Client Error",
-				fmt.Sprintf("Failed to unmarshal accont: %v", err),
-			)
-			return
-		}
-	*/
-	// TODO remove
-	body, err := io.ReadAll(httpResp.Body)
-	if err != nil {
-		panic(err)
+	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
+		resp.Diagnostics.AddError(
+			"Smallstep API Client Error",
+			fmt.Sprintf("Failed to unmarshal accont: %v", err),
+		)
+		return
 	}
-	if err := json.Unmarshal(body, account); err != nil {
-		panic(err)
-	}
-	// println("Create: " + string(body))
 
 	model, diags := accountFromAPI(ctx, account, req.Plan)
 	resp.Diagnostics.Append(diags...)
@@ -681,21 +669,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	}
 
 	account = &v20250101.Account{}
-	/*
-		if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
-			resp.Diagnostics.AddError(
-				"Smallstep API Client Error",
-				fmt.Sprintf("Failed to parse account update response: %v", err),
-			)
-			return
-		}
-	*/
-	body, err := io.ReadAll(httpResp.Body)
-	if err != nil {
-		panic(err)
-	}
-	// println("Updated: " + string(body))
-	if err := json.Unmarshal(body, account); err != nil {
+	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
 			fmt.Sprintf("Failed to parse account update response: %v", err),
