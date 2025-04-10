@@ -11,8 +11,12 @@ import (
 )
 
 // MaybeUseStateForUnknown uses state for unknown if and only if the specified
-// key in private state matches the specified value.
-// UseStateForUnknown except that null states are used instead of ignored.
+// key in private state matches the specified value. This was created to solve
+// the problem where x509 fields will get some default values if not supplied
+// and on susequent applies those values from state should be used for unknown
+// to avoid the "known after apply" messages, but when updating from client-set
+// values to client-unset, the state should not be used since the server will
+// set the defaults.
 func MaybeUseStateForUnknown(key string, val []byte) planmodifier.Object {
 	return maybeUseStateForUnknownModifier{
 		key: key,
@@ -65,7 +69,7 @@ func (m maybeUseStateForUnknownModifier) PlanModifyObject(ctx context.Context, r
 // specified path is set. This was created to solve a problem in smallstep_account
 // resources where at most one of certificate.x509 and certificate.ssh can be set.
 // Because x509 is computed, if ssh is set and applied then subsequent plans will
-// shown "known after apply" for x509. This modifier prevents that because x509
+// show "known after apply" for x509. This modifier prevents that because x509
 // will not return a computed value when ssh is set.
 func NullWhen(path path.Path, val basetypes.ObjectValue) planmodifier.Object {
 	return nullWhen{

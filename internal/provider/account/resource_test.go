@@ -249,6 +249,7 @@ func TestAccAccountSSH(t *testing.T) {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static", "123"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static"),
@@ -265,6 +266,7 @@ func TestAccAccountSSH(t *testing.T) {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUID),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static"),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata", "key"),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static.#", "1"),
@@ -288,6 +290,11 @@ func TestAccAccountSSH(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.device_metadata"),
 				),
+			},
+			{
+				ResourceName:      "smallstep_account.ssh",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -345,7 +352,6 @@ func TestAccAccountMinEmptyMin(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.locality"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.province"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.street_address"),
-
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.postal_code"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.country"),
 
@@ -356,13 +362,46 @@ func TestAccAccountMinEmptyMin(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.uid"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.mode"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.ssh"),
+
+					helper.TestCheckResourceAttr("smallstep_account.generic", "reload.method", "AUTOMATIC"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.pid_file"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.signal"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.unit_file"),
+
+					helper.TestCheckResourceAttr("smallstep_account.generic", "key.format", "DEFAULT"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "key.type", "ECDSA_P256"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "key.protection"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "key.pub_file"),
+
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.assurance"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.ownership"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.os"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.source"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.tags"),
 				),
 			},
+			// These updates check the plan modifiers are correctly using state for update.
+			// They will fail if the plan is not empty after apply.
 			{
 				Config: emptyConfig,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.generic", plancheck.ResourceActionUpdate),
+					},
+				},
 			},
 			{
 				Config: minConfig,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.generic", plancheck.ResourceActionUpdate),
+					},
+				},
+			},
+			{
+				ResourceName:      "smallstep_account.generic",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -433,20 +472,39 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.gid", "999"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.mode", "256"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.common_name.static", "Hello"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.common_name.device_metadata", "host"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.sans.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.sans.static.0", "user@example.com"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.sans.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.sans.device_metadata.0", "sans"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.static.0", "United States"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.device_metadata.0", "country"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.locality.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.locality.static.0", "static loc"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.locality.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.locality.device_metadata.0", "locality"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organization.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organization.static.0", "static org"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organization.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organization.device_metadata.0", "org"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.static.0", "static org unit"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.device_metadata.0", "ou"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.static.0", "20252"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.device_metadata.0", "postal"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.province.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.province.static.0", "CA"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.province.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.province.device_metadata.0", "province"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.street_address.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.street_address.static.0", "1 Main"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.street_address.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.street_address.device_metadata.0", "street"),
 
 					helper.TestCheckResourceAttr("smallstep_account.generic", "reload.method", "SIGNAL"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "reload.pid_file", "x.pid"),
@@ -478,6 +536,11 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 			},
 			{
 				Config: emptyConfig,
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_account.generic", plancheck.ResourceActionUpdate),
+					},
+				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUID),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.crt_file"),
@@ -487,8 +550,37 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.uid"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.gid"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.mode"),
-					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.street_address.static.#", "0"),
-					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.street_address"),
+
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.country.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.country.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.locality.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.locality.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.organization.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.organization.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.organizational_unit.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.postal_code.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.province.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.province.device_metadata"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.street_address.static"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.x509.street_address.device_metadata"),
+
+					helper.TestCheckResourceAttr("smallstep_account.generic", "reload.method", "AUTOMATIC"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.pid_file"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.signal"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "reload.unit_file"),
+
+					helper.TestCheckResourceAttr("smallstep_account.generic", "key.format", "DEFAULT"),
+					helper.TestCheckResourceAttr("smallstep_account.generic", "key.type", "ECDSA_P256"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "key.protection"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "key.pub_file"),
+
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.assurance"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.ownership"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.os"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.source"),
+					helper.TestCheckNoResourceAttr("smallstep_account.generic", "policy.tags"),
 				),
 			},
 		},
@@ -519,10 +611,8 @@ func TestAccAccountX509FullUpdate(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.gid", "998"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.mode", "6"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.common_name.static", "Authorized Client"),
-					// TODO add this above
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.common_name.device_metadata", "email"),
 
-					// TODO above assert values not just length
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.static.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.static.0", "USA"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.x509.country.device_metadata.#", "1"),
