@@ -8,7 +8,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-func TestAccProvisionerDataSource(t *testing.T) {
+func TestAccDeviceDataSource(t *testing.T) {
 	t.Parallel()
 	device := utils.NewDevice(t)
 

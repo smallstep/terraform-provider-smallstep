@@ -221,3 +221,29 @@ func NewDevice(t *testing.T) *v20250101.Device {
 
 	return device
 }
+
+func NewAccount(t *testing.T) *v20250101.Account {
+	t.Helper()
+
+	req := v20250101.Account{
+		Name: "An Account",
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PostAccounts(context.Background(), &v20250101.PostAccountsParams{}, req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 201, resp.StatusCode, string(body))
+
+	account := &v20250101.Account{}
+	err = json.Unmarshal(body, account)
+	require.NoError(t, err)
+
+	return account
+}

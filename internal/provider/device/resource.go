@@ -231,7 +231,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	deviceID := state.ID.ValueString()
 	if deviceID == "" {
 		resp.Diagnostics.AddError(
-			"Invalid Delete Device Request",
+			"Invalid Read Device Request",
 			"Device ID is required",
 		)
 		return
