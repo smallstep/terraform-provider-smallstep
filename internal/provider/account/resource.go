@@ -727,7 +727,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d updating account: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d deleting account: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
