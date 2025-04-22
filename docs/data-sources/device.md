@@ -37,6 +37,7 @@ This field may be populated with a value derived from data synced from your team
 Setting this value explicitly will mask any MDM-derived value.
 - `enrolled_at` (String) Timestamp in RFC3339 format when the device first connected to Smallstep. Read only.
 - `high_assurance` (Boolean) The device has been issued certificates using high assurance device attestation. Read only.
+- `host_id` (String) The identifier for the smallstep agent on the device.
 - `last_seen` (String) Timestamp in RFC3339 format when the device last connected to Smallstep. Read only.
 - `metadata` (Map of String) A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 - `os` (String) The device operating system.

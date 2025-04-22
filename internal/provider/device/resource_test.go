@@ -2,7 +2,6 @@ package device
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/google/uuid"
@@ -11,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
 
@@ -70,8 +70,9 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(minConfig, permanentID),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "host_id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
 					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_id"),
@@ -94,7 +95,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(maxConfig, permanentID),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
@@ -124,7 +125,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(emptyConfig, permanentID1),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID1),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
@@ -152,7 +153,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(maxConfig, permanentID2),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID2),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
@@ -176,7 +177,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(minConfig, permanentID2),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID2),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "connected", "false"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "high_assurance", "false"),
@@ -202,7 +203,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(maxConfig, permanentID3),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID3),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
@@ -226,7 +227,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(emptyConfig, permanentID3),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID3),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
@@ -254,7 +255,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(emptyConfig, permanentID4),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID4),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", ""),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", ""),
@@ -279,7 +280,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(minConfig, permanentID4),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID4),
 					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_id"),
 					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "display_name"),
@@ -310,7 +311,7 @@ func TestAccDeviceResource(t *testing.T) {
 			{
 				Config: fmt.Sprintf(maxConfig, permanentID5),
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID5),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),

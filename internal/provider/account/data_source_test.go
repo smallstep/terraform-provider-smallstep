@@ -14,7 +14,7 @@ func TestAccAccountDataSource(t *testing.T) {
 	config := fmt.Sprintf(`
 data "smallstep_account" "generic" {
 	id = %q
-}`, *account.Id)
+}`, account.Id)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -22,7 +22,7 @@ data "smallstep_account" "generic" {
 			{
 				Config: config,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestCheckResourceAttr("data.smallstep_account.generic", "id", *account.Id),
+					helper.TestCheckResourceAttr("data.smallstep_account.generic", "id", account.Id),
 					helper.TestCheckResourceAttr("data.smallstep_account.generic", "name", account.Name),
 				),
 			},
