@@ -1,3 +1,8 @@
+## 0.6.1
+
+CHANGES:
+* Add host_id to smallstep_device resource and data source.
+
 ## 0.6.0
 
 FEATURES:

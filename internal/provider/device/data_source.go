@@ -142,6 +142,10 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				MarkdownDescription: props["lastSeen"],
 				Computed:            true,
 			},
+			"host_id": schema.StringAttribute{
+				MarkdownDescription: props["hostID"],
+				Computed:            true,
+			},
 		},
 	}
 }

@@ -134,7 +134,7 @@ resource "smallstep_account" "ssh" {
 
 ### Required
 
-- `name` (String)
+- `name` (String) A human-friendly name for this account.
 
 ### Optional
 
@@ -149,7 +149,7 @@ resource "smallstep_account" "ssh" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (String) A UUID identifying this account. Read only.
 
 <a id="nestedatt--browser"></a>
 ### Nested Schema for `browser`

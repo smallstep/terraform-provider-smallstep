@@ -577,13 +577,22 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	reqBody, diags := toAPI(ctx, plan)
+	account, diags := toAPI(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	reqBody := v20250101.AccountRequest{
+		CertificateInfo: account.CertificateInfo,
+		Configuration:   (*v20250101.AccountRequest_Configuration)(account.Configuration),
+		KeyInfo:         account.KeyInfo,
+		Name:            account.Name,
+		Policy:          account.Policy,
+		ReloadInfo:      account.ReloadInfo,
+		Type:            (*v20250101.AccountRequestType)(account.Type),
+	}
 
-	httpResp, err := a.client.PostAccounts(ctx, &v20250101.PostAccountsParams{}, *reqBody)
+	httpResp, err := a.client.PostAccounts(ctx, &v20250101.PostAccountsParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -602,7 +611,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	account := &v20250101.Account{}
+	account = &v20250101.Account{}
 	if err := json.NewDecoder(httpResp.Body).Decode(account); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
