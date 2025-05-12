@@ -32,6 +32,7 @@ type Model struct {
 	LastSeen            types.String `tfsdk:"last_seen"`
 	Connected           types.Bool   `tfsdk:"connected"`
 	HighAssurance       types.Bool   `tfsdk:"high_assurance"`
+	HostID              types.String `tfsdk:"host_id"`
 }
 
 type UserModel struct {
@@ -65,6 +66,7 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 		PermanentIdentifier: types.StringValue(device.PermanentIdentifier),
 		Connected:           types.BoolValue(device.Connected),
 		HighAssurance:       types.BoolValue(device.HighAssurance),
+		HostID:              types.StringPointerValue(device.HostID),
 	}
 
 	displayName, d := utils.ToOptionalString(ctx, device.DisplayName, state, path.Root("display_name"))

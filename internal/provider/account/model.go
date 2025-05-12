@@ -447,7 +447,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 	var diags diag.Diagnostics
 
 	account := &v20250101.Account{
-		Id:            model.ID.ValueStringPointer(),
+		Id:            model.ID.ValueString(),
 		Name:          model.Name.ValueString(),
 		Configuration: &v20250101.Account_Configuration{},
 	}
@@ -486,7 +486,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 
 	switch {
 	case !model.WiFi.IsNull():
-		t := v20250101.Wifi
+		t := v20250101.AccountTypeWifi
 		account.Type = &t
 
 		wifi := &WiFiModel{}
@@ -506,7 +506,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 		}
 
 	case !model.VPN.IsNull():
-		typ := v20250101.Vpn
+		typ := v20250101.AccountTypeVpn
 		account.Type = &typ
 
 		vpn := &VPNModel{}
@@ -537,7 +537,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 		}
 
 	case !model.Browser.IsNull():
-		typ := v20250101.Browser
+		typ := v20250101.AccountTypeBrowser
 		account.Type = &typ
 
 		browser := &BrowserModel{}
@@ -550,7 +550,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 		}
 
 	case !model.Ethernet.IsNull():
-		typ := v20250101.Ethernet
+		typ := v20250101.AccountTypeEthernet
 		account.Type = &typ
 
 		ethernet := &EthernetModel{}
@@ -590,7 +590,7 @@ func accountFromAPI(ctx context.Context, account *v20250101.Account, state utils
 	diags.Append(d...)
 
 	model := &AccountModel{
-		ID:          types.StringPointerValue(account.Id),
+		ID:          types.StringValue(account.Id),
 		Name:        types.StringValue(account.Name),
 		Certificate: cert,
 		Key:         key,
@@ -910,7 +910,7 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 
 	switch *account.Type {
 
-	case v20250101.Browser:
+	case v20250101.AccountTypeBrowser:
 		_, err := account.Configuration.AsBrowserAccount()
 		if err != nil {
 			diags.AddError("Account Browser Parse Error", err.Error())
@@ -921,7 +921,7 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 		diags.Append(ds...)
 		browserObj = obj
 
-	case v20250101.Ethernet:
+	case v20250101.AccountTypeEthernet:
 		ethernet, err := account.Configuration.AsEthernetAccount()
 		if err != nil {
 			diags.AddError("Account Ethernet Parse Error", err.Error())
@@ -948,7 +948,7 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 		})
 		diags.Append(ds...)
 
-	case v20250101.Vpn:
+	case v20250101.AccountTypeVpn:
 		vpn, err := account.Configuration.AsVpnAccount()
 		if err != nil {
 			diags.AddError("Account VPN Parse Error", err.Error())
@@ -973,7 +973,7 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 		})
 		diags.Append(ds...)
 
-	case v20250101.Wifi:
+	case v20250101.AccountTypeWifi:
 		wifi, err := account.Configuration.AsWifiAccount()
 		if err != nil {
 			diags.AddError("Account WiFi Parse Error", err.Error())

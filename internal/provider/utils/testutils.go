@@ -225,7 +225,7 @@ func NewDevice(t *testing.T) *v20250101.Device {
 func NewAccount(t *testing.T) *v20250101.Account {
 	t.Helper()
 
-	req := v20250101.Account{
+	req := v20250101.AccountRequest{
 		Name: "An Account",
 	}
 
