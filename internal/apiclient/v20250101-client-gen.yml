@@ -1,0 +1,6 @@
+package: v20250101
+generate:
+  client: true
+  models: true
+  embedded-spec: true
+output: ./internal/apiclient/v20250101/api.gen.go
