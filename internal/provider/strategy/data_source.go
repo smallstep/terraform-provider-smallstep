@@ -387,7 +387,7 @@ func (ds *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp
 	if err := json.NewDecoder(httpResp.Body).Decode(strategy); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal account %s: %v", id, err),
+			fmt.Sprintf("Failed to unmarshal strategy %s: %v", id, err),
 		)
 		return
 	}
