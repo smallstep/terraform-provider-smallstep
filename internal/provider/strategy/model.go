@@ -9,19 +9,23 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/credential"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/policy"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
 type StrategyModel struct {
-	ID       types.String `tfsdk:"id"`
-	Name     types.String `tfsdk:"name"`
-	Browser  types.Object `tfsdk:"browser"`
-	Ethernet types.Object `tfsdk:"ethernet"`
-	Relay    types.Object `tfsdk:"relay"`
-	SSH      types.Object `tfsdk:"ssh"`
-	SSO      types.Object `tfsdk:"sso"`
-	VPN      types.Object `tfsdk:"vpn"`
-	WiFi     types.Object `tfsdk:"wifi"`
+	ID         types.String `tfsdk:"id"`
+	Name       types.String `tfsdk:"name"`
+	Credential types.Object `tfsdk:"credential"`
+	Policy     types.Object `tfsdk:"policy"`
+	Browser    types.Object `tfsdk:"browser"`
+	Ethernet   types.Object `tfsdk:"ethernet"`
+	Relay      types.Object `tfsdk:"relay"`
+	SSH        types.Object `tfsdk:"ssh"`
+	SSO        types.Object `tfsdk:"sso"`
+	VPN        types.Object `tfsdk:"vpn"`
+	WiFi       types.Object `tfsdk:"wifi"`
 }
 
 type BrowserMutualTLSModel struct {
@@ -39,7 +43,7 @@ func (m *BrowserMutualTLSModel) toAPI(ctx context.Context, obj types.Object) (v2
 	diags.Append(ds...)
 
 	return v20250101.StrategyBrowserMutualTLS{
-		MatchAddresses: toList[string](m.MatchAddresses),
+		MatchAddresses: utils.ToStringList[string](m.MatchAddresses),
 	}, diags
 }
 
@@ -88,8 +92,8 @@ func (m *NetworkRelayModel) toAPI(ctx context.Context, obj types.Object) (v20250
 	diags.Append(ds...)
 
 	return v20250101.StrategyNetworkRelay{
-		MatchDomains: toList[string](m.MatchDomains),
-		Regions:      toList[v20250101.StrategyNetworkRelayRegions](m.Regions),
+		MatchDomains: utils.ToStringList[string](m.MatchDomains),
+		Regions:      utils.ToStringList[v20250101.StrategyNetworkRelayRegions](m.Regions),
 	}, diags
 }
 
@@ -215,15 +219,19 @@ func (m *WLANModel) toAPI(ctx context.Context, obj types.Object) (v20250101.Stra
 }
 
 func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStrategy, diag.Diagnostics) {
-	var diags diag.Diagnostics
+	var diags, ds diag.Diagnostics
 
 	strategy := &v20250101.ProtectionStrategy{
-		Configuration: v20250101.ProtectionStrategy_Configuration{},
-		Credential:    nil,
 		Id:            model.ID.ValueString(),
 		Name:          model.Name.ValueString(),
-		Policy:        nil,
+		Configuration: v20250101.ProtectionStrategy_Configuration{},
 	}
+
+	strategy.Credential, ds = new(credential.Model).ToAPI(ctx, model.Credential)
+	diags.Append(ds...)
+
+	strategy.Policy, ds = new(policy.Model).ToAPI(ctx, model.Policy)
+	diags.Append(ds...)
 
 	switch {
 	case !model.Browser.IsNull():
@@ -281,15 +289,23 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 }
 
 func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state utils.AttributeGetter) (*StrategyModel, diag.Diagnostics) {
-	browser := basetypes.NewObjectNull(browserMutualTLSAttributes)
-	ethernet := basetypes.NewObjectNull(lanAttributes)
-	relay := basetypes.NewObjectNull(networkRelayAttributes)
-	ssh := basetypes.NewObjectNull(sshAttributes)
-	sso := basetypes.NewObjectNull(ssoAttributes)
-	vpn := basetypes.NewObjectNull(vpnAttributes)
-	wifi := basetypes.NewObjectNull(wlanAttributes)
+	var (
+		diags, ds diag.Diagnostics
+		browser   = basetypes.NewObjectNull(browserMutualTLSAttributes)
+		ethernet  = basetypes.NewObjectNull(lanAttributes)
+		relay     = basetypes.NewObjectNull(networkRelayAttributes)
+		ssh       = basetypes.NewObjectNull(sshAttributes)
+		sso       = basetypes.NewObjectNull(ssoAttributes)
+		vpn       = basetypes.NewObjectNull(vpnAttributes)
+		wifi      = basetypes.NewObjectNull(wlanAttributes)
+	)
 
-	var diags, ds diag.Diagnostics
+	credential, ds := credential.FromAPI(ctx, strategy.Credential, state, path.Root("credential"))
+	diags.Append(ds...)
+
+	policy, ds := policy.FromAPI(ctx, strategy.Policy, state, path.Root("policy"))
+	diags.Append(ds...)
+
 	switch strategy.Kind {
 	case v20250101.Browser:
 		browser, ds = browserObjectFromAPI(ctx, strategy, state)
@@ -317,15 +333,17 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 	}
 
 	return &StrategyModel{
-		ID:       types.StringValue(strategy.Id),
-		Name:     types.StringValue(strategy.Name),
-		Browser:  browser,
-		Ethernet: ethernet,
-		Relay:    relay,
-		SSH:      ssh,
-		SSO:      sso,
-		VPN:      vpn,
-		WiFi:     wifi,
+		ID:         types.StringValue(strategy.Id),
+		Name:       types.StringValue(strategy.Name),
+		Credential: credential,
+		Policy:     policy,
+		Browser:    browser,
+		Ethernet:   ethernet,
+		Relay:      relay,
+		SSH:        ssh,
+		SSO:        sso,
+		VPN:        vpn,
+		WiFi:       wifi,
 	}, diags
 }
 
@@ -554,13 +572,4 @@ func wifiObjectFromAPI(ctx context.Context, strategy *v20250101.ProtectionStrate
 	diags.Append(ds...)
 
 	return obj, diags
-}
-
-func toList[T ~string](list types.List) []T {
-	elements := list.Elements()
-	ret := make([]T, len(elements))
-	for i, v := range elements {
-		ret[i] = T(v.String())
-	}
-	return ret
 }

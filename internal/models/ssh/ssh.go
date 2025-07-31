@@ -1,0 +1,49 @@
+package ssh
+
+import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificatefield"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
+)
+
+type Model struct {
+	KeyID      types.Object `tfsdk:"key_id"`
+	Principals types.Object `tfsdk:"principals"`
+}
+
+var Attributes = map[string]attr.Type{
+	"key_id":     types.ObjectType{AttrTypes: certificatefield.Attributes},
+	"principals": types.ObjectType{AttrTypes: certificatefield.ListAttributes},
+}
+
+func FromAPI(ctx context.Context, details *v20250101.EndpointCertificateInfo_Details, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	if details == nil {
+		return basetypes.NewObjectNull(Attributes), diags
+	}
+
+	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
+		"key_id":     nil,
+		"principals": nil,
+	})
+	diags.Append(ds...)
+
+	return obj, diags
+}
+
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.EndpointCertificateInfo_Details, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	diags.Append(ds...)
+
+	return &v20250101.EndpointCertificateInfo_Details{}, diags
+}

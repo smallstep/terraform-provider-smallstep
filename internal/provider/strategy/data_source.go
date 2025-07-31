@@ -6,29 +6,50 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-const name = "smallstep_strategy"
+var _ datasource.DataSourceWithConfigure = (*DataSource)(nil)
 
-var _ resource.ResourceWithImportState = (*Resource)(nil)
-
-func NewResource() resource.Resource {
-	return &Resource{}
+func NewDataSource() datasource.DataSource {
+	return &DataSource{}
 }
 
-type Resource struct {
+type DataSource struct {
 	client *v20250101.Client
 }
 
-func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = name
+}
+
+// Configure adds the Smallstep API client to the data source.
+func (ds *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	client, ok := req.ProviderData.(*v20250101.Client)
+
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Get Smallstep API client from provider",
+			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+		return
+	}
+
+	ds.client = client
+}
+
+func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	strategy, props, err := utils.Describe("protectionStrategy")
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -137,9 +158,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"id": schema.StringAttribute{
 				MarkdownDescription: props["id"],
 				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
@@ -213,9 +231,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: lanProps["caChain"],
 						Optional:            true,
 						Computed:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
 					},
 					"autojoin": schema.BoolAttribute{
 						MarkdownDescription: lanProps["autojoin"],
@@ -318,9 +333,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: wlanProps["caChain"],
 						Computed:            true,
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
 					},
 					"hidden": schema.BoolAttribute{
 						MarkdownDescription: wlanProps["hidden"],
@@ -340,52 +352,19 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	}
 }
 
-func (r *Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = name
-}
-
-// Configure adds the Smallstep API client to the resource.
-func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	// Prevent panic if the provider has not been configured.
-	if req.ProviderData == nil {
-		return
-	}
-
-	client, ok := req.ProviderData.(*v20250101.Client)
-
-	if !ok {
-		resp.Diagnostics.AddError(
-			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-		)
-		return
-	}
-
-	r.client = client
-}
-
-func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	state := &StrategyModel{}
-
-	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
+func (ds *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var id string
+	diags := req.Config.GetAttribute(ctx, path.Root("id"), &id)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	strategyID := state.ID.ValueString()
-	if strategyID == "" {
-		resp.Diagnostics.AddError(
-			"Invalid Read Strategy Request",
-			"Strategy ID is required.",
-		)
-		return
-	}
-
-	httpResp, err := r.client.GetStrategy(ctx, strategyID, &v20250101.GetStrategyParams{})
+	httpResp, err := ds.client.GetStrategy(ctx, id, &v20250101.GetStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read strategy %q: %v", strategyID, err),
+			fmt.Sprintf("Failed to read strategy %q: %v", id, err),
 		)
 		return
 	}
@@ -399,7 +378,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d reading strategy %s: %s", reqID, httpResp.StatusCode, strategyID, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading strategy %s: %s", reqID, httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
@@ -408,166 +387,16 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if err := json.NewDecoder(httpResp.Body).Decode(strategy); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal strategy %s: %v", strategyID, err),
+			fmt.Sprintf("Failed to unmarshal account %s: %v", id, err),
 		)
 		return
 	}
 
-	remote, d := fromAPI(ctx, strategy, req.State)
+	remote, d := fromAPI(ctx, strategy, req.Config)
 	resp.Diagnostics.Append(d...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, remote)...)
-}
-
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	plan := &StrategyModel{}
-	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	strategy, diags := toAPI(ctx, plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-	reqBody := v20250101.ProtectionStrategyRequest{
-		Configuration: v20250101.ProtectionStrategyRequest_Configuration(strategy.Configuration),
-		Credential:    strategy.Credential,
-		Kind:          strategy.Kind,
-		Name:          strategy.Name,
-		Policy:        strategy.Policy,
-	}
-
-	httpResp, err := a.client.PostStrategies(ctx, &v20250101.PostStrategiesParams{}, reqBody)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to create strategy: %v", err),
-		)
-		return
-	}
-	defer httpResp.Body.Close()
-
-	if httpResp.StatusCode != http.StatusCreated {
-		reqID := httpResp.Header.Get("X-Request-Id")
-		resp.Diagnostics.AddError(
-			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d creating strategy: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
-		)
-		return
-	}
-
-	strategy = &v20250101.ProtectionStrategy{}
-	if err := json.NewDecoder(httpResp.Body).Decode(strategy); err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal strategy: %v", err),
-		)
-		return
-	}
-
-	model, diags := fromAPI(ctx, strategy, req.Plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	diags = resp.State.Set(ctx, model)
-	resp.Diagnostics.Append(diags...)
-}
-
-func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	plan := &StrategyModel{}
-	diags := req.Plan.Get(ctx, plan)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
-		return
-	}
-	strategyID := plan.ID.ValueString()
-
-	strategy, diags := toAPI(ctx, plan)
-	resp.Diagnostics.Append(diags...)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
-		return
-	}
-
-	httpResp, err := r.client.PutStrategy(ctx, strategyID, &v20250101.PutStrategyParams{}, *strategy)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			err.Error(),
-		)
-		return
-	}
-	defer httpResp.Body.Close()
-
-	if httpResp.StatusCode != http.StatusOK {
-		reqID := httpResp.Header.Get("X-Request-Id")
-		resp.Diagnostics.AddError(
-			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d updating strategy: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
-		)
-		return
-	}
-
-	strategy = &v20250101.ProtectionStrategy{}
-	if err := json.NewDecoder(httpResp.Body).Decode(strategy); err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to parse strategy update response: %v", err),
-		)
-		return
-	}
-
-	model, diags := fromAPI(ctx, strategy, req.Plan)
-	resp.Diagnostics.Append(diags...)
-
-	diags = resp.State.Set(ctx, model)
-	resp.Diagnostics.Append(diags...)
-}
-
-func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	state := &StrategyModel{}
-	diags := req.State.Get(ctx, state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	strategyID := state.ID.ValueString()
-	if strategyID == "" {
-		resp.Diagnostics.AddError(
-			"Invalid Delete Strategy Request",
-			"Strategy ID is required",
-		)
-		return
-	}
-
-	httpResp, err := r.client.DeleteStrategy(ctx, strategyID, &v20250101.DeleteStrategyParams{})
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to delete strategy: %v", err),
-		)
-		return
-	}
-	defer httpResp.Body.Close()
-
-	if httpResp.StatusCode != http.StatusNoContent {
-		reqID := httpResp.Header.Get("X-Request-Id")
-		resp.Diagnostics.AddError(
-			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d deleting strategy: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
-		)
-		return
-	}
-}
-
-func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

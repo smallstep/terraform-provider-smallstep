@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 )
 
@@ -42,11 +43,15 @@ func Ref[T any](v T) *T {
 	return &v
 }
 
-func ToIntPointer(i64 *int64) *int {
-	if i64 == nil {
+type integer interface {
+	int32 | int64
+}
+
+func ToIntPointer[T integer](v *T) *int {
+	if v == nil {
 		return nil
 	}
-	i := int(*i64)
+	i := int(*v)
 	return &i
 }
 
@@ -56,6 +61,20 @@ func ToStringPointer[Out ~string](str *string) *Out {
 	}
 	s := Out(*str)
 	return &s
+}
+
+func ToStringList[T ~string](list types.List) []T {
+	elements := list.Elements()
+	ret := make([]T, len(elements))
+	for i, v := range elements {
+		ret[i] = T(v.String())
+	}
+	return ret
+}
+
+func ToStringListPointer[T ~string](list types.List) *[]T {
+	ret := ToStringList[T](list)
+	return &ret
 }
 
 // Describe parses descriptions for a component from its schema in Smallstep's
