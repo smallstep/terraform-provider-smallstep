@@ -13,9 +13,9 @@ import (
 )
 
 type Model struct {
-	ClientId     types.String `tfsdk:"client_id"`
+	ClientID     types.String `tfsdk:"client_id"`
 	ClientSecret types.String `tfsdk:"client_secret"`
-	TenantUrl    types.String `tfsdk:"tenant_url"`
+	TenantURL    types.String `tfsdk:"tenant_url"`
 }
 
 var Attributes = map[string]attr.Type{
@@ -57,8 +57,8 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.JamfInve
 	diags.Append(ds...)
 
 	return v20250101.JamfInventoryIntegration{
-		ClientId:     m.ClientId.ValueStringPointer(),
+		ClientId:     m.ClientID.ValueStringPointer(),
 		ClientSecret: m.ClientSecret.ValueStringPointer(),
-		TenantUrl:    m.TenantUrl.ValueString(),
+		TenantUrl:    m.TenantURL.ValueString(),
 	}, diags
 }

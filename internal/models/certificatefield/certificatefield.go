@@ -42,7 +42,6 @@ func FromAPI(ctx context.Context, cf *v20250101.CertificateField, state utils.At
 	diags.Append(ds...)
 
 	return obj, diags
-
 }
 
 func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.CertificateField, diag.Diagnostics) {
@@ -87,7 +86,6 @@ func ListFromAPI(ctx context.Context, cf *v20250101.CertificateFieldList, state 
 	diags.Append(ds...)
 
 	return obj, diags
-
 }
 
 func (m *ListModel) ToAPI(ctx context.Context, obj types.Object) (*v20250101.CertificateFieldList, diag.Diagnostics) {
