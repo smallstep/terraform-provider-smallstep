@@ -91,14 +91,14 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 
 	// user
 	if device.User != nil {
-		userDisplayName, d := utils.ToOptionalString(ctx, device.User.DisplayName, state, path.Root("user").AtName("display_name"))
-		diags.Append(d...)
+		userDisplayName, ds := utils.ToOptionalString(ctx, device.User.DisplayName, state, path.Root("user").AtName("display_name"))
+		diags.Append(ds...)
 
-		user, d := basetypes.NewObjectValue(userAttrTypes, map[string]attr.Value{
+		user, ds := basetypes.NewObjectValue(userAttrTypes, map[string]attr.Value{
 			"display_name": userDisplayName,
 			"email":        types.StringValue(device.User.Email),
 		})
-		diags.Append(d...)
+		diags.Append(ds...)
 		model.User = user
 	} else {
 		model.User = basetypes.NewObjectNull(userAttrTypes)
@@ -135,17 +135,17 @@ func fromAPI(ctx context.Context, device *v20250101.Device, state utils.Attribut
 	}
 
 	if device.ApprovedAt != nil {
-		model.ApprovedAt = types.StringValue((*device.ApprovedAt).Format(time.RFC3339))
+		model.ApprovedAt = types.StringValue(device.ApprovedAt.Format(time.RFC3339))
 	} else {
 		model.ApprovedAt = types.StringNull()
 	}
 	if device.EnrolledAt != nil {
-		model.EnrolledAt = types.StringValue((*device.EnrolledAt).Format(time.RFC3339))
+		model.EnrolledAt = types.StringValue(device.EnrolledAt.Format(time.RFC3339))
 	} else {
 		model.EnrolledAt = types.StringNull()
 	}
 	if device.LastSeen != nil {
-		model.LastSeen = types.StringValue((*device.LastSeen).Format(time.RFC3339))
+		model.LastSeen = types.StringValue(device.LastSeen.Format(time.RFC3339))
 	} else {
 		model.LastSeen = types.StringNull()
 	}
@@ -178,8 +178,8 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 	}
 	if !m.Metadata.IsNull() && !m.Metadata.IsUnknown() {
 		meta := map[string]types.String{}
-		diag := m.Metadata.ElementsAs(ctx, &meta, false)
-		diags.Append(diag...)
+		ds := m.Metadata.ElementsAs(ctx, &meta, false)
+		diags.Append(ds...)
 
 		if len(meta) > 0 {
 			metadata := v20250101.DeviceMetadata{}
@@ -191,16 +191,16 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 	}
 	if !m.Tags.IsNull() && !m.Tags.IsUnknown() {
 		var tags []string
-		diag := m.Tags.ElementsAs(ctx, &tags, false)
-		diags.Append(diag...)
+		ds := m.Tags.ElementsAs(ctx, &tags, false)
+		diags.Append(ds...)
 		d.Tags = &tags
 	}
 	if !m.User.IsNull() && !m.User.IsUnknown() {
 		user := &UserModel{}
-		diag := m.User.As(ctx, &user, basetypes.ObjectAsOptions{
+		ds := m.User.As(ctx, &user, basetypes.ObjectAsOptions{
 			UnhandledUnknownAsEmpty: true,
 		})
-		diags.Append(diag...)
+		diags.Append(ds...)
 		d.User = &v20250101.DeviceUser{
 			DisplayName: user.DisplayName.ValueStringPointer(),
 			Email:       user.Email.ValueString(),

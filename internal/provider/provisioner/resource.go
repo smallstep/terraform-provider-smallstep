@@ -660,7 +660,7 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.client = client
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan Model
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
@@ -681,7 +681,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	b, _ := json.Marshal(p)
 	tflog.Trace(ctx, string(b))
 
-	httpResp, err := a.client.PostAuthorityProvisioners(ctx, plan.AuthorityID.ValueString(), &v20250101.PostAuthorityProvisionersParams{}, *p)
+	httpResp, err := r.client.PostAuthorityProvisioners(ctx, plan.AuthorityID.ValueString(), &v20250101.PostAuthorityProvisionersParams{}, *p)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -734,7 +734,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
-func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	state := &Model{}
 
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
@@ -747,7 +747,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.GetProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.GetProvisionerParams{})
+	httpResp, err := r.client.GetProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.GetProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -809,7 +809,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	// Update not supported. All changes require replacement.
 }
 
-func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state Model
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -822,7 +822,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
+	httpResp, err := r.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

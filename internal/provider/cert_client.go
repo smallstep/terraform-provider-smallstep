@@ -82,7 +82,7 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 
 		if resp.StatusCode != 201 {
 			msg := utils.APIErrorMsg(resp.Body)
-			return fmt.Errorf("Failed to create Smallstep API token with provided client certificate - the certificate may be expired or invalid. Response: %d. Details: %s", resp.StatusCode, msg)
+			return fmt.Errorf("failed to create Smallstep API token with provided client certificate - the certificate may be expired or invalid. Response: %d. Details: %s", resp.StatusCode, msg)
 		}
 
 		respBody := &createTokenResp{}

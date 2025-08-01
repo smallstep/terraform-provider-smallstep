@@ -23,13 +23,6 @@ func APIErrorMsg(r io.Reader) string {
 	return e.Message
 }
 
-type dereferencable interface {
-	string |
-		bool |
-		int |
-		[]string
-}
-
 // Deref gets the default value for a pointer type. This makes it easier to work
 // with the generated API client code, which uses pointers for optional fields.
 func Deref[T any](v *T) (r T) {

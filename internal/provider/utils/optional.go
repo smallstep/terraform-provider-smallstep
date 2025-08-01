@@ -88,7 +88,7 @@ func ToOptionalString[S ~string](ctx context.Context, remote *S, priorState Attr
 }
 
 func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGetter, p path.Path) (types.Bool, diag.Diagnostics) {
-	if remote == nil || *remote == false {
+	if remote == nil || !*remote {
 		boolFromState := types.Bool{}
 		diags := priorState.GetAttribute(ctx, p, &boolFromState)
 		if diags.HasError() {
@@ -97,7 +97,7 @@ func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGette
 		if boolFromState.IsUnknown() {
 			return types.BoolNull(), diags
 		}
-		if boolFromState.IsNull() || boolFromState.ValueBool() == false {
+		if boolFromState.IsNull() || !boolFromState.ValueBool() {
 			return boolFromState, diags
 		}
 	}

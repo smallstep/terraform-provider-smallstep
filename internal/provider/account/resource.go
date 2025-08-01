@@ -570,7 +570,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.Set(ctx, remote)...)
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	plan := &AccountModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
@@ -592,7 +592,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		Type:            (*v20250101.AccountRequestType)(account.Type),
 	}
 
-	httpResp, err := a.client.PostAccounts(ctx, &v20250101.PostAccountsParams{}, reqBody)
+	httpResp, err := r.client.PostAccounts(ctx, &v20250101.PostAccountsParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

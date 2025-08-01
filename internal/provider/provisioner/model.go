@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 	"go.step.sm/crypto/jose"
@@ -365,7 +366,7 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		Type:        types.StringValue(string(provisioner.Type)),
 	}
 	if provisioner.CreatedAt != nil {
-		data.CreatedAt = types.StringValue((*provisioner.CreatedAt).Format(time.RFC3339))
+		data.CreatedAt = types.StringValue(provisioner.CreatedAt.Format(time.RFC3339))
 	}
 
 	if provisioner.Claims != nil {
@@ -479,9 +480,9 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		data.JWK = &JWKModel{
 			Key: types.StringValue(string(pubKeyJSON)),
 		}
-		encryptedKey, diags := utils.ToOptionalString(ctx, jwk.EncryptedKey, state, path.Root("jwk").AtName("encrypted_key"))
-		if diags.HasError() {
-			return nil, diags
+		encryptedKey, ds := utils.ToOptionalString(ctx, jwk.EncryptedKey, state, path.Root("jwk").AtName("encrypted_key"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.JWK.EncryptedKey = encryptedKey
 
@@ -500,39 +501,39 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 			ConfigurationEndpoint: types.StringValue(oidc.ConfigurationEndpoint),
 		}
 
-		secret, diags := utils.ToOptionalString(ctx, &oidc.ClientSecret, state, path.Root("oidc").AtName("client_secret"))
-		if diags.HasError() {
-			return nil, diags
+		secret, ds := utils.ToOptionalString(ctx, &oidc.ClientSecret, state, path.Root("oidc").AtName("client_secret"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.ClientSecret = secret
 
-		admins, diags := utils.ToOptionalSet(ctx, oidc.Admins, state, path.Root("oidc").AtName("admins"))
-		if diags.HasError() {
-			return nil, diags
+		admins, ds := utils.ToOptionalSet(ctx, oidc.Admins, state, path.Root("oidc").AtName("admins"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.Admins = admins
 
-		domains, diags := utils.ToOptionalSet(ctx, oidc.Domains, state, path.Root("oidc").AtName("domains"))
-		if diags.HasError() {
-			return nil, diags
+		domains, ds := utils.ToOptionalSet(ctx, oidc.Domains, state, path.Root("oidc").AtName("domains"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.Domains = domains
 
-		groups, diags := utils.ToOptionalSet(ctx, oidc.Groups, state, path.Root("oidc").AtName("groups"))
-		if diags.HasError() {
-			return nil, diags
+		groups, ds := utils.ToOptionalSet(ctx, oidc.Groups, state, path.Root("oidc").AtName("groups"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.Groups = groups
 
-		listen, diags := utils.ToOptionalString(ctx, oidc.ListenAddress, state, path.Root("oidc").AtName("listen_address"))
-		if diags.HasError() {
-			return nil, diags
+		listen, ds := utils.ToOptionalString(ctx, oidc.ListenAddress, state, path.Root("oidc").AtName("listen_address"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.ListenAddress = listen
 
-		tenantID, diags := utils.ToOptionalString(ctx, oidc.TenantID, state, path.Root("oidc").AtName("tenant_id"))
-		if diags.HasError() {
-			return nil, diags
+		tenantID, ds := utils.ToOptionalString(ctx, oidc.TenantID, state, path.Root("oidc").AtName("tenant_id"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.OIDC.TenantID = tenantID
 
@@ -554,9 +555,9 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		for _, challenge := range acme.Challenges {
 			challenges = append(challenges, types.StringValue(string(challenge)))
 		}
-		challengesSet, diags := types.SetValue(types.StringType, challenges)
-		if diags.HasError() {
-			return nil, diags
+		challengesSet, ds := types.SetValue(types.StringType, challenges)
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.ACME.Challenges = challengesSet
 
@@ -578,29 +579,32 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		for _, format := range attest.AttestationFormats {
 			attestationFormats = append(attestationFormats, types.StringValue(string(format)))
 		}
-		formatsSet, diags := types.SetValue(types.StringType, attestationFormats)
-		if diags.HasError() {
-			return nil, diags
+		formatsSet, ds := types.SetValue(types.StringType, attestationFormats)
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.ACMEAttestation.AttestationFormats = formatsSet
 
 		if attest.AttestationRoots != nil {
-			var roots []attr.Value
+			var (
+				roots    []attr.Value
+				rootsSet basetypes.SetValue
+			)
 			for _, root := range *attest.AttestationRoots {
 				roots = append(roots, types.StringValue(root))
 			}
-			rootsSet, diags := types.SetValue(types.StringType, roots)
-			if diags.HasError() {
-				return nil, diags
+			rootsSet, ds = types.SetValue(types.StringType, roots)
+			if ds.HasError() {
+				return nil, ds
 			}
 			data.ACMEAttestation.AttestationRoots = rootsSet
 		} else {
 			data.ACMEAttestation.AttestationRoots = types.SetNull(types.StringType)
 		}
 
-		attestationRoots, diags := utils.ToOptionalSet(ctx, attest.AttestationRoots, state, path.Root("acme_attestation").AtName("attestation_roots"))
-		if diags.HasError() {
-			return nil, diags
+		attestationRoots, ds := utils.ToOptionalSet(ctx, attest.AttestationRoots, state, path.Root("acme_attestation").AtName("attestation_roots"))
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.ACMEAttestation.AttestationRoots = attestationRoots
 
@@ -618,9 +622,9 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		for _, root := range x5c.Roots {
 			roots = append(roots, types.StringValue(root))
 		}
-		rootsSet, diags := types.SetValue(types.StringType, roots)
-		if diags.HasError() {
-			return nil, diags
+		rootsSet, ds := types.SetValue(types.StringType, roots)
+		if ds.HasError() {
+			return nil, ds
 		}
 		data.X5C = &X5CModel{
 			Roots: rootsSet,
@@ -640,24 +644,24 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		for _, account := range aws.Accounts {
 			accounts = append(accounts, types.StringValue(account))
 		}
-		accountsSet, diags := types.SetValue(types.StringType, accounts)
-		if diags.HasError() {
-			return nil, diags
+		accountsSet, ds := types.SetValue(types.StringType, accounts)
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		instanceAge, diags := utils.ToEqualString(ctx, aws.InstanceAge, state, path.Root("aws").AtName("instance_age"), utils.IsDurationEqual)
-		if diags.HasError() {
-			return nil, diags
+		instanceAge, ds := utils.ToEqualString(ctx, aws.InstanceAge, state, path.Root("aws").AtName("instance_age"), utils.IsDurationEqual)
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableTOFU, diags := utils.ToOptionalBool(ctx, aws.DisableTrustOnFirstUse, state, path.Root("aws").AtName("disable_trust_on_first_use"))
-		if diags.HasError() {
-			return nil, diags
+		disableTOFU, ds := utils.ToOptionalBool(ctx, aws.DisableTrustOnFirstUse, state, path.Root("aws").AtName("disable_trust_on_first_use"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableCustomSANs, diags := utils.ToOptionalBool(ctx, aws.DisableCustomSANs, state, path.Root("aws").AtName("disable_custom_sans"))
-		if diags.HasError() {
-			return nil, diags
+		disableCustomSANs, ds := utils.ToOptionalBool(ctx, aws.DisableCustomSANs, state, path.Root("aws").AtName("disable_custom_sans"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
 		data.AWS = &AWSModel{
@@ -677,29 +681,29 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 			return nil, diags
 		}
 
-		serviceAccountsSet, diags := utils.ToOptionalSet(ctx, gcp.ServiceAccounts, state, path.Root("gcp").AtName("service_accounts"))
-		if diags.HasError() {
-			return nil, diags
+		serviceAccountsSet, ds := utils.ToOptionalSet(ctx, gcp.ServiceAccounts, state, path.Root("gcp").AtName("service_accounts"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		projectIDsSet, diags := utils.ToOptionalSet(ctx, gcp.ProjectIDs, state, path.Root("gcp").AtName("project_ids"))
-		if diags.HasError() {
-			return nil, diags
+		projectIDsSet, ds := utils.ToOptionalSet(ctx, gcp.ProjectIDs, state, path.Root("gcp").AtName("project_ids"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		instanceAge, diags := utils.ToEqualString(ctx, gcp.InstanceAge, state, path.Root("gcp").AtName("instance_age"), utils.IsDurationEqual)
-		if diags.HasError() {
-			return nil, diags
+		instanceAge, ds := utils.ToEqualString(ctx, gcp.InstanceAge, state, path.Root("gcp").AtName("instance_age"), utils.IsDurationEqual)
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableTOFU, diags := utils.ToOptionalBool(ctx, gcp.DisableTrustOnFirstUse, state, path.Root("gcp").AtName("disable_trust_on_first_use"))
-		if diags.HasError() {
-			return nil, diags
+		disableTOFU, ds := utils.ToOptionalBool(ctx, gcp.DisableTrustOnFirstUse, state, path.Root("gcp").AtName("disable_trust_on_first_use"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableCustomSANs, diags := utils.ToOptionalBool(ctx, gcp.DisableCustomSANs, state, path.Root("gcp").AtName("disable_custom_sans"))
-		if diags.HasError() {
-			return nil, diags
+		disableCustomSANs, ds := utils.ToOptionalBool(ctx, gcp.DisableCustomSANs, state, path.Root("gcp").AtName("disable_custom_sans"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
 		data.GCP = &GCPModel{
@@ -724,24 +728,24 @@ func fromAPI(ctx context.Context, provisioner *v20250101.Provisioner, authorityI
 		for _, rg := range azure.ResourceGroups {
 			resourceGroups = append(resourceGroups, types.StringValue(rg))
 		}
-		resourceGroupsSet, diags := types.SetValue(types.StringType, resourceGroups)
-		if diags.HasError() {
-			return nil, diags
+		resourceGroupsSet, ds := types.SetValue(types.StringType, resourceGroups)
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableTOFU, diags := utils.ToOptionalBool(ctx, azure.DisableTrustOnFirstUse, state, path.Root("azure").AtName("disable_trust_on_first_use"))
-		if diags.HasError() {
-			return nil, diags
+		disableTOFU, ds := utils.ToOptionalBool(ctx, azure.DisableTrustOnFirstUse, state, path.Root("azure").AtName("disable_trust_on_first_use"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		disableCustomSANs, diags := utils.ToOptionalBool(ctx, azure.DisableCustomSANs, state, path.Root("azure").AtName("disable_custom_sans"))
-		if diags.HasError() {
-			return nil, diags
+		disableCustomSANs, ds := utils.ToOptionalBool(ctx, azure.DisableCustomSANs, state, path.Root("azure").AtName("disable_custom_sans"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
-		audience, diags := utils.ToOptionalString(ctx, azure.Audience, state, path.Root("azure").AtName("audience"))
-		if diags.HasError() {
-			return nil, diags
+		audience, ds := utils.ToOptionalString(ctx, azure.Audience, state, path.Root("azure").AtName("audience"))
+		if ds.HasError() {
+			return nil, ds
 		}
 
 		data.Azure = &AzureModel{

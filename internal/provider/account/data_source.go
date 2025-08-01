@@ -25,7 +25,7 @@ type DataSource struct {
 	client *v20250101.Client
 }
 
-func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (ds *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = name
 }
 

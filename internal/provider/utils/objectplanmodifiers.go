@@ -71,9 +71,9 @@ func (m maybeUseStateForUnknownModifier) PlanModifyObject(ctx context.Context, r
 // Because x509 is computed, if ssh is set and applied then subsequent plans will
 // show "known after apply" for x509. This modifier prevents that because x509
 // will not return a computed value when ssh is set.
-func NullWhen(path path.Path, val basetypes.ObjectValue) planmodifier.Object {
+func NullWhen(p path.Path, val basetypes.ObjectValue) planmodifier.Object {
 	return nullWhen{
-		path: path,
+		path: p,
 		val:  val,
 	}
 }

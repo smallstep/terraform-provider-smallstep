@@ -66,11 +66,12 @@ func init() {
 				if err != nil {
 					return err
 				}
-				defer resp.Body.Close()
 				if resp.StatusCode != http.StatusNoContent {
 					body, _ := io.ReadAll(resp.Body)
+					resp.Body.Close()
 					return fmt.Errorf("failed to delete authority %q: %d: %s", authority.Domain, resp.StatusCode, body)
 				}
+				resp.Body.Close()
 				log.Printf("Successfully swept %s\n", authority.Domain)
 			}
 

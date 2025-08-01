@@ -2,7 +2,6 @@ package testprovider
 
 import (
 	"context"
-	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -30,11 +29,6 @@ func (p *SmallstepTestProvider) Schema(ctx context.Context, req provider.SchemaR
 }
 
 func (p *SmallstepTestProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	server := os.Getenv("SMALLSTEP_API_URL")
-	if server == "" {
-		server = "https://gateway.smallstep.com/api"
-	}
-
 	client, err := utils.SmallstepAPIClientFromEnv()
 	if err != nil {
 		resp.Diagnostics.AddError(

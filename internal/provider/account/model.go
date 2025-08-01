@@ -909,7 +909,6 @@ func configurationObjectsFromAPI(ctx context.Context, account *v20250101.Account
 	}
 
 	switch *account.Type {
-
 	case v20250101.AccountTypeBrowser:
 		_, err := account.Configuration.AsBrowserAccount()
 		if err != nil {

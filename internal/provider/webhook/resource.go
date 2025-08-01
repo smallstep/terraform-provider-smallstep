@@ -255,7 +255,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	}
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan Model
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
@@ -272,7 +272,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	authorityID := plan.AuthorityID.ValueString()
 	provisionerID := plan.ProvisionerID.ValueString()
 
-	httpResp, err := a.client.PostWebhooks(ctx, authorityID, provisionerID, &v20250101.PostWebhooksParams{}, *reqBody)
+	httpResp, err := r.client.PostWebhooks(ctx, authorityID, provisionerID, &v20250101.PostWebhooksParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -317,7 +317,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	// Update not supported. All changes require replacement.
 }
 
-func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state Model
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -330,7 +330,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if nameOrID == "" {
 		nameOrID = state.Name.ValueString()
 	}
-	httpResp, err := a.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
+	httpResp, err := r.client.DeleteProvisioner(ctx, state.AuthorityID.ValueString(), nameOrID, &v20250101.DeleteProvisionerParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
