@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificateinfo"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/keyinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -20,7 +20,7 @@ type Model struct {
 }
 
 var Attributes = map[string]attr.Type{
-	"certificate_info": types.ObjectType{AttrTypes: certificateinfo.Attributes},
+	"certificate_info": types.ObjectType{AttrTypes: certinfo.Attributes},
 	"key_info":         types.ObjectType{AttrTypes: keyinfo.Attributes},
 }
 
@@ -31,7 +31,7 @@ func FromAPI(ctx context.Context, credential *v20250101.CredentialConfigurationR
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	certificateInfo, ds := certificateinfo.FromAPI(ctx, credential.CertificateInfo, state, root.AtName("certificate_info"))
+	certificateInfo, ds := certinfo.FromAPI(ctx, credential.CertificateInfo, state, root.AtName("certificate_info"))
 	diags.Append(ds...)
 
 	keyInfo, ds := keyinfo.FromAPI(ctx, credential.KeyInfo, state, root.AtName("key_info"))
@@ -56,7 +56,7 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Credent
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	ci, ds := new(certificateinfo.Model).ToAPI(ctx, m.CertificateInfo)
+	ci, ds := new(certinfo.Model).ToAPI(ctx, m.CertificateInfo)
 	diags.Append(ds...)
 
 	ki, ds := new(keyinfo.Model).ToAPI(ctx, m.KeyInfo)

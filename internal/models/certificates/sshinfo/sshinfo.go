@@ -1,4 +1,4 @@
-package ssh
+package sshinfo
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificatefield"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certfield"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -19,8 +19,8 @@ type Model struct {
 }
 
 var Attributes = map[string]attr.Type{
-	"key_id":     types.ObjectType{AttrTypes: certificatefield.Attributes},
-	"principals": types.ObjectType{AttrTypes: certificatefield.ListAttributes},
+	"key_id":     types.ObjectType{AttrTypes: certfield.Attributes},
+	"principals": types.ObjectType{AttrTypes: certfield.ListAttributes},
 }
 
 func FromAPI(ctx context.Context, details *v20250101.EndpointCertificateInfo_Details, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {

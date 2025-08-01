@@ -1,4 +1,4 @@
-package x509
+package x509info
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificatefield"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certfield"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -26,15 +26,15 @@ type Model struct {
 }
 
 var Attributes = map[string]attr.Type{
-	"common_name":         types.ObjectType{AttrTypes: certificatefield.Attributes},
-	"sans":                types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"organization":        types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"organizational_unit": types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"locality":            types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"province":            types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"street_address":      types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"postal_code":         types.ObjectType{AttrTypes: certificatefield.ListAttributes},
-	"country":             types.ObjectType{AttrTypes: certificatefield.ListAttributes},
+	"common_name":         types.ObjectType{AttrTypes: certfield.Attributes},
+	"sans":                types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"organization":        types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"organizational_unit": types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"locality":            types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"province":            types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"street_address":      types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"postal_code":         types.ObjectType{AttrTypes: certfield.ListAttributes},
+	"country":             types.ObjectType{AttrTypes: certfield.ListAttributes},
 }
 
 func FromAPI(ctx context.Context, details *v20250101.EndpointCertificateInfo_Details, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {

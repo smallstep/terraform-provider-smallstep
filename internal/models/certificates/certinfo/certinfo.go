@@ -1,4 +1,4 @@
-package certificateinfo
+package certinfo
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/ssh"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/x509"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/sshinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/x509info"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -36,8 +36,8 @@ var Attributes = map[string]attr.Type{
 	"uid":          types.Int32Type,
 	"gid":          types.Int32Type,
 	"mode":         types.Int32Type,
-	"x509":         types.ObjectType{AttrTypes: x509.Attributes},
-	"ssh":          types.ObjectType{AttrTypes: ssh.Attributes},
+	"x509":         types.ObjectType{AttrTypes: x509info.Attributes},
+	"ssh":          types.ObjectType{AttrTypes: sshinfo.Attributes},
 }
 
 func FromAPI(ctx context.Context, ci *v20250101.EndpointCertificateInfo, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
@@ -72,22 +72,22 @@ func FromAPI(ctx context.Context, ci *v20250101.EndpointCertificateInfo, state u
 	diags.Append(ds...)
 
 	var (
-		x509Object = basetypes.NewObjectNull(x509.Attributes)
-		sshObject  = basetypes.NewObjectNull(ssh.Attributes)
+		x509Object = basetypes.NewObjectNull(x509info.Attributes)
+		sshObject  = basetypes.NewObjectNull(sshinfo.Attributes)
 	)
 
 	switch ci.Type {
 	case v20250101.EndpointCertificateInfoTypeX509:
-		x509Object, ds = x509.FromAPI(ctx, ci.Details, state, root.AtName("x509"))
+		x509Object, ds = x509info.FromAPI(ctx, ci.Details, state, root.AtName("x509"))
 		diags.Append(ds...)
 	case v20250101.EndpointCertificateInfoTypeSSHUSER:
-		sshObject, ds = ssh.FromAPI(ctx, ci.Details, state, root.AtName("ssh"))
+		sshObject, ds = sshinfo.FromAPI(ctx, ci.Details, state, root.AtName("ssh"))
 		diags.Append(ds...)
 	case v20250101.EndpointCertificateInfoTypeSSHHOST:
-		sshObject, ds = ssh.FromAPI(ctx, ci.Details, state, root.AtName("ssh"))
+		sshObject, ds = sshinfo.FromAPI(ctx, ci.Details, state, root.AtName("ssh"))
 		diags.Append(ds...)
 	default:
-		x509Object, ds = x509.FromAPI(ctx, ci.Details, state, root.AtName("x509"))
+		x509Object, ds = x509info.FromAPI(ctx, ci.Details, state, root.AtName("x509"))
 		diags.Append(ds...)
 	}
 
