@@ -13,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -38,7 +40,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	cred, credProps, err := utils.Describe("credentialConfigurationRequest")
+	cred, _, err := utils.Describe("credentialConfigurationRequest")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Strategy Schema",
@@ -128,6 +130,24 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
+	certInfo, err := certinfo.NewResourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Certificate Info",
+			err.Error(),
+		)
+		return
+	}
+
+	keyInfo, err := keyinfo.NewResourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Key Info",
+			err.Error(),
+		)
+		return
+	}
+
 	// The objects can be left empty and will be populated with default values.
 	// The plan modifier UseStateForUnknown prevents showing (known after apply)
 	// for these.
@@ -148,15 +168,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"credential": schema.SingleNestedAttribute{
 				MarkdownDescription: cred,
 				Optional:            true,
-				Attributes: map[string]schema.Attribute{
-					"certificate_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["certificate_info"],
-						Optional:            true,
-					},
-					"key_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["key_info"],
-						Optional:            true,
-					},
+				Attributes: map[string]schema.SingleNestedAttribute{
+					"certificate_info": certInfo,
+					"key_info":         keyInfo,
 				},
 			},
 			"policy": schema.SingleNestedAttribute{
