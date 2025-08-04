@@ -309,8 +309,8 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	strategyID := state.ID.ValueString()
-	if strategyID == "" {
+	integrationID := state.ID.ValueString()
+	if integrationID == "" {
 		resp.Diagnostics.AddError(
 			"Invalid Delete Device Inventory Integration Request",
 			"Strategy ID is required",
@@ -318,7 +318,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.DeleteStrategy(ctx, strategyID, &v20250101.DeleteStrategyParams{})
+	httpResp, err := r.client.DeleteDeviceInventoryIntegration(ctx, integrationID, &v20250101.DeleteDeviceInventoryIntegrationParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
