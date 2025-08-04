@@ -22,7 +22,7 @@ var Attributes = map[string]attr.Type{
 	"regions":       types.ListType{ElemType: types.StringType},
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyNetworkRelay, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyNetworkRelayConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -44,14 +44,14 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyNetworkRelay, state ut
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyNetworkRelay, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyNetworkRelayConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	return v20250101.StrategyNetworkRelay{
+	return v20250101.StrategyNetworkRelayConfig{
 		MatchDomains: utils.ToStringList[string](m.MatchDomains),
-		Regions:      utils.ToStringList[v20250101.StrategyNetworkRelayRegions](m.Regions),
+		Regions:      utils.ToStringList[v20250101.StrategyNetworkRelayConfigRegions](m.Regions),
 	}, diags
 }

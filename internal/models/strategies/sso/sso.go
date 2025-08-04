@@ -22,7 +22,7 @@ var Attributes = map[string]attr.Type{
 	"redirect_uri":  types.StringType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategySSO, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategySSOConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -46,13 +46,13 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategySSO, state utils.Attri
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategySSO, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategySSOConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	return v20250101.StrategySSO{
+	return v20250101.StrategySSOConfig{
 		TrustRoots:  m.TrustedRoots.ValueString(),
 		RedirectUri: m.RedirectURI.ValueString(),
 	}, diags

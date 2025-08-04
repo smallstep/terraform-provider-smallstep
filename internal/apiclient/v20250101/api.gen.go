@@ -85,12 +85,6 @@ const (
 	DeviceInventoryIntegrationKindJamf   DeviceInventoryIntegrationKind = "Jamf"
 )
 
-// Defines values for DeviceInventoryIntegrationRequestKind.
-const (
-	Intune DeviceInventoryIntegrationRequestKind = "Intune"
-	Jamf   DeviceInventoryIntegrationRequestKind = "Jamf"
-)
-
 // Defines values for DeviceOS.
 const (
 	IOS      DeviceOS = "iOS"
@@ -262,48 +256,48 @@ const (
 	DESCBC    ScepProvisionerEncryptionAlgorithmIdentifier = "DES_CBC"
 )
 
-// Defines values for StrategyNetworkRelayRegions.
+// Defines values for StrategyNetworkRelayConfigRegions.
 const (
-	AFRICASOUTH1           StrategyNetworkRelayRegions = "AFRICA_SOUTH1"
-	ASIAEAST1              StrategyNetworkRelayRegions = "ASIA_EAST1"
-	ASIAEAST2              StrategyNetworkRelayRegions = "ASIA_EAST2"
-	ASIANORTHEAST1         StrategyNetworkRelayRegions = "ASIA_NORTHEAST1"
-	ASIANORTHEAST2         StrategyNetworkRelayRegions = "ASIA_NORTHEAST2"
-	ASIANORTHEAST3         StrategyNetworkRelayRegions = "ASIA_NORTHEAST3"
-	ASIASOUTH1             StrategyNetworkRelayRegions = "ASIA_SOUTH1"
-	ASIASOUTH2             StrategyNetworkRelayRegions = "ASIA_SOUTH2"
-	ASIASOUTHEAST1         StrategyNetworkRelayRegions = "ASIA_SOUTHEAST1"
-	ASIASOUTHEAST2         StrategyNetworkRelayRegions = "ASIA_SOUTHEAST2"
-	AUSTRALIASOUTHEAST1    StrategyNetworkRelayRegions = "AUSTRALIA_SOUTHEAST1"
-	AUSTRALIASOUTHEAST2    StrategyNetworkRelayRegions = "AUSTRALIA_SOUTHEAST2"
-	EUROPECENTRAL2         StrategyNetworkRelayRegions = "EUROPE_CENTRAL2"
-	EUROPENORTH1           StrategyNetworkRelayRegions = "EUROPE_NORTH1"
-	EUROPESOUTHWEST1       StrategyNetworkRelayRegions = "EUROPE_SOUTHWEST1"
-	EUROPEWEST1            StrategyNetworkRelayRegions = "EUROPE_WEST1"
-	EUROPEWEST10           StrategyNetworkRelayRegions = "EUROPE_WEST10"
-	EUROPEWEST12           StrategyNetworkRelayRegions = "EUROPE_WEST12"
-	EUROPEWEST2            StrategyNetworkRelayRegions = "EUROPE_WEST2"
-	EUROPEWEST3            StrategyNetworkRelayRegions = "EUROPE_WEST3"
-	EUROPEWEST4            StrategyNetworkRelayRegions = "EUROPE_WEST4"
-	EUROPEWEST6            StrategyNetworkRelayRegions = "EUROPE_WEST6"
-	EUROPEWEST8            StrategyNetworkRelayRegions = "EUROPE_WEST8"
-	EUROPEWEST9            StrategyNetworkRelayRegions = "EUROPE_WEST9"
-	MECENTRAL1             StrategyNetworkRelayRegions = "ME_CENTRAL1"
-	MECENTRAL2             StrategyNetworkRelayRegions = "ME_CENTRAL2"
-	MEWEST1                StrategyNetworkRelayRegions = "ME_WEST1"
-	NORTHAMERICANORTHEAST1 StrategyNetworkRelayRegions = "NORTHAMERICA_NORTHEAST1"
-	NORTHAMERICANORTHEAST2 StrategyNetworkRelayRegions = "NORTHAMERICA_NORTHEAST2"
-	SOUTHAMERICAEAST1      StrategyNetworkRelayRegions = "SOUTHAMERICA_EAST1"
-	SOUTHAMERICAWEST1      StrategyNetworkRelayRegions = "SOUTHAMERICA_WEST1"
-	USCENTRAL1             StrategyNetworkRelayRegions = "US_CENTRAL1"
-	USEAST1                StrategyNetworkRelayRegions = "US_EAST1"
-	USEAST4                StrategyNetworkRelayRegions = "US_EAST4"
-	USEAST5                StrategyNetworkRelayRegions = "US_EAST5"
-	USSOUTH1               StrategyNetworkRelayRegions = "US_SOUTH1"
-	USWEST1                StrategyNetworkRelayRegions = "US_WEST1"
-	USWEST2                StrategyNetworkRelayRegions = "US_WEST2"
-	USWEST3                StrategyNetworkRelayRegions = "US_WEST3"
-	USWEST4                StrategyNetworkRelayRegions = "US_WEST4"
+	AFRICASOUTH1           StrategyNetworkRelayConfigRegions = "AFRICA_SOUTH1"
+	ASIAEAST1              StrategyNetworkRelayConfigRegions = "ASIA_EAST1"
+	ASIAEAST2              StrategyNetworkRelayConfigRegions = "ASIA_EAST2"
+	ASIANORTHEAST1         StrategyNetworkRelayConfigRegions = "ASIA_NORTHEAST1"
+	ASIANORTHEAST2         StrategyNetworkRelayConfigRegions = "ASIA_NORTHEAST2"
+	ASIANORTHEAST3         StrategyNetworkRelayConfigRegions = "ASIA_NORTHEAST3"
+	ASIASOUTH1             StrategyNetworkRelayConfigRegions = "ASIA_SOUTH1"
+	ASIASOUTH2             StrategyNetworkRelayConfigRegions = "ASIA_SOUTH2"
+	ASIASOUTHEAST1         StrategyNetworkRelayConfigRegions = "ASIA_SOUTHEAST1"
+	ASIASOUTHEAST2         StrategyNetworkRelayConfigRegions = "ASIA_SOUTHEAST2"
+	AUSTRALIASOUTHEAST1    StrategyNetworkRelayConfigRegions = "AUSTRALIA_SOUTHEAST1"
+	AUSTRALIASOUTHEAST2    StrategyNetworkRelayConfigRegions = "AUSTRALIA_SOUTHEAST2"
+	EUROPECENTRAL2         StrategyNetworkRelayConfigRegions = "EUROPE_CENTRAL2"
+	EUROPENORTH1           StrategyNetworkRelayConfigRegions = "EUROPE_NORTH1"
+	EUROPESOUTHWEST1       StrategyNetworkRelayConfigRegions = "EUROPE_SOUTHWEST1"
+	EUROPEWEST1            StrategyNetworkRelayConfigRegions = "EUROPE_WEST1"
+	EUROPEWEST10           StrategyNetworkRelayConfigRegions = "EUROPE_WEST10"
+	EUROPEWEST12           StrategyNetworkRelayConfigRegions = "EUROPE_WEST12"
+	EUROPEWEST2            StrategyNetworkRelayConfigRegions = "EUROPE_WEST2"
+	EUROPEWEST3            StrategyNetworkRelayConfigRegions = "EUROPE_WEST3"
+	EUROPEWEST4            StrategyNetworkRelayConfigRegions = "EUROPE_WEST4"
+	EUROPEWEST6            StrategyNetworkRelayConfigRegions = "EUROPE_WEST6"
+	EUROPEWEST8            StrategyNetworkRelayConfigRegions = "EUROPE_WEST8"
+	EUROPEWEST9            StrategyNetworkRelayConfigRegions = "EUROPE_WEST9"
+	MECENTRAL1             StrategyNetworkRelayConfigRegions = "ME_CENTRAL1"
+	MECENTRAL2             StrategyNetworkRelayConfigRegions = "ME_CENTRAL2"
+	MEWEST1                StrategyNetworkRelayConfigRegions = "ME_WEST1"
+	NORTHAMERICANORTHEAST1 StrategyNetworkRelayConfigRegions = "NORTHAMERICA_NORTHEAST1"
+	NORTHAMERICANORTHEAST2 StrategyNetworkRelayConfigRegions = "NORTHAMERICA_NORTHEAST2"
+	SOUTHAMERICAEAST1      StrategyNetworkRelayConfigRegions = "SOUTHAMERICA_EAST1"
+	SOUTHAMERICAWEST1      StrategyNetworkRelayConfigRegions = "SOUTHAMERICA_WEST1"
+	USCENTRAL1             StrategyNetworkRelayConfigRegions = "US_CENTRAL1"
+	USEAST1                StrategyNetworkRelayConfigRegions = "US_EAST1"
+	USEAST4                StrategyNetworkRelayConfigRegions = "US_EAST4"
+	USEAST5                StrategyNetworkRelayConfigRegions = "US_EAST5"
+	USSOUTH1               StrategyNetworkRelayConfigRegions = "US_SOUTH1"
+	USWEST1                StrategyNetworkRelayConfigRegions = "US_WEST1"
+	USWEST2                StrategyNetworkRelayConfigRegions = "US_WEST2"
+	USWEST3                StrategyNetworkRelayConfigRegions = "US_WEST3"
+	USWEST4                StrategyNetworkRelayConfigRegions = "US_WEST4"
 )
 
 // Defines values for VpnAccountConnectionType.
@@ -701,46 +695,69 @@ type DeviceDisplayId = string
 // Setting this value explicitly will mask any MDM-derived value.
 type DeviceDisplayName = string
 
+// DeviceIdentityProvider Device Identity Provider for authenticating devices with attested credentials
+type DeviceIdentityProvider struct {
+	// AuthorizeEndpoint The token authorization endpoint
+	AuthorizeEndpoint string `json:"authorizeEndpoint"`
+
+	// JwksEndpoint The JSON Web Keys endpoint
+	JwksEndpoint string `json:"jwksEndpoint"`
+
+	// TrustRoots The certificate authority bundle that client certificates must chain up to.
+	TrustRoots string `json:"trustRoots"`
+}
+
+// DeviceIdentityProviderClient An OAuth client authorized for token issuance
+type DeviceIdentityProviderClient struct {
+	// Id The OAuth client ID
+	Id string `json:"id"`
+
+	// RedirectUri The redirect URI to navigate clients to after authenticating the device.
+	RedirectUri string `json:"redirectUri"`
+
+	// Secret The OAuth client secret
+	Secret *string `json:"secret,omitempty"`
+}
+
 // DeviceInventoryIntegration defines model for deviceInventoryIntegration.
 type DeviceInventoryIntegration struct {
+	// Configuration The configuration details for the kind of inventory integration
 	Configuration DeviceInventoryIntegration_Configuration `json:"configuration"`
 
 	// Id A UUID identifying this device inventory integration. Read only.
 	Id string `json:"id"`
 
-	// Kind The configuration details for the kind of inventory integration
+	// Kind The kind of of device inventory integration
 	Kind DeviceInventoryIntegrationKind `json:"kind"`
 
 	// Name A human-friendly name for this inventory integration.
 	Name *string `json:"name,omitempty"`
 }
 
-// DeviceInventoryIntegration_Configuration defines model for DeviceInventoryIntegration.Configuration.
+// DeviceInventoryIntegration_Configuration The configuration details for the kind of inventory integration
 type DeviceInventoryIntegration_Configuration struct {
 	union json.RawMessage
 }
 
-// DeviceInventoryIntegrationKind The configuration details for the kind of inventory integration
+// DeviceInventoryIntegrationKind The kind of of device inventory integration
 type DeviceInventoryIntegrationKind string
 
 // DeviceInventoryIntegrationRequest Configuration for a device inventory integration to enable discovery, posture signals, and other functionality.
 type DeviceInventoryIntegrationRequest struct {
+	// Configuration The configuration details for the kind of inventory integration
 	Configuration DeviceInventoryIntegrationRequest_Configuration `json:"configuration"`
 
-	// Kind The configuration details for the kind of inventory integration
-	Kind DeviceInventoryIntegrationRequestKind `json:"kind"`
+	// Kind The kind of of device inventory integration
+	Kind DeviceInventoryIntegrationKind `json:"kind"`
 
 	// Name A human-friendly name for this inventory integration.
 	Name *string `json:"name,omitempty"`
 }
 
-// DeviceInventoryIntegrationRequest_Configuration defines model for DeviceInventoryIntegrationRequest.Configuration.
+// DeviceInventoryIntegrationRequest_Configuration The configuration details for the kind of inventory integration
 type DeviceInventoryIntegrationRequest_Configuration struct {
 	union json.RawMessage
 }
-
-// DeviceInventoryIntegrationRequestKind The configuration details for the kind of inventory integration
-type DeviceInventoryIntegrationRequestKind string
 
 // DeviceMetadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 type DeviceMetadata map[string]string
@@ -1207,10 +1224,10 @@ type IntuneInventoryIntegration struct {
 // JamfInventoryIntegration Configuration for a Jamf inventory integration.
 type JamfInventoryIntegration struct {
 	// ClientId The client ID for API access to your Jamf installation. The API client must have permissions to manage computer and device profiles.
-	ClientId *string `json:"clientId,omitempty"`
+	ClientId string `json:"clientId"`
 
 	// ClientSecret The client secret for API access to your Jamf installation.
-	ClientSecret *string `json:"clientSecret,omitempty"`
+	ClientSecret string `json:"clientSecret"`
 
 	// TenantUrl Your Jamf account URL
 	TenantUrl string `json:"tenantUrl"`
@@ -1362,12 +1379,13 @@ type PolicyMatchCriteria struct {
 	Tags *[]string `json:"tags,omitempty"`
 }
 
-// ProtectionStrategy defines model for protectionStrategy.
+// ProtectionStrategy A managed set of configuration providing a strategy to protect sensitive resources with high-assurance device identity.
 type ProtectionStrategy struct {
 	Configuration ProtectionStrategy_Configuration `json:"configuration"`
+	Details       ProtectionStrategy_Details       `json:"details"`
 
-	// Credential The credential configuration settings for an endpoint.
-	Credential *CredentialConfigurationRequest `json:"credential,omitempty"`
+	// EndpointConfiguration An endpoint configuration represents the details for issuing a certificate a device uses to connect to a protected resource.
+	EndpointConfiguration EndpointConfiguration `json:"endpointConfiguration"`
 
 	// Id A UUID identifying this protection strategy. Read only.
 	Id string `json:"id"`
@@ -1377,13 +1395,15 @@ type ProtectionStrategy struct {
 
 	// Name A human-friendly name for this protection strategy.
 	Name string `json:"name"`
-
-	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
-	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
 }
 
 // ProtectionStrategy_Configuration defines model for ProtectionStrategy.Configuration.
 type ProtectionStrategy_Configuration struct {
+	union json.RawMessage
+}
+
+// ProtectionStrategy_Details defines model for ProtectionStrategy.Details.
+type ProtectionStrategy_Details struct {
 	union json.RawMessage
 }
 
@@ -1409,6 +1429,31 @@ type ProtectionStrategyRequest struct {
 
 // ProtectionStrategyRequest_Configuration defines model for ProtectionStrategyRequest.Configuration.
 type ProtectionStrategyRequest_Configuration struct {
+	union json.RawMessage
+}
+
+// ProtectionStrategyUpdateRequest defines model for protectionStrategyUpdateRequest.
+type ProtectionStrategyUpdateRequest struct {
+	Configuration ProtectionStrategyUpdateRequest_Configuration `json:"configuration"`
+
+	// Credential The credential configuration settings for an endpoint.
+	Credential *CredentialConfigurationRequest `json:"credential,omitempty"`
+
+	// Id A UUID identifying this protection strategy. Read only.
+	Id string `json:"id"`
+
+	// Kind The kind of strategy used to protect sensitive resources.
+	Kind ProtectionStrategyKind `json:"kind"`
+
+	// Name A human-friendly name for this protection strategy.
+	Name string `json:"name"`
+
+	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
+	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
+}
+
+// ProtectionStrategyUpdateRequest_Configuration defines model for ProtectionStrategyUpdateRequest.Configuration.
+type ProtectionStrategyUpdateRequest_Configuration struct {
 	union json.RawMessage
 }
 
@@ -1537,6 +1582,27 @@ type ProvisionerWebhookKind string
 // A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
 type ProvisionerWebhookServerType string
 
+// ProxyInstance A Smallstep-managed instance for Enterprise Network Relay or RADIUS
+type ProxyInstance struct {
+	// IpAddress The IP address of the managed proxy instance
+	IpAddress string `json:"ipAddress"`
+
+	// Region The region of the managed proxy instance
+	Region string `json:"region"`
+
+	// Status The status of the managed proxy instance
+	Status string `json:"status"`
+}
+
+// RadiusServer Server details for Smallstep-managed RADIUS
+type RadiusServer struct {
+	// CaChain The certificate authority bundle that client certificates must chain up to.
+	CaChain string `json:"caChain"`
+
+	// IpAddresses The IP addresses connections are allowed from
+	IpAddresses []string `json:"ipAddresses"`
+}
+
 // ScepProvisioner The [SCEP provisioner](https://smallstep.com/docs/step-ca/provisioners/#scep) grants certificates to clients using the SCEP protocol. This type is currently experimental and subject to change.
 type ScepProvisioner struct {
 	// AutogenerateDecrypter Automatically generate a new RSA decrypter instead of providing one.
@@ -1601,28 +1667,66 @@ type SshOptions struct {
 	TemplateData interface{} `json:"templateData,omitempty"`
 }
 
-// StrategyBrowserMutualTLS Configuration for authenticating directly to web properties using client certificates in browsers.
-type StrategyBrowserMutualTLS struct {
+// StrategyBrowserMutualTLS Direct authentication to web properties using client certificates in browsers.
+type StrategyBrowserMutualTLS = map[string]interface{}
+
+// StrategyBrowserMutualTLSConfig Configuration for authenticating directly to web properties using client certificates in browsers.
+type StrategyBrowserMutualTLSConfig struct {
 	MatchAddresses []string `json:"matchAddresses"`
 }
 
-// StrategyLAN Configuration to connect a device to a protected LAN.
-type StrategyLAN = EthernetAccount
-
-// StrategyNetworkRelay Configuration for a managed Enterprise Network Relay.
-type StrategyNetworkRelay struct {
-	MatchDomains []string                      `json:"matchDomains"`
-	Regions      []StrategyNetworkRelayRegions `json:"regions"`
+// StrategyLAN Authentication to a wired network using EAP-TLS.
+type StrategyLAN struct {
+	// Radius Server details for Smallstep-managed RADIUS
+	Radius RadiusServer `json:"radius"`
 }
 
-// StrategyNetworkRelayRegions defines model for StrategyNetworkRelay.Regions.
-type StrategyNetworkRelayRegions string
+// StrategyLANConfig Configuration to connect a device to a protected LAN.
+type StrategyLANConfig = EthernetAccount
+
+// StrategyNetworkRelay Access to SaaS and internal apps using Enterprise Network Relay.
+type StrategyNetworkRelay struct {
+	ProxyInstances []ProxyInstance `json:"proxyInstances"`
+
+	// Server Server details for the Enterprise Network Relay
+	Server StrategyNetworkRelayServer `json:"server"`
+}
+
+// StrategyNetworkRelayConfig Configuration for a managed Enterprise Network Relay.
+type StrategyNetworkRelayConfig struct {
+	MatchDomains []string                            `json:"matchDomains"`
+	Regions      []StrategyNetworkRelayConfigRegions `json:"regions"`
+}
+
+// StrategyNetworkRelayConfigRegions defines model for StrategyNetworkRelayConfig.Regions.
+type StrategyNetworkRelayConfigRegions string
+
+// StrategyNetworkRelayServer Server details for the Enterprise Network Relay
+type StrategyNetworkRelayServer struct {
+	// CaChain The certificate authority bundle that client certificates must chain up to.
+	CaChain string `json:"caChain"`
+
+	// Hostname The hostname of the Enterprise Network Relay
+	Hostname string `json:"hostname"`
+}
 
 // StrategySSH Authenticate to SSH servers using certificates.
 type StrategySSH = map[string]interface{}
 
-// StrategySSO Configuration for an IdP with a device authentication factor.
+// StrategySSHConfig Authenticate to SSH servers using certificates.
+type StrategySSHConfig = map[string]interface{}
+
+// StrategySSO IdP integration with a device authentication factor.
 type StrategySSO struct {
+	// Client An OAuth client authorized for token issuance
+	Client DeviceIdentityProviderClient `json:"client"`
+
+	// IdentityProvider Device Identity Provider for authenticating devices with attested credentials
+	IdentityProvider DeviceIdentityProvider `json:"identityProvider"`
+}
+
+// StrategySSOConfig Configuration for an IdP with a device authentication factor.
+type StrategySSOConfig struct {
 	// RedirectUri The redirect URI to navigate clients to after authenticating the device.
 	RedirectUri string `json:"redirectUri"`
 
@@ -1630,11 +1734,23 @@ type StrategySSO struct {
 	TrustRoots string `json:"trustRoots"`
 }
 
-// StrategyVPN Configuration to connect a device to a VPN.
-type StrategyVPN = VpnAccount
+// StrategyVPN Authentication to a VPN using client certificates.
+type StrategyVPN = map[string]interface{}
 
-// StrategyWLAN Configuration to connect a device to a protected WiFi network.
-type StrategyWLAN = WifiAccount
+// StrategyVPNConfig Configuration to connect a device to a VPN.
+type StrategyVPNConfig = VpnAccount
+
+// StrategyWLAN Authentication to a wireless network using EAP-TLS.
+type StrategyWLAN struct {
+	// Network Details for connecting to a wireless network
+	Network WirelessNetwork `json:"network"`
+
+	// Radius Server details for Smallstep-managed RADIUS
+	Radius RadiusServer `json:"radius"`
+}
+
+// StrategyWLANConfig Configuration to connect a device to a protected WiFi network.
+type StrategyWLANConfig = WifiAccount
 
 // Subject Name used in x509 certificates
 type Subject struct {
@@ -1689,6 +1805,18 @@ type WifiAccount struct {
 
 	// NetworkAccessServerIP The public IP address of your network equipment that clients connect to.
 	NetworkAccessServerIP *string `json:"networkAccessServerIP,omitempty"`
+
+	// Ssid The name of the wireless network clients connect to.
+	Ssid string `json:"ssid"`
+}
+
+// WirelessNetwork Details for connecting to a wireless network
+type WirelessNetwork struct {
+	// Autojoin Whether or not clients should automatically connect to the network.
+	Autojoin bool `json:"autojoin"`
+
+	// Hidden Whether or not the SSID is broadcast by the access points.
+	Hidden bool `json:"hidden"`
 
 	// Ssid The name of the wireless network clients connect to.
 	Ssid string `json:"ssid"`
@@ -2151,27 +2279,6 @@ type PostDevicesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// ListDeviceInventoryIntegrationsParams defines parameters for ListDeviceInventoryIntegrations.
-type ListDeviceInventoryIntegrationsParams struct {
-	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
-	Pagination *Pagination `json:"pagination,omitempty"`
-
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
-// PostDeviceInventoryIntegrationsParams defines parameters for PostDeviceInventoryIntegrations.
-type PostDeviceInventoryIntegrationsParams struct {
-	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
-	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
-
-	// Accept The content type the client is willing to accept. Also includes API version.
-	Accept *Accept `json:"Accept,omitempty"`
-}
-
 // DeleteDeviceInventoryIntegrationParams defines parameters for DeleteDeviceInventoryIntegration.
 type DeleteDeviceInventoryIntegrationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
@@ -2192,6 +2299,27 @@ type GetDeviceInventoryIntegrationParams struct {
 
 // PatchDeviceInventoryIntegrationParams defines parameters for PatchDeviceInventoryIntegration.
 type PatchDeviceInventoryIntegrationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListDeviceInventoryIntegrationsParams defines parameters for ListDeviceInventoryIntegrations.
+type ListDeviceInventoryIntegrationsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostDeviceInventoryIntegrationsParams defines parameters for PostDeviceInventoryIntegrations.
+type PostDeviceInventoryIntegrationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -2316,8 +2444,8 @@ type PostStrategiesParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// DeleteStrategyParams defines parameters for DeleteStrategy.
-type DeleteStrategyParams struct {
+// DeleteProtectionStrategyParams defines parameters for DeleteProtectionStrategy.
+type DeleteProtectionStrategyParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -2325,14 +2453,17 @@ type DeleteStrategyParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
-// GetStrategyParams defines parameters for GetStrategy.
-type GetStrategyParams struct {
+// GetProtectionStrategyParams defines parameters for GetProtectionStrategy.
+type GetProtectionStrategyParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
+
+// PutStrategyJSONBody defines parameters for PutStrategy.
+type PutStrategyJSONBody = ProtectionStrategyUpdateRequest
 
 // PutStrategyParams defines parameters for PutStrategy.
 type PutStrategyParams struct {
@@ -2370,11 +2501,11 @@ type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
 // PostDevicesJSONRequestBody defines body for PostDevices for application/json ContentType.
 type PostDevicesJSONRequestBody = DeviceRequest
 
-// PostDeviceInventoryIntegrationsJSONRequestBody defines body for PostDeviceInventoryIntegrations for application/json ContentType.
-type PostDeviceInventoryIntegrationsJSONRequestBody = DeviceInventoryIntegrationRequest
-
 // PatchDeviceInventoryIntegrationJSONRequestBody defines body for PatchDeviceInventoryIntegration for application/json ContentType.
 type PatchDeviceInventoryIntegrationJSONRequestBody = DeviceInventoryIntegration
+
+// PostDeviceInventoryIntegrationsJSONRequestBody defines body for PostDeviceInventoryIntegrations for application/json ContentType.
+type PostDeviceInventoryIntegrationsJSONRequestBody = DeviceInventoryIntegrationRequest
 
 // PatchDeviceJSONRequestBody defines body for PatchDevice for application/json ContentType.
 type PatchDeviceJSONRequestBody = DevicePatch
@@ -2392,7 +2523,7 @@ type PutPlatformJSONRequestBody = NewPlatform
 type PostStrategiesJSONRequestBody = ProtectionStrategyRequest
 
 // PutStrategyJSONRequestBody defines body for PutStrategy for application/json ContentType.
-type PutStrategyJSONRequestBody = ProtectionStrategy
+type PutStrategyJSONRequestBody = PutStrategyJSONBody
 
 // AsWifiAccount returns the union data inside the Account_Configuration as a WifiAccount
 func (t Account_Configuration) AsWifiAccount() (WifiAccount, error) {
@@ -3708,22 +3839,22 @@ func (t *Platform_PlatformConfigurations_Item) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsStrategyWLAN returns the union data inside the ProtectionStrategy_Configuration as a StrategyWLAN
-func (t ProtectionStrategy_Configuration) AsStrategyWLAN() (StrategyWLAN, error) {
-	var body StrategyWLAN
+// AsStrategyWLANConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategyWLANConfig
+func (t ProtectionStrategy_Configuration) AsStrategyWLANConfig() (StrategyWLANConfig, error) {
+	var body StrategyWLANConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyWLAN overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyWLAN
-func (t *ProtectionStrategy_Configuration) FromStrategyWLAN(v StrategyWLAN) error {
+// FromStrategyWLANConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyWLANConfig
+func (t *ProtectionStrategy_Configuration) FromStrategyWLANConfig(v StrategyWLANConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyWLAN performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyWLAN
-func (t *ProtectionStrategy_Configuration) MergeStrategyWLAN(v StrategyWLAN) error {
+// MergeStrategyWLANConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyWLANConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategyWLANConfig(v StrategyWLANConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3734,22 +3865,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategyWLAN(v StrategyWLAN) err
 	return err
 }
 
-// AsStrategyLAN returns the union data inside the ProtectionStrategy_Configuration as a StrategyLAN
-func (t ProtectionStrategy_Configuration) AsStrategyLAN() (StrategyLAN, error) {
-	var body StrategyLAN
+// AsStrategyLANConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategyLANConfig
+func (t ProtectionStrategy_Configuration) AsStrategyLANConfig() (StrategyLANConfig, error) {
+	var body StrategyLANConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyLAN overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyLAN
-func (t *ProtectionStrategy_Configuration) FromStrategyLAN(v StrategyLAN) error {
+// FromStrategyLANConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyLANConfig
+func (t *ProtectionStrategy_Configuration) FromStrategyLANConfig(v StrategyLANConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyLAN performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyLAN
-func (t *ProtectionStrategy_Configuration) MergeStrategyLAN(v StrategyLAN) error {
+// MergeStrategyLANConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyLANConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategyLANConfig(v StrategyLANConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3760,22 +3891,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategyLAN(v StrategyLAN) error
 	return err
 }
 
-// AsStrategyVPN returns the union data inside the ProtectionStrategy_Configuration as a StrategyVPN
-func (t ProtectionStrategy_Configuration) AsStrategyVPN() (StrategyVPN, error) {
-	var body StrategyVPN
+// AsStrategyVPNConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategyVPNConfig
+func (t ProtectionStrategy_Configuration) AsStrategyVPNConfig() (StrategyVPNConfig, error) {
+	var body StrategyVPNConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyVPN overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyVPN
-func (t *ProtectionStrategy_Configuration) FromStrategyVPN(v StrategyVPN) error {
+// FromStrategyVPNConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyVPNConfig
+func (t *ProtectionStrategy_Configuration) FromStrategyVPNConfig(v StrategyVPNConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyVPN performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyVPN
-func (t *ProtectionStrategy_Configuration) MergeStrategyVPN(v StrategyVPN) error {
+// MergeStrategyVPNConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyVPNConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategyVPNConfig(v StrategyVPNConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3786,22 +3917,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategyVPN(v StrategyVPN) error
 	return err
 }
 
-// AsStrategySSO returns the union data inside the ProtectionStrategy_Configuration as a StrategySSO
-func (t ProtectionStrategy_Configuration) AsStrategySSO() (StrategySSO, error) {
-	var body StrategySSO
+// AsStrategySSOConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategySSOConfig
+func (t ProtectionStrategy_Configuration) AsStrategySSOConfig() (StrategySSOConfig, error) {
+	var body StrategySSOConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategySSO overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategySSO
-func (t *ProtectionStrategy_Configuration) FromStrategySSO(v StrategySSO) error {
+// FromStrategySSOConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategySSOConfig
+func (t *ProtectionStrategy_Configuration) FromStrategySSOConfig(v StrategySSOConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategySSO performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategySSO
-func (t *ProtectionStrategy_Configuration) MergeStrategySSO(v StrategySSO) error {
+// MergeStrategySSOConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategySSOConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategySSOConfig(v StrategySSOConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3812,22 +3943,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategySSO(v StrategySSO) error
 	return err
 }
 
-// AsStrategyNetworkRelay returns the union data inside the ProtectionStrategy_Configuration as a StrategyNetworkRelay
-func (t ProtectionStrategy_Configuration) AsStrategyNetworkRelay() (StrategyNetworkRelay, error) {
-	var body StrategyNetworkRelay
+// AsStrategyNetworkRelayConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategyNetworkRelayConfig
+func (t ProtectionStrategy_Configuration) AsStrategyNetworkRelayConfig() (StrategyNetworkRelayConfig, error) {
+	var body StrategyNetworkRelayConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyNetworkRelay overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyNetworkRelay
-func (t *ProtectionStrategy_Configuration) FromStrategyNetworkRelay(v StrategyNetworkRelay) error {
+// FromStrategyNetworkRelayConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategy_Configuration) FromStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyNetworkRelay performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyNetworkRelay
-func (t *ProtectionStrategy_Configuration) MergeStrategyNetworkRelay(v StrategyNetworkRelay) error {
+// MergeStrategyNetworkRelayConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3838,22 +3969,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategyNetworkRelay(v StrategyN
 	return err
 }
 
-// AsStrategyBrowserMutualTLS returns the union data inside the ProtectionStrategy_Configuration as a StrategyBrowserMutualTLS
-func (t ProtectionStrategy_Configuration) AsStrategyBrowserMutualTLS() (StrategyBrowserMutualTLS, error) {
-	var body StrategyBrowserMutualTLS
+// AsStrategyBrowserMutualTLSConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategyBrowserMutualTLSConfig
+func (t ProtectionStrategy_Configuration) AsStrategyBrowserMutualTLSConfig() (StrategyBrowserMutualTLSConfig, error) {
+	var body StrategyBrowserMutualTLSConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyBrowserMutualTLS overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyBrowserMutualTLS
-func (t *ProtectionStrategy_Configuration) FromStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
+// FromStrategyBrowserMutualTLSConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategy_Configuration) FromStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyBrowserMutualTLS performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyBrowserMutualTLS
-func (t *ProtectionStrategy_Configuration) MergeStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
+// MergeStrategyBrowserMutualTLSConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3864,22 +3995,22 @@ func (t *ProtectionStrategy_Configuration) MergeStrategyBrowserMutualTLS(v Strat
 	return err
 }
 
-// AsStrategySSH returns the union data inside the ProtectionStrategy_Configuration as a StrategySSH
-func (t ProtectionStrategy_Configuration) AsStrategySSH() (StrategySSH, error) {
-	var body StrategySSH
+// AsStrategySSHConfig returns the union data inside the ProtectionStrategy_Configuration as a StrategySSHConfig
+func (t ProtectionStrategy_Configuration) AsStrategySSHConfig() (StrategySSHConfig, error) {
+	var body StrategySSHConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategySSH overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategySSH
-func (t *ProtectionStrategy_Configuration) FromStrategySSH(v StrategySSH) error {
+// FromStrategySSHConfig overwrites any union data inside the ProtectionStrategy_Configuration as the provided StrategySSHConfig
+func (t *ProtectionStrategy_Configuration) FromStrategySSHConfig(v StrategySSHConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategySSH performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategySSH
-func (t *ProtectionStrategy_Configuration) MergeStrategySSH(v StrategySSH) error {
+// MergeStrategySSHConfig performs a merge with any union data inside the ProtectionStrategy_Configuration, using the provided StrategySSHConfig
+func (t *ProtectionStrategy_Configuration) MergeStrategySSHConfig(v StrategySSHConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3900,22 +4031,22 @@ func (t *ProtectionStrategy_Configuration) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsStrategyWLAN returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyWLAN
-func (t ProtectionStrategyRequest_Configuration) AsStrategyWLAN() (StrategyWLAN, error) {
+// AsStrategyWLAN returns the union data inside the ProtectionStrategy_Details as a StrategyWLAN
+func (t ProtectionStrategy_Details) AsStrategyWLAN() (StrategyWLAN, error) {
 	var body StrategyWLAN
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyWLAN overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyWLAN
-func (t *ProtectionStrategyRequest_Configuration) FromStrategyWLAN(v StrategyWLAN) error {
+// FromStrategyWLAN overwrites any union data inside the ProtectionStrategy_Details as the provided StrategyWLAN
+func (t *ProtectionStrategy_Details) FromStrategyWLAN(v StrategyWLAN) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyWLAN performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyWLAN
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategyWLAN(v StrategyWLAN) error {
+// MergeStrategyWLAN performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategyWLAN
+func (t *ProtectionStrategy_Details) MergeStrategyWLAN(v StrategyWLAN) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3926,22 +4057,22 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategyWLAN(v StrategyWL
 	return err
 }
 
-// AsStrategyLAN returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyLAN
-func (t ProtectionStrategyRequest_Configuration) AsStrategyLAN() (StrategyLAN, error) {
+// AsStrategyLAN returns the union data inside the ProtectionStrategy_Details as a StrategyLAN
+func (t ProtectionStrategy_Details) AsStrategyLAN() (StrategyLAN, error) {
 	var body StrategyLAN
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyLAN overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyLAN
-func (t *ProtectionStrategyRequest_Configuration) FromStrategyLAN(v StrategyLAN) error {
+// FromStrategyLAN overwrites any union data inside the ProtectionStrategy_Details as the provided StrategyLAN
+func (t *ProtectionStrategy_Details) FromStrategyLAN(v StrategyLAN) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyLAN performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyLAN
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategyLAN(v StrategyLAN) error {
+// MergeStrategyLAN performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategyLAN
+func (t *ProtectionStrategy_Details) MergeStrategyLAN(v StrategyLAN) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3952,22 +4083,22 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategyLAN(v StrategyLAN
 	return err
 }
 
-// AsStrategyVPN returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyVPN
-func (t ProtectionStrategyRequest_Configuration) AsStrategyVPN() (StrategyVPN, error) {
+// AsStrategyVPN returns the union data inside the ProtectionStrategy_Details as a StrategyVPN
+func (t ProtectionStrategy_Details) AsStrategyVPN() (StrategyVPN, error) {
 	var body StrategyVPN
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyVPN overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyVPN
-func (t *ProtectionStrategyRequest_Configuration) FromStrategyVPN(v StrategyVPN) error {
+// FromStrategyVPN overwrites any union data inside the ProtectionStrategy_Details as the provided StrategyVPN
+func (t *ProtectionStrategy_Details) FromStrategyVPN(v StrategyVPN) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyVPN performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyVPN
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategyVPN(v StrategyVPN) error {
+// MergeStrategyVPN performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategyVPN
+func (t *ProtectionStrategy_Details) MergeStrategyVPN(v StrategyVPN) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3978,22 +4109,22 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategyVPN(v StrategyVPN
 	return err
 }
 
-// AsStrategySSO returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategySSO
-func (t ProtectionStrategyRequest_Configuration) AsStrategySSO() (StrategySSO, error) {
+// AsStrategySSO returns the union data inside the ProtectionStrategy_Details as a StrategySSO
+func (t ProtectionStrategy_Details) AsStrategySSO() (StrategySSO, error) {
 	var body StrategySSO
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategySSO overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategySSO
-func (t *ProtectionStrategyRequest_Configuration) FromStrategySSO(v StrategySSO) error {
+// FromStrategySSO overwrites any union data inside the ProtectionStrategy_Details as the provided StrategySSO
+func (t *ProtectionStrategy_Details) FromStrategySSO(v StrategySSO) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategySSO performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategySSO
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategySSO(v StrategySSO) error {
+// MergeStrategySSO performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategySSO
+func (t *ProtectionStrategy_Details) MergeStrategySSO(v StrategySSO) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -4004,22 +4135,22 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategySSO(v StrategySSO
 	return err
 }
 
-// AsStrategyNetworkRelay returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyNetworkRelay
-func (t ProtectionStrategyRequest_Configuration) AsStrategyNetworkRelay() (StrategyNetworkRelay, error) {
+// AsStrategyNetworkRelay returns the union data inside the ProtectionStrategy_Details as a StrategyNetworkRelay
+func (t ProtectionStrategy_Details) AsStrategyNetworkRelay() (StrategyNetworkRelay, error) {
 	var body StrategyNetworkRelay
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyNetworkRelay overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyNetworkRelay
-func (t *ProtectionStrategyRequest_Configuration) FromStrategyNetworkRelay(v StrategyNetworkRelay) error {
+// FromStrategyNetworkRelay overwrites any union data inside the ProtectionStrategy_Details as the provided StrategyNetworkRelay
+func (t *ProtectionStrategy_Details) FromStrategyNetworkRelay(v StrategyNetworkRelay) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyNetworkRelay performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyNetworkRelay
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategyNetworkRelay(v StrategyNetworkRelay) error {
+// MergeStrategyNetworkRelay performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategyNetworkRelay
+func (t *ProtectionStrategy_Details) MergeStrategyNetworkRelay(v StrategyNetworkRelay) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -4030,22 +4161,22 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategyNetworkRelay(v St
 	return err
 }
 
-// AsStrategyBrowserMutualTLS returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyBrowserMutualTLS
-func (t ProtectionStrategyRequest_Configuration) AsStrategyBrowserMutualTLS() (StrategyBrowserMutualTLS, error) {
+// AsStrategyBrowserMutualTLS returns the union data inside the ProtectionStrategy_Details as a StrategyBrowserMutualTLS
+func (t ProtectionStrategy_Details) AsStrategyBrowserMutualTLS() (StrategyBrowserMutualTLS, error) {
 	var body StrategyBrowserMutualTLS
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategyBrowserMutualTLS overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyBrowserMutualTLS
-func (t *ProtectionStrategyRequest_Configuration) FromStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
+// FromStrategyBrowserMutualTLS overwrites any union data inside the ProtectionStrategy_Details as the provided StrategyBrowserMutualTLS
+func (t *ProtectionStrategy_Details) FromStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategyBrowserMutualTLS performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyBrowserMutualTLS
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
+// MergeStrategyBrowserMutualTLS performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategyBrowserMutualTLS
+func (t *ProtectionStrategy_Details) MergeStrategyBrowserMutualTLS(v StrategyBrowserMutualTLS) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -4056,22 +4187,214 @@ func (t *ProtectionStrategyRequest_Configuration) MergeStrategyBrowserMutualTLS(
 	return err
 }
 
-// AsStrategySSH returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategySSH
-func (t ProtectionStrategyRequest_Configuration) AsStrategySSH() (StrategySSH, error) {
+// AsStrategySSH returns the union data inside the ProtectionStrategy_Details as a StrategySSH
+func (t ProtectionStrategy_Details) AsStrategySSH() (StrategySSH, error) {
 	var body StrategySSH
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromStrategySSH overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategySSH
-func (t *ProtectionStrategyRequest_Configuration) FromStrategySSH(v StrategySSH) error {
+// FromStrategySSH overwrites any union data inside the ProtectionStrategy_Details as the provided StrategySSH
+func (t *ProtectionStrategy_Details) FromStrategySSH(v StrategySSH) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeStrategySSH performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategySSH
-func (t *ProtectionStrategyRequest_Configuration) MergeStrategySSH(v StrategySSH) error {
+// MergeStrategySSH performs a merge with any union data inside the ProtectionStrategy_Details, using the provided StrategySSH
+func (t *ProtectionStrategy_Details) MergeStrategySSH(v StrategySSH) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ProtectionStrategy_Details) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ProtectionStrategy_Details) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsStrategyWLANConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyWLANConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategyWLANConfig() (StrategyWLANConfig, error) {
+	var body StrategyWLANConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyWLANConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyWLANConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategyWLANConfig(v StrategyWLANConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyWLANConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyWLANConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategyWLANConfig(v StrategyWLANConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyLANConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyLANConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategyLANConfig() (StrategyLANConfig, error) {
+	var body StrategyLANConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyLANConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyLANConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategyLANConfig(v StrategyLANConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyLANConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyLANConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategyLANConfig(v StrategyLANConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyVPNConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyVPNConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategyVPNConfig() (StrategyVPNConfig, error) {
+	var body StrategyVPNConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyVPNConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyVPNConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategyVPNConfig(v StrategyVPNConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyVPNConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyVPNConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategyVPNConfig(v StrategyVPNConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategySSOConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategySSOConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategySSOConfig() (StrategySSOConfig, error) {
+	var body StrategySSOConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategySSOConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategySSOConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategySSOConfig(v StrategySSOConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategySSOConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategySSOConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategySSOConfig(v StrategySSOConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyNetworkRelayConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyNetworkRelayConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategyNetworkRelayConfig() (StrategyNetworkRelayConfig, error) {
+	var body StrategyNetworkRelayConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyNetworkRelayConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyNetworkRelayConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyBrowserMutualTLSConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategyBrowserMutualTLSConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategyBrowserMutualTLSConfig() (StrategyBrowserMutualTLSConfig, error) {
+	var body StrategyBrowserMutualTLSConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyBrowserMutualTLSConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyBrowserMutualTLSConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategySSHConfig returns the union data inside the ProtectionStrategyRequest_Configuration as a StrategySSHConfig
+func (t ProtectionStrategyRequest_Configuration) AsStrategySSHConfig() (StrategySSHConfig, error) {
+	var body StrategySSHConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategySSHConfig overwrites any union data inside the ProtectionStrategyRequest_Configuration as the provided StrategySSHConfig
+func (t *ProtectionStrategyRequest_Configuration) FromStrategySSHConfig(v StrategySSHConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategySSHConfig performs a merge with any union data inside the ProtectionStrategyRequest_Configuration, using the provided StrategySSHConfig
+func (t *ProtectionStrategyRequest_Configuration) MergeStrategySSHConfig(v StrategySSHConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -4088,6 +4411,198 @@ func (t ProtectionStrategyRequest_Configuration) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ProtectionStrategyRequest_Configuration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsStrategyWLANConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategyWLANConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategyWLANConfig() (StrategyWLANConfig, error) {
+	var body StrategyWLANConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyWLANConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategyWLANConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategyWLANConfig(v StrategyWLANConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyWLANConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategyWLANConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategyWLANConfig(v StrategyWLANConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyLANConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategyLANConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategyLANConfig() (StrategyLANConfig, error) {
+	var body StrategyLANConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyLANConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategyLANConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategyLANConfig(v StrategyLANConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyLANConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategyLANConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategyLANConfig(v StrategyLANConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyVPNConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategyVPNConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategyVPNConfig() (StrategyVPNConfig, error) {
+	var body StrategyVPNConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyVPNConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategyVPNConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategyVPNConfig(v StrategyVPNConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyVPNConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategyVPNConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategyVPNConfig(v StrategyVPNConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategySSOConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategySSOConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategySSOConfig() (StrategySSOConfig, error) {
+	var body StrategySSOConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategySSOConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategySSOConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategySSOConfig(v StrategySSOConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategySSOConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategySSOConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategySSOConfig(v StrategySSOConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyNetworkRelayConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategyNetworkRelayConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategyNetworkRelayConfig() (StrategyNetworkRelayConfig, error) {
+	var body StrategyNetworkRelayConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyNetworkRelayConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyNetworkRelayConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategyNetworkRelayConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategyNetworkRelayConfig(v StrategyNetworkRelayConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategyBrowserMutualTLSConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategyBrowserMutualTLSConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategyBrowserMutualTLSConfig() (StrategyBrowserMutualTLSConfig, error) {
+	var body StrategyBrowserMutualTLSConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategyBrowserMutualTLSConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategyBrowserMutualTLSConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategyBrowserMutualTLSConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategyBrowserMutualTLSConfig(v StrategyBrowserMutualTLSConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsStrategySSHConfig returns the union data inside the ProtectionStrategyUpdateRequest_Configuration as a StrategySSHConfig
+func (t ProtectionStrategyUpdateRequest_Configuration) AsStrategySSHConfig() (StrategySSHConfig, error) {
+	var body StrategySSHConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromStrategySSHConfig overwrites any union data inside the ProtectionStrategyUpdateRequest_Configuration as the provided StrategySSHConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) FromStrategySSHConfig(v StrategySSHConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeStrategySSHConfig performs a merge with any union data inside the ProtectionStrategyUpdateRequest_Configuration, using the provided StrategySSHConfig
+func (t *ProtectionStrategyUpdateRequest_Configuration) MergeStrategySSHConfig(v StrategySSHConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ProtectionStrategyUpdateRequest_Configuration) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ProtectionStrategyUpdateRequest_Configuration) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -4597,14 +5112,6 @@ type ClientInterface interface {
 
 	PostDevices(ctx context.Context, params *PostDevicesParams, body PostDevicesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListDeviceInventoryIntegrations request
-	ListDeviceInventoryIntegrations(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostDeviceInventoryIntegrationsWithBody request with any body
-	PostDeviceInventoryIntegrationsWithBody(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PostDeviceInventoryIntegrations(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// DeleteDeviceInventoryIntegration request
 	DeleteDeviceInventoryIntegration(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *DeleteDeviceInventoryIntegrationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4615,6 +5122,14 @@ type ClientInterface interface {
 	PatchDeviceInventoryIntegrationWithBody(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *PatchDeviceInventoryIntegrationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PatchDeviceInventoryIntegration(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *PatchDeviceInventoryIntegrationParams, body PatchDeviceInventoryIntegrationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListDeviceInventoryIntegrations request
+	ListDeviceInventoryIntegrations(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostDeviceInventoryIntegrationsWithBody request with any body
+	PostDeviceInventoryIntegrationsWithBody(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostDeviceInventoryIntegrations(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteDevice request
 	DeleteDevice(ctx context.Context, deviceID DeviceID, params *DeleteDeviceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4662,11 +5177,11 @@ type ClientInterface interface {
 
 	PostStrategies(ctx context.Context, params *PostStrategiesParams, body PostStrategiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteStrategy request
-	DeleteStrategy(ctx context.Context, strategyID StrategyID, params *DeleteStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteProtectionStrategy request
+	DeleteProtectionStrategy(ctx context.Context, strategyID StrategyID, params *DeleteProtectionStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetStrategy request
-	GetStrategy(ctx context.Context, strategyID StrategyID, params *GetStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetProtectionStrategy request
+	GetProtectionStrategy(ctx context.Context, strategyID StrategyID, params *GetProtectionStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutStrategyWithBody request with any body
 	PutStrategyWithBody(ctx context.Context, strategyID StrategyID, params *PutStrategyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5058,42 +5573,6 @@ func (c *Client) PostDevices(ctx context.Context, params *PostDevicesParams, bod
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListDeviceInventoryIntegrations(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListDeviceInventoryIntegrationsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostDeviceInventoryIntegrationsWithBody(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostDeviceInventoryIntegrationsRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostDeviceInventoryIntegrations(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostDeviceInventoryIntegrationsRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) DeleteDeviceInventoryIntegration(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *DeleteDeviceInventoryIntegrationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteDeviceInventoryIntegrationRequest(c.Server, deviceInventoryIntegrationID, params)
 	if err != nil {
@@ -5132,6 +5611,42 @@ func (c *Client) PatchDeviceInventoryIntegrationWithBody(ctx context.Context, de
 
 func (c *Client) PatchDeviceInventoryIntegration(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *PatchDeviceInventoryIntegrationParams, body PatchDeviceInventoryIntegrationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPatchDeviceInventoryIntegrationRequest(c.Server, deviceInventoryIntegrationID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListDeviceInventoryIntegrations(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListDeviceInventoryIntegrationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostDeviceInventoryIntegrationsWithBody(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostDeviceInventoryIntegrationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostDeviceInventoryIntegrations(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostDeviceInventoryIntegrationsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5346,8 +5861,8 @@ func (c *Client) PostStrategies(ctx context.Context, params *PostStrategiesParam
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteStrategy(ctx context.Context, strategyID StrategyID, params *DeleteStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteStrategyRequest(c.Server, strategyID, params)
+func (c *Client) DeleteProtectionStrategy(ctx context.Context, strategyID StrategyID, params *DeleteProtectionStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteProtectionStrategyRequest(c.Server, strategyID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5358,8 +5873,8 @@ func (c *Client) DeleteStrategy(ctx context.Context, strategyID StrategyID, para
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetStrategy(ctx context.Context, strategyID StrategyID, params *GetStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetStrategyRequest(c.Server, strategyID, params)
+func (c *Client) GetProtectionStrategy(ctx context.Context, strategyID StrategyID, params *GetProtectionStrategyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProtectionStrategyRequest(c.Server, strategyID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -6949,147 +7464,6 @@ func NewPostDevicesRequestWithBody(server string, params *PostDevicesParams, con
 	return req, nil
 }
 
-// NewListDeviceInventoryIntegrationsRequest generates requests for ListDeviceInventoryIntegrations
-func NewListDeviceInventoryIntegrationsRequest(server string, params *ListDeviceInventoryIntegrationsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/devices/inventory/integration")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if params.Pagination != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-
-		if params.XRequestId != nil {
-			var headerParam0 string
-
-			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("X-Request-Id", headerParam0)
-		}
-
-		if params.Accept != nil {
-			var headerParam1 string
-
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("Accept", headerParam1)
-		}
-
-	}
-
-	return req, nil
-}
-
-// NewPostDeviceInventoryIntegrationsRequest calls the generic PostDeviceInventoryIntegrations builder with application/json body
-func NewPostDeviceInventoryIntegrationsRequest(server string, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostDeviceInventoryIntegrationsRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewPostDeviceInventoryIntegrationsRequestWithBody generates requests for PostDeviceInventoryIntegrations with any type of body
-func NewPostDeviceInventoryIntegrationsRequestWithBody(server string, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/devices/inventory/integration")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		if params.XRequestId != nil {
-			var headerParam0 string
-
-			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("X-Request-Id", headerParam0)
-		}
-
-		if params.Accept != nil {
-			var headerParam1 string
-
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
-			if err != nil {
-				return nil, err
-			}
-
-			req.Header.Set("Accept", headerParam1)
-		}
-
-	}
-
-	return req, nil
-}
-
 // NewDeleteDeviceInventoryIntegrationRequest generates requests for DeleteDeviceInventoryIntegration
 func NewDeleteDeviceInventoryIntegrationRequest(server string, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *DeleteDeviceInventoryIntegrationParams) (*http.Request, error) {
 	var err error
@@ -7248,6 +7622,147 @@ func NewPatchDeviceInventoryIntegrationRequestWithBody(server string, deviceInve
 	}
 
 	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListDeviceInventoryIntegrationsRequest generates requests for ListDeviceInventoryIntegrations
+func NewListDeviceInventoryIntegrationsRequest(server string, params *ListDeviceInventoryIntegrationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/devices/inventory/integrations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostDeviceInventoryIntegrationsRequest calls the generic PostDeviceInventoryIntegrations builder with application/json body
+func NewPostDeviceInventoryIntegrationsRequest(server string, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostDeviceInventoryIntegrationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostDeviceInventoryIntegrationsRequestWithBody generates requests for PostDeviceInventoryIntegrations with any type of body
+func NewPostDeviceInventoryIntegrationsRequestWithBody(server string, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/devices/inventory/integrations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -8099,8 +8614,8 @@ func NewPostStrategiesRequestWithBody(server string, params *PostStrategiesParam
 	return req, nil
 }
 
-// NewDeleteStrategyRequest generates requests for DeleteStrategy
-func NewDeleteStrategyRequest(server string, strategyID StrategyID, params *DeleteStrategyParams) (*http.Request, error) {
+// NewDeleteProtectionStrategyRequest generates requests for DeleteProtectionStrategy
+func NewDeleteProtectionStrategyRequest(server string, strategyID StrategyID, params *DeleteProtectionStrategyParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -8159,8 +8674,8 @@ func NewDeleteStrategyRequest(server string, strategyID StrategyID, params *Dele
 	return req, nil
 }
 
-// NewGetStrategyRequest generates requests for GetStrategy
-func NewGetStrategyRequest(server string, strategyID StrategyID, params *GetStrategyParams) (*http.Request, error) {
+// NewGetProtectionStrategyRequest generates requests for GetProtectionStrategy
+func NewGetProtectionStrategyRequest(server string, strategyID StrategyID, params *GetProtectionStrategyParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -8422,14 +8937,6 @@ type ClientWithResponsesInterface interface {
 
 	PostDevicesWithResponse(ctx context.Context, params *PostDevicesParams, body PostDevicesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDevicesResponse, error)
 
-	// ListDeviceInventoryIntegrationsWithResponse request
-	ListDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*ListDeviceInventoryIntegrationsResponse, error)
-
-	// PostDeviceInventoryIntegrationsWithBodyWithResponse request with any body
-	PostDeviceInventoryIntegrationsWithBodyWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error)
-
-	PostDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error)
-
 	// DeleteDeviceInventoryIntegrationWithResponse request
 	DeleteDeviceInventoryIntegrationWithResponse(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *DeleteDeviceInventoryIntegrationParams, reqEditors ...RequestEditorFn) (*DeleteDeviceInventoryIntegrationResponse, error)
 
@@ -8440,6 +8947,14 @@ type ClientWithResponsesInterface interface {
 	PatchDeviceInventoryIntegrationWithBodyWithResponse(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *PatchDeviceInventoryIntegrationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchDeviceInventoryIntegrationResponse, error)
 
 	PatchDeviceInventoryIntegrationWithResponse(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *PatchDeviceInventoryIntegrationParams, body PatchDeviceInventoryIntegrationJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchDeviceInventoryIntegrationResponse, error)
+
+	// ListDeviceInventoryIntegrationsWithResponse request
+	ListDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*ListDeviceInventoryIntegrationsResponse, error)
+
+	// PostDeviceInventoryIntegrationsWithBodyWithResponse request with any body
+	PostDeviceInventoryIntegrationsWithBodyWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error)
+
+	PostDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error)
 
 	// DeleteDeviceWithResponse request
 	DeleteDeviceWithResponse(ctx context.Context, deviceID DeviceID, params *DeleteDeviceParams, reqEditors ...RequestEditorFn) (*DeleteDeviceResponse, error)
@@ -8487,11 +9002,11 @@ type ClientWithResponsesInterface interface {
 
 	PostStrategiesWithResponse(ctx context.Context, params *PostStrategiesParams, body PostStrategiesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostStrategiesResponse, error)
 
-	// DeleteStrategyWithResponse request
-	DeleteStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *DeleteStrategyParams, reqEditors ...RequestEditorFn) (*DeleteStrategyResponse, error)
+	// DeleteProtectionStrategyWithResponse request
+	DeleteProtectionStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *DeleteProtectionStrategyParams, reqEditors ...RequestEditorFn) (*DeleteProtectionStrategyResponse, error)
 
-	// GetStrategyWithResponse request
-	GetStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *GetStrategyParams, reqEditors ...RequestEditorFn) (*GetStrategyResponse, error)
+	// GetProtectionStrategyWithResponse request
+	GetProtectionStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *GetProtectionStrategyParams, reqEditors ...RequestEditorFn) (*GetProtectionStrategyResponse, error)
 
 	// PutStrategyWithBodyWithResponse request with any body
 	PutStrategyWithBodyWithResponse(ctx context.Context, strategyID StrategyID, params *PutStrategyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutStrategyResponse, error)
@@ -9121,59 +9636,6 @@ func (r PostDevicesResponse) StatusCode() int {
 	return 0
 }
 
-type ListDeviceInventoryIntegrationsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *[]DeviceInventoryIntegration
-	JSON400      *N400
-	JSON401      *N401
-	JSON403      *N403
-	JSON500      *N500
-}
-
-// Status returns HTTPResponse.Status
-func (r ListDeviceInventoryIntegrationsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListDeviceInventoryIntegrationsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PostDeviceInventoryIntegrationsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON201      *DeviceInventoryIntegration
-	JSON400      *N400
-	JSON401      *N401
-	JSON403      *N403
-	JSON422      *N422
-	JSON500      *N500
-}
-
-// Status returns HTTPResponse.Status
-func (r PostDeviceInventoryIntegrationsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostDeviceInventoryIntegrationsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type DeleteDeviceInventoryIntegrationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -9248,6 +9710,59 @@ func (r PatchDeviceInventoryIntegrationResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PatchDeviceInventoryIntegrationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListDeviceInventoryIntegrationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]DeviceInventoryIntegration
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListDeviceInventoryIntegrationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListDeviceInventoryIntegrationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostDeviceInventoryIntegrationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *DeviceInventoryIntegration
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON422      *N422
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostDeviceInventoryIntegrationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostDeviceInventoryIntegrationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9565,7 +10080,7 @@ func (r PostStrategiesResponse) StatusCode() int {
 	return 0
 }
 
-type DeleteStrategyResponse struct {
+type DeleteProtectionStrategyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *N400
@@ -9575,7 +10090,7 @@ type DeleteStrategyResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteStrategyResponse) Status() string {
+func (r DeleteProtectionStrategyResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9583,14 +10098,14 @@ func (r DeleteStrategyResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteStrategyResponse) StatusCode() int {
+func (r DeleteProtectionStrategyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetStrategyResponse struct {
+type GetProtectionStrategyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *ProtectionStrategy
@@ -9602,7 +10117,7 @@ type GetStrategyResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetStrategyResponse) Status() string {
+func (r GetProtectionStrategyResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9610,7 +10125,7 @@ func (r GetStrategyResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetStrategyResponse) StatusCode() int {
+func (r GetProtectionStrategyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9923,32 +10438,6 @@ func (c *ClientWithResponses) PostDevicesWithResponse(ctx context.Context, param
 	return ParsePostDevicesResponse(rsp)
 }
 
-// ListDeviceInventoryIntegrationsWithResponse request returning *ListDeviceInventoryIntegrationsResponse
-func (c *ClientWithResponses) ListDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*ListDeviceInventoryIntegrationsResponse, error) {
-	rsp, err := c.ListDeviceInventoryIntegrations(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListDeviceInventoryIntegrationsResponse(rsp)
-}
-
-// PostDeviceInventoryIntegrationsWithBodyWithResponse request with arbitrary body returning *PostDeviceInventoryIntegrationsResponse
-func (c *ClientWithResponses) PostDeviceInventoryIntegrationsWithBodyWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error) {
-	rsp, err := c.PostDeviceInventoryIntegrationsWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostDeviceInventoryIntegrationsResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error) {
-	rsp, err := c.PostDeviceInventoryIntegrations(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostDeviceInventoryIntegrationsResponse(rsp)
-}
-
 // DeleteDeviceInventoryIntegrationWithResponse request returning *DeleteDeviceInventoryIntegrationResponse
 func (c *ClientWithResponses) DeleteDeviceInventoryIntegrationWithResponse(ctx context.Context, deviceInventoryIntegrationID DeviceInventoryIntegrationID, params *DeleteDeviceInventoryIntegrationParams, reqEditors ...RequestEditorFn) (*DeleteDeviceInventoryIntegrationResponse, error) {
 	rsp, err := c.DeleteDeviceInventoryIntegration(ctx, deviceInventoryIntegrationID, params, reqEditors...)
@@ -9982,6 +10471,32 @@ func (c *ClientWithResponses) PatchDeviceInventoryIntegrationWithResponse(ctx co
 		return nil, err
 	}
 	return ParsePatchDeviceInventoryIntegrationResponse(rsp)
+}
+
+// ListDeviceInventoryIntegrationsWithResponse request returning *ListDeviceInventoryIntegrationsResponse
+func (c *ClientWithResponses) ListDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *ListDeviceInventoryIntegrationsParams, reqEditors ...RequestEditorFn) (*ListDeviceInventoryIntegrationsResponse, error) {
+	rsp, err := c.ListDeviceInventoryIntegrations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListDeviceInventoryIntegrationsResponse(rsp)
+}
+
+// PostDeviceInventoryIntegrationsWithBodyWithResponse request with arbitrary body returning *PostDeviceInventoryIntegrationsResponse
+func (c *ClientWithResponses) PostDeviceInventoryIntegrationsWithBodyWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error) {
+	rsp, err := c.PostDeviceInventoryIntegrationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostDeviceInventoryIntegrationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostDeviceInventoryIntegrationsWithResponse(ctx context.Context, params *PostDeviceInventoryIntegrationsParams, body PostDeviceInventoryIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostDeviceInventoryIntegrationsResponse, error) {
+	rsp, err := c.PostDeviceInventoryIntegrations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostDeviceInventoryIntegrationsResponse(rsp)
 }
 
 // DeleteDeviceWithResponse request returning *DeleteDeviceResponse
@@ -10132,22 +10647,22 @@ func (c *ClientWithResponses) PostStrategiesWithResponse(ctx context.Context, pa
 	return ParsePostStrategiesResponse(rsp)
 }
 
-// DeleteStrategyWithResponse request returning *DeleteStrategyResponse
-func (c *ClientWithResponses) DeleteStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *DeleteStrategyParams, reqEditors ...RequestEditorFn) (*DeleteStrategyResponse, error) {
-	rsp, err := c.DeleteStrategy(ctx, strategyID, params, reqEditors...)
+// DeleteProtectionStrategyWithResponse request returning *DeleteProtectionStrategyResponse
+func (c *ClientWithResponses) DeleteProtectionStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *DeleteProtectionStrategyParams, reqEditors ...RequestEditorFn) (*DeleteProtectionStrategyResponse, error) {
+	rsp, err := c.DeleteProtectionStrategy(ctx, strategyID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteStrategyResponse(rsp)
+	return ParseDeleteProtectionStrategyResponse(rsp)
 }
 
-// GetStrategyWithResponse request returning *GetStrategyResponse
-func (c *ClientWithResponses) GetStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *GetStrategyParams, reqEditors ...RequestEditorFn) (*GetStrategyResponse, error) {
-	rsp, err := c.GetStrategy(ctx, strategyID, params, reqEditors...)
+// GetProtectionStrategyWithResponse request returning *GetProtectionStrategyResponse
+func (c *ClientWithResponses) GetProtectionStrategyWithResponse(ctx context.Context, strategyID StrategyID, params *GetProtectionStrategyParams, reqEditors ...RequestEditorFn) (*GetProtectionStrategyResponse, error) {
+	rsp, err := c.GetProtectionStrategy(ctx, strategyID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetStrategyResponse(rsp)
+	return ParseGetProtectionStrategyResponse(rsp)
 }
 
 // PutStrategyWithBodyWithResponse request with arbitrary body returning *PutStrategyResponse
@@ -11565,121 +12080,6 @@ func ParsePostDevicesResponse(rsp *http.Response) (*PostDevicesResponse, error) 
 	return response, nil
 }
 
-// ParseListDeviceInventoryIntegrationsResponse parses an HTTP response from a ListDeviceInventoryIntegrationsWithResponse call
-func ParseListDeviceInventoryIntegrationsResponse(rsp *http.Response) (*ListDeviceInventoryIntegrationsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListDeviceInventoryIntegrationsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []DeviceInventoryIntegration
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest N400
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest N401
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest N403
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest N500
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostDeviceInventoryIntegrationsResponse parses an HTTP response from a PostDeviceInventoryIntegrationsWithResponse call
-func ParsePostDeviceInventoryIntegrationsResponse(rsp *http.Response) (*PostDeviceInventoryIntegrationsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostDeviceInventoryIntegrationsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest DeviceInventoryIntegration
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest N400
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest N401
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest N403
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
-		var dest N422
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON422 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest N500
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseDeleteDeviceInventoryIntegrationResponse parses an HTTP response from a DeleteDeviceInventoryIntegrationWithResponse call
 func ParseDeleteDeviceInventoryIntegrationResponse(rsp *http.Response) (*DeleteDeviceInventoryIntegrationResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -11843,6 +12243,121 @@ func ParsePatchDeviceInventoryIntegrationResponse(rsp *http.Response) (*PatchDev
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListDeviceInventoryIntegrationsResponse parses an HTTP response from a ListDeviceInventoryIntegrationsWithResponse call
+func ParseListDeviceInventoryIntegrationsResponse(rsp *http.Response) (*ListDeviceInventoryIntegrationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListDeviceInventoryIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []DeviceInventoryIntegration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostDeviceInventoryIntegrationsResponse parses an HTTP response from a PostDeviceInventoryIntegrationsWithResponse call
+func ParsePostDeviceInventoryIntegrationsResponse(rsp *http.Response) (*PostDeviceInventoryIntegrationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostDeviceInventoryIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest DeviceInventoryIntegration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest N422
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest N500
@@ -12497,15 +13012,15 @@ func ParsePostStrategiesResponse(rsp *http.Response) (*PostStrategiesResponse, e
 	return response, nil
 }
 
-// ParseDeleteStrategyResponse parses an HTTP response from a DeleteStrategyWithResponse call
-func ParseDeleteStrategyResponse(rsp *http.Response) (*DeleteStrategyResponse, error) {
+// ParseDeleteProtectionStrategyResponse parses an HTTP response from a DeleteProtectionStrategyWithResponse call
+func ParseDeleteProtectionStrategyResponse(rsp *http.Response) (*DeleteProtectionStrategyResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteStrategyResponse{
+	response := &DeleteProtectionStrategyResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12544,15 +13059,15 @@ func ParseDeleteStrategyResponse(rsp *http.Response) (*DeleteStrategyResponse, e
 	return response, nil
 }
 
-// ParseGetStrategyResponse parses an HTTP response from a GetStrategyWithResponse call
-func ParseGetStrategyResponse(rsp *http.Response) (*GetStrategyResponse, error) {
+// ParseGetProtectionStrategyResponse parses an HTTP response from a GetProtectionStrategyWithResponse call
+func ParseGetProtectionStrategyResponse(rsp *http.Response) (*GetProtectionStrategyResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetStrategyResponse{
+	response := &GetProtectionStrategyResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12669,349 +13184,363 @@ func ParsePutStrategyResponse(rsp *http.Response) (*PutStrategyResponse, error) 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"Z3OAJvHQ+V3nqf1DlW1Go9ZomLVds9G6rLf26+39RuNPxiuq66CBlm9n40MLn+O3797dvr88xfXB1fdB",
-	"/QyHB6eXg9aobuGT7tuv9tEtLfPNbpAAumd3Yzwgg/n76I/lYHtw21+eXf559K5Wo2UXp/NTfP61vzjt",
-	"dRan3QW2em+/D756eHx08ebDlbON3u/5sPH2D1h/g6/6f9Te3c6+28u3e9XRu/Cyefm+bw4+Tg5abXi8",
-	"9+5qOBw1Tt5++7h4u8CdN72z8+j73dFg9Oa4t5gEPefD7bvqrAnf7X7v+d/uOleXncFO9fjb4Qfz8sv7",
-	"t7uD+/vB8e1RODs535223rca7uA9Odv7NvwjbL533t0P2ue1j/jw+7eu80cbNU13OTn8+GU8+YA+zk/6",
-	"x1fW7cKdvDnvwPPR2Z07aIzOGn/Wt/esO3gIz866vv3n/cL0mu/r1sHwYHfHDuFsxx7u7Lqn5P1sctz7",
-	"GMCv9xYaB+97/V6reTI9OhpZ707NL7Pt6aQ5hN8Pvs+PD8jkaHZs73yNzmt3jbNtdI8ds0fGwa3nbruj",
-	"o7GzPd4Z7jR3T4Lx5fTLud3tf/mzX/8IT7aRja/cD5e4f9+9XfbOW7fLq29/fo9I82RibltWY9s/nE0C",
-	"d3A7dtrhtmVbH13LdFqXd9t30x7+8/aPb36nfwqP+5PLs735u53p16/fmn0U/vnnca3X9k4Oo+HiizWP",
-	"FlWvcezefifz3u3Zye7Hdwd3J6PmycIQt7uWvYPGjb2aadm1idmCsG6O4V7b3LHgpAXtye4EWkbsZwqd",
-	"qbFv9Efc18IK7ox9Y2jyT7esPe9bf9HsvTlof4PQty+Db7dfPP/7xZvex0N4ennwZm8wiT5MWoGHT2md",
-	"cMk8OXhuOSq48dSoGPfGvvFHxz+NdlDnuDOfnJzhaThqhk64+6Y5t1r3f1hW5Hb8d4c7+K5L50KbOXo3",
-	"HRz8aZ5btbDz8fLrzh9ztDc7ef+uG/jNaOLdzuf10Pq2dx7VlPPSOF2CQl9Xeh4xXznxtvfJQO703ynZ",
-	"Qc+RDPM2zVory7x2cmvKVZcvNqx15ldNF7Jt13fbzXrDnGxbNbPVamybu3DSMO16bbzdbu3aFpwYuZcV",
-	"BkZeqxnq9IpfEdixSyfIerSaO+NauzE2t+vtmtna3bHMcXvPMmv2rlVHlo22WY9Jwx/b2XYDzwvZTPTw",
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

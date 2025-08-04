@@ -24,17 +24,17 @@ var Attributes = map[string]attr.Type{
 	"key_info":         types.ObjectType{AttrTypes: keyinfo.Attributes},
 }
 
-func FromAPI(ctx context.Context, credential *v20250101.CredentialConfigurationRequest, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.EndpointConfiguration, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	if credential == nil {
+	if conf == nil || (conf.CertificateInfo == nil && conf.KeyInfo == nil) {
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	certificateInfo, ds := certinfo.FromAPI(ctx, credential.CertificateInfo, state, root.AtName("certificate_info"))
+	certificateInfo, ds := certinfo.FromAPI(ctx, conf.CertificateInfo, state, root.AtName("certificate_info"))
 	diags.Append(ds...)
 
-	keyInfo, ds := keyinfo.FromAPI(ctx, credential.KeyInfo, state, root.AtName("key_info"))
+	keyInfo, ds := keyinfo.FromAPI(ctx, conf.KeyInfo, state, root.AtName("key_info"))
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{

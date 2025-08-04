@@ -20,7 +20,7 @@ var Attributes = map[string]attr.Type{
 	"match_addresses": types.ListType{ElemType: types.StringType},
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyBrowserMutualTLS, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyBrowserMutualTLSConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -38,13 +38,13 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyBrowserMutualTLS, stat
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyBrowserMutualTLS, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyBrowserMutualTLSConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	return v20250101.StrategyBrowserMutualTLS{
+	return v20250101.StrategyBrowserMutualTLSConfig{
 		MatchAddresses: utils.ToStringList[string](m.MatchAddresses),
 	}, diags
 }

@@ -16,7 +16,7 @@ type Model struct{}
 
 var Attributes = map[string]attr.Type{}
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategySSH, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategySSHConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -29,7 +29,7 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategySSH, state utils.Attri
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategySSH, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategySSHConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
-	return v20250101.StrategySSH{}, diags
+	return v20250101.StrategySSHConfig{}, diags
 }

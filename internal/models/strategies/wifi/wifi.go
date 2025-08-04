@@ -30,7 +30,7 @@ var Attributes = map[string]attr.Type{
 	"external_radius_server":   types.BoolType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyWLAN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyWLANConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -68,13 +68,13 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyWLAN, state utils.Attr
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyWLAN, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyWLANConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	return v20250101.StrategyWLAN{
+	return v20250101.StrategyWLANConfig{
 		NetworkAccessServerIP: m.NetworkAccessServerIP.ValueStringPointer(),
 		Ssid:                  m.SSID.ValueString(),
 		CaChain:               m.CAChain.ValueStringPointer(),

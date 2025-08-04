@@ -208,7 +208,7 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 	reqBody := v20250101.DeviceInventoryIntegrationRequest{
 		Configuration: v20250101.DeviceInventoryIntegrationRequest_Configuration(inventory.Configuration),
-		Kind:          v20250101.DeviceInventoryIntegrationRequestKind(inventory.Kind),
+		Kind:          inventory.Kind,
 		Name:          inventory.Name,
 	}
 

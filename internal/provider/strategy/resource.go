@@ -381,7 +381,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetStrategy(ctx, strategyID, &v20250101.GetStrategyParams{})
+	httpResp, err := r.client.GetProtectionStrategy(ctx, strategyID, &v20250101.GetProtectionStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -434,12 +434,21 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	var credential *v20250101.CredentialConfigurationRequest
+	if e := strategy.EndpointConfiguration; e.CertificateInfo != nil || e.KeyInfo != nil {
+		credential = &v20250101.CredentialConfigurationRequest{
+			CertificateInfo: e.CertificateInfo,
+			KeyInfo:         e.KeyInfo,
+		}
+	}
+
 	reqBody := v20250101.ProtectionStrategyRequest{
 		Configuration: v20250101.ProtectionStrategyRequest_Configuration(strategy.Configuration),
-		Credential:    strategy.Credential,
+		Credential:    credential,
 		Kind:          strategy.Kind,
 		Name:          strategy.Name,
-		Policy:        strategy.Policy,
+		Policy:        strategy.EndpointConfiguration.Policy,
 	}
 
 	httpResp, err := r.client.PostStrategies(ctx, &v20250101.PostStrategiesParams{}, reqBody)
@@ -496,7 +505,24 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.PutStrategy(ctx, strategyID, &v20250101.PutStrategyParams{}, *strategy)
+	var credential *v20250101.CredentialConfigurationRequest
+	if e := strategy.EndpointConfiguration; e.CertificateInfo != nil || e.KeyInfo != nil {
+		credential = &v20250101.CredentialConfigurationRequest{
+			CertificateInfo: e.CertificateInfo,
+			KeyInfo:         e.KeyInfo,
+		}
+	}
+
+	reqBody := v20250101.ProtectionStrategyUpdateRequest{
+		Id:            strategyID,
+		Credential:    credential,
+		Kind:          strategy.Kind,
+		Name:          strategy.Name,
+		Configuration: v20250101.ProtectionStrategyUpdateRequest_Configuration(strategy.Configuration),
+		Policy:        strategy.EndpointConfiguration.Policy,
+	}
+
+	httpResp, err := r.client.PutStrategy(ctx, strategyID, &v20250101.PutStrategyParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -548,7 +574,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.DeleteStrategy(ctx, strategyID, &v20250101.DeleteStrategyParams{})
+	httpResp, err := r.client.DeleteProtectionStrategy(ctx, strategyID, &v20250101.DeleteProtectionStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

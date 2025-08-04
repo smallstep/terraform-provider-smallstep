@@ -46,15 +46,15 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		wifiObj     = basetypes.NewObjectNull(wifi.Attributes)
 	)
 
-	credentialObj, ds := credential.FromAPI(ctx, strategy.Credential, state, path.Root("credential"))
+	credentialObj, ds := credential.FromAPI(ctx, &strategy.EndpointConfiguration, state, path.Root("credential"))
 	diags.Append(ds...)
 
-	policyObj, ds := policy.FromAPI(ctx, strategy.Policy, state, path.Root("policy"))
+	policyObj, ds := policy.FromAPI(ctx, strategy.EndpointConfiguration.Policy, state, path.Root("policy"))
 	diags.Append(ds...)
 
 	switch strategy.Kind {
 	case v20250101.Browser:
-		conf, err := strategy.Configuration.AsStrategyBrowserMutualTLS()
+		conf, err := strategy.Configuration.AsStrategyBrowserMutualTLSConfig()
 		if err != nil {
 			diags.AddError("Strategy Browser Parse Error", err.Error())
 			return nil, diags
@@ -62,7 +62,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		browserObj, ds = browser.FromAPI(ctx, &conf, state, path.Root("browser"))
 		diags.Append(ds...)
 	case v20250101.Ethernet:
-		conf, err := strategy.Configuration.AsStrategyLAN()
+		conf, err := strategy.Configuration.AsStrategyLANConfig()
 		if err != nil {
 			diags.AddError("Strategy Ethernet Parse Error", err.Error())
 			return nil, diags
@@ -70,7 +70,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		ethernetObj, ds = ethernet.FromAPI(ctx, &conf, state, path.Root("ethernet"))
 		diags.Append(ds...)
 	case v20250101.Relay:
-		conf, err := strategy.Configuration.AsStrategyNetworkRelay()
+		conf, err := strategy.Configuration.AsStrategyNetworkRelayConfig()
 		if err != nil {
 			diags.AddError("Strategy Relay Parse Error", err.Error())
 			return nil, diags
@@ -78,7 +78,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		relayObj, ds = relay.FromAPI(ctx, &conf, state, path.Root("relay"))
 		diags.Append(ds...)
 	case v20250101.Ssh:
-		conf, err := strategy.Configuration.AsStrategySSH()
+		conf, err := strategy.Configuration.AsStrategySSHConfig()
 		if err != nil {
 			diags.AddError("Strategy SSH Parse Error", err.Error())
 			return nil, diags
@@ -86,7 +86,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		sshObj, ds = ssh.FromAPI(ctx, &conf, state, path.Root("ssh"))
 		diags.Append(ds...)
 	case v20250101.Sso:
-		conf, err := strategy.Configuration.AsStrategySSO()
+		conf, err := strategy.Configuration.AsStrategySSOConfig()
 		if err != nil {
 			diags.AddError("Strategy SSO Parse Error", err.Error())
 			return nil, diags
@@ -94,7 +94,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		ssoObj, ds = sso.FromAPI(ctx, &conf, state, path.Root("sso"))
 		diags.Append(ds...)
 	case v20250101.Vpn:
-		conf, err := strategy.Configuration.AsStrategyVPN()
+		conf, err := strategy.Configuration.AsStrategyVPNConfig()
 		if err != nil {
 			diags.AddError("Strategy VPN Parse Error", err.Error())
 			return nil, diags
@@ -102,7 +102,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		vpnObj, ds = vpn.FromAPI(ctx, &conf, state, path.Root("vpn"))
 		diags.Append(ds...)
 	case v20250101.Wifi:
-		conf, err := strategy.Configuration.AsStrategyWLAN()
+		conf, err := strategy.Configuration.AsStrategyWLANConfig()
 		if err != nil {
 			diags.AddError("Strategy Wifi Parse Error", err.Error())
 			return nil, diags
@@ -133,65 +133,70 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 	var diags, ds diag.Diagnostics
 
 	strategy := &v20250101.ProtectionStrategy{
-		Id:            model.ID.ValueString(),
-		Name:          model.Name.ValueString(),
-		Configuration: v20250101.ProtectionStrategy_Configuration{},
+		Id:   model.ID.ValueString(),
+		Name: model.Name.ValueString(),
 	}
 
-	strategy.Credential, ds = new(credential.Model).ToAPI(ctx, model.Credential)
+	credential, ds := new(credential.Model).ToAPI(ctx, model.Credential)
 	diags.Append(ds...)
 
-	strategy.Policy, ds = new(policy.Model).ToAPI(ctx, model.Policy)
+	policy, ds := new(policy.Model).ToAPI(ctx, model.Policy)
 	diags.Append(ds...)
+
+	strategy.EndpointConfiguration = v20250101.EndpointConfiguration{
+		CertificateInfo: credential.CertificateInfo,
+		KeyInfo:         credential.KeyInfo,
+		Policy:          policy,
+	}
 
 	switch {
 	case !model.Browser.IsNull():
 		strategy.Kind = v20250101.Browser
 		conf, ds := new(browser.Model).ToAPI(ctx, model.Browser)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategyBrowserMutualTLS(conf); err != nil {
+		if err := strategy.Configuration.FromStrategyBrowserMutualTLSConfig(conf); err != nil {
 			diags.AddError("Account Browser Configuration Error", err.Error())
 		}
 	case !model.Ethernet.IsNull():
 		strategy.Kind = v20250101.Ethernet
 		conf, ds := new(ethernet.Model).ToAPI(ctx, model.Ethernet)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategyLAN(conf); err != nil {
+		if err := strategy.Configuration.FromStrategyLANConfig(conf); err != nil {
 			diags.AddError("Account Ethernet Configuration Error", err.Error())
 		}
 	case !model.Relay.IsNull():
 		strategy.Kind = v20250101.Relay
 		conf, ds := new(relay.Model).ToAPI(ctx, model.Relay)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategyNetworkRelay(conf); err != nil {
+		if err := strategy.Configuration.FromStrategyNetworkRelayConfig(conf); err != nil {
 			diags.AddError("Account Relay Configuration Error", err.Error())
 		}
 	case !model.SSH.IsNull():
 		strategy.Kind = v20250101.Ssh
 		conf, ds := new(ssh.Model).ToAPI(ctx, model.Relay)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategySSH(conf); err != nil {
+		if err := strategy.Configuration.FromStrategySSHConfig(conf); err != nil {
 			diags.AddError("Account SSH Configuration Error", err.Error())
 		}
 	case !model.SSO.IsNull():
 		strategy.Kind = v20250101.Sso
 		conf, ds := new(sso.Model).ToAPI(ctx, model.Relay)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategySSO(conf); err != nil {
+		if err := strategy.Configuration.FromStrategySSOConfig(conf); err != nil {
 			diags.AddError("Account SSO Configuration Error", err.Error())
 		}
 	case !model.VPN.IsNull():
 		strategy.Kind = v20250101.Vpn
 		conf, ds := new(vpn.Model).ToAPI(ctx, model.VPN)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategyVPN(conf); err != nil {
+		if err := strategy.Configuration.FromStrategyVPNConfig(conf); err != nil {
 			diags.AddError("Account VPN Configuration Error", err.Error())
 		}
 	case !model.WiFi.IsNull():
 		strategy.Kind = v20250101.Wifi
 		conf, ds := new(wifi.Model).ToAPI(ctx, model.WiFi)
 		diags.Append(ds...)
-		if err := strategy.Configuration.FromStrategyWLAN(conf); err != nil {
+		if err := strategy.Configuration.FromStrategyWLANConfig(conf); err != nil {
 			diags.AddError("Account WiFi Configuration Error", err.Error())
 		}
 	}

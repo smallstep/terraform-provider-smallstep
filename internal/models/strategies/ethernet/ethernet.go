@@ -26,7 +26,7 @@ var Attributes = map[string]attr.Type{
 	"external_radius_server":   types.BoolType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyLAN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyLANConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -56,16 +56,61 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyLAN, state utils.Attri
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyLAN, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyLANConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
 	diags.Append(ds...)
 
-	return v20250101.StrategyLAN{
+	return v20250101.StrategyLANConfig{
 		NetworkAccessServerIP: m.NetworkAccessServerIP.ValueStringPointer(),
 		CaChain:               m.CAChain.ValueStringPointer(),
 		Autojoin:              m.Autojoin.ValueBoolPointer(),
 		ExternalRadiusServer:  m.ExternalRadiusServer.ValueBoolPointer(),
 	}, diags
+}
+
+type radiusServerModel struct {
+	CAChain     types.String `json:"ca_chain"`
+	IPAddresses types.List   `json:"ip_addresses"`
+}
+
+var radiusServerAttributes = map[string]attr.Type{
+	"ca_chain":     types.StringType,
+	"ip_addresses": types.ListType{ElemType: types.StringType},
+}
+
+func radiusServerFromAPI(ctx context.Context, conf *v20250101.RadiusServer, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	if conf == nil {
+		return basetypes.NewObjectNull(radiusServerAttributes), diags
+	}
+
+	caChain, ds := utils.ToOptionalString(ctx, &conf.CaChain, state, root.AtName("ca_chain"))
+	diags.Append(ds...)
+
+	ipAddresses, ds := utils.ToOptionalList(ctx, &conf.IpAddresses, state, root.AtName("match_addresses"))
+	diags.Append(ds...)
+
+	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
+		"ca_chain":     caChain,
+		"ip_addresses": ipAddresses,
+	})
+	diags.Append(ds...)
+
+	return obj, diags
+}
+
+func (m *radiusServerModel) toAPI(ctx context.Context, obj types.Object) (v20250101.RadiusServer, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	diags.Append(ds...)
+
+	return v20250101.RadiusServer{
+		CaChain:     m.CAChain.ValueString(),
+		IpAddresses: utils.ToStringList[string](m.IPAddresses),
+	}, diags
+
 }

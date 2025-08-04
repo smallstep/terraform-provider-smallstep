@@ -360,7 +360,7 @@ func (ds *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp
 		return
 	}
 
-	httpResp, err := ds.client.GetStrategy(ctx, id, &v20250101.GetStrategyParams{})
+	httpResp, err := ds.client.GetProtectionStrategy(ctx, id, &v20250101.GetProtectionStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

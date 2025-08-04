@@ -31,13 +31,13 @@ func FromAPI(ctx context.Context, jamf *v20250101.JamfInventoryIntegration, stat
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	clientID, ds := utils.ToOptionalString(ctx, jamf.ClientId, state, root.AtName("client_id"))
+	clientID, ds := utils.ToOptionalString(ctx, &jamf.ClientId, state, root.AtName("client_id"))
 	diags.Append(ds...)
 
-	clientSecret, ds := utils.ToOptionalString(ctx, jamf.ClientId, state, root.AtName("client_secret"))
+	clientSecret, ds := utils.ToOptionalString(ctx, &jamf.ClientId, state, root.AtName("client_secret"))
 	diags.Append(ds...)
 
-	tenantURL, ds := utils.ToOptionalString(ctx, jamf.ClientId, state, root.AtName("tenant_url"))
+	tenantURL, ds := utils.ToOptionalString(ctx, &jamf.ClientId, state, root.AtName("tenant_url"))
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
@@ -57,8 +57,8 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.JamfInve
 	diags.Append(ds...)
 
 	return v20250101.JamfInventoryIntegration{
-		ClientId:     m.ClientID.ValueStringPointer(),
-		ClientSecret: m.ClientSecret.ValueStringPointer(),
+		ClientId:     m.ClientID.ValueString(),
+		ClientSecret: m.ClientSecret.ValueString(),
 		TenantUrl:    m.TenantURL.ValueString(),
 	}, diags
 }

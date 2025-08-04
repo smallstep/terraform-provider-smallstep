@@ -28,7 +28,7 @@ var Attributes = map[string]attr.Type{
 	"autojoin":        types.BoolType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyVPN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyVPNConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
@@ -62,7 +62,7 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyVPN, state utils.Attri
 	return obj, diags
 }
 
-func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyVPN, diag.Diagnostics) {
+func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyVPNConfig, diag.Diagnostics) {
 	var (
 		diags diag.Diagnostics
 		ike   *v20250101.IkeV2Config
@@ -76,7 +76,7 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.Strategy
 		diags.Append(ds...)
 	}
 
-	return v20250101.StrategyVPN{
+	return v20250101.StrategyVPNConfig{
 		ConnectionType: v20250101.VpnAccountConnectionType(m.ConnectionType.ValueString()),
 		Vendor:         utils.ToStringPointer[v20250101.VpnAccountVendor](m.Vendor.ValueStringPointer()),
 		RemoteAddress:  m.RemoteAddress.ValueString(),
