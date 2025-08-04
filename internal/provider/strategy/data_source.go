@@ -12,6 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -59,7 +61,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	cred, credProps, err := utils.Describe("credentialConfigurationRequest")
+	cred, _, err := utils.Describe("credentialConfigurationRequest")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Strategy Schema",
@@ -149,6 +151,24 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
+	certInfo, err := certinfo.NewDataSourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Certificate Info",
+			err.Error(),
+		)
+		return
+	}
+
+	keyInfo, err := keyinfo.NewDataSourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Key Info",
+			err.Error(),
+		)
+		return
+	}
+
 	// The objects can be left empty and will be populated with default values.
 	// The plan modifier UseStateForUnknown prevents showing (known after apply)
 	// for these.
@@ -167,14 +187,8 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				MarkdownDescription: cred,
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
-					"certificate_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["certificate_info"],
-						Optional:            true,
-					},
-					"key_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["key_info"],
-						Optional:            true,
-					},
+					"certificate_info": certInfo,
+					"key_info":         keyInfo,
 				},
 			},
 			"policy": schema.SingleNestedAttribute{

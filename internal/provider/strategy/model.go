@@ -133,20 +133,26 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 	var diags, ds diag.Diagnostics
 
 	strategy := &v20250101.ProtectionStrategy{
-		Id:   model.ID.ValueString(),
-		Name: model.Name.ValueString(),
+		Id:                    model.ID.ValueString(),
+		Name:                  model.Name.ValueString(),
+		EndpointConfiguration: v20250101.EndpointConfiguration{},
 	}
 
 	credential, ds := new(credential.Model).ToAPI(ctx, model.Credential)
 	diags.Append(ds...)
+	if credential != nil {
+		strategy.EndpointConfiguration.CertificateInfo = credential.CertificateInfo
+		strategy.EndpointConfiguration.KeyInfo = credential.KeyInfo
+	}
 
 	policy, ds := new(policy.Model).ToAPI(ctx, model.Policy)
 	diags.Append(ds...)
+	if policy != nil {
+		strategy.EndpointConfiguration.Policy = policy
+	}
 
 	strategy.EndpointConfiguration = v20250101.EndpointConfiguration{
-		CertificateInfo: credential.CertificateInfo,
-		KeyInfo:         credential.KeyInfo,
-		Policy:          policy,
+		Policy: policy,
 	}
 
 	switch {

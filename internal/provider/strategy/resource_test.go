@@ -10,7 +10,9 @@ import (
 const browserConfig = `
 	resource "smallstep_strategy" "browser" {
 		name = "Browser Certificate"
-		browser = {}
+		browser = {
+			match_addresses = ["https://test.example.org"]
+		}
 	}
 `
 

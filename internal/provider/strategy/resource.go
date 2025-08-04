@@ -168,7 +168,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"credential": schema.SingleNestedAttribute{
 				MarkdownDescription: cred,
 				Optional:            true,
-				Attributes: map[string]schema.SingleNestedAttribute{
+				Attributes: map[string]schema.Attribute{
 					"certificate_info": certInfo,
 					"key_info":         keyInfo,
 				},
