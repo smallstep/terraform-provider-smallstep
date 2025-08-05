@@ -142,6 +142,16 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Endpoin
 		duration = m.Duration.ValueStringPointer()
 	}
 
+	if !m.X509.IsNull() && !m.X509.IsUnknown() {
+		details, ds = new(x509info.Model).ToAPI(ctx, m.X509)
+		diags.Append(ds...)
+	}
+
+	if !m.SSH.IsNull() && !m.SSH.IsUnknown() {
+		details, ds = new(sshinfo.Model).ToAPI(ctx, m.SSH)
+		diags.Append(ds...)
+	}
+
 	return &v20250101.EndpointCertificateInfo{
 		AuthorityID: m.AuthorityID.ValueStringPointer(),
 		CrtFile:     m.CrtFile.ValueStringPointer(),

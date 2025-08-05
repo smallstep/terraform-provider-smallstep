@@ -15,6 +15,7 @@ import (
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/x509info"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -501,6 +502,18 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 
 	diags = resp.State.Set(ctx, model)
 	resp.Diagnostics.Append(diags...)
+
+	// Track whether state holds a computed value. Required for our
+	// MaybeUseStateForUnknown object plan modifier.
+	x509 := types.Object{}
+	req.Config.GetAttribute(ctx, path.Root("credential").AtName("certificate_info").AtName("x509"), &x509)
+	if x509.IsNull() {
+		diags = resp.Private.SetKey(ctx, x509info.X509PrivateKey, x509info.Computed)
+		resp.Diagnostics.Append(diags...)
+	} else {
+		diags = resp.Private.SetKey(ctx, x509info.X509PrivateKey, nil)
+		resp.Diagnostics.Append(diags...)
+	}
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -569,6 +582,18 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 
 	diags = resp.State.Set(ctx, model)
 	resp.Diagnostics.Append(diags...)
+
+	// Track whether state holds a computed value. Required for our
+	// MaybeUseStateForUnknown object plan modifier.
+	x509 := types.Object{}
+	req.Config.GetAttribute(ctx, path.Root("credential").AtName("certificate_info").AtName("x509"), &x509)
+	if x509.IsNull() {
+		diags = resp.Private.SetKey(ctx, x509info.X509PrivateKey, x509info.Computed)
+		resp.Diagnostics.Append(diags...)
+	} else {
+		diags = resp.Private.SetKey(ctx, x509info.X509PrivateKey, nil)
+		resp.Diagnostics.Append(diags...)
+	}
 }
 
 func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
