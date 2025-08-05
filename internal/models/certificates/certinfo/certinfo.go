@@ -59,7 +59,7 @@ func FromAPI(ctx context.Context, ci *v20250101.EndpointCertificateInfo, state u
 	rootFile, ds := utils.ToOptionalString(ctx, ci.RootFile, state, root.AtName("root_file"))
 	diags.Append(ds...)
 
-	duration, ds := utils.ToOptionalString(ctx, ci.Duration, state, root.AtName("duration"))
+	duration, ds := utils.ToEqualString(ctx, ci.Duration, state, root.AtName("duration"), utils.IsDurationEqual)
 	diags.Append(ds...)
 
 	uid, ds := utils.ToOptionalInt(ctx, ci.Uid, state, root.AtName("uid"))
@@ -131,12 +131,23 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Endpoin
 		typ = v20250101.EndpointCertificateInfoTypeX509
 	}
 
+	// duration defaults to 24h if not set, which means the schema must
+	// mark it as both computed and optional. With the computed flag it
+	// will be unknown rather than null if not set. The ValueStringPointer()
+	// method returns the empty string for unknown values, but passing an
+	// empty string to the API results in a 400 since it's not a valid
+	// duration.
+	var duration *string
+	if !m.Duration.IsUnknown() {
+		duration = m.Duration.ValueStringPointer()
+	}
+
 	return &v20250101.EndpointCertificateInfo{
 		AuthorityID: m.AuthorityID.ValueStringPointer(),
 		CrtFile:     m.CrtFile.ValueStringPointer(),
 		KeyFile:     m.KeyFile.ValueStringPointer(),
 		RootFile:    m.RootFile.ValueStringPointer(),
-		Duration:    m.Duration.ValueStringPointer(),
+		Duration:    duration,
 		Uid:         utils.ToIntPointer(m.UID.ValueInt64Pointer()),
 		Gid:         utils.ToIntPointer(m.GID.ValueInt64Pointer()),
 		Mode:        utils.ToIntPointer(m.Mode.ValueInt64Pointer()),
