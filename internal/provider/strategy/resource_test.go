@@ -7,26 +7,23 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-const wifiConfig = `
-	resource "smallstep_strategy" "wifi" {
-		name = "WiFi Certificate"
-		wifi = {
-			ssid = "Big Corp Employee WiFi"
-		}
-		credential = {
-			certificate_info = {
-				x509 = {
-					common_name = {
-						device_metadata = "smallstep:identity"
-					}
+func TestStrategyWifi(t *testing.T) {
+	const wifiConfig = `resource "smallstep_strategy" "wifi" {
+	name = "WiFi Certificate"
+	wifi = {
+		ssid = "Big Corp Employee WiFi"
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					device_metadata = "smallstep:identity"
 				}
-				duration = "24h"
 			}
+			duration = "24h"
 		}
 	}
-`
-
-func TestAccStrategyBrowser(t *testing.T) {
+}`
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
@@ -41,7 +38,37 @@ func TestAccStrategyBrowser(t *testing.T) {
 	})
 }
 
-func TestAccStrategSSH(t *testing.T) {
+func TestStrategyBrowser(t *testing.T) {
+	const browserConfig = `resource "smallstep_strategy" "browser" {
+	name = "Browser Certificate"
+	browser = {
+		"match_addresses": ["example.com", "admin.example.com"]
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					device_metadata = "smallstep:identity"
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: browserConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "Browser Certificate"),
+				),
+			},
+		},
+	})
+}
+
+func TestStrategSSH(t *testing.T) {
 	const sshConfig = `resource "smallstep_strategy" "ssh" {
 	name = "SSH Certificate"
 	ssh = {}
@@ -66,6 +93,37 @@ func TestAccStrategSSH(t *testing.T) {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "SSH Certificate"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccStrategRelay(t *testing.T) {
+	const relayConfig = `resource "smallstep_strategy" "relay" {
+	name = "Relay Certificate"
+	relay = {
+		match_domains: ["example.com"]
+		regions: ["US_CENTRAL1"]
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					device_metadata = "smallstep:identity"
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: relayConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "Relay Certificate"),
 				),
 			},
 		},
