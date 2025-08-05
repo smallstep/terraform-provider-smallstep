@@ -40,3 +40,34 @@ func TestAccStrategyBrowser(t *testing.T) {
 		},
 	})
 }
+
+func TestAccStrategSSH(t *testing.T) {
+	const sshConfig = `resource "smallstep_strategy" "ssh" {
+	name = "SSH Certificate"
+	ssh = {}
+	credential = {
+		certificate_info = {
+			ssh = {
+				key_id = {
+					device_metadata = "smallstep:identity"
+				}
+				principals = {
+					device_metadata = ["SSH.Principals", "smallstep:identity"]
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: sshConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "SSH Certificate"),
+				),
+			},
+		},
+	})
+}

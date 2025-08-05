@@ -74,5 +74,5 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Endpoin
 		diags.AddError("X509 Decode Error", err.Error())
 	}
 
-	return &v20250101.EndpointCertificateInfo_Details{}, diags
+	return details, diags
 }

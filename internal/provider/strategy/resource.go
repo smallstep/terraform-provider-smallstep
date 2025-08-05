@@ -467,8 +467,6 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		Name:          strategy.Name,
 		Policy:        strategy.EndpointConfiguration.Policy,
 	}
-	rb, _ := json.Marshal(reqBody)
-	_ = rb
 
 	httpResp, err := r.client.PostStrategies(ctx, &v20250101.PostStrategiesParams{}, reqBody)
 	if err != nil {
