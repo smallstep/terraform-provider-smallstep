@@ -488,8 +488,8 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 
 	body, _ := io.ReadAll(httpResp.Body)
-	// println("")
-	// println(string(body))
+	println("")
+	println(string(body))
 	strategy = &v20250101.ProtectionStrategy{}
 	if err := json.NewDecoder(bytes.NewReader(body)).Decode(strategy); err != nil {
 		resp.Diagnostics.AddError(

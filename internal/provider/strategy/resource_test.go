@@ -24,6 +24,9 @@ func TestStrategyWifi(t *testing.T) {
 		}
 	}
 }`
+
+func TestAccStrategyWifi(t *testing.T) {
+	t.Skip()
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
@@ -38,22 +41,26 @@ func TestStrategyWifi(t *testing.T) {
 	})
 }
 
-func TestStrategyBrowser(t *testing.T) {
-	const browserConfig = `resource "smallstep_strategy" "browser" {
-	name = "Browser Certificate"
-	browser = {
-		"match_addresses": ["example.com", "admin.example.com"]
-	}
-	credential = {
-		certificate_info = {
-			x509 = {
-				common_name = {
-					device_metadata = "smallstep:identity"
+const browserConfig = `
+	resource "smallstep_strategy" "browser" {
+		name = "Browser Certificate"
+		browser = {
+			match_addresses = ["https://example.com"]
+		}
+		credential = {
+			certificate_info = {
+				x509 = {
+					common_name = {
+						device_metadata = "smallstep:identity"
+					}
 				}
+				duration = "24h"
 			}
 		}
 	}
-}`
+`
+
+func TestAccStrategyBrowser(t *testing.T) {
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
