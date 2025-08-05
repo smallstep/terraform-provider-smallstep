@@ -53,7 +53,10 @@ func FromAPI(ctx context.Context, jamf *v20250101.JamfInventoryIntegration, stat
 func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.JamfInventoryIntegration, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return v20250101.JamfInventoryIntegration{

@@ -53,7 +53,10 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Credent
 		return nil, diags
 	}
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	ci, ds := new(certinfo.Model).ToAPI(ctx, m.CertificateInfo)

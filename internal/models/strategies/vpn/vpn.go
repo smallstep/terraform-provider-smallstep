@@ -68,7 +68,10 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.Strategy
 		ike   *v20250101.IkeV2Config
 	)
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	if !m.IKEV2Config.IsNull() && !m.IKEV2Config.IsUnknown() {
@@ -126,7 +129,10 @@ func ikeFromAPI(ctx context.Context, ike *v20250101.IkeV2Config, state utils.Att
 func (m *ikeModel) toAPI(ctx context.Context, obj types.Object) (*v20250101.IkeV2Config, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return &v20250101.IkeV2Config{

@@ -59,7 +59,10 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyLANConfig, state utils
 func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyLANConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return v20250101.StrategyLANConfig{
@@ -105,7 +108,10 @@ func radiusServerFromAPI(ctx context.Context, conf *v20250101.RadiusServer, stat
 func (m *radiusServerModel) toAPI(ctx context.Context, obj types.Object) (v20250101.RadiusServer, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return v20250101.RadiusServer{

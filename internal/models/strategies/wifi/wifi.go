@@ -71,7 +71,10 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyWLANConfig, state util
 func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.StrategyWLANConfig, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return v20250101.StrategyWLANConfig{
