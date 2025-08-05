@@ -1,9 +1,11 @@
 package strategy
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -465,6 +467,8 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		Name:          strategy.Name,
 		Policy:        strategy.EndpointConfiguration.Policy,
 	}
+	rb, _ := json.Marshal(reqBody)
+	_ = rb
 
 	httpResp, err := r.client.PostStrategies(ctx, &v20250101.PostStrategiesParams{}, reqBody)
 	if err != nil {
@@ -485,8 +489,11 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
+	body, _ := io.ReadAll(httpResp.Body)
+	// println("")
+	// println(string(body))
 	strategy = &v20250101.ProtectionStrategy{}
-	if err := json.NewDecoder(httpResp.Body).Decode(strategy); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(body)).Decode(strategy); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
 			fmt.Sprintf("Failed to unmarshal strategy: %v", err),

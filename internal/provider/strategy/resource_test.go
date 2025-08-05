@@ -7,11 +7,11 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
-const browserConfig = `
-	resource "smallstep_strategy" "browser" {
-		name = "Browser Certificate"
-		browser = {
-			match_addresses = ["https://test.example.org"]
+const wifiConfig = `
+	resource "smallstep_strategy" "wifi" {
+		name = "WiFi Certificate"
+		wifi = {
+			ssid = "Big Corp Employee WiFi"
 		}
 		credential = {
 			certificate_info = {
@@ -31,12 +31,10 @@ func TestAccStrategyBrowser(t *testing.T) {
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
 			{
-				Config: browserConfig,
+				Config: wifiConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_strategy.browser", "id", utils.UUID),
-					helper.TestCheckResourceAttr("smallstep_strategy.browser", "name", "Browser Certificate"),
-					helper.TestMatchResourceAttr("smallstep_strategy.browser", "certificate.authority_id", utils.UUID),
-					helper.TestCheckResourceAttr("smallstep_strategy.browser", "browser.%", "0"),
+					helper.TestMatchResourceAttr("smallstep_strategy.wifi", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.wifi", "name", "WiFi Certificate"),
 				),
 			},
 		},

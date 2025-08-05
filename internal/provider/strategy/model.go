@@ -104,12 +104,12 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		vpnObj, ds = vpn.FromAPI(ctx, &conf, state, path.Root("vpn"))
 		diags.Append(ds...)
 	case v20250101.Wifi:
-		conf, err := strategy.Configuration.AsStrategyWLANConfig()
+		details, err := strategy.Details.AsStrategyWLAN()
 		if err != nil && !isNullError(err) {
-			diags.AddError("Strategy Wifi Parse Error", err.Error())
+			diags.AddError("Strategy WiFi Parse Error", err.Error())
 			return nil, diags
 		}
-		wifiObj, ds = wifi.FromAPI(ctx, &conf, state, path.Root("wifi"))
+		wifiObj, ds = wifi.FromAPI(ctx, &details, state, path.Root("wifi"))
 		diags.Append(ds...)
 	default:
 		diags.AddError("Unsupported Strategy Kind", string(strategy.Kind))

@@ -30,35 +30,34 @@ var Attributes = map[string]attr.Type{
 	"external_radius_server":   types.BoolType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyWLANConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyWLAN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	networkAccessServerIP, ds := utils.ToOptionalString(ctx, conf.NetworkAccessServerIP, state, root.AtName("network_access_server_ip"))
+	var netIP string
+	if len(conf.Radius.IpAddresses) > 0 {
+		netIP = conf.Radius.IpAddresses[0]
+	}
+	networkAccessServerIP, ds := utils.ToOptionalString(ctx, &netIP, state, root.AtName("network_access_server_ip"))
 	diags.Append(ds...)
 
-	ssid, ds := utils.ToOptionalString(ctx, &conf.Ssid, state, root.AtName("ssid"))
+	hidden, ds := utils.ToOptionalBool(ctx, &conf.Network.Hidden, state, root.AtName("hidden"))
 	diags.Append(ds...)
 
-	caChain, ds := utils.ToOptionalString(ctx, conf.CaChain, state, root.AtName("ca_chain"))
+	autojoin, ds := utils.ToOptionalBool(ctx, &conf.Network.Autojoin, state, root.AtName("autojoin"))
 	diags.Append(ds...)
 
-	hidden, ds := utils.ToOptionalBool(ctx, conf.Hidden, state, root.AtName("hidden"))
-	diags.Append(ds...)
-
-	autojoin, ds := utils.ToOptionalBool(ctx, conf.Autojoin, state, root.AtName("autojoin"))
-	diags.Append(ds...)
-
-	externalRadiusServer, ds := utils.ToOptionalBool(ctx, conf.ExternalRadiusServer, state, root.AtName("external_radius_server"))
+	var external bool
+	externalRadiusServer, ds := utils.ToOptionalBool(ctx, &external, state, root.AtName("external_radius_server"))
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
 		"network_access_server_ip": networkAccessServerIP,
-		"ssid":                     ssid,
-		"ca_chain":                 caChain,
+		"ssid":                     types.StringValue(conf.Network.Ssid),
+		"ca_chain":                 types.StringValue(conf.Radius.CaChain),
 		"hidden":                   hidden,
 		"autojoin":                 autojoin,
 		"external_radius_server":   externalRadiusServer,
