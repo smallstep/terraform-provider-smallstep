@@ -23,7 +23,7 @@ import (
 // even though it's never parsed.
 var Computed = []byte(`{"computed": true}`)
 
-const X509PrivateKey = "x509"
+const SSHPrivateKey = "ssh"
 
 func NewResourceSchema() resourceschema.SingleNestedAttribute {
 	certField := certfield.NewResourceSchema()
@@ -34,12 +34,12 @@ func NewResourceSchema() resourceschema.SingleNestedAttribute {
 		Optional:            true,
 		Computed:            true,
 		PlanModifiers: []planmodifier.Object{
-			utils.MaybeUseStateForUnknown(X509PrivateKey, Computed),
-			utils.NullWhen(path.Root("certificate").AtName("ssh"), basetypes.NewObjectNull(Attributes)),
+			utils.MaybeUseStateForUnknown(SSHPrivateKey, Computed),
+			utils.NullWhen(path.Root("credential").AtName("certificate_info").AtName("x509"), basetypes.NewObjectNull(Attributes)),
 		},
 		Validators: []validator.Object{
 			objectvalidator.ConflictsWith(
-				path.MatchRoot("certificate").AtName("ssh"),
+				path.MatchRoot("credential").AtName("certificate_info").AtName("x509"),
 			),
 		},
 		Attributes: map[string]resourceschema.Attribute{
@@ -56,6 +56,7 @@ func NewDataSourceSchema() datasourceschema.SingleNestedAttribute {
 	return datasourceschema.SingleNestedAttribute{
 		MarkdownDescription: "", // TODO
 		Computed:            true,
+		Optional:            true,
 		Attributes: map[string]datasourceschema.Attribute{
 			"key_id":     certField,
 			"principals": certFieldList,

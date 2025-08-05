@@ -83,8 +83,8 @@ func NewDataSourceSchema() (datasourceschema.SingleNestedAttribute, error) {
 		MarkdownDescription: certInfo,
 		Computed:            true,
 		Attributes: map[string]datasourceschema.Attribute{
-			"x509": x509info.NewResourceSchema(),
-			"ssh":  sshinfo.NewResourceSchema(),
+			"x509": x509info.NewDataSourceSchema(),
+			"ssh":  sshinfo.NewDataSourceSchema(),
 			"duration": datasourceschema.StringAttribute{
 				MarkdownDescription: certInfoProps["duration"],
 				Computed:            true,

@@ -20,9 +20,9 @@ type Model struct {
 	KeyFile     types.String `tfsdk:"key_file"`
 	RootFile    types.String `tfsdk:"root_file"`
 	Duration    types.String `tfsdk:"duration"`
-	UID         types.Int32  `tfsdk:"uid"`
-	GID         types.Int32  `tfsdk:"gid"`
-	Mode        types.Int32  `tfsdk:"mode"`
+	UID         types.Int64  `tfsdk:"uid"`
+	GID         types.Int64  `tfsdk:"gid"`
+	Mode        types.Int64  `tfsdk:"mode"`
 	X509        types.Object `tfsdk:"x509"`
 	SSH         types.Object `tfsdk:"ssh"`
 }
@@ -33,9 +33,9 @@ var Attributes = map[string]attr.Type{
 	"key_file":     types.StringType,
 	"root_file":    types.StringType,
 	"duration":     types.StringType,
-	"uid":          types.Int32Type,
-	"gid":          types.Int32Type,
-	"mode":         types.Int32Type,
+	"uid":          types.Int64Type,
+	"gid":          types.Int64Type,
+	"mode":         types.Int64Type,
 	"x509":         types.ObjectType{AttrTypes: x509info.Attributes},
 	"ssh":          types.ObjectType{AttrTypes: sshinfo.Attributes},
 }
@@ -115,7 +115,10 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Endpoin
 		diags   diag.Diagnostics
 	)
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	switch {
@@ -134,9 +137,9 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.Endpoin
 		KeyFile:     m.KeyFile.ValueStringPointer(),
 		RootFile:    m.RootFile.ValueStringPointer(),
 		Duration:    m.Duration.ValueStringPointer(),
-		Uid:         utils.ToIntPointer(m.UID.ValueInt32Pointer()),
-		Gid:         utils.ToIntPointer(m.GID.ValueInt32Pointer()),
-		Mode:        utils.ToIntPointer(m.Mode.ValueInt32Pointer()),
+		Uid:         utils.ToIntPointer(m.UID.ValueInt64Pointer()),
+		Gid:         utils.ToIntPointer(m.GID.ValueInt64Pointer()),
+		Mode:        utils.ToIntPointer(m.Mode.ValueInt64Pointer()),
 		Type:        typ,
 		Details:     details,
 	}, diags

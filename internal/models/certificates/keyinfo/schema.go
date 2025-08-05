@@ -64,15 +64,15 @@ func NewDataSourceSchema() (datasourceschema.SingleNestedAttribute, error) {
 				MarkdownDescription: keyInfoProps["type"],
 			},
 			"format": datasourceschema.StringAttribute{
-				Required:            true,
+				Computed:            true,
 				MarkdownDescription: keyInfoProps["format"],
 			},
 			"pub_file": datasourceschema.StringAttribute{
-				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: keyInfoProps["pubFile"],
 			},
 			"protection": datasourceschema.StringAttribute{
-				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: keyInfoProps["protection"],
 			},
 		},

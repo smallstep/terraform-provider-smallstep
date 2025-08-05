@@ -47,7 +47,10 @@ func FromAPI(ctx context.Context, cf *v20250101.CertificateField, state utils.At
 func (m *Model) ToAPI(ctx context.Context, obj types.Object) (*v20250101.CertificateField, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return &v20250101.CertificateField{
@@ -91,7 +94,10 @@ func ListFromAPI(ctx context.Context, cf *v20250101.CertificateFieldList, state 
 func (m *ListModel) ToAPI(ctx context.Context, obj types.Object) (*v20250101.CertificateFieldList, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{})
+	ds := obj.As(ctx, m, basetypes.ObjectAsOptions{
+		UnhandledNullAsEmpty:    true,
+		UnhandledUnknownAsEmpty: true,
+	})
 	diags.Append(ds...)
 
 	return &v20250101.CertificateFieldList{

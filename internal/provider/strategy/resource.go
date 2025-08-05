@@ -58,7 +58,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	browser, browserProps, err := utils.Describe("strategyBrowserMutualTLS")
+	browser, browserProps, err := utils.Describe("strategyBrowserMutualTLSConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Browser Strategy Schema",
@@ -67,7 +67,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	lan, lanProps, err := utils.Describe("strategyLAN")
+	lan, lanProps, err := utils.Describe("strategyLANConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI LAN Strategy Schema",
@@ -76,7 +76,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	relay, relayProps, err := utils.Describe("strategyNetworkRelay")
+	relay, relayProps, err := utils.Describe("strategyNetworkRelayConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Network Relay Strategy Schema",
@@ -85,7 +85,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	ssh, _, err := utils.Describe("strategySSH")
+	ssh, _, err := utils.Describe("strategySSHConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI SSH Strategy Schema",
@@ -94,7 +94,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	sso, ssoProps, err := utils.Describe("strategySSO")
+	sso, ssoProps, err := utils.Describe("strategySSOConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI SSO Strategy Schema",
@@ -103,7 +103,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	vpn, vpnProps, err := utils.Describe("strategyVPN")
+	vpn, vpnProps, err := utils.Describe("strategyVPNConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI VPN Strategy Schema",
@@ -121,7 +121,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	wlan, wlanProps, err := utils.Describe("strategyWLAN")
+	wlan, wlanProps, err := utils.Describe("strategyWLANConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI WLAN Strategy Schema",
@@ -209,7 +209,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"match_addresses": schema.ListAttribute{
-						MarkdownDescription: browserProps["match_addresses"],
+						MarkdownDescription: browserProps["matchAddresses"],
 						ElementType:         types.StringType,
 						Required:            true,
 					},
@@ -246,7 +246,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"match_domains": schema.ListAttribute{
-						MarkdownDescription: relayProps["match_domains"],
+						MarkdownDescription: relayProps["matchDomains"],
 						ElementType:         types.StringType,
 						Required:            true,
 					},
@@ -267,11 +267,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"trusted_roots": schema.StringAttribute{
-						MarkdownDescription: ssoProps["trusted_roots"],
+						MarkdownDescription: ssoProps["trustedRoots"],
 						Required:            true,
 					},
 					"redirect_uri": schema.StringAttribute{
-						MarkdownDescription: ssoProps["redirect_uri"],
+						MarkdownDescription: ssoProps["redirectUri"],
 						Required:            true,
 					},
 				},

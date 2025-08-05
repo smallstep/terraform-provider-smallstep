@@ -35,11 +35,11 @@ func NewResourceSchema() resourceschema.SingleNestedAttribute {
 		Computed:            true,
 		PlanModifiers: []planmodifier.Object{
 			utils.MaybeUseStateForUnknown(X509PrivateKey, Computed),
-			utils.NullWhen(path.Root("certificate_info").AtName("ssh"), basetypes.NewObjectNull(Attributes)),
+			utils.NullWhen(path.Root("credential").AtName("certificate_info").AtName("ssh"), basetypes.NewObjectNull(Attributes)),
 		},
 		Validators: []validator.Object{
 			objectvalidator.ConflictsWith(
-				path.MatchRoot("certificate_info").AtName("ssh"),
+				path.MatchRoot("credential").AtName("certificate_info").AtName("ssh"),
 			),
 		},
 		Attributes: map[string]resourceschema.Attribute{
@@ -62,6 +62,7 @@ func NewDataSourceSchema() datasourceschema.SingleNestedAttribute {
 
 	return datasourceschema.SingleNestedAttribute{
 		MarkdownDescription: "", // TODO
+		Optional:            true,
 		Computed:            true,
 		Attributes: map[string]datasourceschema.Attribute{
 			"common_name":         certField,

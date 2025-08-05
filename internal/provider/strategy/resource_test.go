@@ -13,6 +13,16 @@ const browserConfig = `
 		browser = {
 			match_addresses = ["https://test.example.org"]
 		}
+		credential = {
+			certificate_info = {
+				x509 = {
+					common_name = {
+						device_metadata = "smallstep:identity"
+					}
+				}
+				duration = "24h"
+			}
+		}
 	}
 `
 
