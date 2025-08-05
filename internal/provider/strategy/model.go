@@ -2,6 +2,8 @@ package strategy
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -55,7 +57,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 	switch strategy.Kind {
 	case v20250101.Browser:
 		conf, err := strategy.Configuration.AsStrategyBrowserMutualTLSConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Browser Parse Error", err.Error())
 			return nil, diags
 		}
@@ -63,7 +65,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Ethernet:
 		conf, err := strategy.Configuration.AsStrategyLANConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Ethernet Parse Error", err.Error())
 			return nil, diags
 		}
@@ -71,7 +73,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Relay:
 		conf, err := strategy.Configuration.AsStrategyNetworkRelayConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Relay Parse Error", err.Error())
 			return nil, diags
 		}
@@ -79,7 +81,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Ssh:
 		conf, err := strategy.Configuration.AsStrategySSHConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy SSH Parse Error", err.Error())
 			return nil, diags
 		}
@@ -87,7 +89,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Sso:
 		conf, err := strategy.Configuration.AsStrategySSOConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy SSO Parse Error", err.Error())
 			return nil, diags
 		}
@@ -95,7 +97,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Vpn:
 		conf, err := strategy.Configuration.AsStrategyVPNConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy VPN Parse Error", err.Error())
 			return nil, diags
 		}
@@ -103,7 +105,7 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		diags.Append(ds...)
 	case v20250101.Wifi:
 		conf, err := strategy.Configuration.AsStrategyWLANConfig()
-		if err != nil {
+		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Wifi Parse Error", err.Error())
 			return nil, diags
 		}
@@ -133,20 +135,22 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 	var diags, ds diag.Diagnostics
 
 	strategy := &v20250101.ProtectionStrategy{
-		Id:   model.ID.ValueString(),
-		Name: model.Name.ValueString(),
+		Id:                    model.ID.ValueString(),
+		Name:                  model.Name.ValueString(),
+		EndpointConfiguration: v20250101.EndpointConfiguration{},
 	}
 
 	credential, ds := new(credential.Model).ToAPI(ctx, model.Credential)
 	diags.Append(ds...)
+	if credential != nil {
+		strategy.EndpointConfiguration.CertificateInfo = credential.CertificateInfo
+		strategy.EndpointConfiguration.KeyInfo = credential.KeyInfo
+	}
 
 	policy, ds := new(policy.Model).ToAPI(ctx, model.Policy)
 	diags.Append(ds...)
-
-	strategy.EndpointConfiguration = v20250101.EndpointConfiguration{
-		CertificateInfo: credential.CertificateInfo,
-		KeyInfo:         credential.KeyInfo,
-		Policy:          policy,
+	if policy != nil {
+		strategy.EndpointConfiguration.Policy = policy
 	}
 
 	switch {
@@ -202,4 +206,12 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 	}
 
 	return strategy, diags
+}
+
+func isNullError(err error) bool {
+	var se *json.SyntaxError
+	if errors.As(err, &se) {
+		return se.Offset == 0
+	}
+	return false
 }

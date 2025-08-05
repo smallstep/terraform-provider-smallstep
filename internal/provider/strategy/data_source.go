@@ -12,6 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -59,7 +61,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	cred, credProps, err := utils.Describe("credentialConfigurationRequest")
+	cred, _, err := utils.Describe("credentialConfigurationRequest")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Strategy Schema",
@@ -77,7 +79,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	browser, browserProps, err := utils.Describe("strategyBrowserMutualTLS")
+	browser, browserProps, err := utils.Describe("strategyBrowserMutualTLSConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Browser Strategy Schema",
@@ -86,7 +88,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	lan, lanProps, err := utils.Describe("strategyLAN")
+	lan, lanProps, err := utils.Describe("strategyLANConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI LAN Strategy Schema",
@@ -95,7 +97,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	relay, relayProps, err := utils.Describe("strategyNetworkRelay")
+	relay, relayProps, err := utils.Describe("strategyNetworkRelayConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Network Relay Strategy Schema",
@@ -104,7 +106,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	ssh, _, err := utils.Describe("strategySSH")
+	ssh, _, err := utils.Describe("strategySSHConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI SSH Strategy Schema",
@@ -113,7 +115,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	sso, ssoProps, err := utils.Describe("strategySSO")
+	sso, ssoProps, err := utils.Describe("strategySSOConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI SSO Strategy Schema",
@@ -122,7 +124,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	vpn, vpnProps, err := utils.Describe("strategyVPN")
+	vpn, vpnProps, err := utils.Describe("strategyVPNConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI VPN Strategy Schema",
@@ -140,10 +142,28 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	wlan, wlanProps, err := utils.Describe("strategyWLAN")
+	wlan, wlanProps, err := utils.Describe("strategyWLANConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI WLAN Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	certInfo, err := certinfo.NewDataSourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Certificate Info",
+			err.Error(),
+		)
+		return
+	}
+
+	keyInfo, err := keyinfo.NewDataSourceSchema()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Key Info",
 			err.Error(),
 		)
 		return
@@ -167,14 +187,8 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				MarkdownDescription: cred,
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
-					"certificate_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["certificate_info"],
-						Optional:            true,
-					},
-					"key_info": schema.ObjectAttribute{
-						MarkdownDescription: credProps["key_info"],
-						Optional:            true,
-					},
+					"certificate_info": certInfo,
+					"key_info":         keyInfo,
 				},
 			},
 			"policy": schema.SingleNestedAttribute{
@@ -213,7 +227,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"match_addresses": schema.ListAttribute{
-						MarkdownDescription: browserProps["match_addresses"],
+						MarkdownDescription: browserProps["matchAddresses"],
 						ElementType:         types.StringType,
 						Required:            true,
 					},
@@ -247,7 +261,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"match_domains": schema.ListAttribute{
-						MarkdownDescription: relayProps["match_domains"],
+						MarkdownDescription: relayProps["matchDomains"],
 						ElementType:         types.StringType,
 						Required:            true,
 					},
@@ -268,11 +282,11 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"trusted_roots": schema.StringAttribute{
-						MarkdownDescription: ssoProps["trusted_roots"],
+						MarkdownDescription: ssoProps["trustedRoots"],
 						Required:            true,
 					},
 					"redirect_uri": schema.StringAttribute{
-						MarkdownDescription: ssoProps["redirect_uri"],
+						MarkdownDescription: ssoProps["redirectUri"],
 						Required:            true,
 					},
 				},

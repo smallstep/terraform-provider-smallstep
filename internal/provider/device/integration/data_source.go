@@ -95,15 +95,15 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"client_id": schema.StringAttribute{
-						MarkdownDescription: jamfProps["client_id"],
+						MarkdownDescription: jamfProps["clientId"],
 						Optional:            true,
 					},
 					"client_secret": schema.StringAttribute{
-						MarkdownDescription: jamfProps["client_secret"],
+						MarkdownDescription: jamfProps["clientSecret"],
 						Optional:            true,
 					},
 					"tenant_url": schema.StringAttribute{
-						MarkdownDescription: jamfProps["tenant_url"],
+						MarkdownDescription: jamfProps["tenantUrl"],
 						Required:            true,
 					},
 				},
@@ -113,15 +113,15 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"app_id": schema.StringAttribute{
-						MarkdownDescription: intuneProps["app_id"],
+						MarkdownDescription: intuneProps["appId"],
 						Required:            true,
 					},
 					"app_secret": schema.StringAttribute{
-						MarkdownDescription: intuneProps["app_secret"],
+						MarkdownDescription: intuneProps["appSecret"],
 						Required:            true,
 					},
 					"azure_tenant_name": schema.StringAttribute{
-						MarkdownDescription: intuneProps["azure_tenant_name"],
+						MarkdownDescription: intuneProps["azureTenantName"],
 						Required:            true,
 					},
 				},
