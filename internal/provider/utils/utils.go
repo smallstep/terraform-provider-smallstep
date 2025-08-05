@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -60,7 +61,17 @@ func ToStringList[T ~string](list types.List) []T {
 	elements := list.Elements()
 	ret := make([]T, len(elements))
 	for i, v := range elements {
-		ret[i] = T(v.String())
+		if v.IsNull() || v.IsUnknown() {
+			continue
+		}
+		var s T
+		tfval, err := v.ToTerraformValue(context.Background())
+		if err != nil {
+			continue
+		}
+		tfval.As(&s)
+
+		ret[i] = s
 	}
 	return ret
 }
