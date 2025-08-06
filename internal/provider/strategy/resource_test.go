@@ -108,8 +108,8 @@ func TestAccStrategRelay(t *testing.T) {
 	const relayConfig = `resource "smallstep_strategy" "relay" {
 	name = "Relay Certificate"
 	relay = {
-		match_domains: ["example.com"]
-		regions: ["US_CENTRAL1"]
+		match_domains = ["example.com"]
+		regions = ["US_CENTRAL1"]
 	}
 	credential = {
 		certificate_info = {

@@ -64,14 +64,14 @@ func ToStringList[T ~string](list types.List) []T {
 		if v.IsNull() || v.IsUnknown() {
 			continue
 		}
-		var s T
 		tfval, err := v.ToTerraformValue(context.Background())
 		if err != nil {
 			continue
 		}
+		var s string
 		tfval.As(&s)
 
-		ret[i] = s
+		ret[i] = T(s)
 	}
 	return ret
 }
