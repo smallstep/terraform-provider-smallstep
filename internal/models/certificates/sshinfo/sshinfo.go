@@ -39,7 +39,7 @@ func FromAPI(ctx context.Context, details *v20250101.EndpointCertificateInfo_Det
 	keyID, ds := certfield.FromAPI(ctx, fields.KeyId, state, root.AtName("key_id"))
 	diags.Append(ds...)
 
-	principals, ds := certfield.FromAPI(ctx, fields.KeyId, state, root.AtName("principals"))
+	principals, ds := certfield.ListFromAPI(ctx, fields.Principals, state, root.AtName("principals"))
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
