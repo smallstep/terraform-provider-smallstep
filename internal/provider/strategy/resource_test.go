@@ -73,7 +73,7 @@ func TestAccStrategyBrowser(t *testing.T) {
 	})
 }
 
-func TestStrategSSH(t *testing.T) {
+func TestStrategySSH(t *testing.T) {
 	const sshConfig = `resource "smallstep_strategy" "ssh" {
 	name = "SSH Certificate"
 	ssh = {}
@@ -129,6 +129,48 @@ func TestAccStrategRelay(t *testing.T) {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
 					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "Relay Certificate"),
+				),
+			},
+		},
+	})
+}
+
+func TestStrategySSO(t *testing.T) {
+	const sshConfig = `resource "smallstep_strategy" "sso" {
+	name = "SSO Certificate"
+	sso = {
+		trusted_roots = <<EOF
+-----BEGIN CERTIFICATE-----
+MIIBaDCCAQ6gAwIBAgIRALAPDGNvR0u5p6dk45rXbDEwCgYIKoZIzj0EAwIwEjEQ
+MA4GA1UEAxMHUm9vdCBDQTAeFw0yNTA4MDYwMDAxMjBaFw0zNTA4MDQwMDAxMjBa
+MBIxEDAOBgNVBAMTB1Jvb3QgQ0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARm
+Z/Zy6bE0atRppjk+oMtQwH3BYRM2BBGDp1T7qrE4stDfTuiiM/UydeYLNR5m5eIu
+eQlA3gLWpnQuMy9Or4RBo0UwQzAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgw
+BgEB/wIBATAdBgNVHQ4EFgQUmybWNbMRsNKa3Xdd6HM4WK1CHCEwCgYIKoZIzj0E
+AwIDSAAwRQIgb/i6XsYimJsvxTFhkICNF86Eu/wE3ro6abqMzu0KXpYCIQCTIMmP
+45S9YHmN9q3lnW/smUkH07YESKJGXnUUR5bZSQ==
+-----END CERTIFICATE-----
+EOF
+		redirect_uri = "https://example.com/sso"
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					static = "SSO Certificate"
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: sshConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.sso", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "SSO Certificate"),
 				),
 			},
 		},
