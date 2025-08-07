@@ -2,8 +2,8 @@ package x509info
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	datasourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -30,7 +30,7 @@ func NewResourceSchema() resourceschema.SingleNestedAttribute {
 	certFieldList := certfield.NewListResourceSchema()
 
 	return resourceschema.SingleNestedAttribute{
-		MarkdownDescription: "", // TODO
+		MarkdownDescription: "", // TODO: add description
 		Optional:            true,
 		Computed:            true,
 		PlanModifiers: []planmodifier.Object{
@@ -61,7 +61,7 @@ func NewDataSourceSchema() datasourceschema.SingleNestedAttribute {
 	certFieldList := certfield.NewListDataSourceSchema()
 
 	return datasourceschema.SingleNestedAttribute{
-		MarkdownDescription: "", // TODO
+		MarkdownDescription: "", // TODO: add description
 		Optional:            true,
 		Computed:            true,
 		Attributes: map[string]datasourceschema.Attribute{

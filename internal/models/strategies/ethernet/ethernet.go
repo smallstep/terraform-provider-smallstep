@@ -73,16 +73,19 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.Strategy
 	}, diags
 }
 
+//nolint:unused // keep it here for the moment
 type radiusServerModel struct {
 	CAChain     types.String `json:"ca_chain"`
 	IPAddresses types.List   `json:"ip_addresses"`
 }
 
+//nolint:unused // keep it here for the moment
 var radiusServerAttributes = map[string]attr.Type{
 	"ca_chain":     types.StringType,
 	"ip_addresses": types.ListType{ElemType: types.StringType},
 }
 
+//nolint:unused // keep it here for the moment
 func radiusServerFromAPI(ctx context.Context, conf *v20250101.RadiusServer, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
@@ -105,6 +108,7 @@ func radiusServerFromAPI(ctx context.Context, conf *v20250101.RadiusServer, stat
 	return obj, diags
 }
 
+//nolint:unused // keep it here for the moment
 func (m *radiusServerModel) toAPI(ctx context.Context, obj types.Object) (v20250101.RadiusServer, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
@@ -118,5 +122,4 @@ func (m *radiusServerModel) toAPI(ctx context.Context, obj types.Object) (v20250
 		CaChain:     m.CAChain.ValueString(),
 		IpAddresses: utils.ToStringList[string](m.IPAddresses),
 	}, diags
-
 }

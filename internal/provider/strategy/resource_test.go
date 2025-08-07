@@ -106,7 +106,7 @@ func TestStrategySSH(t *testing.T) {
 
 func TestAccStrategRelay(t *testing.T) {
 	const relayConfig = `resource "smallstep_strategy" "relay" {
-	name = "Relay Certificate"
+	name = "Relay"
 	relay = {
 		match_domains = ["example.com"]
 		regions = ["US_CENTRAL1"]
@@ -127,8 +127,8 @@ func TestAccStrategRelay(t *testing.T) {
 			{
 				Config: relayConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_strategy.ssh", "id", utils.UUID),
-					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "Relay Certificate"),
+					helper.TestMatchResourceAttr("smallstep_strategy.relay", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.relay", "name", "Relay"),
 				),
 			},
 		},

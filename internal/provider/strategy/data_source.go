@@ -14,6 +14,7 @@ import (
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
+	"github.com/smallstep/terraform-provider-smallstep/internal/models/strategies/relay"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -97,10 +98,19 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	relay, relayProps, err := utils.Describe("strategyNetworkRelayConfig")
+	relayDesc, relayProps, err := utils.Describe("strategyNetworkRelayConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Network Relay Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, relayServerProps, err := utils.Describe("strategyNetworkRelayServer")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network Relay Server Strategy Schema",
 			err.Error(),
 		)
 		return
@@ -257,7 +267,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				},
 			},
 			"relay": schema.SingleNestedAttribute{
-				MarkdownDescription: relay,
+				MarkdownDescription: relayDesc,
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"match_domains": schema.ListAttribute{
@@ -269,6 +279,25 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 						MarkdownDescription: relayProps["regions"],
 						ElementType:         types.StringType,
 						Required:            true,
+					},
+					"proxy_instances": schema.ListAttribute{
+						MarkdownDescription: relayProps["proxy_instances"],
+						ElementType:         types.ObjectType{AttrTypes: relay.ProxyInstanceAttributes},
+						Computed:            true,
+					},
+					"server": schema.SingleNestedAttribute{
+						MarkdownDescription: relayProps["server"],
+						Attributes: map[string]schema.Attribute{
+							"ca_chain": schema.StringAttribute{
+								MarkdownDescription: relayServerProps["ca_chain"],
+								Computed:            true,
+							},
+							"hostname": schema.StringAttribute{
+								MarkdownDescription: relayServerProps["hostname"],
+								Computed:            true,
+							},
+						},
+						Computed: true,
 					},
 				},
 			},

@@ -72,12 +72,12 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		ethernetObj, ds = ethernet.FromAPI(ctx, &conf, state, path.Root("ethernet"))
 		diags.Append(ds...)
 	case v20250101.Relay:
-		conf, err := strategy.Configuration.AsStrategyNetworkRelayConfig()
+		details, err := strategy.Details.AsStrategyNetworkRelay()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Relay Parse Error", err.Error())
 			return nil, diags
 		}
-		relayObj, ds = relay.FromAPI(ctx, &conf, state, path.Root("relay"))
+		relayObj, ds = relay.FromAPI(ctx, &details, state, path.Root("relay"))
 		diags.Append(ds...)
 	case v20250101.Ssh:
 		conf, err := strategy.Configuration.AsStrategySSHConfig()
@@ -140,17 +140,17 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 		EndpointConfiguration: v20250101.EndpointConfiguration{},
 	}
 
-	credential, ds := new(credential.Model).ToAPI(ctx, model.Credential)
+	cred, ds := new(credential.Model).ToAPI(ctx, model.Credential)
 	diags.Append(ds...)
-	if credential != nil {
-		strategy.EndpointConfiguration.CertificateInfo = credential.CertificateInfo
-		strategy.EndpointConfiguration.KeyInfo = credential.KeyInfo
+	if cred != nil {
+		strategy.EndpointConfiguration.CertificateInfo = cred.CertificateInfo
+		strategy.EndpointConfiguration.KeyInfo = cred.KeyInfo
 	}
 
-	policy, ds := new(policy.Model).ToAPI(ctx, model.Policy)
+	pol, ds := new(policy.Model).ToAPI(ctx, model.Policy)
 	diags.Append(ds...)
-	if policy != nil {
-		strategy.EndpointConfiguration.Policy = policy
+	if pol != nil {
+		strategy.EndpointConfiguration.Policy = pol
 	}
 
 	switch {

@@ -30,7 +30,7 @@ func NewResourceSchema() resourceschema.SingleNestedAttribute {
 	certFieldList := certfield.NewListResourceSchema()
 
 	return resourceschema.SingleNestedAttribute{
-		MarkdownDescription: "", // TODO
+		MarkdownDescription: "", // TODO: add description
 		Optional:            true,
 		Computed:            true,
 		PlanModifiers: []planmodifier.Object{
@@ -54,7 +54,7 @@ func NewDataSourceSchema() datasourceschema.SingleNestedAttribute {
 	certFieldList := certfield.NewListDataSourceSchema()
 
 	return datasourceschema.SingleNestedAttribute{
-		MarkdownDescription: "", // TODO
+		MarkdownDescription: "", // TODO: add description
 		Computed:            true,
 		Optional:            true,
 		Attributes: map[string]datasourceschema.Attribute{
