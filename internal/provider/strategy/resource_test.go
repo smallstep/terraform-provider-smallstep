@@ -176,3 +176,53 @@ EOF
 		},
 	})
 }
+
+func TestStrategyVPN(t *testing.T) {
+	t.Skip()
+
+	const vpnConfig = `resource "smallstep_strategy" "vpn" {
+	name = "VPN Certificate"
+	vpn = {
+		connection_type = "IKEv2"
+		remote_address = "10.1.2.3"
+		ike = {
+			remote_id = "remote-id"
+			eap = true
+			ca_chain = <<EOF
+-----BEGIN CERTIFICATE-----
+MIIBaDCCAQ6gAwIBAgIRALAPDGNvR0u5p6dk45rXbDEwCgYIKoZIzj0EAwIwEjEQ
+MA4GA1UEAxMHUm9vdCBDQTAeFw0yNTA4MDYwMDAxMjBaFw0zNTA4MDQwMDAxMjBa
+MBIxEDAOBgNVBAMTB1Jvb3QgQ0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARm
+Z/Zy6bE0atRppjk+oMtQwH3BYRM2BBGDp1T7qrE4stDfTuiiM/UydeYLNR5m5eIu
+eQlA3gLWpnQuMy9Or4RBo0UwQzAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgw
+BgEB/wIBATAdBgNVHQ4EFgQUmybWNbMRsNKa3Xdd6HM4WK1CHCEwCgYIKoZIzj0E
+AwIDSAAwRQIgb/i6XsYimJsvxTFhkICNF86Eu/wE3ro6abqMzu0KXpYCIQCTIMmP
+45S9YHmN9q3lnW/smUkH07YESKJGXnUUR5bZSQ==
+-----END CERTIFICATE-----
+EOF
+		}
+		redirect_uri = "https://example.com/sso"
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					device_metadata = "smallstep:identity"
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: vpnConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.vpn", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.vpn", "name", "VPN Certificate"),
+				),
+			},
+		},
+	})
+}

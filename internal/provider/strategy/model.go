@@ -96,12 +96,12 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		ssoObj, ds = sso.FromAPI(ctx, &details, state, path.Root("sso"))
 		diags.Append(ds...)
 	case v20250101.Vpn:
-		conf, err := strategy.Configuration.AsStrategyVPNConfig()
+		details, err := strategy.Details.AsStrategyVPN()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy VPN Parse Error", err.Error())
 			return nil, diags
 		}
-		vpnObj, ds = vpn.FromAPI(ctx, &conf, state, path.Root("vpn"))
+		vpnObj, ds = vpn.FromAPI(ctx, &details, state, path.Root("vpn"))
 		diags.Append(ds...)
 	case v20250101.Wifi:
 		details, err := strategy.Details.AsStrategyWLAN()

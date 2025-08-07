@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -28,26 +29,32 @@ var Attributes = map[string]attr.Type{
 	"autojoin":        types.BoolType,
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyVPNConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyVPN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	connectionType, ds := utils.ToOptionalString(ctx, &conf.ConnectionType, state, root.AtName("connection_type"))
+	var connectionType types.String
+	ds := state.GetAttribute(ctx, root.AtName("connection_type"), &connectionType)
 	diags.Append(ds...)
 
-	vendor, ds := utils.ToOptionalString(ctx, conf.Vendor, state, root.AtName("vendor"))
+	var vendor types.String
+	ds = state.GetAttribute(ctx, root.AtName("vendor"), &vendor)
 	diags.Append(ds...)
 
-	remoteAddress, ds := utils.ToOptionalString(ctx, &conf.RemoteAddress, state, root.AtName("remote_address"))
+	var remoteAddress types.String
+	ds = state.GetAttribute(ctx, root.AtName("remote_address"), &remoteAddress)
 	diags.Append(ds...)
 
-	ike, ds := ikeFromAPI(ctx, conf.Ike, state, root.AtName("ike"))
+	var autojoin types.Bool
+	ds = state.GetAttribute(ctx, root.AtName("autojoin"), &autojoin)
 	diags.Append(ds...)
 
-	autojoin, ds := utils.ToOptionalBool(ctx, conf.Autojoin, state, root.AtName("connection_type"))
+	var ike types.Object
+	ds = state.GetAttribute(ctx, root.AtName("ike"), &ike)
+	fmt.Printf("===ike: %#v\n", ike)
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
@@ -58,6 +65,8 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyVPNConfig, state utils
 		"autojoin":        autojoin,
 	})
 	diags.Append(ds...)
+
+	fmt.Printf("===diags: %#v\n", diags)
 
 	return obj, diags
 }
