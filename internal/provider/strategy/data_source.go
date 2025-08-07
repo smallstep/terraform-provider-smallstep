@@ -134,6 +134,24 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
+	_, ssoClientProps, err := utils.Describe("deviceIdentityProviderClient")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network SSO Client Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, ssoIdentityProviderProps, err := utils.Describe("deviceIdentityProvider")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network SSO Identity Provider Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
 	vpn, vpnProps, err := utils.Describe("strategyVPNConfig")
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -317,6 +335,44 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 					"redirect_uri": schema.StringAttribute{
 						MarkdownDescription: ssoProps["redirectUri"],
 						Required:            true,
+					},
+					"client": schema.SingleNestedAttribute{
+						MarkdownDescription: ssoProps["client"],
+						Computed:            true,
+						Attributes: map[string]schema.Attribute{
+							"id": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["id"],
+								Computed:            true,
+							},
+							"redirect_uri": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["redirect_uri"],
+								Computed:            true,
+							},
+							"secret": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["secret"],
+								Computed:            true,
+								// Optional:            true,
+								Sensitive: true,
+							},
+						},
+					},
+					"identity_provider": schema.SingleNestedAttribute{
+						MarkdownDescription: ssoProps["identity_provider"],
+						Computed:            true,
+						Attributes: map[string]schema.Attribute{
+							"authorize_endpoint": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["authorize_endpoint"],
+								Computed:            true,
+							},
+							"jwks_endpoint": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["jwks_endpoint"],
+								Computed:            true,
+							},
+							"trust_roots": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["trust_roots"],
+								Computed:            true,
+							},
+						},
 					},
 				},
 			},

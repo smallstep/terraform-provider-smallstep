@@ -80,20 +80,20 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 		relayObj, ds = relay.FromAPI(ctx, &details, state, path.Root("relay"))
 		diags.Append(ds...)
 	case v20250101.Ssh:
-		conf, err := strategy.Configuration.AsStrategySSHConfig()
+		details, err := strategy.Details.AsStrategySSH()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy SSH Parse Error", err.Error())
 			return nil, diags
 		}
-		sshObj, ds = ssh.FromAPI(ctx, &conf, state, path.Root("ssh"))
+		sshObj, ds = ssh.FromAPI(ctx, &details, state, path.Root("ssh"))
 		diags.Append(ds...)
 	case v20250101.Sso:
-		conf, err := strategy.Configuration.AsStrategySSOConfig()
+		details, err := strategy.Details.AsStrategySSO()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy SSO Parse Error", err.Error())
 			return nil, diags
 		}
-		ssoObj, ds = sso.FromAPI(ctx, &conf, state, path.Root("sso"))
+		ssoObj, ds = sso.FromAPI(ctx, &details, state, path.Root("sso"))
 		diags.Append(ds...)
 	case v20250101.Vpn:
 		conf, err := strategy.Configuration.AsStrategyVPNConfig()
@@ -177,14 +177,14 @@ func toAPI(ctx context.Context, model *StrategyModel) (*v20250101.ProtectionStra
 		}
 	case !model.SSH.IsNull():
 		strategy.Kind = v20250101.Ssh
-		conf, ds := new(ssh.Model).ToAPI(ctx, model.Relay)
+		conf, ds := new(ssh.Model).ToAPI(ctx, model.SSH)
 		diags.Append(ds...)
 		if err := strategy.Configuration.FromStrategySSHConfig(conf); err != nil {
 			diags.AddError("Account SSH Configuration Error", err.Error())
 		}
 	case !model.SSO.IsNull():
 		strategy.Kind = v20250101.Sso
-		conf, ds := new(sso.Model).ToAPI(ctx, model.Relay)
+		conf, ds := new(sso.Model).ToAPI(ctx, model.SSO)
 		diags.Append(ds...)
 		if err := strategy.Configuration.FromStrategySSOConfig(conf); err != nil {
 			diags.AddError("Account SSO Configuration Error", err.Error())

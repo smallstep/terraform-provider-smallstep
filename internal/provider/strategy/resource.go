@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -109,6 +111,24 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI SSO Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, ssoClientProps, err := utils.Describe("deviceIdentityProviderClient")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network SSO Client Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, ssoIdentityProviderProps, err := utils.Describe("deviceIdentityProvider")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network SSO Identity Provider Strategy Schema",
 			err.Error(),
 		)
 		return
@@ -268,11 +288,17 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					},
 					"proxy_instances": schema.ListAttribute{
 						MarkdownDescription: relayProps["proxy_instances"],
-						ElementType:         types.ObjectType{AttrTypes: relay.ProxyInstanceAttributes},
-						Computed:            true,
+						PlanModifiers: []planmodifier.List{
+							listplanmodifier.UseStateForUnknown(),
+						},
+						ElementType: types.ObjectType{AttrTypes: relay.ProxyInstanceAttributes},
+						Computed:    true,
 					},
 					"server": schema.SingleNestedAttribute{
 						MarkdownDescription: relayProps["server"],
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
 						Attributes: map[string]schema.Attribute{
 							"ca_chain": schema.StringAttribute{
 								MarkdownDescription: relayServerProps["ca_chain"],
@@ -303,6 +329,49 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"redirect_uri": schema.StringAttribute{
 						MarkdownDescription: ssoProps["redirectUri"],
 						Required:            true,
+					},
+					"client": schema.SingleNestedAttribute{
+						MarkdownDescription: ssoProps["client"],
+						Computed:            true,
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
+						Attributes: map[string]schema.Attribute{
+							"id": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["id"],
+								Computed:            true,
+							},
+							"redirect_uri": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["redirect_uri"],
+								Computed:            true,
+							},
+							"secret": schema.StringAttribute{
+								MarkdownDescription: ssoClientProps["secret"],
+								Computed:            true,
+								Sensitive:           true,
+							},
+						},
+					},
+					"identity_provider": schema.SingleNestedAttribute{
+						MarkdownDescription: ssoProps["identity_provider"],
+						Computed:            true,
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
+						Attributes: map[string]schema.Attribute{
+							"authorize_endpoint": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["authorize_endpoint"],
+								Computed:            true,
+							},
+							"jwks_endpoint": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["jwks_endpoint"],
+								Computed:            true,
+							},
+							"trust_roots": schema.StringAttribute{
+								MarkdownDescription: ssoIdentityProviderProps["trust_roots"],
+								Computed:            true,
+							},
+						},
 					},
 				},
 			},
@@ -425,6 +494,9 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
+	debug("Read request")
+	debug(strategyID)
+
 	httpResp, err := r.client.GetProtectionStrategy(ctx, strategyID, &v20250101.GetProtectionStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -456,6 +528,9 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		)
 		return
 	}
+
+	debug("Read response:")
+	debug(strategy)
 
 	remote, d := fromAPI(ctx, strategy, req.State)
 	resp.Diagnostics.Append(d...)
@@ -495,6 +570,9 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		Policy:        strategy.EndpointConfiguration.Policy,
 	}
 
+	debug("Create request:")
+	debug(reqBody)
+
 	httpResp, err := r.client.PostStrategies(ctx, &v20250101.PostStrategiesParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -522,6 +600,9 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		)
 		return
 	}
+
+	debug("Create response:")
+	debug(strategy)
 
 	model, diags := fromAPI(ctx, strategy, req.Plan)
 	resp.Diagnostics.Append(diags...)
@@ -578,6 +659,9 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		Policy:        strategy.EndpointConfiguration.Policy,
 	}
 
+	debug("Update request:")
+	debug(reqBody)
+
 	httpResp, err := r.client.PutStrategy(ctx, strategyID, &v20250101.PutStrategyParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -605,6 +689,9 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		)
 		return
 	}
+
+	debug("Update response:")
+	debug(strategy)
 
 	model, diags := fromAPI(ctx, strategy, req.Plan)
 	resp.Diagnostics.Append(diags...)
@@ -642,6 +729,9 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
+	debug("Delete request:")
+	debug(strategyID)
+
 	httpResp, err := r.client.DeleteProtectionStrategy(ctx, strategyID, &v20250101.DeleteProtectionStrategyParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -664,4 +754,16 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 
 func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func debug(v any) {
+	switch v := v.(type) {
+	case string:
+		fmt.Println(v)
+	case []byte:
+		fmt.Println(string(v))
+	default:
+		b, _ := json.Marshal(v)
+		fmt.Println(string(b))
+	}
 }

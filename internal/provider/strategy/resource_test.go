@@ -24,7 +24,7 @@ const wifiConfig = `resource "smallstep_strategy" "wifi" {
 	}
 }`
 
-func TestAccStrategyWifi(t *testing.T) {
+func TestStrategyWifi(t *testing.T) {
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
@@ -58,7 +58,7 @@ const browserConfig = `
 	}
 `
 
-func TestAccStrategyBrowser(t *testing.T) {
+func TestStrategyBrowser(t *testing.T) {
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
@@ -104,7 +104,7 @@ func TestStrategySSH(t *testing.T) {
 	})
 }
 
-func TestAccStrategRelay(t *testing.T) {
+func TestStrategyRelay(t *testing.T) {
 	const relayConfig = `resource "smallstep_strategy" "relay" {
 	name = "Relay"
 	relay = {
@@ -136,7 +136,7 @@ func TestAccStrategRelay(t *testing.T) {
 }
 
 func TestStrategySSO(t *testing.T) {
-	const sshConfig = `resource "smallstep_strategy" "sso" {
+	const ssoConfig = `resource "smallstep_strategy" "sso" {
 	name = "SSO Certificate"
 	sso = {
 		trusted_roots = <<EOF
@@ -167,10 +167,10 @@ EOF
 		ProtoV6ProviderFactories: providerFactories,
 		Steps: []helper.TestStep{
 			{
-				Config: sshConfig,
+				Config: ssoConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_strategy.sso", "id", utils.UUID),
-					helper.TestCheckResourceAttr("smallstep_strategy.ssh", "name", "SSO Certificate"),
+					helper.TestCheckResourceAttr("smallstep_strategy.sso", "name", "SSO Certificate"),
 				),
 			},
 		},
