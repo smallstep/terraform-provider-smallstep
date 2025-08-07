@@ -161,6 +161,24 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
+	_, networkProps, err := utils.Describe("wirelessNetwork")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI WLAN Network Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, radiusProps, err := utils.Describe("radiusServer")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI WLAN Radius Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
 	certInfo, err := certinfo.NewResourceSchema()
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -429,11 +447,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					},
 					"ca_chain": schema.StringAttribute{
 						MarkdownDescription: wlanProps["caChain"],
-						Computed:            true,
 						Optional:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
 					},
 					"hidden": schema.BoolAttribute{
 						MarkdownDescription: wlanProps["hidden"],
@@ -446,6 +460,45 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"external_radius_server": schema.BoolAttribute{
 						MarkdownDescription: wlanProps["externalRadiusServer"],
 						Optional:            true,
+					},
+					"network": schema.SingleNestedAttribute{
+						MarkdownDescription: wlanProps["network"],
+						Computed:            true,
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
+						Attributes: map[string]schema.Attribute{
+							"ssid": schema.StringAttribute{
+								MarkdownDescription: networkProps["ssid"],
+								Computed:            true,
+							},
+							"hidden": schema.BoolAttribute{
+								MarkdownDescription: networkProps["hidden"],
+								Computed:            true,
+							},
+							"autojoin": schema.BoolAttribute{
+								MarkdownDescription: networkProps["autojoin"],
+								Computed:            true,
+							},
+						},
+					},
+					"radius": schema.SingleNestedAttribute{
+						MarkdownDescription: wlanProps["radius"],
+						Computed:            true,
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
+						Attributes: map[string]schema.Attribute{
+							"ca_chain": schema.StringAttribute{
+								MarkdownDescription: radiusProps["ca_chain"],
+								Computed:            true,
+							},
+							"ip_addresses": schema.ListAttribute{
+								MarkdownDescription: radiusProps["ip_addresses"],
+								Computed:            true,
+								ElementType:         types.StringType,
+							},
+						},
 					},
 				},
 			},

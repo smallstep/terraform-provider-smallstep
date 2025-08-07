@@ -115,7 +115,7 @@ func proxyInstanceListFromAPI(ctx context.Context, pis []v20250101.ProxyInstance
 	obj, ds := basetypes.NewListValue(types.ObjectType{AttrTypes: ProxyInstanceAttributes}, elements)
 	diags.Append(ds...)
 
-	return obj, ds
+	return obj, diags
 }
 
 var serverAttributes = map[string]attr.Type{

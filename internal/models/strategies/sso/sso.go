@@ -98,7 +98,7 @@ func clientFromAPI(ctx context.Context, c v20250101.DeviceIdentityProviderClient
 	})
 	diags.Append(ds...)
 
-	return obj, ds
+	return obj, diags
 }
 
 var identityProviderAttributes = map[string]attr.Type{
@@ -126,5 +126,5 @@ func identityProviderFromAPI(ctx context.Context, ip v20250101.DeviceIdentityPro
 	})
 	diags.Append(ds...)
 
-	return obj, ds
+	return obj, diags
 }
