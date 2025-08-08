@@ -22,7 +22,7 @@ type Model struct {
 var Attributes = map[string]attr.Type{
 	"match_domains":   types.ListType{ElemType: types.StringType},
 	"regions":         types.ListType{ElemType: types.StringType},
-	"proxy_instances": types.ListType{ElemType: types.ObjectType{AttrTypes: ProxyInstanceAttributes}},
+	"proxy_instances": types.ListType{ElemType: types.ObjectType{AttrTypes: proxyInstanceAttributes}},
 	"server":          types.ObjectType{AttrTypes: serverAttributes},
 }
 
@@ -73,7 +73,7 @@ func (m *Model) ToAPI(ctx context.Context, obj types.Object) (v20250101.Strategy
 	}, diags
 }
 
-var ProxyInstanceAttributes = map[string]attr.Type{
+var proxyInstanceAttributes = map[string]attr.Type{
 	"ip_address": types.StringType,
 	"region":     types.StringType,
 	"status":     types.StringType,
@@ -85,13 +85,13 @@ func proxyInstanceFromAPI(ctx context.Context, pi v20250101.ProxyInstance, state
 	ipAddress, ds := utils.ToOptionalString(ctx, &pi.IpAddress, state, root.AtName("ca_chain"))
 	diags.Append(ds...)
 
-	region, ds := utils.ToOptionalString(ctx, &pi.Region, state, root.AtName("hostname"))
+	region, ds := utils.ToOptionalString(ctx, &pi.Region, state, root.AtName("region"))
 	diags.Append(ds...)
 
-	status, ds := utils.ToOptionalString(ctx, &pi.Status, state, root.AtName("hostname"))
+	status, ds := utils.ToOptionalString(ctx, &pi.Status, state, root.AtName("status"))
 	diags.Append(ds...)
 
-	obj, ds := basetypes.NewObjectValue(ProxyInstanceAttributes, map[string]attr.Value{
+	obj, ds := basetypes.NewObjectValue(proxyInstanceAttributes, map[string]attr.Value{
 		"ip_address": ipAddress,
 		"region":     region,
 		"status":     status,
@@ -112,7 +112,7 @@ func proxyInstanceListFromAPI(ctx context.Context, pis []v20250101.ProxyInstance
 		diags.Append(ds...)
 	}
 
-	obj, ds := basetypes.NewListValue(types.ObjectType{AttrTypes: ProxyInstanceAttributes}, elements)
+	obj, ds := basetypes.NewListValue(types.ObjectType{AttrTypes: proxyInstanceAttributes}, elements)
 	diags.Append(ds...)
 
 	return obj, diags

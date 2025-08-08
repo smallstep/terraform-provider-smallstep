@@ -14,7 +14,6 @@ import (
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/strategies/relay"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -111,6 +110,15 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Network Relay Server Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, proxyInstanceProps, err := utils.Describe("proxyInstance")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network Relay Proxy Instance Strategy Schema",
 			err.Error(),
 		)
 		return
@@ -330,10 +338,26 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 						ElementType:         types.StringType,
 						Required:            true,
 					},
-					"proxy_instances": schema.ListAttribute{
+					"proxy_instances": schema.ListNestedAttribute{
 						MarkdownDescription: relayProps["proxy_instances"],
-						ElementType:         types.ObjectType{AttrTypes: relay.ProxyInstanceAttributes},
 						Computed:            true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"ip_address": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["ip_address"],
+									Computed:            true,
+								},
+								"region": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["region"],
+									Computed:            true,
+								},
+								"status": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["status"],
+									Computed:            true,
+									Optional:            true,
+								},
+							},
+						},
 					},
 					"server": schema.SingleNestedAttribute{
 						MarkdownDescription: relayProps["server"],

@@ -18,7 +18,6 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/certinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/keyinfo"
 	"github.com/smallstep/terraform-provider-smallstep/internal/models/certificates/x509info"
-	"github.com/smallstep/terraform-provider-smallstep/internal/models/strategies/relay"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -93,6 +92,15 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Network Relay Server Strategy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, proxyInstanceProps, err := utils.Describe("proxyInstance")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI Network Relay Proxy Instance Strategy Schema",
 			err.Error(),
 		)
 		return
@@ -318,16 +326,33 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						ElementType:         types.StringType,
 						Required:            true,
 					},
-					"proxy_instances": schema.ListAttribute{
+					"proxy_instances": schema.ListNestedAttribute{
 						MarkdownDescription: relayProps["proxy_instances"],
+						Computed:            true,
 						PlanModifiers: []planmodifier.List{
 							listplanmodifier.UseStateForUnknown(),
 						},
-						ElementType: types.ObjectType{AttrTypes: relay.ProxyInstanceAttributes},
-						Computed:    true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"ip_address": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["ip_address"],
+									Computed:            true,
+								},
+								"region": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["region"],
+									Computed:            true,
+								},
+								"status": schema.StringAttribute{
+									MarkdownDescription: proxyInstanceProps["status"],
+									Computed:            true,
+									Optional:            true,
+								},
+							},
+						},
 					},
 					"server": schema.SingleNestedAttribute{
 						MarkdownDescription: relayProps["server"],
+						Computed:            true,
 						PlanModifiers: []planmodifier.Object{
 							objectplanmodifier.UseStateForUnknown(),
 						},
@@ -341,7 +366,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								Computed:            true,
 							},
 						},
-						Computed: true,
 					},
 				},
 			},
