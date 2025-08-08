@@ -108,7 +108,7 @@ func proxyInstanceListFromAPI(ctx context.Context, pis []v20250101.ProxyInstance
 		elements = make([]attr.Value, len(pis))
 	)
 	for i, pi := range pis {
-		elements[i], ds = proxyInstanceFromAPI(ctx, pi, state, root)
+		elements[i], ds = proxyInstanceFromAPI(ctx, pi, state, root.AtListIndex(i))
 		diags.Append(ds...)
 	}
 

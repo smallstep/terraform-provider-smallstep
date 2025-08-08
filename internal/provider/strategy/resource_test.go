@@ -128,7 +128,7 @@ func TestStrategyRelay(t *testing.T) {
 				Config: relayConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_strategy.relay", "id", utils.UUID),
-					helper.TestCheckResourceAttr("smallstep_strategy.relay", "name", "Relay1"),
+					helper.TestCheckResourceAttr("smallstep_strategy.relay", "name", "Relay"),
 				),
 			},
 		},
