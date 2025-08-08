@@ -290,7 +290,6 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 					"ca_chain": schema.StringAttribute{
 						MarkdownDescription: lanProps["caChain"],
 						Optional:            true,
-						Computed:            true,
 					},
 					"autojoin": schema.BoolAttribute{
 						MarkdownDescription: lanProps["autojoin"],
@@ -299,6 +298,21 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 					"external_radius_server": schema.BoolAttribute{
 						MarkdownDescription: lanProps["externalRadiusServer"],
 						Optional:            true,
+					},
+					"radius": schema.SingleNestedAttribute{
+						MarkdownDescription: wlanProps["radius"],
+						Computed:            true,
+						Attributes: map[string]schema.Attribute{
+							"ca_chain": schema.StringAttribute{
+								MarkdownDescription: radiusProps["ca_chain"],
+								Computed:            true,
+							},
+							"ip_addresses": schema.ListAttribute{
+								MarkdownDescription: radiusProps["ip_addresses"],
+								Computed:            true,
+								ElementType:         types.StringType,
+							},
+						},
 					},
 				},
 			},

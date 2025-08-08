@@ -2,7 +2,6 @@ package vpn
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -54,7 +53,6 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyVPN, state utils.Attri
 
 	var ike types.Object
 	ds = state.GetAttribute(ctx, root.AtName("ike"), &ike)
-	fmt.Printf("===ike: %#v\n", ike)
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
@@ -65,8 +63,6 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyVPN, state utils.Attri
 		"autojoin":        autojoin,
 	})
 	diags.Append(ds...)
-
-	fmt.Printf("===diags: %#v\n", diags)
 
 	return obj, diags
 }

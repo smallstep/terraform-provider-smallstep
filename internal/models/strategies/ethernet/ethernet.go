@@ -13,10 +13,11 @@ import (
 )
 
 type Model struct {
-	NetworkAccessServerIP types.String `tfsdk:"NetworkAccessServerIP"`
+	NetworkAccessServerIP types.String `tfsdk:"network_access_server_ip"`
 	CAChain               types.String `tfsdk:"ca_chain"`
 	Autojoin              types.Bool   `tfsdk:"autojoin"`
 	ExternalRadiusServer  types.Bool   `tfsdk:"external_radius_server"`
+	Radius                types.Object `tfsdk:"radius"`
 }
 
 var Attributes = map[string]attr.Type{
@@ -24,25 +25,33 @@ var Attributes = map[string]attr.Type{
 	"ca_chain":                 types.StringType,
 	"autojoin":                 types.BoolType,
 	"external_radius_server":   types.BoolType,
+	"radius":                   types.ObjectType{AttrTypes: radiusAttributes},
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyLANConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyLAN, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	networkAccessServerIP, ds := utils.ToOptionalString(ctx, conf.NetworkAccessServerIP, state, root.AtName("network_access_server_ip"))
+	var networkAccessServerIP types.String
+	ds := state.GetAttribute(ctx, root.AtName("network_access_server_ip"), &networkAccessServerIP)
 	diags.Append(ds...)
 
-	caChain, ds := utils.ToOptionalString(ctx, conf.CaChain, state, root.AtName("ca_chain"))
+	var caChain types.String
+	ds = state.GetAttribute(ctx, root.AtName("ca_chain"), &caChain)
 	diags.Append(ds...)
 
-	autojoin, ds := utils.ToOptionalBool(ctx, conf.Autojoin, state, root.AtName("autojoin"))
+	var autojoin types.Bool
+	ds = state.GetAttribute(ctx, root.AtName("autojoin"), &autojoin)
 	diags.Append(ds...)
 
-	externalRadiusServer, ds := utils.ToOptionalBool(ctx, conf.ExternalRadiusServer, state, root.AtName("external_radius_server"))
+	var externalRadiusServer types.Bool
+	ds = state.GetAttribute(ctx, root.AtName("external_radius_server"), &externalRadiusServer)
+	diags.Append(ds...)
+
+	radius, ds := radiusFromAPI(ctx, conf.Radius, state, root.AtName("radius"))
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{
@@ -50,6 +59,7 @@ func FromAPI(ctx context.Context, conf *v20250101.StrategyLANConfig, state utils
 		"ca_chain":                 caChain,
 		"autojoin":                 autojoin,
 		"external_radius_server":   externalRadiusServer,
+		"radius":                   radius,
 	})
 	diags.Append(ds...)
 
@@ -122,4 +132,27 @@ func (m *radiusServerModel) toAPI(ctx context.Context, obj types.Object) (v20250
 		CaChain:     m.CAChain.ValueString(),
 		IpAddresses: utils.ToStringList[string](m.IPAddresses),
 	}, diags
+}
+
+var radiusAttributes = map[string]attr.Type{
+	"ca_chain":     types.StringType,
+	"ip_addresses": types.ListType{ElemType: types.StringType},
+}
+
+func radiusFromAPI(ctx context.Context, r v20250101.RadiusServer, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	caChain, ds := utils.ToOptionalString(ctx, &r.CaChain, state, root.AtName("ca_chain"))
+	diags.Append(ds...)
+
+	ipAddresses, ds := utils.ToOptionalList(ctx, &r.IpAddresses, state, root.AtName("ip_addresses"))
+	diags.Append(ds...)
+
+	obj, ds := basetypes.NewObjectValue(radiusAttributes, map[string]attr.Value{
+		"ca_chain":     caChain,
+		"ip_addresses": ipAddresses,
+	})
+	diags.Append(ds...)
+
+	return obj, diags
 }

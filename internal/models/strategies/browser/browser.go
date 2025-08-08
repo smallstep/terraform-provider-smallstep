@@ -20,14 +20,15 @@ var Attributes = map[string]attr.Type{
 	"match_addresses": types.ListType{ElemType: types.StringType},
 }
 
-func FromAPI(ctx context.Context, conf *v20250101.StrategyBrowserMutualTLSConfig, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
+func FromAPI(ctx context.Context, conf *v20250101.StrategyBrowserMutualTLS, state utils.AttributeGetter, root path.Path) (types.Object, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
 	if conf == nil {
 		return basetypes.NewObjectNull(Attributes), diags
 	}
 
-	matchAddresses, ds := utils.ToOptionalList(ctx, &conf.MatchAddresses, state, root.AtName("match_addresses"))
+	var matchAddresses types.List
+	ds := state.GetAttribute(ctx, root.AtName("match_addresses"), &matchAddresses)
 	diags.Append(ds...)
 
 	obj, ds := basetypes.NewObjectValue(Attributes, map[string]attr.Value{

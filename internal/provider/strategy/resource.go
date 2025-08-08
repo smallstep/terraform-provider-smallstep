@@ -275,10 +275,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"ca_chain": schema.StringAttribute{
 						MarkdownDescription: lanProps["caChain"],
 						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
 					},
 					"autojoin": schema.BoolAttribute{
 						MarkdownDescription: lanProps["autojoin"],
@@ -287,6 +283,24 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 					"external_radius_server": schema.BoolAttribute{
 						MarkdownDescription: lanProps["externalRadiusServer"],
 						Optional:            true,
+					},
+					"radius": schema.SingleNestedAttribute{
+						MarkdownDescription: wlanProps["radius"],
+						Computed:            true,
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.UseStateForUnknown(),
+						},
+						Attributes: map[string]schema.Attribute{
+							"ca_chain": schema.StringAttribute{
+								MarkdownDescription: radiusProps["ca_chain"],
+								Computed:            true,
+							},
+							"ip_addresses": schema.ListAttribute{
+								MarkdownDescription: radiusProps["ip_addresses"],
+								Computed:            true,
+								ElementType:         types.StringType,
+							},
+						},
 					},
 				},
 			},

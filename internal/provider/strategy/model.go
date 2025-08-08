@@ -56,20 +56,20 @@ func fromAPI(ctx context.Context, strategy *v20250101.ProtectionStrategy, state 
 
 	switch strategy.Kind {
 	case v20250101.Browser:
-		conf, err := strategy.Configuration.AsStrategyBrowserMutualTLSConfig()
+		details, err := strategy.Details.AsStrategyBrowserMutualTLS()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Browser Parse Error", err.Error())
 			return nil, diags
 		}
-		browserObj, ds = browser.FromAPI(ctx, &conf, state, path.Root("browser"))
+		browserObj, ds = browser.FromAPI(ctx, &details, state, path.Root("browser"))
 		diags.Append(ds...)
 	case v20250101.Ethernet:
-		conf, err := strategy.Configuration.AsStrategyLANConfig()
+		details, err := strategy.Details.AsStrategyLAN()
 		if err != nil && !isNullError(err) {
 			diags.AddError("Strategy Ethernet Parse Error", err.Error())
 			return nil, diags
 		}
-		ethernetObj, ds = ethernet.FromAPI(ctx, &conf, state, path.Root("ethernet"))
+		ethernetObj, ds = ethernet.FromAPI(ctx, &details, state, path.Root("ethernet"))
 		diags.Append(ds...)
 	case v20250101.Relay:
 		details, err := strategy.Details.AsStrategyNetworkRelay()

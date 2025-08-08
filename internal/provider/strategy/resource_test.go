@@ -226,3 +226,35 @@ EOF
 		},
 	})
 }
+
+func TestStrategyLAN(t *testing.T) {
+	t.Skip()
+
+	const sshConfig = `resource "smallstep_strategy" "ethernet" {
+	name = "Ethernet Certificate"
+	ethernet = {
+		network_access_server_ip = "10.1.2.3"
+	}
+	credential = {
+		certificate_info = {
+			x509 = {
+				common_name = {
+					device_metadata = "smallstep:identity"
+				}
+			}
+		}
+	}
+}`
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: sshConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_strategy.ethernet", "id", utils.UUID),
+					helper.TestCheckResourceAttr("smallstep_strategy.ethernet", "name", "Ethernet Certificate"),
+				),
+			},
+		},
+	})
+}
