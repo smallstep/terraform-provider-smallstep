@@ -354,7 +354,6 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 								"status": schema.StringAttribute{
 									MarkdownDescription: proxyInstanceProps["status"],
 									Computed:            true,
-									Optional:            true,
 								},
 							},
 						},
