@@ -33,7 +33,7 @@ func TestAccWebhookResource(t *testing.T) {
 	t.Parallel()
 
 	authority := utils.NewAuthority(t)
-	provisioner, _ := utils.NewOIDCProvisioner(t, authority.Id)
+	prov, _ := utils.NewOIDCProvisioner(t, authority.Id)
 
 	externalConfig := fmt.Sprintf(`
 resource "smallstep_provisioner_webhook" "external" {
@@ -45,7 +45,7 @@ resource "smallstep_provisioner_webhook" "external" {
 	server_type = "EXTERNAL"
 	url = "https://example.com/hook"
 	bearer_token = "abc123"
-}`, authority.Id, *provisioner.Id)
+}`, authority.Id, *prov.Id)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -56,7 +56,7 @@ resource "smallstep_provisioner_webhook" "external" {
 					helper.TestMatchResourceAttr("smallstep_provisioner_webhook.external", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "kind", "ENRICHING"),
 					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "name", "devices2"),
-					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "provisioner_id", *provisioner.Id),
+					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "provisioner_id", *prov.Id),
 					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "authority_id", authority.Id),
 					helper.TestCheckResourceAttr("smallstep_provisioner_webhook.external", "url", "https://example.com/hook"),
 					helper.TestMatchResourceAttr("smallstep_provisioner_webhook.external", "secret", regexp.MustCompile(`^[0-9A-Za-z+/]+={0,2}$`)),
@@ -68,7 +68,7 @@ resource "smallstep_provisioner_webhook" "external" {
 			{
 				ResourceName:      "smallstep_provisioner_webhook.external",
 				ImportState:       true,
-				ImportStateId:     fmt.Sprintf("%s/%s/%s", authority.Id, *provisioner.Id, "devices2"),
+				ImportStateId:     fmt.Sprintf("%s/%s/%s", authority.Id, *prov.Id, "devices2"),
 				ImportStateVerify: false, // secret and bearer token are never returned
 			},
 		},
@@ -87,7 +87,7 @@ resource "smallstep_provisioner_webhook" "basic" {
 		username = "user1"
 		password = "pass1"
 	}
-}`, authority.Id, *provisioner.Id)
+}`, authority.Id, *prov.Id)
 
 	helper.Test(t, helper.TestCase{
 		ProtoV6ProviderFactories: providerFactories,
@@ -103,7 +103,7 @@ resource "smallstep_provisioner_webhook" "basic" {
 			{
 				ResourceName:      "smallstep_provisioner_webhook.basic",
 				ImportState:       true,
-				ImportStateId:     fmt.Sprintf("%s/%s/%s", authority.Id, *provisioner.Id, "devices"),
+				ImportStateId:     fmt.Sprintf("%s/%s/%s", authority.Id, *prov.Id, "devices"),
 				ImportStateVerify: false, // secret and basic_auth are never returned
 			},
 		},

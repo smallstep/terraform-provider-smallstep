@@ -707,7 +707,7 @@ func TestAccAccountWiFiHostedRadius(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.1"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "corpnet"),
-					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-{5}BEGIN CERTIFICATE-{5}")),
 				),
 			},
 			{
@@ -722,7 +722,7 @@ func TestAccAccountWiFiHostedRadius(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.2"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "Corp Net"),
-					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-{5}BEGIN CERTIFICATE-{5}")),
 				),
 			},
 		},
@@ -836,7 +836,7 @@ resource "smallstep_account" "ethernet" {
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.autojoin", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.external_radius_server", "false"),
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.network_access_server_ip", "0.0.0.4"),
-					helper.TestMatchResourceAttr("smallstep_account.ethernet", "ethernet.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
+					helper.TestMatchResourceAttr("smallstep_account.ethernet", "ethernet.ca_chain", regexp.MustCompile("-{5}BEGIN CERTIFICATE-{5}")),
 				),
 			},
 			{

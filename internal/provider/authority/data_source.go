@@ -27,12 +27,12 @@ type DataSource struct {
 	client *v20250101.Client
 }
 
-func (a *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (ds *DataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = authorityTypeName
 }
 
 // Configure adds the Smallstep API client to the data source.
-func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (ds *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -48,10 +48,10 @@ func (a *DataSource) Configure(ctx context.Context, req datasource.ConfigureRequ
 		return
 	}
 
-	a.client = client
+	ds.client = client
 }
 
-func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (ds *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data DataModel
 
 	// Read Terraform configuration data into the model
@@ -65,7 +65,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 		id = data.Domain.ValueString()
 	}
 
-	httpResp, err := a.client.GetAuthority(ctx, id, &v20250101.GetAuthorityParams{})
+	httpResp, err := ds.client.GetAuthority(ctx, id, &v20250101.GetAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -119,7 +119,7 @@ func (a *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	component, properties, err := utils.Describe("authority")
 	if err != nil {
 		resp.Diagnostics.AddError(

@@ -10,3 +10,6 @@ sweep:
 
 generate-docs:
 	go generate
+
+generate-client:
+	go tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen --config ./internal/apiclient/v20250101-client-gen.yml ../api/versions/20250101.yml

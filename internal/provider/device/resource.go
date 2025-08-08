@@ -282,7 +282,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	plan := &Model{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
@@ -295,7 +295,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PostDevices(ctx, &v20250101.PostDevicesParams{}, *reqBody)
+	httpResp, err := r.client.PostDevices(ctx, &v20250101.PostDevicesParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -343,7 +343,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	var deviceID string
 	req.State.GetAttribute(ctx, path.Root("id"), &deviceID)
 
-	resource, diags := toAPI(ctx, plan)
+	deviceReq, diags := toAPI(ctx, plan)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -360,97 +360,97 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		User:        &v20250101.DeviceUserPatch{},
 	}
 
-	if resource.DisplayId == nil {
+	if deviceReq.DisplayId == nil {
 		err := patch.DisplayId.FromDevicePatchDisplayId1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset display_id", err.Error())
 		}
 	} else {
-		err := patch.DisplayId.FromDeviceDisplayId(*resource.DisplayId)
+		err := patch.DisplayId.FromDeviceDisplayId(*deviceReq.DisplayId)
 		if err != nil {
 			diags.AddError("prepare device patch: set display_id", err.Error())
 		}
 	}
 
-	if resource.DisplayName == nil {
+	if deviceReq.DisplayName == nil {
 		err := patch.DisplayName.FromDevicePatchDisplayName1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset display_name", err.Error())
 		}
 	} else {
-		err := patch.DisplayName.FromDeviceDisplayName(*resource.DisplayName)
+		err := patch.DisplayName.FromDeviceDisplayName(*deviceReq.DisplayName)
 		if err != nil {
 			diags.AddError("prepare device patch: set display_name", err.Error())
 		}
 	}
 
-	if resource.Metadata == nil {
+	if deviceReq.Metadata == nil {
 		err := patch.Metadata.FromDevicePatchMetadata1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset metadata", err.Error())
 		}
 	} else {
-		err := patch.Metadata.FromDeviceMetadata(*resource.Metadata)
+		err := patch.Metadata.FromDeviceMetadata(*deviceReq.Metadata)
 		if err != nil {
 			diags.AddError("prepare device patch: unset metadata", err.Error())
 		}
 	}
 
-	if resource.Os == nil {
+	if deviceReq.Os == nil {
 		err := patch.Os.FromDevicePatchOs1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset os", err.Error())
 		}
 	} else {
-		err := patch.Os.FromDeviceOS(*resource.Os)
+		err := patch.Os.FromDeviceOS(*deviceReq.Os)
 		if err != nil {
 			diags.AddError("prepare device patch: set os", err.Error())
 		}
 	}
 
-	if resource.Ownership == nil {
+	if deviceReq.Ownership == nil {
 		err := patch.Ownership.FromDevicePatchOwnership1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset ownership", err.Error())
 		}
 	} else {
-		err := patch.Ownership.FromDeviceOwnership(*resource.Ownership)
+		err := patch.Ownership.FromDeviceOwnership(*deviceReq.Ownership)
 		if err != nil {
 			diags.AddError("prepare device patch: set ownership", err.Error())
 		}
 	}
 
-	if resource.Serial == nil {
+	if deviceReq.Serial == nil {
 		err := patch.Serial.FromDevicePatchSerial1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset serial", err.Error())
 		}
 	} else {
-		err := patch.Serial.FromDeviceSerial(*resource.Serial)
+		err := patch.Serial.FromDeviceSerial(*deviceReq.Serial)
 		if err != nil {
 			diags.AddError("prepare device patch: set serial", err.Error())
 		}
 	}
 
-	if resource.Tags == nil {
+	if deviceReq.Tags == nil {
 		err := patch.Tags.FromDevicePatchTags1(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset tags", err.Error())
 		}
 	} else {
-		err := patch.Tags.FromDeviceTags(*resource.Tags)
+		err := patch.Tags.FromDeviceTags(*deviceReq.Tags)
 		if err != nil {
 			diags.AddError("prepare device patch: set tags", err.Error())
 		}
 	}
 
-	if resource.User == nil || resource.User.Email == "" {
+	if deviceReq.User == nil || deviceReq.User.Email == "" {
 		err := patch.User.Email.FromDeviceUserPatchEmail0(nil)
 		if err != nil {
 			diags.AddError("prepare device patch: unset user email", err.Error())
 		}
 	} else {
-		err := patch.User.Email.FromDeviceUserPatchEmail1(resource.User.Email)
+		err := patch.User.Email.FromDeviceUserPatchEmail1(deviceReq.User.Email)
 		if err != nil {
 			diags.AddError("prepare device patch: unset user email", err.Error())
 		}

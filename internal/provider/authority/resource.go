@@ -293,7 +293,7 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 	r.client = client
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data ResourceModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -326,7 +326,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	}
 	b, _ := json.Marshal(reqBody)
 	tflog.Debug(ctx, string(b))
-	httpResp, err := a.client.PostAuthorities(ctx, &v20250101.PostAuthoritiesParams{}, reqBody)
+	httpResp, err := r.client.PostAuthorities(ctx, &v20250101.PostAuthoritiesParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -365,7 +365,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data ResourceModel
 
 	// Read Terraform configuration data into the model
@@ -380,7 +380,7 @@ func (a *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		id = data.Domain.ValueString()
 	}
 
-	httpResp, err := a.client.GetAuthority(ctx, id, &v20250101.GetAuthorityParams{})
+	httpResp, err := r.client.GetAuthority(ctx, id, &v20250101.GetAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -453,7 +453,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	)
 }
 
-func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var data ResourceModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -462,7 +462,7 @@ func (a *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.DeleteAuthority(ctx, data.ID.ValueString(), &v20250101.DeleteAuthorityParams{})
+	httpResp, err := r.client.DeleteAuthority(ctx, data.ID.ValueString(), &v20250101.DeleteAuthorityParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",

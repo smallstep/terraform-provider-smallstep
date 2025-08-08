@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 )
 
@@ -22,13 +24,6 @@ func APIErrorMsg(r io.Reader) string {
 	return e.Message
 }
 
-type dereferencable interface {
-	string |
-		bool |
-		int |
-		[]string
-}
-
 // Deref gets the default value for a pointer type. This makes it easier to work
 // with the generated API client code, which uses pointers for optional fields.
 func Deref[T any](v *T) (r T) {
@@ -42,11 +37,15 @@ func Ref[T any](v T) *T {
 	return &v
 }
 
-func ToIntPointer(i64 *int64) *int {
-	if i64 == nil {
+type integer interface {
+	int32 | int64
+}
+
+func ToIntPointer[T integer](v *T) *int {
+	if v == nil {
 		return nil
 	}
-	i := int(*i64)
+	i := int(*v)
 	return &i
 }
 
@@ -56,6 +55,30 @@ func ToStringPointer[Out ~string](str *string) *Out {
 	}
 	s := Out(*str)
 	return &s
+}
+
+func ToStringList[T ~string](list types.List) []T {
+	elements := list.Elements()
+	ret := make([]T, len(elements))
+	for i, v := range elements {
+		if v.IsNull() || v.IsUnknown() {
+			continue
+		}
+		tfval, err := v.ToTerraformValue(context.Background())
+		if err != nil {
+			continue
+		}
+		var s string
+		tfval.As(&s)
+
+		ret[i] = T(s)
+	}
+	return ret
+}
+
+func ToStringListPointer[T ~string](list types.List) *[]T {
+	ret := ToStringList[T](list)
+	return &ret
 }
 
 // Describe parses descriptions for a component from its schema in Smallstep's

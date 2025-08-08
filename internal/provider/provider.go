@@ -17,6 +17,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/strategy"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 )
 
@@ -171,6 +172,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		webhook.NewResource,
 		device.NewResource,
 		account.NewResource,
+		strategy.NewResource,
 	}
 }
 
@@ -181,6 +183,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		webhook.NewDataSource,
 		device.NewDataSource,
 		account.NewDataSource,
+		strategy.NewDataSource,
 	}
 }
 

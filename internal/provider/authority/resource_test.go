@@ -55,7 +55,7 @@ resource "smallstep_authority" "devops" {
 					helper.TestMatchResourceAttr("smallstep_authority.devops", "id", regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)),
 					helper.TestCheckResourceAttr("smallstep_authority.devops", "domain", devopsSlug+caDomain),
 					helper.TestMatchResourceAttr("smallstep_authority.devops", "fingerprint", regexp.MustCompile(`^[0-9a-z]{64}$`)),
-					helper.TestMatchResourceAttr("smallstep_authority.devops", "root", regexp.MustCompile(`-----BEGIN`)),
+					helper.TestMatchResourceAttr("smallstep_authority.devops", "root", regexp.MustCompile(`-{5}BEGIN`)),
 					helper.TestMatchResourceAttr("smallstep_authority.devops", "created_at", regexp.MustCompile(`^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\dZ`)),
 				),
 			},
