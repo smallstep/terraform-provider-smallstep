@@ -40,5 +40,3 @@ output "bootstrap_preexisting" {
 - `root` (String) The root certificate in pem format.
 - `type` (String) One of the available authority types
  Allowed values: `devops` `advanced` `managed`
-
-

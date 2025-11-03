@@ -79,6 +79,8 @@ Required:
 
 Import is supported using the following syntax:
 
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
 ```shell
 # <authority_id>/<provisioner_id>/<name>
 AUTHORITY_ID=ed2e4f38-fd2d-4eb0-9280-52b697636873

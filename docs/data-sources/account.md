@@ -260,5 +260,3 @@ Read-Only:
 - `hidden` (Boolean) Whether or not the SSID is broadcast by the access points.
 - `network_access_server_ip` (String) The public IP address of your network equipment that clients connect to.
 - `ssid` (String) The name of the wireless network clients connect to.
-
-

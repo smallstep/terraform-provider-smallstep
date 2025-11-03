@@ -42,11 +42,11 @@ func Ref[T any](v T) *T {
 	return &v
 }
 
-func ToIntPointer(i64 *int64) *int {
-	if i64 == nil {
+func ToIntPointer[T int64 | int32](in *T) *int {
+	if in == nil {
 		return nil
 	}
-	i := int(*i64)
+	i := int(*in)
 	return &i
 }
 
@@ -56,6 +56,13 @@ func ToStringPointer[Out ~string](str *string) *Out {
 	}
 	s := Out(*str)
 	return &s
+}
+
+func Default[T comparable](v, d T) T {
+	if v == *new(T) {
+		return d
+	}
+	return v
 }
 
 // Describe parses descriptions for a component from its schema in Smallstep's

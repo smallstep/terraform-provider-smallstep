@@ -64,5 +64,3 @@ Read-Only:
 - `email` (String) Email of the user the device is assigned to.
 This field may be populated with a value derived from data synced from your team's MDMs.
 Setting this value explicitly will mask any MDM-derived value.
-
-

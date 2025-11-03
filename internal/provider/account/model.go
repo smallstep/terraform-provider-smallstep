@@ -515,9 +515,9 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 
 		vpnAccount := v20250101.VpnAccount{
 			Autojoin:       vpn.Autojoin.ValueBoolPointer(),
-			ConnectionType: v20250101.VpnAccountConnectionType(vpn.ConnectionType.ValueString()),
+			ConnectionType: v20250101.VpnType(vpn.ConnectionType.ValueString()),
 			RemoteAddress:  vpn.RemoteAddress.ValueString(),
-			Vendor:         utils.ToStringPointer[v20250101.VpnAccountVendor](vpn.Vendor.ValueStringPointer()),
+			Vendor:         utils.ToStringPointer[v20250101.VpnVendor](vpn.Vendor.ValueStringPointer()),
 		}
 
 		if !vpn.IKE.IsNull() && !vpn.IKE.IsUnknown() {
@@ -525,7 +525,7 @@ func toAPI(ctx context.Context, model *AccountModel) (*v20250101.Account, diag.D
 			ds := vpn.IKE.As(ctx, ike, basetypes.ObjectAsOptions{})
 			diags.Append(ds...)
 			vpnAccount.Ike = &v20250101.IkeV2Config{
-				CaChain:  ike.CAChain.ValueStringPointer(),
+				CaChain:  ike.CAChain.ValueString(),
 				Eap:      ike.EAP.ValueBoolPointer(),
 				RemoteID: ike.RemoteID.ValueStringPointer(),
 			}
@@ -1018,7 +1018,7 @@ func ikeObjectFromAPI(ctx context.Context, ike *v20250101.IkeV2Config, state uti
 
 	p := path.Root("vpn").AtName("ike")
 
-	caChain, ds := utils.ToOptionalString(ctx, ike.CaChain, state, p.AtName("ca_chain"))
+	caChain, ds := utils.ToOptionalString(ctx, &ike.CaChain, state, p.AtName("ca_chain"))
 	diags.Append(ds...)
 
 	eap, ds := utils.ToOptionalBool(ctx, ike.Eap, state, p.AtName("eap"))

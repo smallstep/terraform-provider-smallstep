@@ -183,5 +183,3 @@ Read-Only:
 Read-Only:
 
 - `roots` (Set of String) A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
-
-

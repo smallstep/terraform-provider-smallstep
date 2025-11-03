@@ -7,13 +7,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
+	"net/netip"
 	"os"
 	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.step.sm/crypto/jose"
 	"go.step.sm/crypto/minica"
@@ -21,7 +24,9 @@ import (
 	"go.step.sm/crypto/randutil"
 )
 
-var UUID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+var UUIDRegexp = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+var CARegexp = regexp.MustCompile(`-----BEGIN CERTIFICATE-----`)
+var IPv4Regexp = regexp.MustCompile(`^\d+\.\d+\.\d+\.\d+$`)
 
 func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
@@ -72,6 +77,12 @@ func NewAuthority(t *testing.T) *v20250101.Authority {
 		t.Fatal(err)
 	}
 
+	t.Cleanup(func() {
+		resp, err := client.DeleteAuthority(context.Background(), authority.Id, &v20250101.DeleteAuthorityParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
 	return authority
 }
 
@@ -106,6 +117,12 @@ func NewOIDCProvisioner(t *testing.T, authorityID string) (*v20250101.Provisione
 	if err := json.NewDecoder(resp.Body).Decode(&provisioner); err != nil {
 		t.Fatal(err)
 	}
+
+	t.Cleanup(func() {
+		resp, err := client.DeleteProvisioner(context.Background(), authorityID, *provisioner.Id, &v20250101.DeleteProvisionerParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
 
 	return provisioner, &oidc
 }
@@ -175,6 +192,18 @@ func Slug(t *testing.T) string {
 	return "tfprovider" + slug
 }
 
+func IP(t *testing.T) string {
+	size := 4
+	if rand.Int31n(2) == 0 {
+		size = 16
+	}
+	ip, err := randutil.Bytes(size)
+	require.NoError(t, err)
+	addr, ok := netip.AddrFromSlice(ip)
+	require.True(t, ok)
+	return addr.String()
+}
+
 func NewDevice(t *testing.T) *v20250101.Device {
 	t.Helper()
 
@@ -219,6 +248,12 @@ func NewDevice(t *testing.T) *v20250101.Device {
 	err = json.Unmarshal(body, device)
 	require.NoError(t, err)
 
+	t.Cleanup(func() {
+		resp, err := client.DeleteDevice(context.Background(), device.Id, &v20250101.DeleteDeviceParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
 	return device
 }
 
@@ -245,5 +280,71 @@ func NewAccount(t *testing.T) *v20250101.Account {
 	err = json.Unmarshal(body, account)
 	require.NoError(t, err)
 
+	t.Cleanup(func() {
+		resp, err := client.DeleteAccount(context.Background(), account.Id, &v20250101.DeleteAccountParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
 	return account
+}
+
+func NewManagedRADIUS(t *testing.T) *v20250101.ManagedRadius {
+	t.Helper()
+	ca, _ := CACerts(t)
+
+	reqBody := v20250101.ManagedRadius{
+		NasIPs:   []string{IP(t)},
+		Name:     Slug(t),
+		ClientCA: ca,
+		ReplyAttributes: &[]v20250101.ReplyAttribute{
+			{
+				Name:  "Tunnel-Type",
+				Value: Ref("13"),
+			},
+			{
+				Name:               "Tunnel-Private-Group-ID",
+				ValueFromExtension: Ref("2.5.4.11"),
+			},
+		},
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PostManagedRadius(t.Context(), &v20250101.PostManagedRadiusParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 201, resp.StatusCode, string(body))
+
+	radius := &v20250101.ManagedRadius{}
+	err = json.Unmarshal(body, radius)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		resp, err := client.DeleteManagedRadius(context.Background(), *radius.Id, &v20250101.DeleteManagedRadiusParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
+	resp, err = client.GetManagedRadius(t.Context(), *radius.Id, &v20250101.GetManagedRadiusParams{
+		Secret: Ref(true),
+	})
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err = io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 200, resp.StatusCode, string(body))
+
+	radius = &v20250101.ManagedRadius{}
+	err = json.Unmarshal(body, radius)
+	require.NoError(t, err)
+
+	return radius
 }
