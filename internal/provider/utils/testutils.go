@@ -348,3 +348,68 @@ func NewManagedRADIUS(t *testing.T) *v20250101.ManagedRadius {
 
 	return radius
 }
+
+func NewIdentityProvider(t *testing.T) *v20250101.IdentityProvider {
+	t.Helper()
+	ca, _ := CACerts(t)
+
+	reqBody := v20250101.IdentityProvider{
+		TrustRoots: ca,
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PutIdentityProvider(t.Context(), &v20250101.PutIdentityProviderParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 200, resp.StatusCode, string(body))
+
+	idp := &v20250101.IdentityProvider{}
+	err = json.Unmarshal(body, idp)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		resp, err := client.DeleteIdentityProvider(context.Background(), &v20250101.DeleteIdentityProviderParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
+	return idp
+}
+
+func NewIdentityProviderClient(t *testing.T) *v20250101.IdpClient {
+	t.Helper()
+
+	reqBody := v20250101.IdpClient{
+		RedirectURI: "https://example.com/" + Slug(t),
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PostIdpClients(t.Context(), &v20250101.PostIdpClientsParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 201, resp.StatusCode, string(body))
+
+	c := &v20250101.IdpClient{}
+	err = json.Unmarshal(body, c)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		resp, err := client.DeleteIdpClient(context.Background(), *c.Id, &v20250101.DeleteIdpClientParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
+	return c
+}
