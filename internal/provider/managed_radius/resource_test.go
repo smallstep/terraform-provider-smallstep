@@ -35,7 +35,7 @@ resource "smallstep_managed_radius" "my_rad" {
 	client_ca = %q
 	reply_attributes = [{
 		name = "Tunnel-Private-Group-ID"
-		value_from_extension = "2.5.4.11"
+		value_from_certificate = "2.5.4.11"
 	}]
 }`
 	cfg := fmt.Sprintf(config, name, ip, ca)
@@ -55,7 +55,7 @@ resource "smallstep_managed_radius" "my_rad" {
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.name", "Tunnel-Type"),
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value", "13"),
-					helper.TestCheckNoResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value_from_extension"),
+					helper.TestCheckNoResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value_from_certificate"),
 					helper.TestMatchResourceAttr("smallstep_managed_radius.my_rad", "server_ca", utils.CARegexp),
 					helper.TestMatchResourceAttr("smallstep_managed_radius.my_rad", "server_hostname", regexp.MustCompile(`^radius\.\w+`)),
 					helper.TestMatchResourceAttr("smallstep_managed_radius.my_rad", "server_ip", utils.IPv4Regexp),
@@ -77,7 +77,7 @@ resource "smallstep_managed_radius" "my_rad" {
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "nas_ips.0", ip2),
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.name", "Tunnel-Private-Group-ID"),
-					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value_from_extension", "2.5.4.11"),
+					helper.TestCheckResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value_from_certificate", "2.5.4.11"),
 					helper.TestCheckNoResourceAttr("smallstep_managed_radius.my_rad", "reply_attributes.0.value"),
 				),
 			},

@@ -21,8 +21,8 @@ resource "smallstep_managed_radius" "my_radius" {
     name  = "Tunnel-Type"
     value = "13"
     }, {
-    name                 = "Tunnel-Private-Group-ID"
-    value_from_extension = "2.5.4.11"
+    name                   = "Tunnel-Private-Group-ID"
+    value_from_certificate = "2.5.4.11"
   }]
 }
 ```
@@ -34,7 +34,7 @@ resource "smallstep_managed_radius" "my_radius" {
 
 - `client_ca` (String) The CA that the RADIUS server will trust to verify clients.
 - `name` (String) A descriptive name for this resource. Must be unique across the team.
-- `nas_ips` (List of String) The ip addresses the Network Access Server (NAS) may connect to the RADIUS server from.
+- `nas_ips` (List of String) The IP addresses the Network Access Server (NAS) may connect from to the RADIUS server.
 
 ### Optional
 
@@ -58,7 +58,7 @@ Required:
 Optional:
 
 - `value` (String) The static attribute value.
-- `value_from_extension` (String) The object identifier of an extension in the supplicant certificate. The RADIUS server will set the value of the reply attribute to the value of the extension.
+- `value_from_certificate` (String) The object identifier (OID) of a field in the supplicant certificate. The RADIUS server will set the value of the reply attribute to the value of the field.
 
 ## Import
 

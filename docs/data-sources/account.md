@@ -233,7 +233,7 @@ Read-Only:
 Read-Only:
 
 - `autojoin` (Boolean) Whether or not clients should automatically connect to the network.
-- `connection_type` (String) The type of VPN connection. Allowed values: `IPSec` `IKEv2` `SSL`
+- `connection_type` (String) The type of VPN connection. Allowed values: `IPsec` `IKEv2` `SSL`
 - `ike` (Attributes) (see [below for nested schema](#nestedatt--vpn--ike))
 - `remote_address` (String) The public IP address of the VPN server.
 - `vendor` (String) For SSL-type VPN connections, the vendor of the VPN. Allowed values: `F5` `Cisco` `Juniper`

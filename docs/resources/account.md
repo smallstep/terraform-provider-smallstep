@@ -358,7 +358,7 @@ Optional:
 
 Required:
 
-- `connection_type` (String) The type of VPN connection. Allowed values: `IPSec` `IKEv2` `SSL`
+- `connection_type` (String) The type of VPN connection. Allowed values: `IPsec` `IKEv2` `SSL`
 - `remote_address` (String) The public IP address of the VPN server.
 
 Optional:

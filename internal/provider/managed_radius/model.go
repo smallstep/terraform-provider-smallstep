@@ -28,15 +28,15 @@ type ManagedRadiusModel struct {
 }
 
 type ReplyAttributeModel struct {
-	Name               types.String `tfsdk:"name"`
-	Value              types.String `tfsdk:"value"`
-	ValueFromExtension types.String `tfsdk:"value_from_extension"`
+	Name                 types.String `tfsdk:"name"`
+	Value                types.String `tfsdk:"value"`
+	ValueFromCertificate types.String `tfsdk:"value_from_certificate"`
 }
 
 var replyAttributeTypes = map[string]attr.Type{
-	"name":                 types.StringType,
-	"value":                types.StringType,
-	"value_from_extension": types.StringType,
+	"name":                   types.StringType,
+	"value":                  types.StringType,
+	"value_from_certificate": types.StringType,
 }
 
 func toAPI(ctx context.Context, diags *diag.Diagnostics, model *ManagedRadiusModel) v20250101.ManagedRadius {
@@ -51,9 +51,9 @@ func toAPI(ctx context.Context, diags *diag.Diagnostics, model *ManagedRadiusMod
 	replyAttrs := make([]v20250101.ReplyAttribute, len(replyAttrModels))
 	for i, ra := range replyAttrModels {
 		replyAttrs[i] = v20250101.ReplyAttribute{
-			Name:               ra.Name.ValueString(),
-			Value:              ra.Value.ValueStringPointer(),
-			ValueFromExtension: ra.ValueFromExtension.ValueStringPointer(),
+			Name:                 ra.Name.ValueString(),
+			Value:                ra.Value.ValueStringPointer(),
+			ValueFromCertificate: ra.ValueFromCertificate.ValueStringPointer(),
 		}
 	}
 
@@ -87,9 +87,9 @@ func fromAPI(ctx context.Context, diags *diag.Diagnostics, radius *v20250101.Man
 		replyAttributeValues := make([]attr.Value, len(utils.Deref(radius.ReplyAttributes)))
 		for i, ra := range utils.Deref(radius.ReplyAttributes) {
 			obj, ds := basetypes.NewObjectValue(replyAttributeTypes, map[string]attr.Value{
-				"name":                 types.StringValue(ra.Name),
-				"value":                types.StringPointerValue(ra.Value),
-				"value_from_extension": types.StringPointerValue(ra.ValueFromExtension),
+				"name":                   types.StringValue(ra.Name),
+				"value":                  types.StringPointerValue(ra.Value),
+				"value_from_certificate": types.StringPointerValue(ra.ValueFromCertificate),
 			})
 			diags.Append(ds...)
 			replyAttributeValues[i] = obj

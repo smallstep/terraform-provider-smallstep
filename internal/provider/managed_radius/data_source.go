@@ -105,9 +105,9 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 							Computed:            true,
 							MarkdownDescription: replyAttrsProps["value"],
 						},
-						"value_from_extension": schema.StringAttribute{
+						"value_from_certificate": schema.StringAttribute{
 							Computed:            true,
-							MarkdownDescription: replyAttrsProps["valueFromExtension"],
+							MarkdownDescription: replyAttrsProps["valueFromCertificate"],
 						},
 					},
 				},

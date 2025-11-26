@@ -86,9 +86,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							Optional:            true,
 							MarkdownDescription: replyAttrsProps["value"],
 						},
-						"value_from_extension": schema.StringAttribute{
+						"value_from_certificate": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: replyAttrsProps["valueFromExtension"],
+							MarkdownDescription: replyAttrsProps["valueFromCertificate"],
 						},
 					},
 				},

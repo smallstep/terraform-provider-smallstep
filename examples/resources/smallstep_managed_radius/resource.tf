@@ -7,7 +7,7 @@ resource "smallstep_managed_radius" "my_radius" {
     name  = "Tunnel-Type"
     value = "13"
     }, {
-    name                 = "Tunnel-Private-Group-ID"
-    value_from_extension = "2.5.4.11"
+    name                   = "Tunnel-Private-Group-ID"
+    value_from_certificate = "2.5.4.11"
   }]
 }

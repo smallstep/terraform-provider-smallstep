@@ -303,8 +303,8 @@ func NewManagedRADIUS(t *testing.T) *v20250101.ManagedRadius {
 				Value: Ref("13"),
 			},
 			{
-				Name:               "Tunnel-Private-Group-ID",
-				ValueFromExtension: Ref("2.5.4.11"),
+				Name:                 "Tunnel-Private-Group-ID",
+				ValueFromCertificate: Ref("2.5.4.11"),
 			},
 		},
 	}
