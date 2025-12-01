@@ -212,7 +212,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	reqBody := toAPI(ctx, &resp.Diagnostics, plan)
+	reqBody := plan.ToAPI(ctx, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -262,7 +262,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	}
 	id := plan.ID.ValueString()
 
-	reqBody := toAPI(ctx, &resp.Diagnostics, plan)
+	reqBody := plan.ToAPI(ctx, &resp.Diagnostics)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return

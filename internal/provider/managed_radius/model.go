@@ -39,7 +39,7 @@ var replyAttributeTypes = map[string]attr.Type{
 	"value_from_certificate": types.StringType,
 }
 
-func toAPI(ctx context.Context, diags *diag.Diagnostics, model *ManagedRadiusModel) v20250101.ManagedRadius {
+func (model *ManagedRadiusModel) ToAPI(ctx context.Context, diags *diag.Diagnostics) v20250101.ManagedRadius {
 	var nasIPs []string
 	ds := model.NASIPs.ElementsAs(ctx, &nasIPs, false)
 	diags.Append(ds...)
@@ -110,4 +110,24 @@ func fromAPI(ctx context.Context, diags *diag.Diagnostics, radius *v20250101.Man
 		ServerIP:       types.StringPointerValue(radius.ServerIP),
 		ServerPort:     types.StringPointerValue(radius.ServerPort),
 	}
+}
+
+func FromAPI(ctx context.Context, m ManagedRadiusModel) (types.Object, diag.Diagnostics) {
+	return basetypes.NewObjectValueFrom(ctx, map[string]attr.Type{
+		"id":   types.StringType,
+		"name": types.StringType,
+		"nas_ips": types.ListType{
+			ElemType: types.StringType,
+		},
+		"client_ca": types.StringType,
+		"reply_attributes": types.ListType{
+			ElemType: types.ObjectType{
+				AttrTypes: replyAttributeTypes,
+			},
+		},
+		"server_ca":       types.StringType,
+		"server_ip":       types.StringType,
+		"server_port":     types.StringType,
+		"server_hostname": types.StringType,
+	}, m)
 }
