@@ -233,7 +233,7 @@ Read-Only:
 Read-Only:
 
 - `autojoin` (Boolean) Whether or not clients should automatically connect to the network.
-- `connection_type` (String) The type of VPN connection. Allowed values: `IPSec` `IKEv2` `SSL`
+- `connection_type` (String) The type of VPN connection. Allowed values: `IPsec` `IKEv2` `SSL`
 - `ike` (Attributes) (see [below for nested schema](#nestedatt--vpn--ike))
 - `remote_address` (String) The public IP address of the VPN server.
 - `vendor` (String) For SSL-type VPN connections, the vendor of the VPN. Allowed values: `F5` `Cisco` `Juniper`
@@ -260,5 +260,3 @@ Read-Only:
 - `hidden` (Boolean) Whether or not the SSID is broadcast by the access points.
 - `network_access_server_ip` (String) The public IP address of your network equipment that clients connect to.
 - `ssid` (String) The name of the wireless network clients connect to.
-
-

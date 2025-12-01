@@ -36,7 +36,7 @@ resource "smallstep_account" "wifi_hosted_radius" {
 		autojoin = true
 		external_radius_server = false
 		hidden = true
-		network_access_server_ip = "0.0.0.1"
+		network_access_server_ip = "0.0.0.5"
 		ssid = "corpnet"
 	}
 }
@@ -48,7 +48,7 @@ resource "smallstep_account" "wifi_hosted_radius" {
 	wifi = {
 		autojoin = false
 		external_radius_server = false
-		network_access_server_ip = "0.0.0.2"
+		network_access_server_ip = "0.0.0.6"
 		ssid = "Corp Net"
 	}
 }
@@ -247,9 +247,9 @@ func TestAccAccountSSH(t *testing.T) {
 			{
 				Config: sshMinConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
-					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static", "123"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static"),
@@ -264,9 +264,9 @@ func TestAccAccountSSH(t *testing.T) {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
-					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static"),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata", "key"),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.principals.static.#", "1"),
@@ -283,7 +283,7 @@ func TestAccAccountSSH(t *testing.T) {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ssh", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "name", "SSH User Certificate"),
 					helper.TestCheckResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.static", "123"),
 					helper.TestCheckNoResourceAttr("smallstep_account.ssh", "certificate.ssh.key_id.device_metadata"),
@@ -307,7 +307,7 @@ func TestAccAccountRename(t *testing.T) {
 			{
 				Config: minConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "name", "Generic Client Certificate"),
 				),
 			},
@@ -338,7 +338,7 @@ func TestAccAccountMinEmptyMin(t *testing.T) {
 			{
 				Config: minConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "name", "Generic Client Certificate"),
 
 					// default x509 fields
@@ -414,7 +414,7 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 			{
 				Config: emptyConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUIDRegexp),
 
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.crt_file"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.key_file"),
@@ -463,7 +463,7 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.duration", "168h"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.crt_file", "db.crt"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.key_file", "db.key"),
@@ -542,7 +542,7 @@ func TestAccAccountEmptyFullEmpty(t *testing.T) {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.crt_file"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.crt_file"),
 					helper.TestCheckNoResourceAttr("smallstep_account.generic", "certificate.key_file"),
@@ -602,7 +602,7 @@ func TestAccAccountX509FullUpdate(t *testing.T) {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.generic", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.duration", "24h"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.crt_file", "my.crt"),
 					helper.TestCheckResourceAttr("smallstep_account.generic", "certificate.key_file", "my.key"),
@@ -683,9 +683,9 @@ func TestAccAccountBrowser(t *testing.T) {
 			{
 				Config: browserConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.browser", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.browser", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.browser", "name", "Browser Certificate"),
-					helper.TestMatchResourceAttr("smallstep_account.browser", "certificate.authority_id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.browser", "certificate.authority_id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.browser", "browser.%", "0"),
 				),
 			},
@@ -700,12 +700,12 @@ func TestAccAccountWiFiHostedRadius(t *testing.T) {
 			{
 				Config: wifiHostedRadiusConfig,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "name", "WiFi Hosted Radius"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.autojoin", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.external_radius_server", "false"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden", "true"),
-					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.1"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.5"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "corpnet"),
 					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
 				),
@@ -720,7 +720,7 @@ func TestAccAccountWiFiHostedRadius(t *testing.T) {
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.autojoin", "false"),
 					helper.TestCheckNoResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.hidden"),
-					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.2"),
+					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.network_access_server_ip", "0.0.0.6"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ssid", "Corp Net"),
 					helper.TestMatchResourceAttr("smallstep_account.wifi_hosted_radius", "wifi.ca_chain", regexp.MustCompile("-----BEGIN CERTIFICATE-----")),
 				),
@@ -768,7 +768,7 @@ resource "smallstep_account" "wifi_byoradius" {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "name", "WiFi Hosted Radius"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.external_radius_server", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.network_access_server_ip", "0.0.0.3"),
@@ -786,7 +786,7 @@ resource "smallstep_account" "wifi_byoradius" {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.wifi_byoradius", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.ca_chain", root2),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.hidden", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.wifi_byoradius", "wifi.autojoin", "true"),
@@ -831,7 +831,7 @@ resource "smallstep_account" "ethernet" {
 					},
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.ethernet", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.ethernet", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "name", "Ethernet Hosted Radius"),
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.autojoin", "true"),
 					helper.TestCheckResourceAttr("smallstep_account.ethernet", "ethernet.external_radius_server", "false"),
@@ -968,7 +968,7 @@ resource "smallstep_account" "custom_authority" {
 			{
 				Config: config,
 				Check: helper.ComposeAggregateTestCheckFunc(
-					helper.TestMatchResourceAttr("smallstep_account.custom_authority", "id", utils.UUID),
+					helper.TestMatchResourceAttr("smallstep_account.custom_authority", "id", utils.UUIDRegexp),
 					helper.TestCheckResourceAttr("smallstep_account.custom_authority", "certificate.authority_id", authority.Id),
 				),
 			},

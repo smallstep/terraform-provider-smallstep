@@ -46,5 +46,3 @@ ENRICHING webhooks are called before rendering the certificate template. They ha
 A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
  Allowed values: `EXTERNAL` `HOSTED_ATTESTATION`
 - `url` (String) The URL of the webhook server. Required for `EXTERNAL` webhook servers; read-only for hosted webhook servers.
-
-

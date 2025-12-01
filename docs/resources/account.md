@@ -358,7 +358,7 @@ Optional:
 
 Required:
 
-- `connection_type` (String) The type of VPN connection. Allowed values: `IPSec` `IKEv2` `SSL`
+- `connection_type` (String) The type of VPN connection. Allowed values: `IPsec` `IKEv2` `SSL`
 - `remote_address` (String) The public IP address of the VPN server.
 
 Optional:
@@ -396,6 +396,8 @@ Optional:
 ## Import
 
 Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
 terraform import smallstep_account.wifi b1161f78-d251-401e-b17c-fe38fc26ae7b

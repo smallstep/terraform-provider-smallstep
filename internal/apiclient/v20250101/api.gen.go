@@ -64,6 +64,40 @@ const (
 	AuthorityTypeManaged  AuthorityType = "managed"
 )
 
+// Defines values for CredentialCertificateType.
+const (
+	CredentialCertificateTypeX509 CredentialCertificateType = "X509"
+)
+
+// Defines values for CredentialFilesKeyFormat.
+const (
+	CredentialFilesKeyFormatCLASSIC CredentialFilesKeyFormat = "CLASSIC"
+	CredentialFilesKeyFormatDEFAULT CredentialFilesKeyFormat = "DEFAULT"
+	CredentialFilesKeyFormatOPENSSH CredentialFilesKeyFormat = "OPENSSH"
+	CredentialFilesKeyFormatPKCS8   CredentialFilesKeyFormat = "PKCS8"
+	CredentialFilesKeyFormatTSS2    CredentialFilesKeyFormat = "TSS2"
+)
+
+// Defines values for CredentialKeyProtection.
+const (
+	CredentialKeyProtectionHARDWARE             CredentialKeyProtection = "HARDWARE"
+	CredentialKeyProtectionHARDWAREATTESTED     CredentialKeyProtection = "HARDWARE_ATTESTED"
+	CredentialKeyProtectionHARDWAREWITHFALLBACK CredentialKeyProtection = "HARDWARE_WITH_FALLBACK"
+	CredentialKeyProtectionNONE                 CredentialKeyProtection = "NONE"
+)
+
+// Defines values for CredentialKeyType.
+const (
+	CredentialKeyTypeDEFAULT   CredentialKeyType = "DEFAULT"
+	CredentialKeyTypeECDSAP256 CredentialKeyType = "ECDSA_P256"
+	CredentialKeyTypeECDSAP384 CredentialKeyType = "ECDSA_P384"
+	CredentialKeyTypeECDSAP521 CredentialKeyType = "ECDSA_P521"
+	CredentialKeyTypeED25519   CredentialKeyType = "ED25519"
+	CredentialKeyTypeRSA2048   CredentialKeyType = "RSA_2048"
+	CredentialKeyTypeRSA3072   CredentialKeyType = "RSA_3072"
+	CredentialKeyTypeRSA4096   CredentialKeyType = "RSA_4096"
+)
+
 // Defines values for DeviceAssurance.
 const (
 	High   DeviceAssurance = "high"
@@ -77,6 +111,13 @@ const (
 	Jamf           DeviceDiscoverySource = "Jamf"
 	SmallstepAPI   DeviceDiscoverySource = "Smallstep API"
 	SmallstepAgent DeviceDiscoverySource = "Smallstep Agent"
+)
+
+// Defines values for DeviceLifecycleStatus.
+const (
+	Active      DeviceLifecycleStatus = "active"
+	Deleted     DeviceLifecycleStatus = "deleted"
+	Quarantined DeviceLifecycleStatus = "quarantined"
 )
 
 // Defines values for DeviceOS.
@@ -110,6 +151,36 @@ const (
 	EndpointCertificateInfoTypeX509    EndpointCertificateInfoType = "X509"
 )
 
+// Defines values for EndpointConfigurationExtendedType.
+const (
+	EndpointConfigurationExtendedTypeBrowser  EndpointConfigurationExtendedType = "browser"
+	EndpointConfigurationExtendedTypeEthernet EndpointConfigurationExtendedType = "ethernet"
+	EndpointConfigurationExtendedTypeVpn      EndpointConfigurationExtendedType = "vpn"
+	EndpointConfigurationExtendedTypeWifi     EndpointConfigurationExtendedType = "wifi"
+)
+
+// Defines values for EndpointConfigurationKind.
+const (
+	EndpointConfigurationKindAccount  EndpointConfigurationKind = "account"
+	EndpointConfigurationKindDevice   EndpointConfigurationKind = "device"
+	EndpointConfigurationKindWorkload EndpointConfigurationKind = "workload"
+)
+
+// Defines values for EndpointConfigurationRequestExtendedType.
+const (
+	EndpointConfigurationRequestExtendedTypeBrowser  EndpointConfigurationRequestExtendedType = "browser"
+	EndpointConfigurationRequestExtendedTypeEthernet EndpointConfigurationRequestExtendedType = "ethernet"
+	EndpointConfigurationRequestExtendedTypeVpn      EndpointConfigurationRequestExtendedType = "vpn"
+	EndpointConfigurationRequestExtendedTypeWifi     EndpointConfigurationRequestExtendedType = "wifi"
+)
+
+// Defines values for EndpointConfigurationRequestKind.
+const (
+	EndpointConfigurationRequestKindAccount  EndpointConfigurationRequestKind = "account"
+	EndpointConfigurationRequestKindDevice   EndpointConfigurationRequestKind = "device"
+	EndpointConfigurationRequestKindWorkload EndpointConfigurationRequestKind = "workload"
+)
+
 // Defines values for EndpointKeyInfoFormat.
 const (
 	EndpointKeyInfoFormatCLASSIC EndpointKeyInfoFormat = "CLASSIC"
@@ -130,14 +201,14 @@ const (
 
 // Defines values for EndpointKeyInfoType.
 const (
-	DEFAULT   EndpointKeyInfoType = "DEFAULT"
-	ECDSAP256 EndpointKeyInfoType = "ECDSA_P256"
-	ECDSAP384 EndpointKeyInfoType = "ECDSA_P384"
-	ECDSAP521 EndpointKeyInfoType = "ECDSA_P521"
-	ED25519   EndpointKeyInfoType = "ED25519"
-	RSA2048   EndpointKeyInfoType = "RSA_2048"
-	RSA3072   EndpointKeyInfoType = "RSA_3072"
-	RSA4096   EndpointKeyInfoType = "RSA_4096"
+	EndpointKeyInfoTypeDEFAULT   EndpointKeyInfoType = "DEFAULT"
+	EndpointKeyInfoTypeECDSAP256 EndpointKeyInfoType = "ECDSA_P256"
+	EndpointKeyInfoTypeECDSAP384 EndpointKeyInfoType = "ECDSA_P384"
+	EndpointKeyInfoTypeECDSAP521 EndpointKeyInfoType = "ECDSA_P521"
+	EndpointKeyInfoTypeED25519   EndpointKeyInfoType = "ED25519"
+	EndpointKeyInfoTypeRSA2048   EndpointKeyInfoType = "RSA_2048"
+	EndpointKeyInfoTypeRSA3072   EndpointKeyInfoType = "RSA_3072"
+	EndpointKeyInfoTypeRSA4096   EndpointKeyInfoType = "RSA_4096"
 )
 
 // Defines values for EndpointReloadInfoMethod.
@@ -184,9 +255,9 @@ const (
 
 // Defines values for ProvisionerWebhookCertType.
 const (
-	ProvisionerWebhookCertTypeALL  ProvisionerWebhookCertType = "ALL"
-	ProvisionerWebhookCertTypeSSH  ProvisionerWebhookCertType = "SSH"
-	ProvisionerWebhookCertTypeX509 ProvisionerWebhookCertType = "X509"
+	ALL  ProvisionerWebhookCertType = "ALL"
+	SSH  ProvisionerWebhookCertType = "SSH"
+	X509 ProvisionerWebhookCertType = "X509"
 )
 
 // Defines values for ProvisionerWebhookKind.
@@ -209,18 +280,25 @@ const (
 	DESCBC    ScepProvisionerEncryptionAlgorithmIdentifier = "DES_CBC"
 )
 
-// Defines values for VpnAccountConnectionType.
+// Defines values for VpnType.
 const (
-	IKEv2 VpnAccountConnectionType = "IKEv2"
-	IPSec VpnAccountConnectionType = "IPSec"
-	SSL   VpnAccountConnectionType = "SSL"
+	IKEv2 VpnType = "IKEv2"
+	IPsec VpnType = "IPsec"
+	SSL   VpnType = "SSL"
 )
 
-// Defines values for VpnAccountVendor.
+// Defines values for VpnVendor.
 const (
-	Cisco   VpnAccountVendor = "Cisco"
-	F5      VpnAccountVendor = "F5"
-	Juniper VpnAccountVendor = "Juniper"
+	Cisco   VpnVendor = "Cisco"
+	F5      VpnVendor = "F5"
+	Juniper VpnVendor = "Juniper"
+)
+
+// Defines values for WifiAccountSecurityProtocol.
+const (
+	WPA2    WifiAccountSecurityProtocol = "WPA2"
+	WPA3    WifiAccountSecurityProtocol = "WPA3"
+	WPA3192 WifiAccountSecurityProtocol = "WPA3192"
 )
 
 // Defines values for X509CertificateRevocationReason.
@@ -495,6 +573,15 @@ type BasicConstraints struct {
 	MaxPathLen int  `json:"maxPathLen"`
 }
 
+// Browser defines model for browser.
+type Browser struct {
+	// Credentials The UUID of credentials that the Smallstep agent will configure to use this browser integration.
+	Credentials    []string `json:"credentials"`
+	Id             *string  `json:"id,omitempty"`
+	MatchAddresses []string `json:"matchAddresses"`
+	Name           *string  `json:"name,omitempty"`
+}
+
 // BrowserAccount Configuration to use a client certificate.
 type BrowserAccount = map[string]interface{}
 
@@ -515,6 +602,86 @@ type CertificateFieldList struct {
 	// Static A literal value.
 	Static *[]string `json:"static,omitempty"`
 }
+
+// Credential A certificate key pair.
+type Credential struct {
+	Certificate CredentialCertificate `json:"certificate"`
+	Files       *CredentialFiles      `json:"files,omitempty"`
+
+	// Id A UUID identifying this credential. Read only.
+	Id *string `json:"id,omitempty"`
+
+	// Key The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set.
+	Key CredentialKey `json:"key"`
+
+	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
+	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
+	Slug   string               `json:"slug"`
+}
+
+// CredentialCertificate defines model for credentialCertificate.
+type CredentialCertificate struct {
+	// AuthorityID A UUID identifying the authority that issues certificates for the credential.
+	AuthorityID string `json:"authorityID"`
+
+	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	Duration string                       `json:"duration"`
+	Fields   CredentialCertificate_Fields `json:"fields"`
+	Type     CredentialCertificateType    `json:"type"`
+}
+
+// CredentialCertificate_Fields defines model for CredentialCertificate.Fields.
+type CredentialCertificate_Fields struct {
+	union json.RawMessage
+}
+
+// CredentialCertificateType defines model for CredentialCertificate.Type.
+type CredentialCertificateType string
+
+// CredentialFiles defines model for credentialFiles.
+type CredentialFiles struct {
+	// CrtFile The filepath where the certificate is to be stored.
+	CrtFile *string `json:"crtFile,omitempty"`
+
+	// Gid GID of the files where the credential is stored.
+	Gid *int `json:"gid,omitempty"`
+
+	// KeyFile The filepath where the key is to be stored.
+	KeyFile *string `json:"keyFile,omitempty"`
+
+	// KeyFormat The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux tss2 will be used.
+	KeyFormat *CredentialFilesKeyFormat `json:"keyFormat,omitempty"`
+
+	// Mode Permission bits of the files where the credential is stored.
+	Mode *int `json:"mode,omitempty"`
+
+	// RootFile The filepath where the root certificate is to be stored.
+	RootFile *string `json:"rootFile,omitempty"`
+
+	// Uid UID of the files where the credential is stored.
+	Uid *int `json:"uid,omitempty"`
+}
+
+// CredentialFilesKeyFormat The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux tss2 will be used.
+type CredentialFilesKeyFormat string
+
+// CredentialKey The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set.
+type CredentialKey struct {
+	// Protection Whether to use a hardware module to store the private key. If set to `NONE` no hardware module will be used. `HARDWARE_WITH_FALLBACK` can only be used with the key file format `DEFAULT`.
+	Protection *CredentialKeyProtection `json:"protection,omitempty"`
+
+	// PubFile A CSR or SSH public key to use instead of generating one. Cannot be used in conjunction with key type, key protection, key file or key file format.
+	PubFile *string `json:"pubFile,omitempty"`
+
+	// Type The key type used. The current default type is `ECDSA_P256` but is not fixed at the time the credential resource is created - new keys generated for this credential in the future may have a different type.
+	Type *CredentialKeyType `json:"type,omitempty"`
+}
+
+// CredentialKeyProtection Whether to use a hardware module to store the private key. If set to `NONE` no hardware module will be used. `HARDWARE_WITH_FALLBACK` can only be used with the key file format `DEFAULT`.
+type CredentialKeyProtection string
+
+// CredentialKeyType The key type used. The current default type is `ECDSA_P256` but is not fixed at the time the credential resource is created - new keys generated for this credential in the future may have a different type.
+type CredentialKeyType string
 
 // Device defines model for device.
 type Device struct {
@@ -548,6 +715,10 @@ type Device struct {
 
 	// LastSeen Timestamp in RFC3339 format when the device last connected to Smallstep. Read only.
 	LastSeen *time.Time `json:"lastSeen,omitempty"`
+
+	// LifecycleStatus The lifecycle status of a device indicates its ongoing management
+	// state.
+	LifecycleStatus *DeviceLifecycleStatus `json:"lifecycleStatus,omitempty"`
 
 	// Metadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 	Metadata *DeviceMetadata `json:"metadata,omitempty"`
@@ -594,6 +765,18 @@ type DeviceDisplayId = string
 // This field may be populated with a value derived from data synced from your team's MDMs.
 // Setting this value explicitly will mask any MDM-derived value.
 type DeviceDisplayName = string
+
+// DeviceLifecyclePatch Updating a device's lifecycle state can be used to control behavior of credential issuance, as well
+// as inform authorization decisions of integrations, such as RADIUS.
+type DeviceLifecyclePatch struct {
+	// Status The lifecycle status of a device indicates its ongoing management
+	// state.
+	Status DeviceLifecycleStatus `json:"status"`
+}
+
+// DeviceLifecycleStatus The lifecycle status of a device indicates its ongoing management
+// state.
+type DeviceLifecycleStatus string
 
 // DeviceMetadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
 type DeviceMetadata map[string]string
@@ -820,6 +1003,105 @@ type EndpointCertificateInfo_Details struct {
 // EndpointCertificateInfoType The type of certificate.
 type EndpointCertificateInfoType string
 
+// EndpointConfiguration defines model for endpointConfiguration.
+type EndpointConfiguration struct {
+	// CertificateInfo Details on a managed certificate.
+	CertificateInfo *EndpointCertificateInfo `json:"certificateInfo,omitempty"`
+
+	// ExtendedType The extended type of this endpoint, which allows for further configuration to be specified using the `extendedTypeConfiguration` field.
+	ExtendedType              *EndpointConfigurationExtendedType               `json:"extendedType,omitempty"`
+	ExtendedTypeConfiguration *EndpointConfiguration_ExtendedTypeConfiguration `json:"extendedTypeConfiguration,omitempty"`
+
+	// Id A UUID identifying this endpoint configuration. Read only.
+	Id string `json:"id"`
+
+	// KeyInfo The attributes of the cryptographic key.
+	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
+
+	// Kind The kind of endpoint.
+	//
+	// Account-kind endpoints should be used for human users accessing protected resources. For account-kind endpoints, the `extendedType` and `extendedTypeConfiguration` fields are required.
+	//
+	// Device-kind endpoints should be used for devices or machines accessing protected resources.
+	//
+	// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
+	Kind EndpointConfigurationKind `json:"kind"`
+
+	// Name A human-friendly name for this endpoint on devices.
+	Name string `json:"name"`
+
+	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
+	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
+
+	// ReloadInfo The properties used to reload a service.
+	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
+}
+
+// EndpointConfigurationExtendedType The extended type of this endpoint, which allows for further configuration to be specified using the `extendedTypeConfiguration` field.
+type EndpointConfigurationExtendedType string
+
+// EndpointConfiguration_ExtendedTypeConfiguration defines model for EndpointConfiguration.ExtendedTypeConfiguration.
+type EndpointConfiguration_ExtendedTypeConfiguration struct {
+	union json.RawMessage
+}
+
+// EndpointConfigurationKind The kind of endpoint.
+//
+// Account-kind endpoints should be used for human users accessing protected resources. For account-kind endpoints, the `extendedType` and `extendedTypeConfiguration` fields are required.
+//
+// Device-kind endpoints should be used for devices or machines accessing protected resources.
+//
+// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
+type EndpointConfigurationKind string
+
+// EndpointConfigurationRequest The configuration settings of an endpoint.
+type EndpointConfigurationRequest struct {
+	// CertificateInfo Details on a managed certificate.
+	CertificateInfo *EndpointCertificateInfo `json:"certificateInfo,omitempty"`
+
+	// ExtendedType The extended type of this endpoint, which allows for further configuration to be specified using the `extendedTypeConfiguration` field.
+	ExtendedType              *EndpointConfigurationRequestExtendedType               `json:"extendedType,omitempty"`
+	ExtendedTypeConfiguration *EndpointConfigurationRequest_ExtendedTypeConfiguration `json:"extendedTypeConfiguration,omitempty"`
+
+	// KeyInfo The attributes of the cryptographic key.
+	KeyInfo *EndpointKeyInfo `json:"keyInfo,omitempty"`
+
+	// Kind The kind of endpoint.
+	//
+	// Account-kind endpoints should be used for human users accessing protected resources. For account-kind endpoints, the `extendedType` and `extendedTypeConfiguration` fields are required.
+	//
+	// Device-kind endpoints should be used for devices or machines accessing protected resources.
+	//
+	// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
+	Kind EndpointConfigurationRequestKind `json:"kind"`
+
+	// Name A human-friendly name for this endpoint on devices.
+	Name string `json:"name"`
+
+	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
+	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
+
+	// ReloadInfo The properties used to reload a service.
+	ReloadInfo *EndpointReloadInfo `json:"reloadInfo,omitempty"`
+}
+
+// EndpointConfigurationRequestExtendedType The extended type of this endpoint, which allows for further configuration to be specified using the `extendedTypeConfiguration` field.
+type EndpointConfigurationRequestExtendedType string
+
+// EndpointConfigurationRequest_ExtendedTypeConfiguration defines model for EndpointConfigurationRequest.ExtendedTypeConfiguration.
+type EndpointConfigurationRequest_ExtendedTypeConfiguration struct {
+	union json.RawMessage
+}
+
+// EndpointConfigurationRequestKind The kind of endpoint.
+//
+// Account-kind endpoints should be used for human users accessing protected resources. For account-kind endpoints, the `extendedType` and `extendedTypeConfiguration` fields are required.
+//
+// Device-kind endpoints should be used for devices or machines accessing protected resources.
+//
+// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
+type EndpointConfigurationRequestKind string
+
 // EndpointKeyInfo The attributes of the cryptographic key.
 type EndpointKeyInfo struct {
 	// Format The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where tss2 will be used.
@@ -866,6 +1148,24 @@ type EndpointReloadInfoMethod string
 type Error struct {
 	// Message A description of the error.
 	Message string `json:"message"`
+}
+
+// Ethernet Configuration for connecting a device to an EAP-TLS 802.1X wired network.
+type Ethernet struct {
+	// Autojoin Whether or not clients should automatically connect to the network.
+	Autojoin *bool `json:"autojoin,omitempty"`
+
+	// Credentials The UUID of credentials that the Smallstep agent will configure to use this ethernet integration.
+	Credentials []string `json:"credentials"`
+
+	// Id The UUID of this protected Ethernet configuration.
+	Id *string `json:"id,omitempty"`
+
+	// Name A human-friendly display name for this resource.
+	Name *string `json:"name,omitempty"`
+
+	// RadiusServerCA The certificate bundle used to verify the RADIUS server.
+	RadiusServerCA string `json:"radiusServerCA"`
 }
 
 // EthernetAccount Configuration to connect a device to a protected LAN.
@@ -931,10 +1231,40 @@ type GcpProvisioner struct {
 // GcpServiceAccounts The list of service accounts that are allowed to use a GCP cloud provisioner.
 type GcpServiceAccounts = []string
 
+// IdentityProvider defines model for identityProvider.
+type IdentityProvider struct {
+	// AuthorizeEndpoint The URL where clients authenticate.
+	AuthorizeEndpoint *string `json:"authorizeEndpoint,omitempty"`
+
+	// Issuer The URL of this identity provider.
+	Issuer *string `json:"issuer,omitempty"`
+
+	// JwksEndpoint The URL where relying parties can read the provider's public key.
+	JwksEndpoint *string `json:"jwksEndpoint,omitempty"`
+
+	// TokenEndpoint The URL where relying parties exchange authorization codes for identity tokens.
+	TokenEndpoint *string `json:"tokenEndpoint,omitempty"`
+
+	// TrustRoots The CA used to verify clients at the authorize endpoint.
+	TrustRoots string `json:"trustRoots"`
+}
+
+// IdpClient defines model for idpClient.
+type IdpClient struct {
+	// Id The client ID.
+	Id *string `json:"id,omitempty"`
+
+	// RedirectURI Where user-agents will be sent after authentication attempts.
+	RedirectURI string `json:"redirectURI"`
+
+	// Secret The secret relying parties will use to authenticate when exchanging an authorization code for an id token.
+	Secret *string `json:"secret,omitempty"`
+}
+
 // IkeV2Config defines model for ikeV2Config.
 type IkeV2Config struct {
 	// CaChain The certificate authority bundle that client certificates must chain up to.
-	CaChain *string `json:"caChain,omitempty"`
+	CaChain string `json:"caChain"`
 
 	// Eap Whether or not EAP is enforced on this VPN server.
 	Eap *bool `json:"eap,omitempty"`
@@ -953,6 +1283,38 @@ type JwkProvisioner struct {
 
 	// Key The public JSON web key.
 	Key interface{} `json:"key"`
+}
+
+// ManagedRadius defines model for managedRadius.
+type ManagedRadius struct {
+	// ClientCA The CA that the RADIUS server will trust to verify clients.
+	ClientCA string `json:"clientCA"`
+
+	// Id The UUID of this managed RADIUS server.
+	Id *string `json:"id,omitempty"`
+
+	// Name A descriptive name for this resource. Must be unique across the team.
+	Name string `json:"name"`
+
+	// NasIPs The IP addresses the Network Access Server (NAS) may connect from to the RADIUS server.
+	NasIPs          []string          `json:"nasIPs"`
+	ReplyAttributes *[]ReplyAttribute `json:"replyAttributes,omitempty"`
+
+	// Secret The credential the Network Access Server (NAS) uses to connect to the RADIUS server.
+	// Only included when the `secret` parameter is set in the query string.
+	Secret *string `json:"secret,omitempty"`
+
+	// ServerCA The CA that supplicants should use to verify the RADIUS server.
+	ServerCA *string `json:"serverCA,omitempty"`
+
+	// ServerHostname The hostname of the RADIUS server.
+	ServerHostname *string `json:"serverHostname,omitempty"`
+
+	// ServerIP The IP address of the RADIUS server.
+	ServerIP *string `json:"serverIP,omitempty"`
+
+	// ServerPort The port of the RADIUS server.
+	ServerPort *string `json:"serverPort,omitempty"`
 }
 
 // NameConstraints X509 certificate name constratins.
@@ -1217,6 +1579,25 @@ type ProvisionerWebhookKind string
 // A HOSTED_ATTESTATION webhook server is hosted by Smallstep and must be used with an `ENRICHING` webhook type and an ACME Attestation provisioner. The webhook server will verify the attested permanent identifier exists as the ID of an instance in the configured collection. The data of the instance in the collection will be added to the template data.
 type ProvisionerWebhookServerType string
 
+// ReplyAttribute defines model for replyAttribute.
+type ReplyAttribute struct {
+	// Name The attribute name.
+	Name string `json:"name"`
+
+	// Value The static attribute value.
+	Value *string `json:"value,omitempty"`
+
+	// ValueFromCertificate The object identifier (OID) of a field in the supplicant certificate. The RADIUS server will set the value of the reply attribute to the value of the field.
+	ValueFromCertificate *string `json:"valueFromCertificate,omitempty"`
+	union                json.RawMessage
+}
+
+// ReplyAttribute0 defines model for .
+type ReplyAttribute0 = interface{}
+
+// ReplyAttribute1 defines model for .
+type ReplyAttribute1 = interface{}
+
 // ScepProvisioner The [SCEP provisioner](https://smallstep.com/docs/step-ca/provisioners/#scep) grants certificates to clients using the SCEP protocol. This type is currently experimental and subject to change.
 type ScepProvisioner struct {
 	// AutogenerateDecrypter Automatically generate a new RSA decrypter instead of providing one.
@@ -1296,27 +1677,75 @@ type Subject struct {
 	StreetAddress      *[]string    `json:"streetAddress,omitempty"`
 }
 
+// Vpn defines model for vpn.
+type Vpn struct {
+	// Autojoin Whether or not clients should automatically connect to the network.
+	Autojoin *bool `json:"autojoin,omitempty"`
+
+	// ConnectionType The type of VPN connection.
+	ConnectionType VpnType `json:"connectionType"`
+
+	// Credentials The UUID of credentials that the Smallstep agent will configure to use this VPN integration.
+	Credentials []string     `json:"credentials"`
+	Id          *string      `json:"id,omitempty"`
+	Ike         *IkeV2Config `json:"ike,omitempty"`
+	Name        *string      `json:"name,omitempty"`
+
+	// RemoteAddress The public IP address of the VPN server.
+	RemoteAddress string `json:"remoteAddress"`
+
+	// Vendor For SSL-type VPN connections, the vendor of the VPN.
+	Vendor *VpnVendor `json:"vendor,omitempty"`
+}
+
 // VpnAccount Configuration to connect a device to a VPN.
 type VpnAccount struct {
 	// Autojoin Whether or not clients should automatically connect to the network.
 	Autojoin *bool `json:"autojoin,omitempty"`
 
 	// ConnectionType The type of VPN connection.
-	ConnectionType VpnAccountConnectionType `json:"connectionType"`
-	Ike            *IkeV2Config             `json:"ike,omitempty"`
+	ConnectionType VpnType      `json:"connectionType"`
+	Ike            *IkeV2Config `json:"ike,omitempty"`
 
 	// RemoteAddress The public IP address of the VPN server.
 	RemoteAddress string `json:"remoteAddress"`
 
 	// Vendor For SSL-type VPN connections, the vendor of the VPN.
-	Vendor *VpnAccountVendor `json:"vendor,omitempty"`
+	Vendor *VpnVendor `json:"vendor,omitempty"`
 }
 
-// VpnAccountConnectionType The type of VPN connection.
-type VpnAccountConnectionType string
+// VpnType The type of VPN connection.
+type VpnType string
 
-// VpnAccountVendor For SSL-type VPN connections, the vendor of the VPN.
-type VpnAccountVendor string
+// VpnVendor For SSL-type VPN connections, the vendor of the VPN.
+type VpnVendor string
+
+// Wifi Configuration to use a credential to connect to a protected Wi-Fi network.
+type Wifi struct {
+	// Autojoin Whether or not clients should automatically connect to the network.
+	Autojoin *bool `json:"autojoin,omitempty"`
+
+	// Credentials The UUID of credentials that the Smallstep agent will configure to use this Wi-Fi integration.
+	Credentials []string `json:"credentials"`
+
+	// Hidden Whether or not the SSID is broadcast by the access points.
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// Id The UUID of this protected Wi-Fi configuration.
+	Id *string `json:"id,omitempty"`
+
+	// Name A human-friendly display name for this resource.
+	Name *string `json:"name,omitempty"`
+
+	// RadiusServerCA The certificate bundle used to verify the RADIUS server.
+	RadiusServerCA string `json:"radiusServerCA"`
+
+	// RadiusServerDomain Require the RADIUS server certificate to contain this DNS name as a SAN or CommonName. Supported on Windows.
+	RadiusServerDomain *string `json:"radiusServerDomain,omitempty"`
+
+	// Ssid The name of the wireless network that clients connect to.
+	Ssid string `json:"ssid"`
+}
 
 // WifiAccount Configuration to connect a device to a protected WiFi network.
 type WifiAccount struct {
@@ -1335,9 +1764,15 @@ type WifiAccount struct {
 	// NetworkAccessServerIP The public IP address of your network equipment that clients connect to.
 	NetworkAccessServerIP *string `json:"networkAccessServerIP,omitempty"`
 
+	// SecurityProtocol The security protocol that the wireless network is configured for.
+	SecurityProtocol *WifiAccountSecurityProtocol `json:"securityProtocol,omitempty"`
+
 	// Ssid The name of the wireless network clients connect to.
 	Ssid string `json:"ssid"`
 }
+
+// WifiAccountSecurityProtocol The security protocol that the wireless network is configured for.
+type WifiAccountSecurityProtocol string
 
 // X509Certificate defines model for x509Certificate.
 type X509Certificate struct {
@@ -1453,6 +1888,12 @@ type AuthorityDomainOrID = string
 // AuthorityID defines model for authorityID.
 type AuthorityID = string
 
+// BrowserID defines model for browserID.
+type BrowserID = string
+
+// CredentialID defines model for credentialID.
+type CredentialID = string
+
 // DeviceFilters defines model for deviceFilters.
 type DeviceFilters struct {
 	// Assurance Assurance levels that devices must match.
@@ -1492,6 +1933,18 @@ type DeviceSort struct {
 	Field *string `json:"field,omitempty"`
 }
 
+// EndpointConfigurationID defines model for endpointConfigurationID.
+type EndpointConfigurationID = string
+
+// EthernetID defines model for ethernetID.
+type EthernetID = string
+
+// IdpClientID defines model for idpClientID.
+type IdpClientID = string
+
+// ManagedRadiusID defines model for managedRadiusID.
+type ManagedRadiusID = string
+
 // Pagination defines model for pagination.
 type Pagination struct {
 	// After Fetch a page of results other than the first page.
@@ -1512,11 +1965,20 @@ type ProvisionerNameOrID = string
 // RequestID defines model for requestID.
 type RequestID = string
 
+// Secret defines model for secret.
+type Secret = bool
+
 // SerialNumber defines model for serialNumber.
 type SerialNumber = string
 
+// VpnID defines model for vpnID.
+type VpnID = string
+
 // WebhookNameOrID defines model for webhookNameOrID.
 type WebhookNameOrID = string
+
+// WifiID defines model for wifiID.
+type WifiID = string
 
 // N400 defines model for 400.
 type N400 = Error
@@ -1757,6 +2219,42 @@ type GetCertificateParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// DeleteCredentialParams defines parameters for DeleteCredential.
+type DeleteCredentialParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetCredentialParams defines parameters for GetCredential.
+type GetCredentialParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutCredentialParams defines parameters for PutCredential.
+type PutCredentialParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostCredentialsParams defines parameters for PostCredentials.
+type PostCredentialsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // ListDevicesParams defines parameters for ListDevices.
 type ListDevicesParams struct {
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1814,6 +2312,117 @@ type PatchDeviceParams struct {
 	Accept *Accept `json:"Accept,omitempty"`
 }
 
+// PatchDeviceLifecycleParams defines parameters for PatchDeviceLifecycle.
+type PatchDeviceLifecycleParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListEndpointConfigurationsParams defines parameters for ListEndpointConfigurations.
+type ListEndpointConfigurationsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostEndpointConfigurationsParams defines parameters for PostEndpointConfigurations.
+type PostEndpointConfigurationsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteEndpointConfigurationParams defines parameters for DeleteEndpointConfiguration.
+type DeleteEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetEndpointConfigurationParams defines parameters for GetEndpointConfiguration.
+type GetEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutEndpointConfigurationParams defines parameters for PutEndpointConfiguration.
+type PutEndpointConfigurationParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListManagedRadiusParams defines parameters for ListManagedRadius.
+type ListManagedRadiusParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostManagedRadiusParams defines parameters for PostManagedRadius.
+type PostManagedRadiusParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteManagedRadiusParams defines parameters for DeleteManagedRadius.
+type DeleteManagedRadiusParams struct {
+	// Secret Whether to return the managed RADIUS secret in the response.
+	Secret *Secret `form:"secret,omitempty" json:"secret,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetManagedRadiusParams defines parameters for GetManagedRadius.
+type GetManagedRadiusParams struct {
+	// Secret Whether to return the managed RADIUS secret in the response.
+	Secret *Secret `form:"secret,omitempty" json:"secret,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutManagedRadiusParams defines parameters for PutManagedRadius.
+type PutManagedRadiusParams struct {
+	// Secret Whether to return the managed RADIUS secret in the response.
+	Secret *Secret `form:"secret,omitempty" json:"secret,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
 // GetPlatformsParams defines parameters for GetPlatforms.
 type GetPlatformsParams struct {
 	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
@@ -1828,6 +2437,261 @@ type GetPlatformsParams struct {
 
 // PutPlatformParams defines parameters for PutPlatform.
 type PutPlatformParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListBrowserParams defines parameters for ListBrowser.
+type ListBrowserParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostBrowserParams defines parameters for PostBrowser.
+type PostBrowserParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteBrowserParams defines parameters for DeleteBrowser.
+type DeleteBrowserParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetBrowserParams defines parameters for GetBrowser.
+type GetBrowserParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutBrowserParams defines parameters for PutBrowser.
+type PutBrowserParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListEthernetParams defines parameters for ListEthernet.
+type ListEthernetParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostEthernetParams defines parameters for PostEthernet.
+type PostEthernetParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteEthernetParams defines parameters for DeleteEthernet.
+type DeleteEthernetParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetEthernetParams defines parameters for GetEthernet.
+type GetEthernetParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutEthernetParams defines parameters for PutEthernet.
+type PutEthernetParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListVpnParams defines parameters for ListVpn.
+type ListVpnParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostVpnParams defines parameters for PostVpn.
+type PostVpnParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteVpnParams defines parameters for DeleteVpn.
+type DeleteVpnParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetVpnParams defines parameters for GetVpn.
+type GetVpnParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutVpnParams defines parameters for PutVpn.
+type PutVpnParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListWifiParams defines parameters for ListWifi.
+type ListWifiParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostWifiParams defines parameters for PostWifi.
+type PostWifiParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteWifiParams defines parameters for DeleteWifi.
+type DeleteWifiParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetWifiParams defines parameters for GetWifi.
+type GetWifiParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutWifiParams defines parameters for PutWifi.
+type PutWifiParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteIdentityProviderParams defines parameters for DeleteIdentityProvider.
+type DeleteIdentityProviderParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetIdentityProviderParams defines parameters for GetIdentityProvider.
+type GetIdentityProviderParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutIdentityProviderParams defines parameters for PutIdentityProvider.
+type PutIdentityProviderParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListIdpClientsParams defines parameters for ListIdpClients.
+type ListIdpClientsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PostIdpClientsParams defines parameters for PostIdpClients.
+type PostIdpClientsParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// DeleteIdpClientParams defines parameters for DeleteIdpClient.
+type DeleteIdpClientParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// GetIdpClientParams defines parameters for GetIdpClient.
+type GetIdpClientParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
@@ -1859,14 +2723,65 @@ type PostWebhooksJSONRequestBody = ProvisionerWebhook
 // PostAuthorityRootJSONRequestBody defines body for PostAuthorityRoot for application/json ContentType.
 type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
 
+// PutCredentialJSONRequestBody defines body for PutCredential for application/json ContentType.
+type PutCredentialJSONRequestBody = Credential
+
+// PostCredentialsJSONRequestBody defines body for PostCredentials for application/json ContentType.
+type PostCredentialsJSONRequestBody = Credential
+
 // PostDevicesJSONRequestBody defines body for PostDevices for application/json ContentType.
 type PostDevicesJSONRequestBody = DeviceRequest
 
 // PatchDeviceJSONRequestBody defines body for PatchDevice for application/json ContentType.
 type PatchDeviceJSONRequestBody = DevicePatch
 
+// PatchDeviceLifecycleJSONRequestBody defines body for PatchDeviceLifecycle for application/json ContentType.
+type PatchDeviceLifecycleJSONRequestBody = DeviceLifecyclePatch
+
+// PostEndpointConfigurationsJSONRequestBody defines body for PostEndpointConfigurations for application/json ContentType.
+type PostEndpointConfigurationsJSONRequestBody = EndpointConfigurationRequest
+
+// PutEndpointConfigurationJSONRequestBody defines body for PutEndpointConfiguration for application/json ContentType.
+type PutEndpointConfigurationJSONRequestBody = EndpointConfiguration
+
+// PostManagedRadiusJSONRequestBody defines body for PostManagedRadius for application/json ContentType.
+type PostManagedRadiusJSONRequestBody = ManagedRadius
+
+// PutManagedRadiusJSONRequestBody defines body for PutManagedRadius for application/json ContentType.
+type PutManagedRadiusJSONRequestBody = ManagedRadius
+
 // PutPlatformJSONRequestBody defines body for PutPlatform for application/json ContentType.
 type PutPlatformJSONRequestBody = NewPlatform
+
+// PostBrowserJSONRequestBody defines body for PostBrowser for application/json ContentType.
+type PostBrowserJSONRequestBody = Browser
+
+// PutBrowserJSONRequestBody defines body for PutBrowser for application/json ContentType.
+type PutBrowserJSONRequestBody = Browser
+
+// PostEthernetJSONRequestBody defines body for PostEthernet for application/json ContentType.
+type PostEthernetJSONRequestBody = Ethernet
+
+// PutEthernetJSONRequestBody defines body for PutEthernet for application/json ContentType.
+type PutEthernetJSONRequestBody = Ethernet
+
+// PostVpnJSONRequestBody defines body for PostVpn for application/json ContentType.
+type PostVpnJSONRequestBody = Vpn
+
+// PutVpnJSONRequestBody defines body for PutVpn for application/json ContentType.
+type PutVpnJSONRequestBody = Vpn
+
+// PostWifiJSONRequestBody defines body for PostWifi for application/json ContentType.
+type PostWifiJSONRequestBody = Wifi
+
+// PutWifiJSONRequestBody defines body for PutWifi for application/json ContentType.
+type PutWifiJSONRequestBody = Wifi
+
+// PutIdentityProviderJSONRequestBody defines body for PutIdentityProvider for application/json ContentType.
+type PutIdentityProviderJSONRequestBody = IdentityProvider
+
+// PostIdpClientsJSONRequestBody defines body for PostIdpClients for application/json ContentType.
+type PostIdpClientsJSONRequestBody = IdpClient
 
 // AsWifiAccount returns the union data inside the Account_Configuration as a WifiAccount
 func (t Account_Configuration) AsWifiAccount() (WifiAccount, error) {
@@ -2092,6 +3007,42 @@ func (t AccountRequest_Configuration) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AccountRequest_Configuration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsX509Fields returns the union data inside the CredentialCertificate_Fields as a X509Fields
+func (t CredentialCertificate_Fields) AsX509Fields() (X509Fields, error) {
+	var body X509Fields
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromX509Fields overwrites any union data inside the CredentialCertificate_Fields as the provided X509Fields
+func (t *CredentialCertificate_Fields) FromX509Fields(v X509Fields) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeX509Fields performs a merge with any union data inside the CredentialCertificate_Fields, using the provided X509Fields
+func (t *CredentialCertificate_Fields) MergeX509Fields(v X509Fields) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t CredentialCertificate_Fields) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *CredentialCertificate_Fields) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -2654,6 +3605,234 @@ func (t *EndpointCertificateInfo_Details) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsWifiAccount returns the union data inside the EndpointConfiguration_ExtendedTypeConfiguration as a WifiAccount
+func (t EndpointConfiguration_ExtendedTypeConfiguration) AsWifiAccount() (WifiAccount, error) {
+	var body WifiAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWifiAccount overwrites any union data inside the EndpointConfiguration_ExtendedTypeConfiguration as the provided WifiAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) FromWifiAccount(v WifiAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWifiAccount performs a merge with any union data inside the EndpointConfiguration_ExtendedTypeConfiguration, using the provided WifiAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) MergeWifiAccount(v WifiAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEthernetAccount returns the union data inside the EndpointConfiguration_ExtendedTypeConfiguration as a EthernetAccount
+func (t EndpointConfiguration_ExtendedTypeConfiguration) AsEthernetAccount() (EthernetAccount, error) {
+	var body EthernetAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEthernetAccount overwrites any union data inside the EndpointConfiguration_ExtendedTypeConfiguration as the provided EthernetAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) FromEthernetAccount(v EthernetAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEthernetAccount performs a merge with any union data inside the EndpointConfiguration_ExtendedTypeConfiguration, using the provided EthernetAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) MergeEthernetAccount(v EthernetAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsVpnAccount returns the union data inside the EndpointConfiguration_ExtendedTypeConfiguration as a VpnAccount
+func (t EndpointConfiguration_ExtendedTypeConfiguration) AsVpnAccount() (VpnAccount, error) {
+	var body VpnAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVpnAccount overwrites any union data inside the EndpointConfiguration_ExtendedTypeConfiguration as the provided VpnAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) FromVpnAccount(v VpnAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVpnAccount performs a merge with any union data inside the EndpointConfiguration_ExtendedTypeConfiguration, using the provided VpnAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) MergeVpnAccount(v VpnAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBrowserAccount returns the union data inside the EndpointConfiguration_ExtendedTypeConfiguration as a BrowserAccount
+func (t EndpointConfiguration_ExtendedTypeConfiguration) AsBrowserAccount() (BrowserAccount, error) {
+	var body BrowserAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBrowserAccount overwrites any union data inside the EndpointConfiguration_ExtendedTypeConfiguration as the provided BrowserAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) FromBrowserAccount(v BrowserAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBrowserAccount performs a merge with any union data inside the EndpointConfiguration_ExtendedTypeConfiguration, using the provided BrowserAccount
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) MergeBrowserAccount(v BrowserAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t EndpointConfiguration_ExtendedTypeConfiguration) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *EndpointConfiguration_ExtendedTypeConfiguration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsWifiAccount returns the union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as a WifiAccount
+func (t EndpointConfigurationRequest_ExtendedTypeConfiguration) AsWifiAccount() (WifiAccount, error) {
+	var body WifiAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWifiAccount overwrites any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as the provided WifiAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) FromWifiAccount(v WifiAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWifiAccount performs a merge with any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration, using the provided WifiAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) MergeWifiAccount(v WifiAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEthernetAccount returns the union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as a EthernetAccount
+func (t EndpointConfigurationRequest_ExtendedTypeConfiguration) AsEthernetAccount() (EthernetAccount, error) {
+	var body EthernetAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEthernetAccount overwrites any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as the provided EthernetAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) FromEthernetAccount(v EthernetAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEthernetAccount performs a merge with any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration, using the provided EthernetAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) MergeEthernetAccount(v EthernetAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsVpnAccount returns the union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as a VpnAccount
+func (t EndpointConfigurationRequest_ExtendedTypeConfiguration) AsVpnAccount() (VpnAccount, error) {
+	var body VpnAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVpnAccount overwrites any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as the provided VpnAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) FromVpnAccount(v VpnAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeVpnAccount performs a merge with any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration, using the provided VpnAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) MergeVpnAccount(v VpnAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBrowserAccount returns the union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as a BrowserAccount
+func (t EndpointConfigurationRequest_ExtendedTypeConfiguration) AsBrowserAccount() (BrowserAccount, error) {
+	var body BrowserAccount
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBrowserAccount overwrites any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration as the provided BrowserAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) FromBrowserAccount(v BrowserAccount) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeBrowserAccount performs a merge with any union data inside the EndpointConfigurationRequest_ExtendedTypeConfiguration, using the provided BrowserAccount
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) MergeBrowserAccount(v BrowserAccount) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t EndpointConfigurationRequest_ExtendedTypeConfiguration) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *EndpointConfigurationRequest_ExtendedTypeConfiguration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsAwsPlatform returns the union data inside the NewPlatform_PlatformConfiguration as a AwsPlatform
 func (t NewPlatform_PlatformConfiguration) AsAwsPlatform() (AwsPlatform, error) {
 	var body AwsPlatform
@@ -3175,6 +4354,128 @@ func (t *Provisioner) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsReplyAttribute0 returns the union data inside the ReplyAttribute as a ReplyAttribute0
+func (t ReplyAttribute) AsReplyAttribute0() (ReplyAttribute0, error) {
+	var body ReplyAttribute0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromReplyAttribute0 overwrites any union data inside the ReplyAttribute as the provided ReplyAttribute0
+func (t *ReplyAttribute) FromReplyAttribute0(v ReplyAttribute0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeReplyAttribute0 performs a merge with any union data inside the ReplyAttribute, using the provided ReplyAttribute0
+func (t *ReplyAttribute) MergeReplyAttribute0(v ReplyAttribute0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsReplyAttribute1 returns the union data inside the ReplyAttribute as a ReplyAttribute1
+func (t ReplyAttribute) AsReplyAttribute1() (ReplyAttribute1, error) {
+	var body ReplyAttribute1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromReplyAttribute1 overwrites any union data inside the ReplyAttribute as the provided ReplyAttribute1
+func (t *ReplyAttribute) FromReplyAttribute1(v ReplyAttribute1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeReplyAttribute1 performs a merge with any union data inside the ReplyAttribute, using the provided ReplyAttribute1
+func (t *ReplyAttribute) MergeReplyAttribute1(v ReplyAttribute1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ReplyAttribute) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	object := make(map[string]json.RawMessage)
+	if t.union != nil {
+		err = json.Unmarshal(b, &object)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	object["name"], err = json.Marshal(t.Name)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'name': %w", err)
+	}
+
+	if t.Value != nil {
+		object["value"], err = json.Marshal(t.Value)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'value': %w", err)
+		}
+	}
+
+	if t.ValueFromCertificate != nil {
+		object["valueFromCertificate"], err = json.Marshal(t.ValueFromCertificate)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'valueFromCertificate': %w", err)
+		}
+	}
+	b, err = json.Marshal(object)
+	return b, err
+}
+
+func (t *ReplyAttribute) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	if err != nil {
+		return err
+	}
+	object := make(map[string]json.RawMessage)
+	err = json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["name"]; found {
+		err = json.Unmarshal(raw, &t.Name)
+		if err != nil {
+			return fmt.Errorf("error reading 'name': %w", err)
+		}
+	}
+
+	if raw, found := object["value"]; found {
+		err = json.Unmarshal(raw, &t.Value)
+		if err != nil {
+			return fmt.Errorf("error reading 'value': %w", err)
+		}
+	}
+
+	if raw, found := object["valueFromCertificate"]; found {
+		err = json.Unmarshal(raw, &t.ValueFromCertificate)
+		if err != nil {
+			return fmt.Errorf("error reading 'valueFromCertificate': %w", err)
+		}
+	}
+
+	return err
+}
+
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -3327,6 +4628,22 @@ type ClientInterface interface {
 	// GetCertificate request
 	GetCertificate(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteCredential request
+	DeleteCredential(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCredential request
+	GetCredential(ctx context.Context, credentialID CredentialID, params *GetCredentialParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutCredentialWithBody request with any body
+	PutCredentialWithBody(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutCredential(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostCredentialsWithBody request with any body
+	PostCredentialsWithBody(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostCredentials(ctx context.Context, params *PostCredentialsParams, body PostCredentialsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListDevices request
 	ListDevices(ctx context.Context, params *ListDevicesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3346,6 +4663,49 @@ type ClientInterface interface {
 
 	PatchDevice(ctx context.Context, deviceID DeviceID, params *PatchDeviceParams, body PatchDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PatchDeviceLifecycleWithBody request with any body
+	PatchDeviceLifecycleWithBody(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PatchDeviceLifecycle(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, body PatchDeviceLifecycleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListEndpointConfigurations request
+	ListEndpointConfigurations(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostEndpointConfigurationsWithBody request with any body
+	PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEndpointConfiguration request
+	DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEndpointConfiguration request
+	GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutEndpointConfigurationWithBody request with any body
+	PutEndpointConfigurationWithBody(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListManagedRadius request
+	ListManagedRadius(ctx context.Context, params *ListManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostManagedRadiusWithBody request with any body
+	PostManagedRadiusWithBody(ctx context.Context, params *PostManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostManagedRadius(ctx context.Context, params *PostManagedRadiusParams, body PostManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteManagedRadius request
+	DeleteManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *DeleteManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetManagedRadius request
+	GetManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *GetManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutManagedRadiusWithBody request with any body
+	PutManagedRadiusWithBody(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, body PutManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetPlatforms request
 	GetPlatforms(ctx context.Context, params *GetPlatformsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3353,6 +4713,107 @@ type ClientInterface interface {
 	PutPlatformWithBody(ctx context.Context, platformSlug PlatformSlug, params *PutPlatformParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutPlatform(ctx context.Context, platformSlug PlatformSlug, params *PutPlatformParams, body PutPlatformJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListBrowser request
+	ListBrowser(ctx context.Context, params *ListBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostBrowserWithBody request with any body
+	PostBrowserWithBody(ctx context.Context, params *PostBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostBrowser(ctx context.Context, params *PostBrowserParams, body PostBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteBrowser request
+	DeleteBrowser(ctx context.Context, browserID BrowserID, params *DeleteBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetBrowser request
+	GetBrowser(ctx context.Context, browserID BrowserID, params *GetBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutBrowserWithBody request with any body
+	PutBrowserWithBody(ctx context.Context, browserID BrowserID, params *PutBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutBrowser(ctx context.Context, browserID BrowserID, params *PutBrowserParams, body PutBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListEthernet request
+	ListEthernet(ctx context.Context, params *ListEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostEthernetWithBody request with any body
+	PostEthernetWithBody(ctx context.Context, params *PostEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostEthernet(ctx context.Context, params *PostEthernetParams, body PostEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEthernet request
+	DeleteEthernet(ctx context.Context, ethernetID EthernetID, params *DeleteEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEthernet request
+	GetEthernet(ctx context.Context, ethernetID EthernetID, params *GetEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutEthernetWithBody request with any body
+	PutEthernetWithBody(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutEthernet(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, body PutEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVpn request
+	ListVpn(ctx context.Context, params *ListVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostVpnWithBody request with any body
+	PostVpnWithBody(ctx context.Context, params *PostVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostVpn(ctx context.Context, params *PostVpnParams, body PostVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteVpn request
+	DeleteVpn(ctx context.Context, vpnID VpnID, params *DeleteVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVpn request
+	GetVpn(ctx context.Context, vpnID VpnID, params *GetVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutVpnWithBody request with any body
+	PutVpnWithBody(ctx context.Context, vpnID VpnID, params *PutVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutVpn(ctx context.Context, vpnID VpnID, params *PutVpnParams, body PutVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListWifi request
+	ListWifi(ctx context.Context, params *ListWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostWifiWithBody request with any body
+	PostWifiWithBody(ctx context.Context, params *PostWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostWifi(ctx context.Context, params *PostWifiParams, body PostWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteWifi request
+	DeleteWifi(ctx context.Context, wifiID WifiID, params *DeleteWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWifi request
+	GetWifi(ctx context.Context, wifiID WifiID, params *GetWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutWifiWithBody request with any body
+	PutWifiWithBody(ctx context.Context, wifiID WifiID, params *PutWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutWifi(ctx context.Context, wifiID WifiID, params *PutWifiParams, body PutWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteIdentityProvider request
+	DeleteIdentityProvider(ctx context.Context, params *DeleteIdentityProviderParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetIdentityProvider request
+	GetIdentityProvider(ctx context.Context, params *GetIdentityProviderParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutIdentityProviderWithBody request with any body
+	PutIdentityProviderWithBody(ctx context.Context, params *PutIdentityProviderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutIdentityProvider(ctx context.Context, params *PutIdentityProviderParams, body PutIdentityProviderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListIdpClients request
+	ListIdpClients(ctx context.Context, params *ListIdpClientsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostIdpClientsWithBody request with any body
+	PostIdpClientsWithBody(ctx context.Context, params *PostIdpClientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostIdpClients(ctx context.Context, params *PostIdpClientsParams, body PostIdpClientsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteIdpClient request
+	DeleteIdpClient(ctx context.Context, idpClientID IdpClientID, params *DeleteIdpClientParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetIdpClient request
+	GetIdpClient(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListAccounts(ctx context.Context, params *ListAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3703,6 +5164,78 @@ func (c *Client) GetCertificate(ctx context.Context, serialNumber SerialNumber, 
 	return c.Client.Do(req)
 }
 
+func (c *Client) DeleteCredential(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCredentialRequest(c.Server, credentialID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCredential(ctx context.Context, credentialID CredentialID, params *GetCredentialParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCredentialRequest(c.Server, credentialID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCredentialWithBody(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCredentialRequestWithBody(c.Server, credentialID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutCredential(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutCredentialRequest(c.Server, credentialID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCredentialsWithBody(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostCredentialsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCredentials(ctx context.Context, params *PostCredentialsParams, body PostCredentialsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostCredentialsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) ListDevices(ctx context.Context, params *ListDevicesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListDevicesRequest(c.Server, params)
 	if err != nil {
@@ -3787,6 +5320,198 @@ func (c *Client) PatchDevice(ctx context.Context, deviceID DeviceID, params *Pat
 	return c.Client.Do(req)
 }
 
+func (c *Client) PatchDeviceLifecycleWithBody(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchDeviceLifecycleRequestWithBody(c.Server, deviceID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PatchDeviceLifecycle(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, body PatchDeviceLifecycleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchDeviceLifecycleRequest(c.Server, deviceID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListEndpointConfigurations(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEndpointConfigurationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurationsWithBody(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEndpointConfigurations(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEndpointConfigurationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEndpointConfigurationRequest(c.Server, endpointConfigurationID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEndpointConfigurationWithBody(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEndpointConfigurationRequestWithBody(c.Server, endpointConfigurationID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEndpointConfiguration(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEndpointConfigurationRequest(c.Server, endpointConfigurationID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListManagedRadius(ctx context.Context, params *ListManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListManagedRadiusRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostManagedRadiusWithBody(ctx context.Context, params *PostManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedRadiusRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostManagedRadius(ctx context.Context, params *PostManagedRadiusParams, body PostManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostManagedRadiusRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *DeleteManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteManagedRadiusRequest(c.Server, managedRadiusID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *GetManagedRadiusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetManagedRadiusRequest(c.Server, managedRadiusID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutManagedRadiusWithBody(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutManagedRadiusRequestWithBody(c.Server, managedRadiusID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutManagedRadius(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, body PutManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutManagedRadiusRequest(c.Server, managedRadiusID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetPlatforms(ctx context.Context, params *GetPlatformsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetPlatformsRequest(c.Server, params)
 	if err != nil {
@@ -3813,6 +5538,450 @@ func (c *Client) PutPlatformWithBody(ctx context.Context, platformSlug PlatformS
 
 func (c *Client) PutPlatform(ctx context.Context, platformSlug PlatformSlug, params *PutPlatformParams, body PutPlatformJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutPlatformRequest(c.Server, platformSlug, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListBrowser(ctx context.Context, params *ListBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListBrowserRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostBrowserWithBody(ctx context.Context, params *PostBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostBrowserRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostBrowser(ctx context.Context, params *PostBrowserParams, body PostBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostBrowserRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteBrowser(ctx context.Context, browserID BrowserID, params *DeleteBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteBrowserRequest(c.Server, browserID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetBrowser(ctx context.Context, browserID BrowserID, params *GetBrowserParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetBrowserRequest(c.Server, browserID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutBrowserWithBody(ctx context.Context, browserID BrowserID, params *PutBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutBrowserRequestWithBody(c.Server, browserID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutBrowser(ctx context.Context, browserID BrowserID, params *PutBrowserParams, body PutBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutBrowserRequest(c.Server, browserID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListEthernet(ctx context.Context, params *ListEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEthernetRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEthernetWithBody(ctx context.Context, params *PostEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEthernetRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEthernet(ctx context.Context, params *PostEthernetParams, body PostEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostEthernetRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEthernet(ctx context.Context, ethernetID EthernetID, params *DeleteEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEthernetRequest(c.Server, ethernetID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEthernet(ctx context.Context, ethernetID EthernetID, params *GetEthernetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEthernetRequest(c.Server, ethernetID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEthernetWithBody(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEthernetRequestWithBody(c.Server, ethernetID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEthernet(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, body PutEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutEthernetRequest(c.Server, ethernetID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListVpn(ctx context.Context, params *ListVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVpnRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostVpnWithBody(ctx context.Context, params *PostVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostVpnRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostVpn(ctx context.Context, params *PostVpnParams, body PostVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostVpnRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteVpn(ctx context.Context, vpnID VpnID, params *DeleteVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteVpnRequest(c.Server, vpnID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetVpn(ctx context.Context, vpnID VpnID, params *GetVpnParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVpnRequest(c.Server, vpnID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutVpnWithBody(ctx context.Context, vpnID VpnID, params *PutVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutVpnRequestWithBody(c.Server, vpnID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutVpn(ctx context.Context, vpnID VpnID, params *PutVpnParams, body PutVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutVpnRequest(c.Server, vpnID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListWifi(ctx context.Context, params *ListWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListWifiRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostWifiWithBody(ctx context.Context, params *PostWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWifiRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostWifi(ctx context.Context, params *PostWifiParams, body PostWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostWifiRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteWifi(ctx context.Context, wifiID WifiID, params *DeleteWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteWifiRequest(c.Server, wifiID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetWifi(ctx context.Context, wifiID WifiID, params *GetWifiParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWifiRequest(c.Server, wifiID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWifiWithBody(ctx context.Context, wifiID WifiID, params *PutWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWifiRequestWithBody(c.Server, wifiID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutWifi(ctx context.Context, wifiID WifiID, params *PutWifiParams, body PutWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutWifiRequest(c.Server, wifiID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteIdentityProvider(ctx context.Context, params *DeleteIdentityProviderParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteIdentityProviderRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetIdentityProvider(ctx context.Context, params *GetIdentityProviderParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIdentityProviderRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutIdentityProviderWithBody(ctx context.Context, params *PutIdentityProviderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutIdentityProviderRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutIdentityProvider(ctx context.Context, params *PutIdentityProviderParams, body PutIdentityProviderJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutIdentityProviderRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListIdpClients(ctx context.Context, params *ListIdpClientsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListIdpClientsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostIdpClientsWithBody(ctx context.Context, params *PostIdpClientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostIdpClientsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostIdpClients(ctx context.Context, params *PostIdpClientsParams, body PostIdpClientsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostIdpClientsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteIdpClient(ctx context.Context, idpClientID IdpClientID, params *DeleteIdpClientParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteIdpClientRequest(c.Server, idpClientID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetIdpClient(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIdpClientRequest(c.Server, idpClientID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5205,6 +7374,265 @@ func NewGetCertificateRequest(server string, serialNumber SerialNumber, params *
 	return req, nil
 }
 
+// NewDeleteCredentialRequest generates requests for DeleteCredential
+func NewDeleteCredentialRequest(server string, credentialID CredentialID, params *DeleteCredentialParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "credentialID", runtime.ParamLocationPath, credentialID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/credential/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetCredentialRequest generates requests for GetCredential
+func NewGetCredentialRequest(server string, credentialID CredentialID, params *GetCredentialParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "credentialID", runtime.ParamLocationPath, credentialID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/credential/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutCredentialRequest calls the generic PutCredential builder with application/json body
+func NewPutCredentialRequest(server string, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutCredentialRequestWithBody(server, credentialID, params, "application/json", bodyReader)
+}
+
+// NewPutCredentialRequestWithBody generates requests for PutCredential with any type of body
+func NewPutCredentialRequestWithBody(server string, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "credentialID", runtime.ParamLocationPath, credentialID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/credential/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostCredentialsRequest calls the generic PostCredentials builder with application/json body
+func NewPostCredentialsRequest(server string, params *PostCredentialsParams, body PostCredentialsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostCredentialsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostCredentialsRequestWithBody generates requests for PostCredentials with any type of body
+func NewPostCredentialsRequestWithBody(server string, params *PostCredentialsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/credentials")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
 // NewListDevicesRequest generates requests for ListDevices
 func NewListDevicesRequest(server string, params *ListDevicesParams) (*http.Request, error) {
 	var err error
@@ -5571,6 +7999,791 @@ func NewPatchDeviceRequestWithBody(server string, deviceID DeviceID, params *Pat
 	return req, nil
 }
 
+// NewPatchDeviceLifecycleRequest calls the generic PatchDeviceLifecycle builder with application/json body
+func NewPatchDeviceLifecycleRequest(server string, deviceID DeviceID, params *PatchDeviceLifecycleParams, body PatchDeviceLifecycleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPatchDeviceLifecycleRequestWithBody(server, deviceID, params, "application/json", bodyReader)
+}
+
+// NewPatchDeviceLifecycleRequestWithBody generates requests for PatchDeviceLifecycle with any type of body
+func NewPatchDeviceLifecycleRequestWithBody(server string, deviceID DeviceID, params *PatchDeviceLifecycleParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deviceID", runtime.ParamLocationPath, deviceID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/devices/%s/lifecycle", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListEndpointConfigurationsRequest generates requests for ListEndpointConfigurations
+func NewListEndpointConfigurationsRequest(server string, params *ListEndpointConfigurationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostEndpointConfigurationsRequest calls the generic PostEndpointConfigurations builder with application/json body
+func NewPostEndpointConfigurationsRequest(server string, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEndpointConfigurationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostEndpointConfigurationsRequestWithBody generates requests for PostEndpointConfigurations with any type of body
+func NewPostEndpointConfigurationsRequestWithBody(server string, params *PostEndpointConfigurationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteEndpointConfigurationRequest generates requests for DeleteEndpointConfiguration
+func NewDeleteEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetEndpointConfigurationRequest generates requests for GetEndpointConfiguration
+func NewGetEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutEndpointConfigurationRequest calls the generic PutEndpointConfiguration builder with application/json body
+func NewPutEndpointConfigurationRequest(server string, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutEndpointConfigurationRequestWithBody(server, endpointConfigurationID, params, "application/json", bodyReader)
+}
+
+// NewPutEndpointConfigurationRequestWithBody generates requests for PutEndpointConfiguration with any type of body
+func NewPutEndpointConfigurationRequestWithBody(server string, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "endpointConfigurationID", runtime.ParamLocationPath, endpointConfigurationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/endpoint-configurations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListManagedRadiusRequest generates requests for ListManagedRadius
+func NewListManagedRadiusRequest(server string, params *ListManagedRadiusParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-radius")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostManagedRadiusRequest calls the generic PostManagedRadius builder with application/json body
+func NewPostManagedRadiusRequest(server string, params *PostManagedRadiusParams, body PostManagedRadiusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostManagedRadiusRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostManagedRadiusRequestWithBody generates requests for PostManagedRadius with any type of body
+func NewPostManagedRadiusRequestWithBody(server string, params *PostManagedRadiusParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-radius")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteManagedRadiusRequest generates requests for DeleteManagedRadius
+func NewDeleteManagedRadiusRequest(server string, managedRadiusID ManagedRadiusID, params *DeleteManagedRadiusParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedRadiusID", runtime.ParamLocationPath, managedRadiusID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-radius/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Secret != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "secret", runtime.ParamLocationQuery, *params.Secret); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetManagedRadiusRequest generates requests for GetManagedRadius
+func NewGetManagedRadiusRequest(server string, managedRadiusID ManagedRadiusID, params *GetManagedRadiusParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedRadiusID", runtime.ParamLocationPath, managedRadiusID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-radius/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Secret != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "secret", runtime.ParamLocationQuery, *params.Secret); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutManagedRadiusRequest calls the generic PutManagedRadius builder with application/json body
+func NewPutManagedRadiusRequest(server string, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, body PutManagedRadiusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutManagedRadiusRequestWithBody(server, managedRadiusID, params, "application/json", bodyReader)
+}
+
+// NewPutManagedRadiusRequestWithBody generates requests for PutManagedRadius with any type of body
+func NewPutManagedRadiusRequestWithBody(server string, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "managedRadiusID", runtime.ParamLocationPath, managedRadiusID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/managed-radius/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Secret != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "secret", runtime.ParamLocationQuery, *params.Secret); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
 // NewGetPlatformsRequest generates requests for GetPlatforms
 func NewGetPlatformsRequest(server string, params *GetPlatformsParams) (*http.Request, error) {
 	var err error
@@ -5689,6 +8902,1753 @@ func NewPutPlatformRequestWithBody(server string, platformSlug PlatformSlug, par
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListBrowserRequest generates requests for ListBrowser
+func NewListBrowserRequest(server string, params *ListBrowserParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/browser")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostBrowserRequest calls the generic PostBrowser builder with application/json body
+func NewPostBrowserRequest(server string, params *PostBrowserParams, body PostBrowserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostBrowserRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostBrowserRequestWithBody generates requests for PostBrowser with any type of body
+func NewPostBrowserRequestWithBody(server string, params *PostBrowserParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/browser")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteBrowserRequest generates requests for DeleteBrowser
+func NewDeleteBrowserRequest(server string, browserID BrowserID, params *DeleteBrowserParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "browserID", runtime.ParamLocationPath, browserID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/browser/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetBrowserRequest generates requests for GetBrowser
+func NewGetBrowserRequest(server string, browserID BrowserID, params *GetBrowserParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "browserID", runtime.ParamLocationPath, browserID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/browser/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutBrowserRequest calls the generic PutBrowser builder with application/json body
+func NewPutBrowserRequest(server string, browserID BrowserID, params *PutBrowserParams, body PutBrowserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutBrowserRequestWithBody(server, browserID, params, "application/json", bodyReader)
+}
+
+// NewPutBrowserRequestWithBody generates requests for PutBrowser with any type of body
+func NewPutBrowserRequestWithBody(server string, browserID BrowserID, params *PutBrowserParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "browserID", runtime.ParamLocationPath, browserID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/browser/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListEthernetRequest generates requests for ListEthernet
+func NewListEthernetRequest(server string, params *ListEthernetParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/ethernet")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostEthernetRequest calls the generic PostEthernet builder with application/json body
+func NewPostEthernetRequest(server string, params *PostEthernetParams, body PostEthernetJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEthernetRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostEthernetRequestWithBody generates requests for PostEthernet with any type of body
+func NewPostEthernetRequestWithBody(server string, params *PostEthernetParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/ethernet")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteEthernetRequest generates requests for DeleteEthernet
+func NewDeleteEthernetRequest(server string, ethernetID EthernetID, params *DeleteEthernetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "ethernetID", runtime.ParamLocationPath, ethernetID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/ethernet/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetEthernetRequest generates requests for GetEthernet
+func NewGetEthernetRequest(server string, ethernetID EthernetID, params *GetEthernetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "ethernetID", runtime.ParamLocationPath, ethernetID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/ethernet/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutEthernetRequest calls the generic PutEthernet builder with application/json body
+func NewPutEthernetRequest(server string, ethernetID EthernetID, params *PutEthernetParams, body PutEthernetJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutEthernetRequestWithBody(server, ethernetID, params, "application/json", bodyReader)
+}
+
+// NewPutEthernetRequestWithBody generates requests for PutEthernet with any type of body
+func NewPutEthernetRequestWithBody(server string, ethernetID EthernetID, params *PutEthernetParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "ethernetID", runtime.ParamLocationPath, ethernetID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/ethernet/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListVpnRequest generates requests for ListVpn
+func NewListVpnRequest(server string, params *ListVpnParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/vpn")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostVpnRequest calls the generic PostVpn builder with application/json body
+func NewPostVpnRequest(server string, params *PostVpnParams, body PostVpnJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostVpnRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostVpnRequestWithBody generates requests for PostVpn with any type of body
+func NewPostVpnRequestWithBody(server string, params *PostVpnParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/vpn")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteVpnRequest generates requests for DeleteVpn
+func NewDeleteVpnRequest(server string, vpnID VpnID, params *DeleteVpnParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "vpnID", runtime.ParamLocationPath, vpnID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/vpn/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetVpnRequest generates requests for GetVpn
+func NewGetVpnRequest(server string, vpnID VpnID, params *GetVpnParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "vpnID", runtime.ParamLocationPath, vpnID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/vpn/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutVpnRequest calls the generic PutVpn builder with application/json body
+func NewPutVpnRequest(server string, vpnID VpnID, params *PutVpnParams, body PutVpnJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutVpnRequestWithBody(server, vpnID, params, "application/json", bodyReader)
+}
+
+// NewPutVpnRequestWithBody generates requests for PutVpn with any type of body
+func NewPutVpnRequestWithBody(server string, vpnID VpnID, params *PutVpnParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "vpnID", runtime.ParamLocationPath, vpnID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/vpn/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListWifiRequest generates requests for ListWifi
+func NewListWifiRequest(server string, params *ListWifiParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/wifi")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostWifiRequest calls the generic PostWifi builder with application/json body
+func NewPostWifiRequest(server string, params *PostWifiParams, body PostWifiJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostWifiRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostWifiRequestWithBody generates requests for PostWifi with any type of body
+func NewPostWifiRequestWithBody(server string, params *PostWifiParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/wifi")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteWifiRequest generates requests for DeleteWifi
+func NewDeleteWifiRequest(server string, wifiID WifiID, params *DeleteWifiParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "wifiID", runtime.ParamLocationPath, wifiID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/wifi/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetWifiRequest generates requests for GetWifi
+func NewGetWifiRequest(server string, wifiID WifiID, params *GetWifiParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "wifiID", runtime.ParamLocationPath, wifiID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/wifi/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutWifiRequest calls the generic PutWifi builder with application/json body
+func NewPutWifiRequest(server string, wifiID WifiID, params *PutWifiParams, body PutWifiJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutWifiRequestWithBody(server, wifiID, params, "application/json", bodyReader)
+}
+
+// NewPutWifiRequestWithBody generates requests for PutWifi with any type of body
+func NewPutWifiRequestWithBody(server string, wifiID WifiID, params *PutWifiParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "wifiID", runtime.ParamLocationPath, wifiID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/protect/wifi/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteIdentityProviderRequest generates requests for DeleteIdentityProvider
+func NewDeleteIdentityProviderRequest(server string, params *DeleteIdentityProviderParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetIdentityProviderRequest generates requests for GetIdentityProvider
+func NewGetIdentityProviderRequest(server string, params *GetIdentityProviderParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutIdentityProviderRequest calls the generic PutIdentityProvider builder with application/json body
+func NewPutIdentityProviderRequest(server string, params *PutIdentityProviderParams, body PutIdentityProviderJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutIdentityProviderRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPutIdentityProviderRequestWithBody generates requests for PutIdentityProvider with any type of body
+func NewPutIdentityProviderRequestWithBody(server string, params *PutIdentityProviderParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListIdpClientsRequest generates requests for ListIdpClients
+func NewListIdpClientsRequest(server string, params *ListIdpClientsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso/clients")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPostIdpClientsRequest calls the generic PostIdpClients builder with application/json body
+func NewPostIdpClientsRequest(server string, params *PostIdpClientsParams, body PostIdpClientsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostIdpClientsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostIdpClientsRequestWithBody generates requests for PostIdpClients with any type of body
+func NewPostIdpClientsRequestWithBody(server string, params *PostIdpClientsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso/clients")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteIdpClientRequest generates requests for DeleteIdpClient
+func NewDeleteIdpClientRequest(server string, idpClientID IdpClientID, params *DeleteIdpClientParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "idpClientID", runtime.ParamLocationPath, idpClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso/clients/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.Accept != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam1)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewGetIdpClientRequest generates requests for GetIdpClient
+func NewGetIdpClientRequest(server string, idpClientID IdpClientID, params *GetIdpClientParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "idpClientID", runtime.ParamLocationPath, idpClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso/clients/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -5841,6 +10801,22 @@ type ClientWithResponsesInterface interface {
 	// GetCertificateWithResponse request
 	GetCertificateWithResponse(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*GetCertificateResponse, error)
 
+	// DeleteCredentialWithResponse request
+	DeleteCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*DeleteCredentialResponse, error)
+
+	// GetCredentialWithResponse request
+	GetCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *GetCredentialParams, reqEditors ...RequestEditorFn) (*GetCredentialResponse, error)
+
+	// PutCredentialWithBodyWithResponse request with any body
+	PutCredentialWithBodyWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error)
+
+	PutCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error)
+
+	// PostCredentialsWithBodyWithResponse request with any body
+	PostCredentialsWithBodyWithResponse(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostCredentialsResponse, error)
+
+	PostCredentialsWithResponse(ctx context.Context, params *PostCredentialsParams, body PostCredentialsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostCredentialsResponse, error)
+
 	// ListDevicesWithResponse request
 	ListDevicesWithResponse(ctx context.Context, params *ListDevicesParams, reqEditors ...RequestEditorFn) (*ListDevicesResponse, error)
 
@@ -5860,6 +10836,49 @@ type ClientWithResponsesInterface interface {
 
 	PatchDeviceWithResponse(ctx context.Context, deviceID DeviceID, params *PatchDeviceParams, body PatchDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchDeviceResponse, error)
 
+	// PatchDeviceLifecycleWithBodyWithResponse request with any body
+	PatchDeviceLifecycleWithBodyWithResponse(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchDeviceLifecycleResponse, error)
+
+	PatchDeviceLifecycleWithResponse(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, body PatchDeviceLifecycleJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchDeviceLifecycleResponse, error)
+
+	// ListEndpointConfigurationsWithResponse request
+	ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error)
+
+	// PostEndpointConfigurationsWithBodyWithResponse request with any body
+	PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error)
+
+	// DeleteEndpointConfigurationWithResponse request
+	DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error)
+
+	// GetEndpointConfigurationWithResponse request
+	GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error)
+
+	// PutEndpointConfigurationWithBodyWithResponse request with any body
+	PutEndpointConfigurationWithBodyWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error)
+
+	PutEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error)
+
+	// ListManagedRadiusWithResponse request
+	ListManagedRadiusWithResponse(ctx context.Context, params *ListManagedRadiusParams, reqEditors ...RequestEditorFn) (*ListManagedRadiusResponse, error)
+
+	// PostManagedRadiusWithBodyWithResponse request with any body
+	PostManagedRadiusWithBodyWithResponse(ctx context.Context, params *PostManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedRadiusResponse, error)
+
+	PostManagedRadiusWithResponse(ctx context.Context, params *PostManagedRadiusParams, body PostManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedRadiusResponse, error)
+
+	// DeleteManagedRadiusWithResponse request
+	DeleteManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *DeleteManagedRadiusParams, reqEditors ...RequestEditorFn) (*DeleteManagedRadiusResponse, error)
+
+	// GetManagedRadiusWithResponse request
+	GetManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *GetManagedRadiusParams, reqEditors ...RequestEditorFn) (*GetManagedRadiusResponse, error)
+
+	// PutManagedRadiusWithBodyWithResponse request with any body
+	PutManagedRadiusWithBodyWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutManagedRadiusResponse, error)
+
+	PutManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, body PutManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*PutManagedRadiusResponse, error)
+
 	// GetPlatformsWithResponse request
 	GetPlatformsWithResponse(ctx context.Context, params *GetPlatformsParams, reqEditors ...RequestEditorFn) (*GetPlatformsResponse, error)
 
@@ -5867,6 +10886,107 @@ type ClientWithResponsesInterface interface {
 	PutPlatformWithBodyWithResponse(ctx context.Context, platformSlug PlatformSlug, params *PutPlatformParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutPlatformResponse, error)
 
 	PutPlatformWithResponse(ctx context.Context, platformSlug PlatformSlug, params *PutPlatformParams, body PutPlatformJSONRequestBody, reqEditors ...RequestEditorFn) (*PutPlatformResponse, error)
+
+	// ListBrowserWithResponse request
+	ListBrowserWithResponse(ctx context.Context, params *ListBrowserParams, reqEditors ...RequestEditorFn) (*ListBrowserResponse, error)
+
+	// PostBrowserWithBodyWithResponse request with any body
+	PostBrowserWithBodyWithResponse(ctx context.Context, params *PostBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostBrowserResponse, error)
+
+	PostBrowserWithResponse(ctx context.Context, params *PostBrowserParams, body PostBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*PostBrowserResponse, error)
+
+	// DeleteBrowserWithResponse request
+	DeleteBrowserWithResponse(ctx context.Context, browserID BrowserID, params *DeleteBrowserParams, reqEditors ...RequestEditorFn) (*DeleteBrowserResponse, error)
+
+	// GetBrowserWithResponse request
+	GetBrowserWithResponse(ctx context.Context, browserID BrowserID, params *GetBrowserParams, reqEditors ...RequestEditorFn) (*GetBrowserResponse, error)
+
+	// PutBrowserWithBodyWithResponse request with any body
+	PutBrowserWithBodyWithResponse(ctx context.Context, browserID BrowserID, params *PutBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBrowserResponse, error)
+
+	PutBrowserWithResponse(ctx context.Context, browserID BrowserID, params *PutBrowserParams, body PutBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*PutBrowserResponse, error)
+
+	// ListEthernetWithResponse request
+	ListEthernetWithResponse(ctx context.Context, params *ListEthernetParams, reqEditors ...RequestEditorFn) (*ListEthernetResponse, error)
+
+	// PostEthernetWithBodyWithResponse request with any body
+	PostEthernetWithBodyWithResponse(ctx context.Context, params *PostEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEthernetResponse, error)
+
+	PostEthernetWithResponse(ctx context.Context, params *PostEthernetParams, body PostEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEthernetResponse, error)
+
+	// DeleteEthernetWithResponse request
+	DeleteEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *DeleteEthernetParams, reqEditors ...RequestEditorFn) (*DeleteEthernetResponse, error)
+
+	// GetEthernetWithResponse request
+	GetEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *GetEthernetParams, reqEditors ...RequestEditorFn) (*GetEthernetResponse, error)
+
+	// PutEthernetWithBodyWithResponse request with any body
+	PutEthernetWithBodyWithResponse(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEthernetResponse, error)
+
+	PutEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, body PutEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEthernetResponse, error)
+
+	// ListVpnWithResponse request
+	ListVpnWithResponse(ctx context.Context, params *ListVpnParams, reqEditors ...RequestEditorFn) (*ListVpnResponse, error)
+
+	// PostVpnWithBodyWithResponse request with any body
+	PostVpnWithBodyWithResponse(ctx context.Context, params *PostVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostVpnResponse, error)
+
+	PostVpnWithResponse(ctx context.Context, params *PostVpnParams, body PostVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*PostVpnResponse, error)
+
+	// DeleteVpnWithResponse request
+	DeleteVpnWithResponse(ctx context.Context, vpnID VpnID, params *DeleteVpnParams, reqEditors ...RequestEditorFn) (*DeleteVpnResponse, error)
+
+	// GetVpnWithResponse request
+	GetVpnWithResponse(ctx context.Context, vpnID VpnID, params *GetVpnParams, reqEditors ...RequestEditorFn) (*GetVpnResponse, error)
+
+	// PutVpnWithBodyWithResponse request with any body
+	PutVpnWithBodyWithResponse(ctx context.Context, vpnID VpnID, params *PutVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutVpnResponse, error)
+
+	PutVpnWithResponse(ctx context.Context, vpnID VpnID, params *PutVpnParams, body PutVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*PutVpnResponse, error)
+
+	// ListWifiWithResponse request
+	ListWifiWithResponse(ctx context.Context, params *ListWifiParams, reqEditors ...RequestEditorFn) (*ListWifiResponse, error)
+
+	// PostWifiWithBodyWithResponse request with any body
+	PostWifiWithBodyWithResponse(ctx context.Context, params *PostWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWifiResponse, error)
+
+	PostWifiWithResponse(ctx context.Context, params *PostWifiParams, body PostWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWifiResponse, error)
+
+	// DeleteWifiWithResponse request
+	DeleteWifiWithResponse(ctx context.Context, wifiID WifiID, params *DeleteWifiParams, reqEditors ...RequestEditorFn) (*DeleteWifiResponse, error)
+
+	// GetWifiWithResponse request
+	GetWifiWithResponse(ctx context.Context, wifiID WifiID, params *GetWifiParams, reqEditors ...RequestEditorFn) (*GetWifiResponse, error)
+
+	// PutWifiWithBodyWithResponse request with any body
+	PutWifiWithBodyWithResponse(ctx context.Context, wifiID WifiID, params *PutWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWifiResponse, error)
+
+	PutWifiWithResponse(ctx context.Context, wifiID WifiID, params *PutWifiParams, body PutWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWifiResponse, error)
+
+	// DeleteIdentityProviderWithResponse request
+	DeleteIdentityProviderWithResponse(ctx context.Context, params *DeleteIdentityProviderParams, reqEditors ...RequestEditorFn) (*DeleteIdentityProviderResponse, error)
+
+	// GetIdentityProviderWithResponse request
+	GetIdentityProviderWithResponse(ctx context.Context, params *GetIdentityProviderParams, reqEditors ...RequestEditorFn) (*GetIdentityProviderResponse, error)
+
+	// PutIdentityProviderWithBodyWithResponse request with any body
+	PutIdentityProviderWithBodyWithResponse(ctx context.Context, params *PutIdentityProviderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutIdentityProviderResponse, error)
+
+	PutIdentityProviderWithResponse(ctx context.Context, params *PutIdentityProviderParams, body PutIdentityProviderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutIdentityProviderResponse, error)
+
+	// ListIdpClientsWithResponse request
+	ListIdpClientsWithResponse(ctx context.Context, params *ListIdpClientsParams, reqEditors ...RequestEditorFn) (*ListIdpClientsResponse, error)
+
+	// PostIdpClientsWithBodyWithResponse request with any body
+	PostIdpClientsWithBodyWithResponse(ctx context.Context, params *PostIdpClientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostIdpClientsResponse, error)
+
+	PostIdpClientsWithResponse(ctx context.Context, params *PostIdpClientsParams, body PostIdpClientsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostIdpClientsResponse, error)
+
+	// DeleteIdpClientWithResponse request
+	DeleteIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *DeleteIdpClientParams, reqEditors ...RequestEditorFn) (*DeleteIdpClientResponse, error)
+
+	// GetIdpClientWithResponse request
+	GetIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*GetIdpClientResponse, error)
 }
 
 type ListAccountsResponse struct {
@@ -6438,6 +11558,107 @@ func (r GetCertificateResponse) StatusCode() int {
 	return 0
 }
 
+type DeleteCredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Credential
+	JSON400      *N400
+	JSON401      *N401
+	JSON404      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutCredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Credential
+	JSON400      *N400
+	JSON401      *N401
+	JSON404      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutCredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutCredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostCredentialsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Credential
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostCredentialsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostCredentialsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListDevicesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6571,6 +11792,294 @@ func (r PatchDeviceResponse) StatusCode() int {
 	return 0
 }
 
+type PatchDeviceLifecycleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Device
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PatchDeviceLifecycleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PatchDeviceLifecycleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListEndpointConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]EndpointConfiguration
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListEndpointConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListEndpointConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEndpointConfigurationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *EndpointConfiguration
+	JSON400      *N400
+	JSON401      *N401
+	JSON422      *N422
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEndpointConfigurationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEndpointConfigurationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *EndpointConfiguration
+	JSON400      *N400
+	JSON401      *N401
+	JSON404      *N404
+	JSON422      *N422
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutEndpointConfigurationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *EndpointConfiguration
+	JSON400      *N400
+	JSON401      *N401
+	JSON404      *N404
+	JSON422      *N422
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutEndpointConfigurationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutEndpointConfigurationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListManagedRadiusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ManagedRadius
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListManagedRadiusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListManagedRadiusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostManagedRadiusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedRadius
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON409      *N409
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostManagedRadiusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostManagedRadiusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteManagedRadiusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteManagedRadiusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteManagedRadiusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetManagedRadiusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedRadius
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetManagedRadiusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetManagedRadiusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutManagedRadiusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ManagedRadius
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON409      *N409
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutManagedRadiusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutManagedRadiusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetPlatformsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6617,6 +12126,713 @@ func (r PutPlatformResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutPlatformResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListBrowserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Browser
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListBrowserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListBrowserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostBrowserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Browser
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostBrowserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostBrowserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteBrowserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteBrowserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteBrowserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetBrowserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Browser
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetBrowserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetBrowserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutBrowserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Browser
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutBrowserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutBrowserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListEthernetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Ethernet
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListEthernetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListEthernetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEthernetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Ethernet
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEthernetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEthernetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteEthernetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEthernetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEthernetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEthernetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Ethernet
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEthernetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEthernetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutEthernetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Ethernet
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutEthernetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutEthernetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListVpnResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Vpn
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVpnResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVpnResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostVpnResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Vpn
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostVpnResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostVpnResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteVpnResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteVpnResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteVpnResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVpnResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vpn
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVpnResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVpnResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutVpnResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vpn
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutVpnResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutVpnResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListWifiResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Wifi
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListWifiResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListWifiResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostWifiResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Wifi
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostWifiResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostWifiResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteWifiResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteWifiResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteWifiResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWifiResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Wifi
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWifiResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWifiResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutWifiResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Wifi
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutWifiResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutWifiResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteIdentityProviderResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteIdentityProviderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteIdentityProviderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetIdentityProviderResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IdentityProvider
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIdentityProviderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIdentityProviderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutIdentityProviderResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IdentityProvider
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutIdentityProviderResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutIdentityProviderResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListIdpClientsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IdentityProvider
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListIdpClientsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListIdpClientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostIdpClientsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *IdentityProvider
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON422      *N422
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PostIdpClientsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostIdpClientsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteIdpClientResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteIdpClientResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteIdpClientResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetIdpClientResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IdentityProvider
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIdpClientResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIdpClientResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6876,6 +13092,58 @@ func (c *ClientWithResponses) GetCertificateWithResponse(ctx context.Context, se
 	return ParseGetCertificateResponse(rsp)
 }
 
+// DeleteCredentialWithResponse request returning *DeleteCredentialResponse
+func (c *ClientWithResponses) DeleteCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*DeleteCredentialResponse, error) {
+	rsp, err := c.DeleteCredential(ctx, credentialID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCredentialResponse(rsp)
+}
+
+// GetCredentialWithResponse request returning *GetCredentialResponse
+func (c *ClientWithResponses) GetCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *GetCredentialParams, reqEditors ...RequestEditorFn) (*GetCredentialResponse, error) {
+	rsp, err := c.GetCredential(ctx, credentialID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCredentialResponse(rsp)
+}
+
+// PutCredentialWithBodyWithResponse request with arbitrary body returning *PutCredentialResponse
+func (c *ClientWithResponses) PutCredentialWithBodyWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error) {
+	rsp, err := c.PutCredentialWithBody(ctx, credentialID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCredentialResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error) {
+	rsp, err := c.PutCredential(ctx, credentialID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutCredentialResponse(rsp)
+}
+
+// PostCredentialsWithBodyWithResponse request with arbitrary body returning *PostCredentialsResponse
+func (c *ClientWithResponses) PostCredentialsWithBodyWithResponse(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostCredentialsResponse, error) {
+	rsp, err := c.PostCredentialsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCredentialsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostCredentialsWithResponse(ctx context.Context, params *PostCredentialsParams, body PostCredentialsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostCredentialsResponse, error) {
+	rsp, err := c.PostCredentials(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCredentialsResponse(rsp)
+}
+
 // ListDevicesWithResponse request returning *ListDevicesResponse
 func (c *ClientWithResponses) ListDevicesWithResponse(ctx context.Context, params *ListDevicesParams, reqEditors ...RequestEditorFn) (*ListDevicesResponse, error) {
 	rsp, err := c.ListDevices(ctx, params, reqEditors...)
@@ -6937,6 +13205,145 @@ func (c *ClientWithResponses) PatchDeviceWithResponse(ctx context.Context, devic
 	return ParsePatchDeviceResponse(rsp)
 }
 
+// PatchDeviceLifecycleWithBodyWithResponse request with arbitrary body returning *PatchDeviceLifecycleResponse
+func (c *ClientWithResponses) PatchDeviceLifecycleWithBodyWithResponse(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchDeviceLifecycleResponse, error) {
+	rsp, err := c.PatchDeviceLifecycleWithBody(ctx, deviceID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchDeviceLifecycleResponse(rsp)
+}
+
+func (c *ClientWithResponses) PatchDeviceLifecycleWithResponse(ctx context.Context, deviceID DeviceID, params *PatchDeviceLifecycleParams, body PatchDeviceLifecycleJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchDeviceLifecycleResponse, error) {
+	rsp, err := c.PatchDeviceLifecycle(ctx, deviceID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePatchDeviceLifecycleResponse(rsp)
+}
+
+// ListEndpointConfigurationsWithResponse request returning *ListEndpointConfigurationsResponse
+func (c *ClientWithResponses) ListEndpointConfigurationsWithResponse(ctx context.Context, params *ListEndpointConfigurationsParams, reqEditors ...RequestEditorFn) (*ListEndpointConfigurationsResponse, error) {
+	rsp, err := c.ListEndpointConfigurations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEndpointConfigurationsResponse(rsp)
+}
+
+// PostEndpointConfigurationsWithBodyWithResponse request with arbitrary body returning *PostEndpointConfigurationsResponse
+func (c *ClientWithResponses) PostEndpointConfigurationsWithBodyWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEndpointConfigurationsWithResponse(ctx context.Context, params *PostEndpointConfigurationsParams, body PostEndpointConfigurationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEndpointConfigurationsResponse, error) {
+	rsp, err := c.PostEndpointConfigurations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEndpointConfigurationsResponse(rsp)
+}
+
+// DeleteEndpointConfigurationWithResponse request returning *DeleteEndpointConfigurationResponse
+func (c *ClientWithResponses) DeleteEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *DeleteEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*DeleteEndpointConfigurationResponse, error) {
+	rsp, err := c.DeleteEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEndpointConfigurationResponse(rsp)
+}
+
+// GetEndpointConfigurationWithResponse request returning *GetEndpointConfigurationResponse
+func (c *ClientWithResponses) GetEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *GetEndpointConfigurationParams, reqEditors ...RequestEditorFn) (*GetEndpointConfigurationResponse, error) {
+	rsp, err := c.GetEndpointConfiguration(ctx, endpointConfigurationID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEndpointConfigurationResponse(rsp)
+}
+
+// PutEndpointConfigurationWithBodyWithResponse request with arbitrary body returning *PutEndpointConfigurationResponse
+func (c *ClientWithResponses) PutEndpointConfigurationWithBodyWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error) {
+	rsp, err := c.PutEndpointConfigurationWithBody(ctx, endpointConfigurationID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEndpointConfigurationResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutEndpointConfigurationWithResponse(ctx context.Context, endpointConfigurationID EndpointConfigurationID, params *PutEndpointConfigurationParams, body PutEndpointConfigurationJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEndpointConfigurationResponse, error) {
+	rsp, err := c.PutEndpointConfiguration(ctx, endpointConfigurationID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEndpointConfigurationResponse(rsp)
+}
+
+// ListManagedRadiusWithResponse request returning *ListManagedRadiusResponse
+func (c *ClientWithResponses) ListManagedRadiusWithResponse(ctx context.Context, params *ListManagedRadiusParams, reqEditors ...RequestEditorFn) (*ListManagedRadiusResponse, error) {
+	rsp, err := c.ListManagedRadius(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListManagedRadiusResponse(rsp)
+}
+
+// PostManagedRadiusWithBodyWithResponse request with arbitrary body returning *PostManagedRadiusResponse
+func (c *ClientWithResponses) PostManagedRadiusWithBodyWithResponse(ctx context.Context, params *PostManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostManagedRadiusResponse, error) {
+	rsp, err := c.PostManagedRadiusWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostManagedRadiusResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostManagedRadiusWithResponse(ctx context.Context, params *PostManagedRadiusParams, body PostManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*PostManagedRadiusResponse, error) {
+	rsp, err := c.PostManagedRadius(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostManagedRadiusResponse(rsp)
+}
+
+// DeleteManagedRadiusWithResponse request returning *DeleteManagedRadiusResponse
+func (c *ClientWithResponses) DeleteManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *DeleteManagedRadiusParams, reqEditors ...RequestEditorFn) (*DeleteManagedRadiusResponse, error) {
+	rsp, err := c.DeleteManagedRadius(ctx, managedRadiusID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteManagedRadiusResponse(rsp)
+}
+
+// GetManagedRadiusWithResponse request returning *GetManagedRadiusResponse
+func (c *ClientWithResponses) GetManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *GetManagedRadiusParams, reqEditors ...RequestEditorFn) (*GetManagedRadiusResponse, error) {
+	rsp, err := c.GetManagedRadius(ctx, managedRadiusID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetManagedRadiusResponse(rsp)
+}
+
+// PutManagedRadiusWithBodyWithResponse request with arbitrary body returning *PutManagedRadiusResponse
+func (c *ClientWithResponses) PutManagedRadiusWithBodyWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutManagedRadiusResponse, error) {
+	rsp, err := c.PutManagedRadiusWithBody(ctx, managedRadiusID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutManagedRadiusResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutManagedRadiusWithResponse(ctx context.Context, managedRadiusID ManagedRadiusID, params *PutManagedRadiusParams, body PutManagedRadiusJSONRequestBody, reqEditors ...RequestEditorFn) (*PutManagedRadiusResponse, error) {
+	rsp, err := c.PutManagedRadius(ctx, managedRadiusID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutManagedRadiusResponse(rsp)
+}
+
 // GetPlatformsWithResponse request returning *GetPlatformsResponse
 func (c *ClientWithResponses) GetPlatformsWithResponse(ctx context.Context, params *GetPlatformsParams, reqEditors ...RequestEditorFn) (*GetPlatformsResponse, error) {
 	rsp, err := c.GetPlatforms(ctx, params, reqEditors...)
@@ -6961,6 +13368,329 @@ func (c *ClientWithResponses) PutPlatformWithResponse(ctx context.Context, platf
 		return nil, err
 	}
 	return ParsePutPlatformResponse(rsp)
+}
+
+// ListBrowserWithResponse request returning *ListBrowserResponse
+func (c *ClientWithResponses) ListBrowserWithResponse(ctx context.Context, params *ListBrowserParams, reqEditors ...RequestEditorFn) (*ListBrowserResponse, error) {
+	rsp, err := c.ListBrowser(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListBrowserResponse(rsp)
+}
+
+// PostBrowserWithBodyWithResponse request with arbitrary body returning *PostBrowserResponse
+func (c *ClientWithResponses) PostBrowserWithBodyWithResponse(ctx context.Context, params *PostBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostBrowserResponse, error) {
+	rsp, err := c.PostBrowserWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostBrowserResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostBrowserWithResponse(ctx context.Context, params *PostBrowserParams, body PostBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*PostBrowserResponse, error) {
+	rsp, err := c.PostBrowser(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostBrowserResponse(rsp)
+}
+
+// DeleteBrowserWithResponse request returning *DeleteBrowserResponse
+func (c *ClientWithResponses) DeleteBrowserWithResponse(ctx context.Context, browserID BrowserID, params *DeleteBrowserParams, reqEditors ...RequestEditorFn) (*DeleteBrowserResponse, error) {
+	rsp, err := c.DeleteBrowser(ctx, browserID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteBrowserResponse(rsp)
+}
+
+// GetBrowserWithResponse request returning *GetBrowserResponse
+func (c *ClientWithResponses) GetBrowserWithResponse(ctx context.Context, browserID BrowserID, params *GetBrowserParams, reqEditors ...RequestEditorFn) (*GetBrowserResponse, error) {
+	rsp, err := c.GetBrowser(ctx, browserID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetBrowserResponse(rsp)
+}
+
+// PutBrowserWithBodyWithResponse request with arbitrary body returning *PutBrowserResponse
+func (c *ClientWithResponses) PutBrowserWithBodyWithResponse(ctx context.Context, browserID BrowserID, params *PutBrowserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBrowserResponse, error) {
+	rsp, err := c.PutBrowserWithBody(ctx, browserID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutBrowserResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutBrowserWithResponse(ctx context.Context, browserID BrowserID, params *PutBrowserParams, body PutBrowserJSONRequestBody, reqEditors ...RequestEditorFn) (*PutBrowserResponse, error) {
+	rsp, err := c.PutBrowser(ctx, browserID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutBrowserResponse(rsp)
+}
+
+// ListEthernetWithResponse request returning *ListEthernetResponse
+func (c *ClientWithResponses) ListEthernetWithResponse(ctx context.Context, params *ListEthernetParams, reqEditors ...RequestEditorFn) (*ListEthernetResponse, error) {
+	rsp, err := c.ListEthernet(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEthernetResponse(rsp)
+}
+
+// PostEthernetWithBodyWithResponse request with arbitrary body returning *PostEthernetResponse
+func (c *ClientWithResponses) PostEthernetWithBodyWithResponse(ctx context.Context, params *PostEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostEthernetResponse, error) {
+	rsp, err := c.PostEthernetWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEthernetResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEthernetWithResponse(ctx context.Context, params *PostEthernetParams, body PostEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*PostEthernetResponse, error) {
+	rsp, err := c.PostEthernet(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEthernetResponse(rsp)
+}
+
+// DeleteEthernetWithResponse request returning *DeleteEthernetResponse
+func (c *ClientWithResponses) DeleteEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *DeleteEthernetParams, reqEditors ...RequestEditorFn) (*DeleteEthernetResponse, error) {
+	rsp, err := c.DeleteEthernet(ctx, ethernetID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEthernetResponse(rsp)
+}
+
+// GetEthernetWithResponse request returning *GetEthernetResponse
+func (c *ClientWithResponses) GetEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *GetEthernetParams, reqEditors ...RequestEditorFn) (*GetEthernetResponse, error) {
+	rsp, err := c.GetEthernet(ctx, ethernetID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEthernetResponse(rsp)
+}
+
+// PutEthernetWithBodyWithResponse request with arbitrary body returning *PutEthernetResponse
+func (c *ClientWithResponses) PutEthernetWithBodyWithResponse(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutEthernetResponse, error) {
+	rsp, err := c.PutEthernetWithBody(ctx, ethernetID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEthernetResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutEthernetWithResponse(ctx context.Context, ethernetID EthernetID, params *PutEthernetParams, body PutEthernetJSONRequestBody, reqEditors ...RequestEditorFn) (*PutEthernetResponse, error) {
+	rsp, err := c.PutEthernet(ctx, ethernetID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEthernetResponse(rsp)
+}
+
+// ListVpnWithResponse request returning *ListVpnResponse
+func (c *ClientWithResponses) ListVpnWithResponse(ctx context.Context, params *ListVpnParams, reqEditors ...RequestEditorFn) (*ListVpnResponse, error) {
+	rsp, err := c.ListVpn(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVpnResponse(rsp)
+}
+
+// PostVpnWithBodyWithResponse request with arbitrary body returning *PostVpnResponse
+func (c *ClientWithResponses) PostVpnWithBodyWithResponse(ctx context.Context, params *PostVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostVpnResponse, error) {
+	rsp, err := c.PostVpnWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostVpnResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostVpnWithResponse(ctx context.Context, params *PostVpnParams, body PostVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*PostVpnResponse, error) {
+	rsp, err := c.PostVpn(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostVpnResponse(rsp)
+}
+
+// DeleteVpnWithResponse request returning *DeleteVpnResponse
+func (c *ClientWithResponses) DeleteVpnWithResponse(ctx context.Context, vpnID VpnID, params *DeleteVpnParams, reqEditors ...RequestEditorFn) (*DeleteVpnResponse, error) {
+	rsp, err := c.DeleteVpn(ctx, vpnID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteVpnResponse(rsp)
+}
+
+// GetVpnWithResponse request returning *GetVpnResponse
+func (c *ClientWithResponses) GetVpnWithResponse(ctx context.Context, vpnID VpnID, params *GetVpnParams, reqEditors ...RequestEditorFn) (*GetVpnResponse, error) {
+	rsp, err := c.GetVpn(ctx, vpnID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVpnResponse(rsp)
+}
+
+// PutVpnWithBodyWithResponse request with arbitrary body returning *PutVpnResponse
+func (c *ClientWithResponses) PutVpnWithBodyWithResponse(ctx context.Context, vpnID VpnID, params *PutVpnParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutVpnResponse, error) {
+	rsp, err := c.PutVpnWithBody(ctx, vpnID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutVpnResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutVpnWithResponse(ctx context.Context, vpnID VpnID, params *PutVpnParams, body PutVpnJSONRequestBody, reqEditors ...RequestEditorFn) (*PutVpnResponse, error) {
+	rsp, err := c.PutVpn(ctx, vpnID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutVpnResponse(rsp)
+}
+
+// ListWifiWithResponse request returning *ListWifiResponse
+func (c *ClientWithResponses) ListWifiWithResponse(ctx context.Context, params *ListWifiParams, reqEditors ...RequestEditorFn) (*ListWifiResponse, error) {
+	rsp, err := c.ListWifi(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListWifiResponse(rsp)
+}
+
+// PostWifiWithBodyWithResponse request with arbitrary body returning *PostWifiResponse
+func (c *ClientWithResponses) PostWifiWithBodyWithResponse(ctx context.Context, params *PostWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostWifiResponse, error) {
+	rsp, err := c.PostWifiWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWifiResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostWifiWithResponse(ctx context.Context, params *PostWifiParams, body PostWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*PostWifiResponse, error) {
+	rsp, err := c.PostWifi(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostWifiResponse(rsp)
+}
+
+// DeleteWifiWithResponse request returning *DeleteWifiResponse
+func (c *ClientWithResponses) DeleteWifiWithResponse(ctx context.Context, wifiID WifiID, params *DeleteWifiParams, reqEditors ...RequestEditorFn) (*DeleteWifiResponse, error) {
+	rsp, err := c.DeleteWifi(ctx, wifiID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteWifiResponse(rsp)
+}
+
+// GetWifiWithResponse request returning *GetWifiResponse
+func (c *ClientWithResponses) GetWifiWithResponse(ctx context.Context, wifiID WifiID, params *GetWifiParams, reqEditors ...RequestEditorFn) (*GetWifiResponse, error) {
+	rsp, err := c.GetWifi(ctx, wifiID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWifiResponse(rsp)
+}
+
+// PutWifiWithBodyWithResponse request with arbitrary body returning *PutWifiResponse
+func (c *ClientWithResponses) PutWifiWithBodyWithResponse(ctx context.Context, wifiID WifiID, params *PutWifiParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutWifiResponse, error) {
+	rsp, err := c.PutWifiWithBody(ctx, wifiID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWifiResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutWifiWithResponse(ctx context.Context, wifiID WifiID, params *PutWifiParams, body PutWifiJSONRequestBody, reqEditors ...RequestEditorFn) (*PutWifiResponse, error) {
+	rsp, err := c.PutWifi(ctx, wifiID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutWifiResponse(rsp)
+}
+
+// DeleteIdentityProviderWithResponse request returning *DeleteIdentityProviderResponse
+func (c *ClientWithResponses) DeleteIdentityProviderWithResponse(ctx context.Context, params *DeleteIdentityProviderParams, reqEditors ...RequestEditorFn) (*DeleteIdentityProviderResponse, error) {
+	rsp, err := c.DeleteIdentityProvider(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteIdentityProviderResponse(rsp)
+}
+
+// GetIdentityProviderWithResponse request returning *GetIdentityProviderResponse
+func (c *ClientWithResponses) GetIdentityProviderWithResponse(ctx context.Context, params *GetIdentityProviderParams, reqEditors ...RequestEditorFn) (*GetIdentityProviderResponse, error) {
+	rsp, err := c.GetIdentityProvider(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIdentityProviderResponse(rsp)
+}
+
+// PutIdentityProviderWithBodyWithResponse request with arbitrary body returning *PutIdentityProviderResponse
+func (c *ClientWithResponses) PutIdentityProviderWithBodyWithResponse(ctx context.Context, params *PutIdentityProviderParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutIdentityProviderResponse, error) {
+	rsp, err := c.PutIdentityProviderWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutIdentityProviderResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutIdentityProviderWithResponse(ctx context.Context, params *PutIdentityProviderParams, body PutIdentityProviderJSONRequestBody, reqEditors ...RequestEditorFn) (*PutIdentityProviderResponse, error) {
+	rsp, err := c.PutIdentityProvider(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutIdentityProviderResponse(rsp)
+}
+
+// ListIdpClientsWithResponse request returning *ListIdpClientsResponse
+func (c *ClientWithResponses) ListIdpClientsWithResponse(ctx context.Context, params *ListIdpClientsParams, reqEditors ...RequestEditorFn) (*ListIdpClientsResponse, error) {
+	rsp, err := c.ListIdpClients(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListIdpClientsResponse(rsp)
+}
+
+// PostIdpClientsWithBodyWithResponse request with arbitrary body returning *PostIdpClientsResponse
+func (c *ClientWithResponses) PostIdpClientsWithBodyWithResponse(ctx context.Context, params *PostIdpClientsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostIdpClientsResponse, error) {
+	rsp, err := c.PostIdpClientsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostIdpClientsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostIdpClientsWithResponse(ctx context.Context, params *PostIdpClientsParams, body PostIdpClientsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostIdpClientsResponse, error) {
+	rsp, err := c.PostIdpClients(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostIdpClientsResponse(rsp)
+}
+
+// DeleteIdpClientWithResponse request returning *DeleteIdpClientResponse
+func (c *ClientWithResponses) DeleteIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *DeleteIdpClientParams, reqEditors ...RequestEditorFn) (*DeleteIdpClientResponse, error) {
+	rsp, err := c.DeleteIdpClient(ctx, idpClientID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteIdpClientResponse(rsp)
+}
+
+// GetIdpClientWithResponse request returning *GetIdpClientResponse
+func (c *ClientWithResponses) GetIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*GetIdpClientResponse, error) {
+	rsp, err := c.GetIdpClient(ctx, idpClientID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIdpClientResponse(rsp)
 }
 
 // ParseListAccountsResponse parses an HTTP response from a ListAccountsWithResponse call
@@ -8246,6 +14976,201 @@ func ParseGetCertificateResponse(rsp *http.Response) (*GetCertificateResponse, e
 	return response, nil
 }
 
+// ParseDeleteCredentialResponse parses an HTTP response from a DeleteCredentialWithResponse call
+func ParseDeleteCredentialResponse(rsp *http.Response) (*DeleteCredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCredentialResponse parses an HTTP response from a GetCredentialWithResponse call
+func ParseGetCredentialResponse(rsp *http.Response) (*GetCredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Credential
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutCredentialResponse parses an HTTP response from a PutCredentialWithResponse call
+func ParsePutCredentialResponse(rsp *http.Response) (*PutCredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutCredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Credential
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostCredentialsResponse parses an HTTP response from a PostCredentialsWithResponse call
+func ParsePostCredentialsResponse(rsp *http.Response) (*PostCredentialsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostCredentialsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Credential
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListDevicesResponse parses an HTTP response from a ListDevicesWithResponse call
 func ParseListDevicesResponse(rsp *http.Response) (*ListDevicesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8537,6 +15462,614 @@ func ParsePatchDeviceResponse(rsp *http.Response) (*PatchDeviceResponse, error) 
 	return response, nil
 }
 
+// ParsePatchDeviceLifecycleResponse parses an HTTP response from a PatchDeviceLifecycleWithResponse call
+func ParsePatchDeviceLifecycleResponse(rsp *http.Response) (*PatchDeviceLifecycleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PatchDeviceLifecycleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Device
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListEndpointConfigurationsResponse parses an HTTP response from a ListEndpointConfigurationsWithResponse call
+func ParseListEndpointConfigurationsResponse(rsp *http.Response) (*ListEndpointConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListEndpointConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostEndpointConfigurationsResponse parses an HTTP response from a PostEndpointConfigurationsWithResponse call
+func ParsePostEndpointConfigurationsResponse(rsp *http.Response) (*PostEndpointConfigurationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEndpointConfigurationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest N422
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEndpointConfigurationResponse parses an HTTP response from a DeleteEndpointConfigurationWithResponse call
+func ParseDeleteEndpointConfigurationResponse(rsp *http.Response) (*DeleteEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEndpointConfigurationResponse parses an HTTP response from a GetEndpointConfigurationWithResponse call
+func ParseGetEndpointConfigurationResponse(rsp *http.Response) (*GetEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest N422
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutEndpointConfigurationResponse parses an HTTP response from a PutEndpointConfigurationWithResponse call
+func ParsePutEndpointConfigurationResponse(rsp *http.Response) (*PutEndpointConfigurationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutEndpointConfigurationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EndpointConfiguration
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest N422
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListManagedRadiusResponse parses an HTTP response from a ListManagedRadiusWithResponse call
+func ParseListManagedRadiusResponse(rsp *http.Response) (*ListManagedRadiusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListManagedRadiusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ManagedRadius
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostManagedRadiusResponse parses an HTTP response from a PostManagedRadiusWithResponse call
+func ParsePostManagedRadiusResponse(rsp *http.Response) (*PostManagedRadiusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostManagedRadiusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ManagedRadius
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest N409
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteManagedRadiusResponse parses an HTTP response from a DeleteManagedRadiusWithResponse call
+func ParseDeleteManagedRadiusResponse(rsp *http.Response) (*DeleteManagedRadiusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteManagedRadiusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetManagedRadiusResponse parses an HTTP response from a GetManagedRadiusWithResponse call
+func ParseGetManagedRadiusResponse(rsp *http.Response) (*GetManagedRadiusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetManagedRadiusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ManagedRadius
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutManagedRadiusResponse parses an HTTP response from a PutManagedRadiusWithResponse call
+func ParsePutManagedRadiusResponse(rsp *http.Response) (*PutManagedRadiusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutManagedRadiusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ManagedRadius
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest N409
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetPlatformsResponse parses an HTTP response from a GetPlatformsWithResponse call
 func ParseGetPlatformsResponse(rsp *http.Response) (*GetPlatformsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8645,312 +16178,1874 @@ func ParsePutPlatformResponse(rsp *http.Response) (*PutPlatformResponse, error) 
 	return response, nil
 }
 
+// ParseListBrowserResponse parses an HTTP response from a ListBrowserWithResponse call
+func ParseListBrowserResponse(rsp *http.Response) (*ListBrowserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListBrowserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Browser
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostBrowserResponse parses an HTTP response from a PostBrowserWithResponse call
+func ParsePostBrowserResponse(rsp *http.Response) (*PostBrowserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostBrowserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Browser
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteBrowserResponse parses an HTTP response from a DeleteBrowserWithResponse call
+func ParseDeleteBrowserResponse(rsp *http.Response) (*DeleteBrowserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteBrowserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetBrowserResponse parses an HTTP response from a GetBrowserWithResponse call
+func ParseGetBrowserResponse(rsp *http.Response) (*GetBrowserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetBrowserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Browser
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutBrowserResponse parses an HTTP response from a PutBrowserWithResponse call
+func ParsePutBrowserResponse(rsp *http.Response) (*PutBrowserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutBrowserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Browser
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListEthernetResponse parses an HTTP response from a ListEthernetWithResponse call
+func ParseListEthernetResponse(rsp *http.Response) (*ListEthernetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListEthernetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Ethernet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostEthernetResponse parses an HTTP response from a PostEthernetWithResponse call
+func ParsePostEthernetResponse(rsp *http.Response) (*PostEthernetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEthernetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Ethernet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEthernetResponse parses an HTTP response from a DeleteEthernetWithResponse call
+func ParseDeleteEthernetResponse(rsp *http.Response) (*DeleteEthernetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEthernetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEthernetResponse parses an HTTP response from a GetEthernetWithResponse call
+func ParseGetEthernetResponse(rsp *http.Response) (*GetEthernetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEthernetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Ethernet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutEthernetResponse parses an HTTP response from a PutEthernetWithResponse call
+func ParsePutEthernetResponse(rsp *http.Response) (*PutEthernetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutEthernetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Ethernet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVpnResponse parses an HTTP response from a ListVpnWithResponse call
+func ParseListVpnResponse(rsp *http.Response) (*ListVpnResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVpnResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Vpn
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostVpnResponse parses an HTTP response from a PostVpnWithResponse call
+func ParsePostVpnResponse(rsp *http.Response) (*PostVpnResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostVpnResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Vpn
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteVpnResponse parses an HTTP response from a DeleteVpnWithResponse call
+func ParseDeleteVpnResponse(rsp *http.Response) (*DeleteVpnResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteVpnResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVpnResponse parses an HTTP response from a GetVpnWithResponse call
+func ParseGetVpnResponse(rsp *http.Response) (*GetVpnResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVpnResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vpn
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutVpnResponse parses an HTTP response from a PutVpnWithResponse call
+func ParsePutVpnResponse(rsp *http.Response) (*PutVpnResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutVpnResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vpn
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListWifiResponse parses an HTTP response from a ListWifiWithResponse call
+func ParseListWifiResponse(rsp *http.Response) (*ListWifiResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListWifiResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Wifi
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostWifiResponse parses an HTTP response from a PostWifiWithResponse call
+func ParsePostWifiResponse(rsp *http.Response) (*PostWifiResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostWifiResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Wifi
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteWifiResponse parses an HTTP response from a DeleteWifiWithResponse call
+func ParseDeleteWifiResponse(rsp *http.Response) (*DeleteWifiResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteWifiResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWifiResponse parses an HTTP response from a GetWifiWithResponse call
+func ParseGetWifiResponse(rsp *http.Response) (*GetWifiResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWifiResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Wifi
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutWifiResponse parses an HTTP response from a PutWifiWithResponse call
+func ParsePutWifiResponse(rsp *http.Response) (*PutWifiResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutWifiResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Wifi
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteIdentityProviderResponse parses an HTTP response from a DeleteIdentityProviderWithResponse call
+func ParseDeleteIdentityProviderResponse(rsp *http.Response) (*DeleteIdentityProviderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteIdentityProviderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetIdentityProviderResponse parses an HTTP response from a GetIdentityProviderWithResponse call
+func ParseGetIdentityProviderResponse(rsp *http.Response) (*GetIdentityProviderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIdentityProviderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IdentityProvider
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutIdentityProviderResponse parses an HTTP response from a PutIdentityProviderWithResponse call
+func ParsePutIdentityProviderResponse(rsp *http.Response) (*PutIdentityProviderResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutIdentityProviderResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IdentityProvider
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListIdpClientsResponse parses an HTTP response from a ListIdpClientsWithResponse call
+func ParseListIdpClientsResponse(rsp *http.Response) (*ListIdpClientsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListIdpClientsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IdentityProvider
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostIdpClientsResponse parses an HTTP response from a PostIdpClientsWithResponse call
+func ParsePostIdpClientsResponse(rsp *http.Response) (*PostIdpClientsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostIdpClientsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest IdentityProvider
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest N422
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteIdpClientResponse parses an HTTP response from a DeleteIdpClientWithResponse call
+func ParseDeleteIdpClientResponse(rsp *http.Response) (*DeleteIdpClientResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteIdpClientResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetIdpClientResponse parses an HTTP response from a GetIdpClientWithResponse call
+func ParseGetIdpClientResponse(rsp *http.Response) (*GetIdpClientResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIdpClientResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IdentityProvider
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
