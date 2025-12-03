@@ -19,7 +19,10 @@ func APIErrorMsg(r io.Reader) string {
 	if err := json.Unmarshal(body, e); err != nil {
 		return string(body)
 	}
-	return e.Message
+	if e.Message != "" {
+		return e.Message
+	}
+	return string(body)
 }
 
 type dereferencable interface {

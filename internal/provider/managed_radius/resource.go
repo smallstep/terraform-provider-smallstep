@@ -240,7 +240,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 	if err := json.NewDecoder(httpResp.Body).Decode(radius); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal accont: %v", err),
+			fmt.Sprintf("Failed to unmarshal managed radius: %v", err),
 		)
 		return
 	}

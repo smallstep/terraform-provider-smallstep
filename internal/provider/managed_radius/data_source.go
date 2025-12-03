@@ -73,18 +73,15 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				// TODO remove once this field is documented in the API spec
-				MarkdownDescription: utils.Default(props["id"], "The UUID of this managed RADIUS server."),
+				MarkdownDescription: props["id"],
 				Required:            true,
 			},
 			"name": schema.StringAttribute{
-				// TODO remove once this field is documented in the API spec
-				MarkdownDescription: utils.Default(props["name"], "A descriptive name for this resource. Must be unique across the team."),
+				MarkdownDescription: props["name"],
 				Computed:            true,
 			},
 			"nas_ips": schema.ListAttribute{
-				// TODO remove once this field is documented in the API spec
-				MarkdownDescription: utils.Default(props["nasIPs"], "The ip addresses the Network Access Server (NAS) may connect to the RADIUS server from."),
+				MarkdownDescription: props["nasIPs"],
 				Computed:            true,
 				ElementType:         types.StringType,
 			},

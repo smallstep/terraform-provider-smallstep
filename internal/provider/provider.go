@@ -16,6 +16,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/identity_provider"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_radius"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
@@ -173,6 +174,8 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		device.NewResource,
 		account.NewResource,
 		managed_radius.NewResource,
+		identity_provider.NewClientResource,
+		identity_provider.NewIdentityProviderResource,
 	}
 }
 
@@ -185,6 +188,8 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		account.NewDataSource,
 		managed_radius.NewDataSource,
 		managed_radius.NewSecretDataSource,
+		identity_provider.NewClientDataSource,
+		identity_provider.NewIdentityProviderDataSource,
 	}
 }
 
