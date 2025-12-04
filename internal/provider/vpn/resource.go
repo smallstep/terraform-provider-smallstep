@@ -1,4 +1,4 @@
-package managed_radius
+package vpn
 
 import (
 	"context"
@@ -27,26 +27,17 @@ type Resource struct {
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	radius, props, err := utils.Describe("managedRadius")
+	vpn, props, err := utils.Describe("vpn")
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI Managed RADIUS Schema",
-			err.Error(),
-		)
-		return
-	}
-
-	replyAttrs, replyAttrsProps, err := utils.Describe("replyAttribute")
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Parse Smallstep OpenAPI Reply Attributes Schema",
+			"Parse Smallstep OpenAPI VPN Schema",
 			err.Error(),
 		)
 		return
 	}
 
 	resp.Schema = schema.Schema{
-		MarkdownDescription: radius,
+		MarkdownDescription: vpn,
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -58,65 +49,50 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: props["name"],
-				Required:            true,
-			},
-			"nas_ips": schema.ListAttribute{
-				MarkdownDescription: props["nasIPs"],
-				Required:            true,
-				ElementType:         types.StringType,
-			},
-			"client_ca": schema.StringAttribute{
-				MarkdownDescription: props["clientCA"],
-				Required:            true,
-			},
-			"reply_attributes": schema.ListNestedAttribute{
-				MarkdownDescription: replyAttrs,
+				Computed:            true,
 				Optional:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"name": schema.StringAttribute{
-							Required:            true,
-							MarkdownDescription: replyAttrsProps["name"],
-						},
-						"value": schema.StringAttribute{
-							Optional:            true,
-							MarkdownDescription: replyAttrsProps["value"],
-						},
-						"value_from_certificate": schema.StringAttribute{
-							Optional:            true,
-							MarkdownDescription: replyAttrsProps["valueFromCertificate"],
-						},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"connection_type": schema.StringAttribute{
+				MarkdownDescription: props["connectionType"],
+				Required:            true,
+			},
+			"remote_address": schema.StringAttribute{
+				MarkdownDescription: props["remoteAddress"],
+				Required:            true,
+			},
+			"autojoin": schema.BoolAttribute{
+				MarkdownDescription: props["autojoin"],
+				Optional:            true,
+			},
+			"vendor": schema.StringAttribute{
+				MarkdownDescription: props["vendor"],
+				Optional:            true,
+			},
+			"ike": schema.SingleNestedAttribute{
+				MarkdownDescription: props["ike"],
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"ca_chain": schema.StringAttribute{
+						MarkdownDescription: "The certificate authority bundle that client certificates must chain up to.",
+						Required:            true,
+					},
+					"eap": schema.BoolAttribute{
+						MarkdownDescription: "Whether or not EAP is enforced on this VPN server.",
+						Optional:            true,
+					},
+					"remote_id": schema.StringAttribute{
+						MarkdownDescription: "Typically, the common name of the remote server. Defaults to the remote address.",
+						Optional:            true,
 					},
 				},
 			},
-
-			"server_ca": schema.StringAttribute{
-				MarkdownDescription: props["serverCA"],
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"server_ip": schema.StringAttribute{
-				MarkdownDescription: props["serverIP"],
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"server_port": schema.StringAttribute{
-				MarkdownDescription: props["serverPort"],
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"server_hostname": schema.StringAttribute{
-				MarkdownDescription: props["serverHostname"],
-				Computed:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
+			"credentials": schema.SetAttribute{
+				MarkdownDescription: props["credentials"],
+				ElementType:         types.StringType,
+				Optional:            true,
 			},
 		},
 	}
@@ -147,25 +123,27 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 }
 
 func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var id string
-	diags := req.State.GetAttribute(ctx, path.Root("id"), &id)
-	resp.Diagnostics.Append(diags...)
+	state := &VpnModel{}
+
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	if id == "" {
+
+	vpnID := state.ID.ValueString()
+	if vpnID == "" {
 		resp.Diagnostics.AddError(
-			"Invalid Read Managed RADIUS Request",
-			"ID is required.",
+			"Invalid Read VPN Request",
+			"VPN ID is required.",
 		)
 		return
 	}
 
-	httpResp, err := r.client.GetManagedRadius(ctx, id, &v20250101.GetManagedRadiusParams{})
+	httpResp, err := r.client.GetVpn(ctx, vpnID, &v20250101.GetVpnParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to read managed radius %q: %v", id, err),
+			fmt.Sprintf("Failed to read vpn %q: %v", vpnID, err),
 		)
 		return
 	}
@@ -179,21 +157,21 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d reading managed radius %s: %s", reqID, httpResp.StatusCode, id, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d reading vpn %s: %s", reqID, httpResp.StatusCode, vpnID, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	radius := &v20250101.ManagedRadius{}
-	if err := json.NewDecoder(httpResp.Body).Decode(radius); err != nil {
+	vpn := &v20250101.Vpn{}
+	if err := json.NewDecoder(httpResp.Body).Decode(vpn); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal managed radius %s: %v", id, err),
+			fmt.Sprintf("Failed to unmarshal vpn %s: %v", vpnID, err),
 		)
 		return
 	}
 
-	remote := fromAPI(ctx, &resp.Diagnostics, radius, req.State)
+	remote := FromAPI(ctx, vpn, &resp.Diagnostics, req.State)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -201,8 +179,8 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 	resp.Diagnostics.Append(resp.State.Set(ctx, remote)...)
 }
 
-func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	plan := &ManagedRadiusModel{}
+func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	plan := &VpnModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -213,11 +191,11 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PostManagedRadius(ctx, &v20250101.PostManagedRadiusParams{}, reqBody)
+	httpResp, err := r.client.PostVpn(ctx, &v20250101.PostVpnParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to create managed radius: %v", err),
+			fmt.Sprintf("Failed to create vpn: %v", err),
 		)
 		return
 	}
@@ -227,21 +205,21 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d creating managed radius: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d creating vpn: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	radius := &v20250101.ManagedRadius{}
-	if err := json.NewDecoder(httpResp.Body).Decode(radius); err != nil {
+	vpn := &v20250101.Vpn{}
+	if err := json.NewDecoder(httpResp.Body).Decode(vpn); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to unmarshal managed radius: %v", err),
+			fmt.Sprintf("Failed to unmarshal vpn: %v", err),
 		)
 		return
 	}
 
-	model := fromAPI(ctx, &resp.Diagnostics, radius, req.Plan)
+	model := FromAPI(ctx, vpn, &resp.Diagnostics, req.Plan)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -250,21 +228,20 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 }
 
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	plan := &ManagedRadiusModel{}
+	plan := &VpnModel{}
 	diags := req.Plan.Get(ctx, plan)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-	id := plan.ID.ValueString()
+	vpnID := plan.ID.ValueString()
 
 	reqBody := plan.ToAPI(ctx, &resp.Diagnostics)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	httpResp, err := r.client.PutManagedRadius(ctx, id, &v20250101.PutManagedRadiusParams{}, reqBody)
+	httpResp, err := r.client.PutVpn(ctx, vpnID, &v20250101.PutVpnParams{}, *reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -274,50 +251,57 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	}
 	defer httpResp.Body.Close()
 
+	if httpResp.StatusCode == http.StatusNotFound {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	if httpResp.StatusCode != http.StatusOK {
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d updating managed radius: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d updating vpn: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}
 
-	radius := &v20250101.ManagedRadius{}
-	if err := json.NewDecoder(httpResp.Body).Decode(radius); err != nil {
+	vpn := &v20250101.Vpn{}
+	if err := json.NewDecoder(httpResp.Body).Decode(vpn); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to parse managed radius update response: %v", err),
+			fmt.Sprintf("Failed to parse vpn update response: %v", err),
 		)
 		return
 	}
 
-	model := fromAPI(ctx, &resp.Diagnostics, radius, req.Plan)
+	model := FromAPI(ctx, vpn, &resp.Diagnostics, req.Plan)
 
 	diags = resp.State.Set(ctx, model)
 	resp.Diagnostics.Append(diags...)
 }
 
 func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var id string
-	diags := req.State.GetAttribute(ctx, path.Root("id"), &id)
+	state := &VpnModel{}
+	diags := req.State.Get(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	if id == "" {
+
+	vpnID := state.ID.ValueString()
+	if vpnID == "" {
 		resp.Diagnostics.AddError(
-			"Invalid Delete Managed RADIUS Request",
-			"ID is required",
+			"Invalid Delete VPN Request",
+			"VPN ID is required",
 		)
 		return
 	}
 
-	httpResp, err := r.client.DeleteManagedRadius(ctx, id, &v20250101.DeleteManagedRadiusParams{})
+	httpResp, err := r.client.DeleteVpn(ctx, vpnID, &v20250101.DeleteVpnParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
-			fmt.Sprintf("Failed to delete managed radius: %v", err),
+			fmt.Sprintf("Failed to delete vpn: %v", err),
 		)
 		return
 	}
@@ -327,7 +311,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		reqID := httpResp.Header.Get("X-Request-Id")
 		resp.Diagnostics.AddError(
 			"Smallstep API Response Error",
-			fmt.Sprintf("Request %q received status %d deleting managed radius: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
+			fmt.Sprintf("Request %q received status %d deleting vpn: %s", reqID, httpResp.StatusCode, utils.APIErrorMsg(httpResp.Body)),
 		)
 		return
 	}

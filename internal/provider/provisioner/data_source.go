@@ -154,10 +154,6 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 		)
 		return
 	}
-	// TODO Remove when description is added to OpenAPI spec
-	if jwk == "" {
-		jwk = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#jwk) that uses public-key cryptography to sign and validate a JSON Web Token (JWT)."
-	}
 	jwk += " This object is populated when type is `JWK`."
 
 	oidc, oidcProps, err := utils.Describe("oidcProvisioner")
@@ -167,10 +163,6 @@ func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, r
 			err.Error(),
 		)
 		return
-	}
-	// TODO Remove when description is added to OpenAPI spec
-	if oidc == "" {
-		oidc = "A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#oauthoidc-single-sign-on) that trusts an OAuth provider's ID tokens for authentication."
 	}
 	oidc += " This object is populated when type is `OIDC`."
 
