@@ -413,3 +413,43 @@ func NewIdentityProviderClient(t *testing.T) *v20250101.IdpClient {
 
 	return c
 }
+
+func NewCredential(t *testing.T) *v20250101.Credential {
+	t.Helper()
+
+	reqBody := v20250101.Credential{
+		Slug: "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
+		Certificate: v20250101.CredentialCertificate{
+			Duration: "1h",
+			Type:     "X509",
+		},
+		Key: v20250101.CredentialKey{
+			Type:       Ref(v20250101.CredentialKeyType("ECDSA_P256")),
+			Protection: Ref(v20250101.CredentialKeyProtection("NONE")),
+		},
+	}
+
+	client, err := SmallstepAPIClientFromEnv()
+	require.NoError(t, err)
+
+	resp, err := client.PostCredentials(t.Context(), &v20250101.PostCredentialsParams{}, reqBody)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	require.Equal(t, 201, resp.StatusCode, string(body))
+
+	c := &v20250101.Credential{}
+	err = json.Unmarshal(body, c)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		resp, err := client.DeleteCredential(context.Background(), *c.Id, &v20250101.DeleteCredentialParams{})
+		require.NoError(t, err)
+		assert.Equal(t, 204, resp.StatusCode)
+	})
+
+	return c
+}

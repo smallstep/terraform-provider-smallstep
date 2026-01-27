@@ -13,14 +13,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/account"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/browser"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/credential"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/device"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/ethernet"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/identity_provider"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_radius"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/vpn"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/wifi"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -173,11 +176,14 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		provisioner.NewResource,
 		webhook.NewResource,
 		device.NewResource,
-		account.NewResource,
 		managed_radius.NewResource,
 		identity_provider.NewClientResource,
 		identity_provider.NewIdentityProviderResource,
 		credential.NewResource,
+		wifi.NewResource,
+		ethernet.NewResource,
+		browser.NewResource,
+		vpn.NewResource,
 	}
 }
 
@@ -187,12 +193,15 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		provisioner.NewDataSource,
 		webhook.NewDataSource,
 		device.NewDataSource,
-		account.NewDataSource,
 		managed_radius.NewDataSource,
 		managed_radius.NewSecretDataSource,
 		identity_provider.NewClientDataSource,
 		identity_provider.NewIdentityProviderDataSource,
 		credential.NewDataSource,
+		wifi.NewDataSource,
+		ethernet.NewDataSource,
+		browser.NewDataSource,
+		vpn.NewDataSource,
 	}
 }
 

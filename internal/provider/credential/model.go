@@ -262,13 +262,8 @@ func (cfl *CertificateFieldListModel) toAPI(ctx context.Context, diags *diag.Dia
 	var static *[]string
 	var deviceMetadata *[]string
 
-	// TODO why is this guard needed?
-	// if !cfl.Static.IsNull() {
 	diags.Append(cfl.Static.ElementsAs(ctx, &static, false)...)
-	// }
-	// if !cfl.DeviceMetadata.IsNull() {
 	diags.Append(cfl.DeviceMetadata.ElementsAs(ctx, &deviceMetadata, false)...)
-	// }
 
 	return &v20250101.CertificateFieldList{
 		Static:         static,
