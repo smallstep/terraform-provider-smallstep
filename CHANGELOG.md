@@ -1,3 +1,15 @@
+## 0.7.0
+FEATURES:
+* Add smallstep_credential resource and data source.
+* Add smallstep_browser resource and data source.
+* Add smallstep_ethernet resource and data source.
+* Add smallstep_vpn resource and data source.
+* Add smallstep_wifi resource and data source.
+* Add smallstep_managed_radius resource and data source.
+
+CHANGES:
+* Remove smallstep_account resource and data source.
+
 ## 0.6.1
 
 CHANGES:
