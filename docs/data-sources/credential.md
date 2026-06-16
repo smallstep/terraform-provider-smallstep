@@ -72,6 +72,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -81,6 +82,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -90,6 +92,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -99,6 +102,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -108,6 +112,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -117,6 +122,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -126,6 +132,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
@@ -135,6 +142,7 @@ Read-Only:
 Read-Only:
 
 - `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `insecure_include_requested` (Boolean) Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.
 - `static` (List of String) Literal values.
 
 
