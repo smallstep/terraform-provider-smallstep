@@ -140,6 +140,10 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
+			"insecure_include_requested": schema.BoolAttribute{
+				MarkdownDescription: "Pass through the value supplied in the device's CSR for this field. Required for macOS credentials managed by Jamf or Fleet where the MDM profile identifier is injected into the CSR during renewal.",
+				Computed:            true,
+			},
 		},
 	}
 
