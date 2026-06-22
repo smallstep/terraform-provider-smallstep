@@ -14,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
@@ -56,17 +55,8 @@ func (r *Resource) ModifyPlan(ctx context.Context, req resource.ModifyPlanReques
 		resp.Plan.SetAttribute(ctx, p, config)
 	}
 
-	email := types.String{}
-	diags := req.Config.GetAttribute(ctx, path.Root("user").AtName("email"), &email)
-	resp.Diagnostics.Append(diags...)
-	if email.IsNull() {
-		user := basetypes.NewObjectNull(userAttrTypes)
-		diags = resp.Plan.SetAttribute(ctx, path.Root("user"), user)
-		resp.Diagnostics.Append(diags...)
-	}
-
 	tags := types.Set{}
-	diags = req.Config.GetAttribute(ctx, path.Root("tags"), &tags)
+	diags := req.Config.GetAttribute(ctx, path.Root("tags"), &tags)
 	resp.Diagnostics.Append(diags...)
 	if tags.IsNull() {
 		diags = resp.Plan.SetAttribute(ctx, path.Root("tags"), tags)
@@ -357,7 +347,6 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		Ownership:   &v20250101.DevicePatch_Ownership{},
 		Serial:      &v20250101.DevicePatch_Serial{},
 		Tags:        &v20250101.DevicePatch_Tags{},
-		User:        &v20250101.DeviceUserPatch{},
 	}
 
 	if resource.DisplayId == nil {
@@ -444,9 +433,11 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		}
 	}
 
-	// The zero value of DeviceUserPatch_Email marshals to JSON null, which
-	// unsets the user email.
+	// user.email can be set or updated via PATCH, but it can no longer be unset.
+	// Only include the user in the patch when an email is present; when it's
+	// absent we leave the device's existing user untouched.
 	if resource.User != nil && resource.User.Email != "" {
+		patch.User = &v20250101.DeviceUserPatch{}
 		err := patch.User.Email.FromDeviceUserPatchEmail0(resource.User.Email)
 		if err != nil {
 			diags.AddError("prepare device patch: set user email", err.Error())
