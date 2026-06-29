@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -35,7 +36,7 @@ func (p *SmallstepTestProvider) Configure(ctx context.Context, req provider.Conf
 		server = "https://gateway.smallstep.com/api"
 	}
 
-	client, err := utils.SmallstepAPIClientFromEnv()
+	client25, err := utils.SmallstepAPIClientFromEnv()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Get API client configured from environment",
@@ -43,8 +44,22 @@ func (p *SmallstepTestProvider) Configure(ctx context.Context, req provider.Conf
 		)
 		return
 	}
-	resp.DataSourceData = client
-	resp.ResourceData = client
+
+	client26, err := utils.SmallstepAPIClientV20260501FromEnv()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Get v20260501 API client configured from environment",
+			err.Error(),
+		)
+		return
+	}
+
+	clients := &clientset.Clients{
+		V20250101: client25,
+		V20260501: client26,
+	}
+	resp.DataSourceData = clients
+	resp.ResourceData = clients
 }
 
 func (p *SmallstepTestProvider) Resources(ctx context.Context) []func() resource.Resource {
