@@ -14,6 +14,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
+	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -27,10 +29,10 @@ type createTokenResp struct {
 	Message string `json:"message"`
 }
 
-// Uses a client cert to get an API token and returns a client using that token.
+// Uses a client cert to get an API token and returns clients using that token.
 // Renews the token just before its 1 hour expiry in case of long running
 // terraform applies.
-func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key string) (*v20250101.Client, error) {
+func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key string) (*clientset.Clients, error) {
 	if _, err := uuid.Parse(teamID); err != nil {
 		return nil, fmt.Errorf("team-id argument must be a valid UUID")
 	}
@@ -116,7 +118,7 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 		}
 	}()
 
-	apiClient, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+	apiClient20250101, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		m.RLock()
 		r.Header.Set("X-Smallstep-Api-Version", "2025-01-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
@@ -127,5 +129,19 @@ func apiClientWithClientCert(ctx context.Context, server, teamID, cert, key stri
 		return nil, err
 	}
 
-	return apiClient, nil
+	apiClient20260501, err := v20260501.NewClient(server, v20260501.WithRequestEditorFn(v20260501.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+		m.RLock()
+		r.Header.Set("X-Smallstep-Api-Version", "2026-05-01")
+		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
+		m.RUnlock()
+		return nil
+	})))
+	if err != nil {
+		return nil, err
+	}
+
+	return &clientset.Clients{
+		V20250101: apiClient20250101,
+		V20260501: apiClient20260501,
+	}, nil
 }

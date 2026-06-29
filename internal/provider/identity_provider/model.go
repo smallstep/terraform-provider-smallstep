@@ -6,7 +6,6 @@ import (
 )
 
 const idp_name = "smallstep_identity_provider"
-const client_name = "smallstep_identity_provider_client"
 
 type IdentityProviderModel struct {
 	TrustRoots        types.String `tfsdk:"trust_roots"`
@@ -14,14 +13,6 @@ type IdentityProviderModel struct {
 	AuthorizeEndpoint types.String `tfsdk:"authorize_endpoint"`
 	TokenEndpoint     types.String `tfsdk:"token_endpoint"`
 	JWKSEndpoint      types.String `tfsdk:"jwks_endpoint"`
-}
-
-type ClientModel struct {
-	ID              types.String `tfsdk:"id"`
-	RedirectURI     types.String `tfsdk:"redirect_uri"`
-	Secret          types.String `tfsdk:"secret"`
-	StoreSecret     types.Bool   `tfsdk:"store_secret"`
-	WriteSecretFile types.String `tfsdk:"write_secret_file"`
 }
 
 func idpToAPI(model *IdentityProviderModel) v20250101.IdentityProvider {
@@ -37,20 +28,5 @@ func idpFromAPI(idp *v20250101.IdentityProvider) IdentityProviderModel {
 		AuthorizeEndpoint: types.StringPointerValue(idp.AuthorizeEndpoint),
 		TokenEndpoint:     types.StringPointerValue(idp.TokenEndpoint),
 		JWKSEndpoint:      types.StringPointerValue(idp.JwksEndpoint),
-	}
-}
-
-func clientToAPI(model *ClientModel) v20250101.IdpClient {
-	return v20250101.IdpClient{
-		Id:          model.ID.ValueStringPointer(),
-		RedirectURI: model.RedirectURI.ValueString(),
-	}
-}
-
-func clientFromAPI(client *v20250101.IdpClient) ClientModel {
-	return ClientModel{
-		RedirectURI: types.StringValue(client.RedirectURI),
-		ID:          types.StringPointerValue(client.Id),
-		Secret:      types.StringPointerValue(client.Secret),
 	}
 }

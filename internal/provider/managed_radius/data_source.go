@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -36,17 +37,17 @@ func (ds *DataSource) Configure(ctx context.Context, req datasource.ConfigureReq
 		return
 	}
 
-	client, ok := req.ProviderData.(*v20250101.Client)
+	clients, ok := req.ProviderData.(*clientset.Clients)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Get Smallstep API client from provider",
-			fmt.Sprintf("Expected *v20250101.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *clientset.Clients, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 		return
 	}
 
-	ds.client = client
+	ds.client = clients.V20250101
 }
 
 func (d *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {

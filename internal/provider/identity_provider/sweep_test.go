@@ -20,11 +20,9 @@ import (
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewIdentityProviderResource,
-		NewClientResource,
 	},
 	DataSourceFactories: []func() datasource.DataSource{
 		NewIdentityProviderDataSource,
-		NewClientDataSource,
 	},
 }
 
