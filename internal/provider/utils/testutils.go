@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"encoding/pem"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.step.sm/crypto/jose"
@@ -27,6 +29,14 @@ import (
 var UUIDRegexp = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 var CARegexp = regexp.MustCompile(`-----BEGIN CERTIFICATE-----`)
 var IPv4Regexp = regexp.MustCompile(`^\d+\.\d+\.\d+\.\d+$`)
+
+func RelayHostname() string {
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME"), "relay.example.com")
+}
+
+func RelayHostname2() string {
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME_2"), "relay2.example.com")
+}
 
 func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
 	token := os.Getenv("SMALLSTEP_API_TOKEN")
@@ -40,6 +50,27 @@ func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
 
 	client, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		r.Header.Set("X-Smallstep-Api-Version", "2025-01-01")
+		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		return nil
+	})))
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+func SmallstepAPIClientV20260501FromEnv() (*v20260501.Client, error) {
+	token := os.Getenv("SMALLSTEP_API_TOKEN")
+	if token == "" {
+		return nil, errors.New("missing environment variable SMALLSTEP_API_TOKEN")
+	}
+	server := os.Getenv("SMALLSTEP_API_URL")
+	if server == "" {
+		return nil, errors.New("missing environment variable SMALLSTEP_API_URL")
+	}
+
+	client, err := v20260501.NewClient(server, v20260501.WithRequestEditorFn(v20260501.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+		r.Header.Set("X-Smallstep-Api-Version", "2026-05-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
 	})))
