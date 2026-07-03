@@ -86,10 +86,19 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 		return
 	}
 
-	x509, _, err := utils.Describe("x509Fields")
+	x509, x509Props, err := utils.Describe("x509Fields")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI X509 Certificate Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, customExtProps, err := utils.Describe("x509CustomExtension")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Custom Extension Schema",
 			err.Error(),
 		)
 		return
@@ -172,8 +181,19 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 						MarkdownDescription: x509,
 						Computed:            true,
 						Attributes: map[string]schema.Attribute{
-							"common_name":         name,
-							"sans":                nameList,
+							"common_name": name,
+							"sans":        nameList,
+							"typed_sans": schema.SingleNestedAttribute{
+								MarkdownDescription: x509Props["typedSans"],
+								Computed:            true,
+								Attributes: map[string]schema.Attribute{
+									"dns_names":            nameList,
+									"ip_addresses":         nameList,
+									"email_addresses":      nameList,
+									"uris":                 nameList,
+									"user_principal_names": nameList,
+								},
+							},
 							"organization":        nameList,
 							"organizational_unit": nameList,
 							"locality":            nameList,
@@ -181,6 +201,34 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 							"province":            nameList,
 							"street_address":      nameList,
 							"postal_code":         nameList,
+							"serial_number":       name,
+							"given_name":          name,
+							"surname":             name,
+							"extended_key_usage": schema.ListAttribute{
+								MarkdownDescription: x509Props["extendedKeyUsage"],
+								ElementType:         types.StringType,
+								Computed:            true,
+							},
+							"custom_extensions": schema.ListNestedAttribute{
+								MarkdownDescription: x509Props["customExtensions"],
+								Computed:            true,
+								NestedObject: schema.NestedAttributeObject{
+									Attributes: map[string]schema.Attribute{
+										"oid": schema.StringAttribute{
+											MarkdownDescription: customExtProps["oid"],
+											Computed:            true,
+										},
+										"critical": schema.BoolAttribute{
+											MarkdownDescription: customExtProps["critical"],
+											Computed:            true,
+										},
+										"value": schema.StringAttribute{
+											MarkdownDescription: customExtProps["value"],
+											Computed:            true,
+										},
+									},
+								},
+							},
 						},
 					},
 					"duration": schema.StringAttribute{
