@@ -46,9 +46,48 @@ resource "smallstep_credential" "test" {
 				static = ["staging.example.com", "*.staging.example.com"]
 				device_metadata = ["dns", "email"]
 			}
+			typed_sans = {
+				dns_names = {
+					static = ["internal.example.com"]
+					device_metadata = ["dns"]
+				}
+				ip_addresses = {
+					static = ["10.0.0.1"]
+				}
+				email_addresses = {
+					device_metadata = ["smallstep:identity"]
+				}
+				uris = {
+					static = ["spiffe://example.com/device"]
+				}
+				user_principal_names = {
+					device_metadata = ["smallstep:identity"]
+				}
+			}
 			organization = {
 				static = ["Example Inc"]
 			}
+			serial_number = {
+				device_metadata = "serial"
+			}
+			given_name = {
+				static = "Jane"
+			}
+			surname = {
+				static = "Doe"
+			}
+			extended_key_usage = ["serverAuth", "clientAuth"]
+			custom_extensions = [
+				{
+					oid = "1.3.6.1.4.1.44947.1.2.3"
+					critical = true
+					value = "DAVoZWxsbw=="
+				},
+				{
+					oid = "1.3.6.1.4.1.44947.1.2.4"
+					value = "BAJoaQ=="
+				},
+			]
 		}
 	}
 	key = {
@@ -182,6 +221,28 @@ resource "smallstep_credential" "test" {
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.device_metadata.1", "email"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organization.static.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organization.static.0", "Example Inc"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.0", "internal.example.com"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.device_metadata.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.device_metadata.0", "dns"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.ip_addresses.static.0", "10.0.0.1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.device_metadata.0", "smallstep:identity"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.uris.static.0", "spiffe://example.com/device"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.user_principal_names.device_metadata.0", "smallstep:identity"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.serial_number.device_metadata", "serial"),
+					helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.serial_number.static"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.given_name.static", "Jane"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.surname.static", "Doe"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#", "2"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.0", "serverAuth"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.1", "clientAuth"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.#", "2"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.oid", "1.3.6.1.4.1.44947.1.2.3"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical", "true"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.value", "DAVoZWxsbw=="),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.1.oid", "1.3.6.1.4.1.44947.1.2.4"),
+					helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.1.critical"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.1.value", "BAJoaQ=="),
 
 					// Key fields
 					helper.TestCheckResourceAttr("smallstep_credential.test", "key.type", "ECDSA_P384"),

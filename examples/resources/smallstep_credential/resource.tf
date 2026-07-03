@@ -3,15 +3,21 @@ resource "smallstep_credential" "test" {
   slug = "slug"
 
   certificate = {
-    authority_id = smallstep_authory.staging.id
+    authority_id = smallstep_authority.staging.id
     duration     = "168h"
     x509 = {
       common_name = {
         device_metadata = "smallstep:identity"
       }
-      sans = {
-        device_metadata = ["smallstep:identity"]
+      typed_sans = {
+        dns_names = {
+          device_metadata = ["Device.Hostname"]
+        }
+        user_principal_names = {
+          device_metadata = ["smallstep:identity"]
+        }
       }
+      extended_key_usage = ["serverAuth", "clientAuth"]
     }
   }
 
