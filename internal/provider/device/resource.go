@@ -444,15 +444,12 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		}
 	}
 
-	if resource.User == nil || resource.User.Email == "" {
-		err := patch.User.Email.FromDeviceUserPatchEmail0(nil)
+	// The zero value of DeviceUserPatch_Email marshals to JSON null, which
+	// unsets the user email.
+	if resource.User != nil && resource.User.Email != "" {
+		err := patch.User.Email.FromDeviceUserPatchEmail0(resource.User.Email)
 		if err != nil {
-			diags.AddError("prepare device patch: unset user email", err.Error())
-		}
-	} else {
-		err := patch.User.Email.FromDeviceUserPatchEmail1(resource.User.Email)
-		if err != nil {
-			diags.AddError("prepare device patch: unset user email", err.Error())
+			diags.AddError("prepare device patch: set user email", err.Error())
 		}
 	}
 

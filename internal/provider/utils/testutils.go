@@ -420,7 +420,7 @@ func NewCredential(t *testing.T) *v20250101.Credential {
 	reqBody := v20250101.Credential{
 		Slug: "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
 		Certificate: v20250101.CredentialCertificate{
-			Duration: "1h",
+			Duration: Ref("1h"),
 			Type:     "X509",
 		},
 		Key: v20250101.CredentialKey{

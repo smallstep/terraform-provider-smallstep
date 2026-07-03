@@ -178,7 +178,9 @@ func (m *CertificateModel) toAPI(ctx context.Context, diags *diag.Diagnostics) v
 		AuthorityID: m.AuthorityID.ValueString(),
 	}
 
-	cert.Duration = m.Duration.ValueString()
+	if !m.Duration.IsNull() && !m.Duration.IsUnknown() && m.Duration.ValueString() != "" {
+		cert.Duration = m.Duration.ValueStringPointer()
+	}
 
 	if !m.X509.IsNull() && !m.X509.IsUnknown() {
 		x509 := &X509Model{}
@@ -334,7 +336,7 @@ func fromAPI(ctx context.Context, diags *diag.Diagnostics, credential *v20250101
 }
 
 func certificateObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, cert v20250101.CredentialCertificate, state utils.AttributeGetter) types.Object {
-	dur, d := utils.ToEqualString(ctx, &cert.Duration, state, path.Root("certificate").AtName("duration"), utils.IsDurationEqual)
+	dur, d := utils.ToEqualString(ctx, cert.Duration, state, path.Root("certificate").AtName("duration"), utils.IsDurationEqual)
 	diags.Append(d...)
 
 	x509Obj := basetypes.NewObjectNull(x509Attributes)

@@ -66,7 +66,9 @@ const (
 
 // Defines values for CredentialCertificateType.
 const (
-	CredentialCertificateTypeX509 CredentialCertificateType = "X509"
+	CredentialCertificateTypeSSHHOST CredentialCertificateType = "SSH_HOST"
+	CredentialCertificateTypeSSHUSER CredentialCertificateType = "SSH_USER"
+	CredentialCertificateTypeX509    CredentialCertificateType = "X509"
 )
 
 // Defines values for CredentialFilesKeyFormat.
@@ -211,6 +213,13 @@ const (
 	EndpointKeyInfoTypeRSA4096   EndpointKeyInfoType = "RSA_4096"
 )
 
+// Defines values for EndpointManagementMode.
+const (
+	Agent EndpointManagementMode = "agent"
+	Mdm   EndpointManagementMode = "mdm"
+	Other EndpointManagementMode = "other"
+)
+
 // Defines values for EndpointReloadInfoMethod.
 const (
 	AUTOMATIC EndpointReloadInfoMethod = "AUTOMATIC"
@@ -271,6 +280,20 @@ const (
 	HOSTEDATTESTATION ProvisionerWebhookServerType = "HOSTED_ATTESTATION"
 )
 
+// Defines values for RevocationCode.
+const (
+	RevocationCodeAACOMPROMISE         RevocationCode = "AA_COMPROMISE"
+	RevocationCodeAFFILIATIONCHANGED   RevocationCode = "AFFILIATION_CHANGED"
+	RevocationCodeCACOMPROMISE         RevocationCode = "CA_COMPROMISE"
+	RevocationCodeCERTIFICATEHOLD      RevocationCode = "CERTIFICATE_HOLD"
+	RevocationCodeCESSATIONOFOPERATION RevocationCode = "CESSATION_OF_OPERATION"
+	RevocationCodeKEYCOMPROMISE        RevocationCode = "KEY_COMPROMISE"
+	RevocationCodePRIVILEGEWITHDRAWN   RevocationCode = "PRIVILEGE_WITHDRAWN"
+	RevocationCodeREMOVEFROMCRL        RevocationCode = "REMOVE_FROM_CRL"
+	RevocationCodeSUPERSEDED           RevocationCode = "SUPERSEDED"
+	RevocationCodeUNSPECIFIED          RevocationCode = "UNSPECIFIED"
+)
+
 // Defines values for ScepProvisionerEncryptionAlgorithmIdentifier.
 const (
 	AES128CBC ScepProvisionerEncryptionAlgorithmIdentifier = "AES_128_CBC"
@@ -303,15 +326,33 @@ const (
 
 // Defines values for X509CertificateRevocationReason.
 const (
-	AACOMPROMISE         X509CertificateRevocationReason = "AA_COMPROMISE"
-	AFFILIATIONCHANGED   X509CertificateRevocationReason = "AFFILIATION_CHANGED"
-	CACOMPROMISE         X509CertificateRevocationReason = "CA_COMPROMISE"
-	CERTIFICATEHOLD      X509CertificateRevocationReason = "CERTIFICATE_HOLD"
-	CESSATIONOFOPERATION X509CertificateRevocationReason = "CESSATION_OF_OPERATION"
-	KEYCOMPROMISE        X509CertificateRevocationReason = "KEY_COMPROMISE"
-	PRIVILEGEWITHDRAWN   X509CertificateRevocationReason = "PRIVILEGE_WITHDRAWN"
-	SUPERSEDED           X509CertificateRevocationReason = "SUPERSEDED"
-	UNSPECIFIED          X509CertificateRevocationReason = "UNSPECIFIED"
+	X509CertificateRevocationReasonAACOMPROMISE         X509CertificateRevocationReason = "AA_COMPROMISE"
+	X509CertificateRevocationReasonAFFILIATIONCHANGED   X509CertificateRevocationReason = "AFFILIATION_CHANGED"
+	X509CertificateRevocationReasonCACOMPROMISE         X509CertificateRevocationReason = "CA_COMPROMISE"
+	X509CertificateRevocationReasonCERTIFICATEHOLD      X509CertificateRevocationReason = "CERTIFICATE_HOLD"
+	X509CertificateRevocationReasonCESSATIONOFOPERATION X509CertificateRevocationReason = "CESSATION_OF_OPERATION"
+	X509CertificateRevocationReasonKEYCOMPROMISE        X509CertificateRevocationReason = "KEY_COMPROMISE"
+	X509CertificateRevocationReasonPRIVILEGEWITHDRAWN   X509CertificateRevocationReason = "PRIVILEGE_WITHDRAWN"
+	X509CertificateRevocationReasonSUPERSEDED           X509CertificateRevocationReason = "SUPERSEDED"
+	X509CertificateRevocationReasonUNSPECIFIED          X509CertificateRevocationReason = "UNSPECIFIED"
+)
+
+// Defines values for X509ExtendedKeyUsage.
+const (
+	Any                            X509ExtendedKeyUsage = "any"
+	ClientAuth                     X509ExtendedKeyUsage = "clientAuth"
+	CodeSigning                    X509ExtendedKeyUsage = "codeSigning"
+	EmailProtection                X509ExtendedKeyUsage = "emailProtection"
+	IpsecEndSystem                 X509ExtendedKeyUsage = "ipsecEndSystem"
+	IpsecTunnel                    X509ExtendedKeyUsage = "ipsecTunnel"
+	IpsecUser                      X509ExtendedKeyUsage = "ipsecUser"
+	MicrosoftCommercialCodeSigning X509ExtendedKeyUsage = "microsoftCommercialCodeSigning"
+	MicrosoftKernelCodeSigning     X509ExtendedKeyUsage = "microsoftKernelCodeSigning"
+	MicrosoftServerGatedCrypto     X509ExtendedKeyUsage = "microsoftServerGatedCrypto"
+	NetscapeServerGatedCrypto      X509ExtendedKeyUsage = "netscapeServerGatedCrypto"
+	OcspSigning                    X509ExtendedKeyUsage = "ocspSigning"
+	ServerAuth                     X509ExtendedKeyUsage = "serverAuth"
+	TimeStamping                   X509ExtendedKeyUsage = "timeStamping"
 )
 
 // Defines values for X509IssuerKeyVersion.
@@ -328,9 +369,23 @@ const (
 	RSASIGNPSS4096SHA512   X509IssuerKeyVersion = "RSA_SIGN_PSS_4096_SHA512"
 )
 
+// Defines values for ExpirationStatus.
+const (
+	ExpirationStatusACTIVE   ExpirationStatus = "ACTIVE"
+	ExpirationStatusEXPIRED  ExpirationStatus = "EXPIRED"
+	ExpirationStatusEXPIRING ExpirationStatus = "EXPIRING"
+)
+
 // Defines values for PostAuthJSONBodyAudience.
 const (
 	StepAgent PostAuthJSONBodyAudience = "step-agent"
+)
+
+// Defines values for SearchCertificatesParamsExpirationStatus.
+const (
+	SearchCertificatesParamsExpirationStatusACTIVE   SearchCertificatesParamsExpirationStatus = "ACTIVE"
+	SearchCertificatesParamsExpirationStatusEXPIRED  SearchCertificatesParamsExpirationStatus = "EXPIRED"
+	SearchCertificatesParamsExpirationStatusEXPIRING SearchCertificatesParamsExpirationStatus = "EXPIRING"
 )
 
 // Defines values for ListDevicesParamsSortField.
@@ -436,7 +491,7 @@ type AcmeProvisioner struct {
 // AcmeProvisionerChallenges defines model for AcmeProvisioner.Challenges.
 type AcmeProvisionerChallenges string
 
-// Authority An X509 authority hosted by Smallstep.
+// Authority An X.509 authority hosted by Smallstep.
 type Authority struct {
 	// ActiveRevocation Whether CRL and OCSP are enabled (advanced authorities only).
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
@@ -459,19 +514,19 @@ type Authority struct {
 	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// Root The root certificate in pem format.
+	// Root The root certificate in PEM format.
 	Root *string `json:"root,omitempty"`
 
 	// Type One of the available authority types
 	Type AuthorityType `json:"type"`
 }
 
-// AuthorityCsr A certificate signing request for an X509 advanced authority with an external root.
+// AuthorityCsr A certificate signing request for an X.509 advanced authority with an external root.
 type AuthorityCsr struct {
 	// AuthorityID A UUID identifying the authority.
 	AuthorityID string `json:"authorityID"`
 
-	// Csr A certificate sigining request for the authority's intermediate issuer in pem format.
+	// Csr A certificate signing request for the authority's intermediate issuer in PEM format.
 	Csr string `json:"csr"`
 
 	// Id A UUID identifying this CSR.
@@ -593,7 +648,9 @@ type BrowserAccount = map[string]interface{}
 
 // CertificateField A certificate field that takes a single string value, e.g. Common Name. Static values are used as a fallback when device metadata is not present.
 type CertificateField struct {
-	// DeviceMetadata A value populated from a key in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user. If no value is found in the device's metadata at the specified key then the static value will be used.
+	// DeviceMetadata A key in the device's metadata whose value will populate this certificate field. If the key is not present in the device's metadata, the static value will be used.
+	//
+	// In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.KeyID` is also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 	DeviceMetadata *string `json:"deviceMetadata,omitempty"`
 
 	// Static A literal value.
@@ -602,8 +659,13 @@ type CertificateField struct {
 
 // CertificateFieldList A certificate field that accepts multiple string values, e.g. SANs.
 type CertificateFieldList struct {
-	// DeviceMetadata Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+	// DeviceMetadata Keys in the device's metadata whose values will populate this certificate field.
+	//
+	// In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 	DeviceMetadata *[]string `json:"deviceMetadata,omitempty"`
+
+	// InsecureIncludeRequested Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
+	InsecureIncludeRequested *bool `json:"insecureIncludeRequested,omitempty"`
 
 	// Static Literal values.
 	Static *[]string `json:"static,omitempty"`
@@ -623,6 +685,14 @@ type Credential struct {
 	// Key The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set.
 	Key CredentialKey `json:"key"`
 
+	// ManagementMode Determines who manages the certificate lifecycle for the workload.
+	// Defaults to `agent` if not set.
+	//
+	// - `agent`: The Smallstep Agent manages the certificate lifecycle, including enrollment, renewal, key management, and service reloading.
+	// - `mdm`: An MDM manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	// - `other`: Some other process or workflow manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	ManagementMode *EndpointManagementMode `json:"managementMode,omitempty"`
+
 	// Policy Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices.
 	Policy *PolicyMatchCriteria `json:"policy,omitempty"`
 	Slug   string               `json:"slug"`
@@ -634,12 +704,19 @@ type CredentialCertificate struct {
 	AuthorityID string `json:"authorityID"`
 
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
-	Duration string                       `json:"duration"`
-	Fields   CredentialCertificate_Fields `json:"fields"`
-	Type     CredentialCertificateType    `json:"type"`
+	Duration *string `json:"duration,omitempty"`
+
+	// Fields Certificate subject fields. See [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
+	Fields CredentialCertificate_Fields `json:"fields"`
+
+	// NamePolicy Allow- and deny-lists constraining the X.509 names a credential's
+	// provisioner may issue. When omitted, no name policy is enforced.
+	// On update, omitting this field clears any existing policy.
+	NamePolicy *X509NamePolicy           `json:"namePolicy,omitempty"`
+	Type       CredentialCertificateType `json:"type"`
 }
 
-// CredentialCertificate_Fields defines model for CredentialCertificate.Fields.
+// CredentialCertificate_Fields Certificate subject fields. See [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
 type CredentialCertificate_Fields struct {
 	union json.RawMessage
 }
@@ -658,7 +735,7 @@ type CredentialFiles struct {
 	// KeyFile The filepath where the key is to be stored.
 	KeyFile *string `json:"keyFile,omitempty"`
 
-	// KeyFormat The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux tss2 will be used.
+	// KeyFormat The format used to encode the private key. For X.509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux TSS2 will be used.
 	KeyFormat *CredentialFilesKeyFormat `json:"keyFormat,omitempty"`
 
 	// Mode Permission bits of the files where the credential is stored.
@@ -671,7 +748,7 @@ type CredentialFiles struct {
 	Uid *int `json:"uid,omitempty"`
 }
 
-// CredentialFilesKeyFormat The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux tss2 will be used.
+// CredentialFilesKeyFormat The format used to encode the private key. For X.509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux TSS2 will be used.
 type CredentialFilesKeyFormat string
 
 // CredentialKey The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set.
@@ -729,7 +806,26 @@ type Device struct {
 	// state.
 	LifecycleStatus *DeviceLifecycleStatus `json:"lifecycleStatus,omitempty"`
 
-	// Metadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+	// Metadata A map of custom key-value pairs for a device, typically used to populate certificate fields. These custom keys can be referenced in [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
+	//
+	// In addition to custom keys, the following reserved keys are also available:
+	//
+	// - `smallstep:identity` — The device's assigned user email.
+	// - `Device.ID` — The Smallstep internal UUID for the device.
+	// - `Device.DisplayName` — The computed display name for the device, usually sourced from the MDM or hostname.
+	// - `Device.PermanentIdentifier` — The permanent identifier of the device (e.g. the EK public key hash).
+	// - `Device.PermanentIdentifierURI` — The permanent identifier as a URI.
+	// - `Device.Hostname` — The reported hostname of the device.
+	// - `Device.HostURI` — The host identifier as a URI.
+	// - `Device.Serial` — The serial number of the device.
+	//
+	// For SSH certificates, the following additional reserved keys are available:
+	//
+	// - `SSH.Principals` — The SSH certificate principals.
+	// - `SSH.KeyID` — The SSH certificate key ID.
+	// - `SSH.Extensions` — The SSH certificate extensions.
+	//
+	// Reserved keys are populated automatically and are not stored in this map.
 	Metadata *DeviceMetadata `json:"metadata,omitempty"`
 
 	// Os The device operating system.
@@ -749,6 +845,9 @@ type Device struct {
 	// This field may be populated with a value derived from data synced from your team's MDMs.
 	// Setting this value explicitly will mask any MDM-derived value.
 	Serial *DeviceSerial `json:"serial,omitempty"`
+
+	// Shared Whether the device is shared. A shared device is not expected to have a direct user binding.
+	Shared *bool `json:"shared,omitempty"`
 
 	// Tags A set of tags that can be used to group devices.
 	Tags *DeviceTags `json:"tags,omitempty"`
@@ -787,7 +886,26 @@ type DeviceLifecyclePatch struct {
 // state.
 type DeviceLifecycleStatus string
 
-// DeviceMetadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+// DeviceMetadata A map of custom key-value pairs for a device, typically used to populate certificate fields. These custom keys can be referenced in [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
+//
+// In addition to custom keys, the following reserved keys are also available:
+//
+// - `smallstep:identity` — The device's assigned user email.
+// - `Device.ID` — The Smallstep internal UUID for the device.
+// - `Device.DisplayName` — The computed display name for the device, usually sourced from the MDM or hostname.
+// - `Device.PermanentIdentifier` — The permanent identifier of the device (e.g. the EK public key hash).
+// - `Device.PermanentIdentifierURI` — The permanent identifier as a URI.
+// - `Device.Hostname` — The reported hostname of the device.
+// - `Device.HostURI` — The host identifier as a URI.
+// - `Device.Serial` — The serial number of the device.
+//
+// For SSH certificates, the following additional reserved keys are available:
+//
+// - `SSH.Principals` — The SSH certificate principals.
+// - `SSH.KeyID` — The SSH certificate key ID.
+// - `SSH.Extensions` — The SSH certificate extensions.
+//
+// Reserved keys are populated automatically and are not stored in this map.
 type DeviceMetadata map[string]string
 
 // DeviceOS The device operating system.
@@ -814,6 +932,7 @@ type DevicePatch struct {
 	Os          *DevicePatch_Os          `json:"os,omitempty"`
 	Ownership   *DevicePatch_Ownership   `json:"ownership,omitempty"`
 	Serial      *DevicePatch_Serial      `json:"serial,omitempty"`
+	Shared      *bool                    `json:"shared,omitempty"`
 	Tags        *DevicePatch_Tags        `json:"tags,omitempty"`
 
 	// User The user that a device is assigned to. A device cannot be approved for high-assurance certificates until it has an assigned user.
@@ -888,7 +1007,26 @@ type DeviceRequest struct {
 	// Setting this value explicitly will mask any MDM-derived value.
 	DisplayName *DeviceDisplayName `json:"displayName,omitempty"`
 
-	// Metadata A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+	// Metadata A map of custom key-value pairs for a device, typically used to populate certificate fields. These custom keys can be referenced in [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
+	//
+	// In addition to custom keys, the following reserved keys are also available:
+	//
+	// - `smallstep:identity` — The device's assigned user email.
+	// - `Device.ID` — The Smallstep internal UUID for the device.
+	// - `Device.DisplayName` — The computed display name for the device, usually sourced from the MDM or hostname.
+	// - `Device.PermanentIdentifier` — The permanent identifier of the device (e.g. the EK public key hash).
+	// - `Device.PermanentIdentifierURI` — The permanent identifier as a URI.
+	// - `Device.Hostname` — The reported hostname of the device.
+	// - `Device.HostURI` — The host identifier as a URI.
+	// - `Device.Serial` — The serial number of the device.
+	//
+	// For SSH certificates, the following additional reserved keys are available:
+	//
+	// - `SSH.Principals` — The SSH certificate principals.
+	// - `SSH.KeyID` — The SSH certificate key ID.
+	// - `SSH.Extensions` — The SSH certificate extensions.
+	//
+	// Reserved keys are populated automatically and are not stored in this map.
 	Metadata *DeviceMetadata `json:"metadata,omitempty"`
 
 	// Os The device operating system.
@@ -947,10 +1085,7 @@ type DeviceUserPatch struct {
 }
 
 // DeviceUserPatchEmail0 defines model for .
-type DeviceUserPatchEmail0 = interface{}
-
-// DeviceUserPatchEmail1 defines model for .
-type DeviceUserPatchEmail1 = string
+type DeviceUserPatchEmail0 = string
 
 // DeviceUserPatch_Email Email of the user the device is assigned to.
 // This field may be populated with a value derived from data synced from your team's MDMs.
@@ -959,7 +1094,7 @@ type DeviceUserPatch_Email struct {
 	union json.RawMessage
 }
 
-// DistinguishedName Name used in x509 certificates
+// DistinguishedName Name used in X.509 certificates
 type DistinguishedName struct {
 	CommonName         *string `json:"commonName,omitempty"`
 	Country            *string `json:"country,omitempty"`
@@ -979,7 +1114,9 @@ type EndpointCertificateInfo struct {
 	AuthorityID *string `json:"authorityID,omitempty"`
 
 	// CrtFile The filepath where the certificate is to be stored.
-	CrtFile *string                          `json:"crtFile,omitempty"`
+	CrtFile *string `json:"crtFile,omitempty"`
+
+	// Details Certificate subject fields. See [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
 	Details *EndpointCertificateInfo_Details `json:"details,omitempty"`
 
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -1004,7 +1141,7 @@ type EndpointCertificateInfo struct {
 	Uid *int `json:"uid,omitempty"`
 }
 
-// EndpointCertificateInfo_Details defines model for EndpointCertificateInfo.Details.
+// EndpointCertificateInfo_Details Certificate subject fields. See [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
 type EndpointCertificateInfo_Details struct {
 	union json.RawMessage
 }
@@ -1035,6 +1172,14 @@ type EndpointConfiguration struct {
 	//
 	// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
 	Kind EndpointConfigurationKind `json:"kind"`
+
+	// ManagementMode Determines who manages the certificate lifecycle for the workload.
+	// Defaults to `agent` if not set.
+	//
+	// - `agent`: The Smallstep Agent manages the certificate lifecycle, including enrollment, renewal, key management, and service reloading.
+	// - `mdm`: An MDM manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	// - `other`: Some other process or workflow manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	ManagementMode *EndpointManagementMode `json:"managementMode,omitempty"`
 
 	// Name A human-friendly name for this endpoint on devices.
 	Name string `json:"name"`
@@ -1084,6 +1229,14 @@ type EndpointConfigurationRequest struct {
 	// Workload-kind endpoints should be used issuing credentials to programs running on the device or machine.
 	Kind EndpointConfigurationRequestKind `json:"kind"`
 
+	// ManagementMode Determines who manages the certificate lifecycle for the workload.
+	// Defaults to `agent` if not set.
+	//
+	// - `agent`: The Smallstep Agent manages the certificate lifecycle, including enrollment, renewal, key management, and service reloading.
+	// - `mdm`: An MDM manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	// - `other`: Some other process or workflow manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+	ManagementMode *EndpointManagementMode `json:"managementMode,omitempty"`
+
 	// Name A human-friendly name for this endpoint on devices.
 	Name string `json:"name"`
 
@@ -1113,7 +1266,7 @@ type EndpointConfigurationRequestKind string
 
 // EndpointKeyInfo The attributes of the cryptographic key.
 type EndpointKeyInfo struct {
-	// Format The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where tss2 will be used.
+	// Format The format used to encode the private key. For X.509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where TSS2 will be used.
 	Format *EndpointKeyInfoFormat `json:"format,omitempty"`
 
 	// Protection Whether to use a hardware module to store the private key for a workload certificate. If set to `NONE` no hardware module will be used. If set to `DEFAULT` a hardware module will only be used with format `TSS2`. `HARDWARE_WITH_FALLBACK` can only be used with the key format `DEFAULT`.
@@ -1126,7 +1279,7 @@ type EndpointKeyInfo struct {
 	Type *EndpointKeyInfoType `json:"type,omitempty"`
 }
 
-// EndpointKeyInfoFormat The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where tss2 will be used.
+// EndpointKeyInfoFormat The format used to encode the private key. For X.509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux where TSS2 will be used.
 type EndpointKeyInfoFormat string
 
 // EndpointKeyInfoProtection Whether to use a hardware module to store the private key for a workload certificate. If set to `NONE` no hardware module will be used. If set to `DEFAULT` a hardware module will only be used with format `TSS2`. `HARDWARE_WITH_FALLBACK` can only be used with the key format `DEFAULT`.
@@ -1134,6 +1287,14 @@ type EndpointKeyInfoProtection string
 
 // EndpointKeyInfoType The key type used. The current DEFAULT type is ECDSA_P256.
 type EndpointKeyInfoType string
+
+// EndpointManagementMode Determines who manages the certificate lifecycle for the workload.
+// Defaults to `agent` if not set.
+//
+// - `agent`: The Smallstep Agent manages the certificate lifecycle, including enrollment, renewal, key management, and service reloading.
+// - `mdm`: An MDM manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+// - `other`: Some other process or workflow manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+type EndpointManagementMode string
 
 // EndpointReloadInfo The properties used to reload a service.
 type EndpointReloadInfo struct {
@@ -1263,6 +1424,9 @@ type IdpClient struct {
 	// Id The client ID.
 	Id *string `json:"id,omitempty"`
 
+	// LifecycleFailureURI Where user-agents will be sent when the device lifecycle is not active.
+	LifecycleFailureURI *string `json:"lifecycleFailureURI,omitempty"`
+
 	// RedirectURI Where user-agents will be sent after authentication attempts.
 	RedirectURI string `json:"redirectURI"`
 
@@ -1326,7 +1490,7 @@ type ManagedRadius struct {
 	ServerPort *string `json:"serverPort,omitempty"`
 }
 
-// NameConstraints X509 certificate name constratins.
+// NameConstraints X.509 certificate name constraints.
 type NameConstraints struct {
 	// Critical Whether or not name constraints are marked critical.
 	Critical                *bool     `json:"critical,omitempty"`
@@ -1348,13 +1512,13 @@ type NewAuthority struct {
 	// AdminEmails Users that will have admin access to manage the authority.
 	AdminEmails []string `json:"adminEmails"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority.
+	// IntermediateIssuer A customized X.509 issuer for an authority.
 	IntermediateIssuer *X509Issuer `json:"intermediateIssuer,omitempty"`
 
 	// Name The name of the authority.
 	Name string `json:"name"`
 
-	// RootIssuer A Customized X509 issuer for an authority.
+	// RootIssuer A customized X.509 issuer for an authority.
 	RootIssuer *X509Issuer `json:"rootIssuer,omitempty"`
 
 	// Subdomain The new authority will be available at <subdomain>.<team slug>.ca.smallstep.com.
@@ -1367,12 +1531,12 @@ type NewAuthority struct {
 // NewAuthorityType Create either a devops or advanced authority.
 type NewAuthorityType string
 
-// NewAuthorityCsr Body of a request to create a new X509 advanced authority with an external root.
+// NewAuthorityCsr Body of a request to create a new X.509 advanced authority with an external root.
 type NewAuthorityCsr struct {
 	// ActiveRevocation Whether to enable CRL and OCSP on the authority.
 	ActiveRevocation *bool `json:"activeRevocation,omitempty"`
 
-	// IntermediateIssuer A Customized X509 issuer for an authority.
+	// IntermediateIssuer A customized X.509 issuer for an authority.
 	IntermediateIssuer X509Issuer `json:"intermediateIssuer"`
 
 	// Name The name of the authority.
@@ -1496,7 +1660,7 @@ type ProvisionerClaims struct {
 	// DefaultHostSSHCertDuration The default duration for an SSH host certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	DefaultHostSSHCertDuration *string `json:"defaultHostSSHCertDuration,omitempty"`
 
-	// DefaultTLSCertDuration The default duration for an x509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	// DefaultTLSCertDuration The default duration for an X.509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	DefaultTLSCertDuration *string `json:"defaultTLSCertDuration,omitempty"`
 
 	// DefaultUserSSHCertDuration The default duration for an SSH user certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -1511,7 +1675,7 @@ type ProvisionerClaims struct {
 	// MaxHostSSHCertDuration The maximum duration for an SSH host certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	MaxHostSSHCertDuration *string `json:"maxHostSSHCertDuration,omitempty"`
 
-	// MaxTLSCertDuration The maximum duration for an x509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	// MaxTLSCertDuration The maximum duration for an X.509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	MaxTLSCertDuration *string `json:"maxTLSCertDuration,omitempty"`
 
 	// MaxUserSSHCertDuration The maximum duration for an SSH user certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -1520,7 +1684,7 @@ type ProvisionerClaims struct {
 	// MinHostSSHCertDuration The minimum duration for an SSH host certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	MinHostSSHCertDuration *string `json:"minHostSSHCertDuration,omitempty"`
 
-	// MinTLSCertDuration The minimum duration for an x509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+	// MinTLSCertDuration The minimum duration for an X.509 certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	MinTLSCertDuration *string `json:"minTLSCertDuration,omitempty"`
 
 	// MinUserSSHCertDuration The minimum duration for an SSH user certificate generated by this provisioner. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
@@ -1533,7 +1697,7 @@ type ProvisionerOptions struct {
 	Ssh      *SshOptions           `json:"ssh,omitempty"`
 	Webhooks *[]ProvisionerWebhook `json:"webhooks,omitempty"`
 
-	// X509 Options that apply when issuing x509 certificates.
+	// X509 Options that apply when issuing X.509 certificates.
 	X509 *X509Options `json:"x509,omitempty"`
 }
 
@@ -1557,7 +1721,7 @@ type ProvisionerWebhook struct {
 
 	// Kind The webhook kind indicates how and when it is called.
 	//
-	// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+	// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X.509 or SSH certificate is to be signed and based on the type of provisioner.
 	Kind ProvisionerWebhookKind `json:"kind"`
 
 	// Name The name of the webhook. For `ENRICHING` webhooks, the returned data can be referenced in the certificate under the path `.Webhooks.<name>`. Must be unique to the provisioner.
@@ -1580,7 +1744,7 @@ type ProvisionerWebhookCertType string
 
 // ProvisionerWebhookKind The webhook kind indicates how and when it is called.
 //
-// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+// ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X.509 or SSH certificate is to be signed and based on the type of provisioner.
 type ProvisionerWebhookKind string
 
 // ProvisionerWebhookServerType An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
@@ -1607,6 +1771,15 @@ type ReplyAttribute0 = interface{}
 // ReplyAttribute1 defines model for .
 type ReplyAttribute1 = interface{}
 
+// Revocation defines model for revocation.
+type Revocation struct {
+	Code   *RevocationCode `json:"code,omitempty"`
+	Reason *string         `json:"reason,omitempty"`
+}
+
+// RevocationCode defines model for Revocation.Code.
+type RevocationCode string
+
 // ScepProvisioner The [SCEP provisioner](https://smallstep.com/docs/step-ca/provisioners/#scep) grants certificates to clients using the SCEP protocol. This type is currently experimental and subject to change.
 type ScepProvisioner struct {
 	// AutogenerateDecrypter Automatically generate a new RSA decrypter instead of providing one.
@@ -1615,13 +1788,13 @@ type ScepProvisioner struct {
 	// Challenge A static challenge secret.
 	Challenge *string `json:"challenge,omitempty"`
 
-	// DecrypterCertificate A pem-encoded certificate for an RSA public key.
+	// DecrypterCertificate A PEM-encoded certificate for an RSA public key.
 	DecrypterCertificate *string `json:"decrypterCertificate,omitempty"`
 
-	// DecrypterKey The pem-encoded RSA private key, corresponding to the certificate public key.
+	// DecrypterKey The PEM-encoded RSA private key, corresponding to the certificate public key.
 	DecrypterKey *string `json:"decrypterKey,omitempty"`
 
-	// DecrypterKeyPassword The password for the pem-encoded RSA private key, if any.
+	// DecrypterKeyPassword The password for the PEM-encoded RSA private key, if any.
 	DecrypterKeyPassword *string `json:"decrypterKeyPassword,omitempty"`
 
 	// EncryptionAlgorithmIdentifier The encryption algorithm used for encrypting responses to the SCEP client:
@@ -1671,7 +1844,7 @@ type SshOptions struct {
 	TemplateData *interface{} `json:"templateData,omitempty"`
 }
 
-// Subject Name used in x509 certificates
+// Subject Name used in X.509 certificates
 type Subject struct {
 	CommonName         *string      `json:"commonName,omitempty"`
 	Country            *[]string    `json:"country,omitempty"`
@@ -1801,12 +1974,12 @@ type X509Certificate struct {
 	ExtKeyUsage           *[]string        `json:"extKeyUsage,omitempty"`
 	IpAddresses           *[]string        `json:"ipAddresses,omitempty"`
 
-	// Issuer Name used in x509 certificates
+	// Issuer Name used in X.509 certificates
 	Issuer                Subject   `json:"issuer"`
 	IssuingCertificateURL *[]string `json:"issuingCertificateURL,omitempty"`
 	KeyUsage              []string  `json:"keyUsage"`
 
-	// NameConstraints X509 certificate name constratins.
+	// NameConstraints X.509 certificate name constraints.
 	NameConstraints    *NameConstraints                 `json:"nameConstraints,omitempty"`
 	OcspServer         *[]string                        `json:"ocspServer,omitempty"`
 	Pem                string                           `json:"pem"`
@@ -1816,7 +1989,7 @@ type X509Certificate struct {
 	SerialNumber       string                           `json:"serialNumber"`
 	SignatureAlgorithm string                           `json:"signatureAlgorithm"`
 
-	// Subject Name used in x509 certificates
+	// Subject Name used in X.509 certificates
 	Subject      Subject   `json:"subject"`
 	SubjectKeyId string    `json:"subjectKeyId"`
 	Uris         *[]string `json:"uris,omitempty"`
@@ -1826,6 +1999,21 @@ type X509Certificate struct {
 // X509CertificateRevocationReason defines model for X509Certificate.RevocationReason.
 type X509CertificateRevocationReason string
 
+// X509CustomExtension An arbitrary X.509 certificate extension.
+type X509CustomExtension struct {
+	// Critical Whether the extension is marked critical.
+	Critical *bool `json:"critical,omitempty"`
+
+	// Oid The object identifier in dotted notation (e.g. `1.3.6.1.4.1.44947`).
+	Oid string `json:"oid"`
+
+	// Value The DER-encoded extension value, base64-encoded.
+	Value []byte `json:"value"`
+}
+
+// X509ExtendedKeyUsage A purpose for which a certified public key may be used.
+type X509ExtendedKeyUsage string
+
 // X509Fields Populate certificate fields using using static names or device metadata.
 type X509Fields struct {
 	// CommonName A certificate field that takes a single string value, e.g. Common Name. Static values are used as a fallback when device metadata is not present.
@@ -1833,6 +2021,15 @@ type X509Fields struct {
 
 	// Country A certificate field that accepts multiple string values, e.g. SANs.
 	Country *CertificateFieldList `json:"country,omitempty"`
+
+	// CustomExtensions Arbitrary X.509 extensions to include in the certificate.
+	CustomExtensions *[]X509CustomExtension `json:"customExtensions,omitempty"`
+
+	// ExtendedKeyUsage The set of purposes for which the certified public key may be used. Defaults to server and client authentication when omitted.
+	ExtendedKeyUsage *[]X509ExtendedKeyUsage `json:"extendedKeyUsage,omitempty"`
+
+	// GivenName A certificate field that takes a single string value, e.g. Common Name. Static values are used as a fallback when device metadata is not present.
+	GivenName *CertificateField `json:"givenName,omitempty"`
 
 	// Locality A certificate field that accepts multiple string values, e.g. SANs.
 	Locality *CertificateFieldList `json:"locality,omitempty"`
@@ -1852,11 +2049,20 @@ type X509Fields struct {
 	// Sans A certificate field that accepts multiple string values, e.g. SANs.
 	Sans *CertificateFieldList `json:"sans,omitempty"`
 
+	// SerialNumber A certificate field that takes a single string value, e.g. Common Name. Static values are used as a fallback when device metadata is not present.
+	SerialNumber *CertificateField `json:"serialNumber,omitempty"`
+
 	// StreetAddress A certificate field that accepts multiple string values, e.g. SANs.
 	StreetAddress *CertificateFieldList `json:"streetAddress,omitempty"`
+
+	// Surname A certificate field that takes a single string value, e.g. Common Name. Static values are used as a fallback when device metadata is not present.
+	Surname *CertificateField `json:"surname,omitempty"`
+
+	// TypedSans Explicitly typed subject alternative names. When set, takes precedence over the untyped `sans` field.
+	TypedSans *X509TypedSANs `json:"typedSans,omitempty"`
 }
 
-// X509Issuer A Customized X509 issuer for an authority.
+// X509Issuer A customized X.509 issuer for an authority.
 type X509Issuer struct {
 	// Duration The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 	Duration *string `json:"duration,omitempty"`
@@ -1868,28 +2074,69 @@ type X509Issuer struct {
 	// Name The name of the issuer.
 	Name string `json:"name"`
 
-	// NameConstraints X509 certificate name constratins.
+	// NameConstraints X.509 certificate name constraints.
 	NameConstraints *NameConstraints `json:"nameConstraints,omitempty"`
 
-	// Subject Name used in x509 certificates
+	// Subject Name used in X.509 certificates
 	Subject *DistinguishedName `json:"subject,omitempty"`
 }
 
 // X509IssuerKeyVersion The signature algorithm.
 type X509IssuerKeyVersion string
 
-// X509Options Options that apply when issuing x509 certificates.
+// X509NamePolicy Allow- and deny-lists constraining the X.509 names a credential's
+// provisioner may issue. When omitted, no name policy is enforced.
+// On update, omitting this field clears any existing policy.
+type X509NamePolicy struct {
+	// Allow A set of X.509 name patterns grouped by name type.
+	Allow *X509Names `json:"allow,omitempty"`
+
+	// AllowWildcardNames When true, wildcard names like `*.example.com` are permitted.
+	AllowWildcardNames *bool `json:"allowWildcardNames,omitempty"`
+
+	// Deny A set of X.509 name patterns grouped by name type.
+	Deny *X509Names `json:"deny,omitempty"`
+}
+
+// X509Names A set of X.509 name patterns grouped by name type.
+type X509Names struct {
+	CommonNames *[]string `json:"commonNames,omitempty"`
+	Dns         *[]string `json:"dns,omitempty"`
+	Emails      *[]string `json:"emails,omitempty"`
+	Ips         *[]string `json:"ips,omitempty"`
+	Uris        *[]string `json:"uris,omitempty"`
+}
+
+// X509Options Options that apply when issuing X.509 certificates.
 type X509Options struct {
-	// Template A JSON representation of the x509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
+	// Template A JSON representation of the X.509 certificate to be created. [More info](https://smallstep.com/docs/step-ca/templates/#x509-templates).
 	Template *string `json:"template,omitempty"`
 
 	// TemplateData A map of data that can be used by the certificate template.
 	TemplateData *interface{} `json:"templateData,omitempty"`
 }
 
-// X5cProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing x509 certificate.
+// X509TypedSANs Explicitly typed subject alternative names. When set, takes precedence over the untyped `sans` field.
+type X509TypedSANs struct {
+	// DnsNames A certificate field that accepts multiple string values, e.g. SANs.
+	DnsNames *CertificateFieldList `json:"dnsNames,omitempty"`
+
+	// EmailAddresses A certificate field that accepts multiple string values, e.g. SANs.
+	EmailAddresses *CertificateFieldList `json:"emailAddresses,omitempty"`
+
+	// IpAddresses A certificate field that accepts multiple string values, e.g. SANs.
+	IpAddresses *CertificateFieldList `json:"ipAddresses,omitempty"`
+
+	// Uris A certificate field that accepts multiple string values, e.g. SANs.
+	Uris *CertificateFieldList `json:"uris,omitempty"`
+
+	// UserPrincipalNames A certificate field that accepts multiple string values, e.g. SANs.
+	UserPrincipalNames *CertificateFieldList `json:"userPrincipalNames,omitempty"`
+}
+
+// X5cProvisioner A [provisioner](https://smallstep.com/docs/step-ca/provisioners/#x5c---x509-certificate) that authenticates a certificate request with an existing X.509 certificate.
 type X5cProvisioner struct {
-	// Roots A list of pem-encoded x509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
+	// Roots A list of PEM-encoded X.509 certificates. Any certificate bundle that chains up to any of these roots can be used in a certificate request.
 	Roots []string `json:"roots"`
 }
 
@@ -1907,6 +2154,18 @@ type AuthorityID = string
 
 // BrowserID defines model for browserID.
 type BrowserID = string
+
+// CertAuthorityID defines model for certAuthorityID.
+type CertAuthorityID = string
+
+// CertProvisioner defines model for certProvisioner.
+type CertProvisioner = string
+
+// CommonName defines model for commonName.
+type CommonName = string
+
+// Country defines model for country.
+type Country = string
 
 // CredentialID defines model for credentialID.
 type CredentialID = string
@@ -1956,11 +2215,29 @@ type EndpointConfigurationID = string
 // EthernetID defines model for ethernetID.
 type EthernetID = string
 
+// ExpirationStatus defines model for expirationStatus.
+type ExpirationStatus string
+
 // IdpClientID defines model for idpClientID.
 type IdpClientID = string
 
+// Locality defines model for locality.
+type Locality = string
+
 // ManagedRadiusID defines model for managedRadiusID.
 type ManagedRadiusID = string
+
+// NotAfter defines model for notAfter.
+type NotAfter = time.Time
+
+// NotBefore defines model for notBefore.
+type NotBefore = time.Time
+
+// Organization defines model for organization.
+type Organization = string
+
+// OrganizationalUnit defines model for organizationalUnit.
+type OrganizationalUnit = string
 
 // Pagination defines model for pagination.
 type Pagination struct {
@@ -1976,17 +2253,32 @@ type Pagination struct {
 // PlatformSlug defines model for platformSlug.
 type PlatformSlug = string
 
+// PostalCode defines model for postalCode.
+type PostalCode = string
+
+// Province defines model for province.
+type Province = string
+
 // ProvisionerNameOrID defines model for provisionerNameOrID.
 type ProvisionerNameOrID = string
 
 // RequestID defines model for requestID.
 type RequestID = string
 
+// San defines model for san.
+type San = string
+
 // Secret defines model for secret.
 type Secret = bool
 
 // SerialNumber defines model for serialNumber.
 type SerialNumber = string
+
+// StreetAddress defines model for streetAddress.
+type StreetAddress = string
+
+// Version defines model for version.
+type Version = string
 
 // VpnID defines model for vpnID.
 type VpnID = string
@@ -2029,6 +2321,9 @@ type ListAccountsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2037,6 +2332,9 @@ type ListAccountsParams struct {
 type PostAccountsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2047,6 +2345,9 @@ type DeleteAccountParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2056,6 +2357,9 @@ type GetAccountParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2064,6 +2368,9 @@ type GetAccountParams struct {
 type PutAccountParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2085,6 +2392,9 @@ type GetAuthoritiesParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2093,6 +2403,9 @@ type GetAuthoritiesParams struct {
 type PostAuthoritiesParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2103,6 +2416,9 @@ type PostAuthoritiesCsrParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2111,6 +2427,9 @@ type PostAuthoritiesCsrParams struct {
 type DeleteAuthorityParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2121,6 +2440,9 @@ type GetAuthorityParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2129,6 +2451,9 @@ type GetAuthorityParams struct {
 type ListAuthorityProvisionersParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2139,6 +2464,9 @@ type PostAuthorityProvisionersParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2147,6 +2475,9 @@ type PostAuthorityProvisionersParams struct {
 type DeleteProvisionerParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2157,6 +2488,9 @@ type GetProvisionerParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2165,6 +2499,9 @@ type GetProvisionerParams struct {
 type PostWebhooksParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2175,6 +2512,9 @@ type DeleteWebhookParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2183,6 +2523,9 @@ type DeleteWebhookParams struct {
 type GetWebhookParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2202,7 +2545,7 @@ type PostAuthorityRootJSONBody struct {
 	// RootName A name for the external root issuer
 	RootName string `json:"rootName"`
 
-	// RootPEM The root certificate in pem format
+	// RootPEM The root certificate in PEM format
 	RootPEM string `json:"rootPEM"`
 }
 
@@ -2210,6 +2553,9 @@ type PostAuthorityRootJSONBody struct {
 type PostAuthorityRootParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2223,14 +2569,92 @@ type ListCertificatesParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
+
+// SearchCertificatesParams defines parameters for SearchCertificates.
+type SearchCertificatesParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// DeviceID ID of a device
+	DeviceID *string `form:"deviceID,omitempty" json:"deviceID,omitempty"`
+
+	// ExpirationStatus Filter certificates by expiration status.
+	ExpirationStatus *SearchCertificatesParamsExpirationStatus `form:"expirationStatus,omitempty" json:"expirationStatus,omitempty"`
+
+	// NotBefore Timestamp in RFC3339 format to filter certs not active before this timestamp.
+	NotBefore *NotBefore `form:"notBefore,omitempty" json:"notBefore,omitempty"`
+
+	// NotAfter Timestamp in RFC3339 format to filter certs not active after this timestamp.
+	NotAfter *NotAfter `form:"notAfter,omitempty" json:"notAfter,omitempty"`
+
+	// San SAN of cert.
+	San *San `form:"san,omitempty" json:"san,omitempty"`
+
+	// Country Subject country.
+	Country *Country `form:"country,omitempty" json:"country,omitempty"`
+
+	// Organization Subject organization.
+	Organization *Organization `form:"organization,omitempty" json:"organization,omitempty"`
+
+	// OrganizationalUnit Subject organizational unit.
+	OrganizationalUnit *OrganizationalUnit `form:"organizationalUnit,omitempty" json:"organizationalUnit,omitempty"`
+
+	// Locality Subject locality.
+	Locality *Locality `form:"locality,omitempty" json:"locality,omitempty"`
+
+	// StreetAddress Subject street address.
+	StreetAddress *StreetAddress `form:"streetAddress,omitempty" json:"streetAddress,omitempty"`
+
+	// PostalCode Subject postal code.
+	PostalCode *PostalCode `form:"postalCode,omitempty" json:"postalCode,omitempty"`
+
+	// CommonName Subject common name.
+	CommonName *CommonName `form:"commonName,omitempty" json:"commonName,omitempty"`
+
+	// Province Subject province.
+	Province *Province `form:"province,omitempty" json:"province,omitempty"`
+
+	// Provisioner Provisioner of cert.
+	Provisioner *CertProvisioner `form:"provisioner,omitempty" json:"provisioner,omitempty"`
+
+	// AuthorityID Authority ID of cert.
+	AuthorityID *CertAuthorityID `form:"authorityID,omitempty" json:"authorityID,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// SearchCertificatesParamsExpirationStatus defines parameters for SearchCertificates.
+type SearchCertificatesParamsExpirationStatus string
 
 // GetCertificateParams defines parameters for GetCertificate.
 type GetCertificateParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// RevokeCertificateParams defines parameters for RevokeCertificate.
+type RevokeCertificateParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2241,6 +2665,9 @@ type DeleteCredentialParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2249,6 +2676,9 @@ type DeleteCredentialParams struct {
 type GetCredentialParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2259,6 +2689,24 @@ type PutCredentialParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// ListCredentialsParams defines parameters for ListCredentials.
+type ListCredentialsParams struct {
+	// Pagination Paginate over a list of objects. Example: `?pagination[first]=30&pagination[after]=MTIzNA==`, which after encoding would be `?pagination%5Bfirst%5D=30&pagination%5Bafter%5D=MTIzNA==`
+	Pagination *Pagination `json:"pagination,omitempty"`
+
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2267,6 +2715,9 @@ type PutCredentialParams struct {
 type PostCredentialsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2278,13 +2729,16 @@ type ListDevicesParams struct {
 	Pagination *Pagination `json:"pagination,omitempty"`
 
 	// Filters Filter a list of devices by specifying the critera that must be met. Example: `?filters[os]=windows&filters[assurance]=high`, which after encoding would be `?filters%5Bos%5D=windows&filters%5Bassurance%5D=high`
-	Filters *DeviceFilters `form:"filters,omitempty" json:"filters,omitempty"`
+	Filters *DeviceFilters `json:"filters,omitempty"`
 
 	// Sort The sorting behavior for matching devices. Example: `?sort[field]=lastSeen&sort[ascending]=true`, which after encoding would be `?sort%5Bfield%5D=lastSeen&sort%5Bascending%5D=true`
-	Sort *DeviceSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort *DeviceSort `json:"sort,omitempty"`
 
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2298,6 +2752,9 @@ type PostDevicesParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2306,6 +2763,9 @@ type PostDevicesParams struct {
 type DeleteDeviceParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2316,6 +2776,9 @@ type GetDeviceParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2325,6 +2788,9 @@ type PatchDeviceParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2333,6 +2799,9 @@ type PatchDeviceParams struct {
 type PatchDeviceLifecycleParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2346,6 +2815,9 @@ type ListEndpointConfigurationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2354,6 +2826,9 @@ type ListEndpointConfigurationsParams struct {
 type PostEndpointConfigurationsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2364,6 +2839,9 @@ type DeleteEndpointConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2372,6 +2850,9 @@ type DeleteEndpointConfigurationParams struct {
 type GetEndpointConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2382,6 +2863,9 @@ type PutEndpointConfigurationParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2391,6 +2875,9 @@ type ListManagedRadiusParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2399,6 +2886,9 @@ type ListManagedRadiusParams struct {
 type PostManagedRadiusParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2412,6 +2902,9 @@ type DeleteManagedRadiusParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2423,6 +2916,9 @@ type GetManagedRadiusParams struct {
 
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2436,6 +2932,9 @@ type PutManagedRadiusParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2448,6 +2947,9 @@ type GetPlatformsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2456,6 +2958,9 @@ type GetPlatformsParams struct {
 type PutPlatformParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2469,6 +2974,9 @@ type ListBrowserParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2477,6 +2985,9 @@ type ListBrowserParams struct {
 type PostBrowserParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2487,6 +2998,9 @@ type DeleteBrowserParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2496,6 +3010,9 @@ type GetBrowserParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2504,6 +3021,9 @@ type GetBrowserParams struct {
 type PutBrowserParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2517,6 +3037,9 @@ type ListEthernetParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2525,6 +3048,9 @@ type ListEthernetParams struct {
 type PostEthernetParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2535,6 +3061,9 @@ type DeleteEthernetParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2544,6 +3073,9 @@ type GetEthernetParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2552,6 +3084,9 @@ type GetEthernetParams struct {
 type PutEthernetParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2565,6 +3100,9 @@ type ListVpnParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2573,6 +3111,9 @@ type ListVpnParams struct {
 type PostVpnParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2583,6 +3124,9 @@ type DeleteVpnParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2592,6 +3136,9 @@ type GetVpnParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2600,6 +3147,9 @@ type GetVpnParams struct {
 type PutVpnParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2613,6 +3163,9 @@ type ListWifiParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2621,6 +3174,9 @@ type ListWifiParams struct {
 type PostWifiParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2631,6 +3187,9 @@ type DeleteWifiParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2639,6 +3198,9 @@ type DeleteWifiParams struct {
 type GetWifiParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2649,6 +3211,9 @@ type PutWifiParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2657,6 +3222,9 @@ type PutWifiParams struct {
 type DeleteIdentityProviderParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2667,6 +3235,9 @@ type GetIdentityProviderParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2675,6 +3246,9 @@ type GetIdentityProviderParams struct {
 type PutIdentityProviderParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2685,6 +3259,9 @@ type ListIdpClientsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2693,6 +3270,9 @@ type ListIdpClientsParams struct {
 type PostIdpClientsParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2703,6 +3283,9 @@ type DeleteIdpClientParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
 
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
 }
@@ -2711,6 +3294,21 @@ type DeleteIdpClientParams struct {
 type GetIdpClientParams struct {
 	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
 	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
+
+	// Accept The content type the client is willing to accept. Also includes API version.
+	Accept *Accept `json:"Accept,omitempty"`
+}
+
+// PutIdpClientParams defines parameters for PutIdpClient.
+type PutIdpClientParams struct {
+	// XRequestId A request ID provided by the client. If not provided, the server will generate one. Will be reflected in responses.
+	XRequestId *RequestID `json:"X-Request-Id,omitempty"`
+
+	// XSmallstepApiVersion The version of the Smallstep API. Required unless set in the Accept header.
+	XSmallstepApiVersion *Version `json:"X-Smallstep-Api-Version,omitempty"`
 
 	// Accept The content type the client is willing to accept. Also includes API version.
 	Accept *Accept `json:"Accept,omitempty"`
@@ -2739,6 +3337,9 @@ type PostWebhooksJSONRequestBody = ProvisionerWebhook
 
 // PostAuthorityRootJSONRequestBody defines body for PostAuthorityRoot for application/json ContentType.
 type PostAuthorityRootJSONRequestBody PostAuthorityRootJSONBody
+
+// RevokeCertificateJSONRequestBody defines body for RevokeCertificate for application/json ContentType.
+type RevokeCertificateJSONRequestBody = Revocation
 
 // PutCredentialJSONRequestBody defines body for PutCredential for application/json ContentType.
 type PutCredentialJSONRequestBody = Credential
@@ -2799,6 +3400,9 @@ type PutIdentityProviderJSONRequestBody = IdentityProvider
 
 // PostIdpClientsJSONRequestBody defines body for PostIdpClients for application/json ContentType.
 type PostIdpClientsJSONRequestBody = IdpClient
+
+// PutIdpClientJSONRequestBody defines body for PutIdpClient for application/json ContentType.
+type PutIdpClientJSONRequestBody = IdpClient
 
 // AsWifiAccount returns the union data inside the Account_Configuration as a WifiAccount
 func (t Account_Configuration) AsWifiAccount() (WifiAccount, error) {
@@ -3044,6 +3648,32 @@ func (t *CredentialCertificate_Fields) FromX509Fields(v X509Fields) error {
 
 // MergeX509Fields performs a merge with any union data inside the CredentialCertificate_Fields, using the provided X509Fields
 func (t *CredentialCertificate_Fields) MergeX509Fields(v X509Fields) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSshFields returns the union data inside the CredentialCertificate_Fields as a SshFields
+func (t CredentialCertificate_Fields) AsSshFields() (SshFields, error) {
+	var body SshFields
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSshFields overwrites any union data inside the CredentialCertificate_Fields as the provided SshFields
+func (t *CredentialCertificate_Fields) FromSshFields(v SshFields) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSshFields performs a merge with any union data inside the CredentialCertificate_Fields, using the provided SshFields
+func (t *CredentialCertificate_Fields) MergeSshFields(v SshFields) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3514,32 +4144,6 @@ func (t *DeviceUserPatch_Email) FromDeviceUserPatchEmail0(v DeviceUserPatchEmail
 
 // MergeDeviceUserPatchEmail0 performs a merge with any union data inside the DeviceUserPatch_Email, using the provided DeviceUserPatchEmail0
 func (t *DeviceUserPatch_Email) MergeDeviceUserPatchEmail0(v DeviceUserPatchEmail0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsDeviceUserPatchEmail1 returns the union data inside the DeviceUserPatch_Email as a DeviceUserPatchEmail1
-func (t DeviceUserPatch_Email) AsDeviceUserPatchEmail1() (DeviceUserPatchEmail1, error) {
-	var body DeviceUserPatchEmail1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDeviceUserPatchEmail1 overwrites any union data inside the DeviceUserPatch_Email as the provided DeviceUserPatchEmail1
-func (t *DeviceUserPatch_Email) FromDeviceUserPatchEmail1(v DeviceUserPatchEmail1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeDeviceUserPatchEmail1 performs a merge with any union data inside the DeviceUserPatch_Email, using the provided DeviceUserPatchEmail1
-func (t *DeviceUserPatch_Email) MergeDeviceUserPatchEmail1(v DeviceUserPatchEmail1) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -4642,8 +5246,16 @@ type ClientInterface interface {
 	// ListCertificates request
 	ListCertificates(ctx context.Context, params *ListCertificatesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// SearchCertificates request
+	SearchCertificates(ctx context.Context, params *SearchCertificatesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetCertificate request
 	GetCertificate(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RevokeCertificateWithBody request with any body
+	RevokeCertificateWithBody(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RevokeCertificate(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, body RevokeCertificateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteCredential request
 	DeleteCredential(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4655,6 +5267,9 @@ type ClientInterface interface {
 	PutCredentialWithBody(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutCredential(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCredentials request
+	ListCredentials(ctx context.Context, params *ListCredentialsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostCredentialsWithBody request with any body
 	PostCredentialsWithBody(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4831,6 +5446,11 @@ type ClientInterface interface {
 
 	// GetIdpClient request
 	GetIdpClient(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutIdpClientWithBody request with any body
+	PutIdpClientWithBody(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutIdpClient(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, body PutIdpClientJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListAccounts(ctx context.Context, params *ListAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5169,8 +5789,44 @@ func (c *Client) ListCertificates(ctx context.Context, params *ListCertificatesP
 	return c.Client.Do(req)
 }
 
+func (c *Client) SearchCertificates(ctx context.Context, params *SearchCertificatesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSearchCertificatesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetCertificate(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCertificateRequest(c.Server, serialNumber, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RevokeCertificateWithBody(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRevokeCertificateRequestWithBody(c.Server, serialNumber, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RevokeCertificate(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, body RevokeCertificateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRevokeCertificateRequest(c.Server, serialNumber, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5219,6 +5875,18 @@ func (c *Client) PutCredentialWithBody(ctx context.Context, credentialID Credent
 
 func (c *Client) PutCredential(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutCredentialRequest(c.Server, credentialID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListCredentials(ctx context.Context, params *ListCredentialsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCredentialsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -6009,6 +6677,30 @@ func (c *Client) GetIdpClient(ctx context.Context, idpClientID IdpClientID, para
 	return c.Client.Do(req)
 }
 
+func (c *Client) PutIdpClientWithBody(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutIdpClientRequestWithBody(c.Server, idpClientID, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutIdpClient(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, body PutIdpClientJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutIdpClientRequest(c.Server, idpClientID, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // NewListAccountsRequest generates requests for ListAccounts
 func NewListAccountsRequest(server string, params *ListAccountsParams) (*http.Request, error) {
 	var err error
@@ -6068,15 +6760,26 @@ func NewListAccountsRequest(server string, params *ListAccountsParams) (*http.Re
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6134,15 +6837,26 @@ func NewPostAccountsRequestWithBody(server string, params *PostAccountsParams, c
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6194,15 +6908,26 @@ func NewDeleteAccountRequest(server string, accountID AccountID, params *DeleteA
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6254,15 +6979,26 @@ func NewGetAccountRequest(server string, accountID AccountID, params *GetAccount
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6327,15 +7063,26 @@ func NewPutAccountRequestWithBody(server string, accountID AccountID, params *Pu
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6420,15 +7167,26 @@ func NewGetAuthoritiesRequest(server string, params *GetAuthoritiesParams) (*htt
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6486,15 +7244,26 @@ func NewPostAuthoritiesRequestWithBody(server string, params *PostAuthoritiesPar
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6552,15 +7321,26 @@ func NewPostAuthoritiesCsrRequestWithBody(server string, params *PostAuthorities
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6612,15 +7392,26 @@ func NewDeleteAuthorityRequest(server string, authorityDomainOrID AuthorityDomai
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6672,15 +7463,26 @@ func NewGetAuthorityRequest(server string, authorityDomainOrID AuthorityDomainOr
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6732,15 +7534,26 @@ func NewListAuthorityProvisionersRequest(server string, authorityID AuthorityID,
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6805,15 +7618,26 @@ func NewPostAuthorityProvisionersRequestWithBody(server string, authorityID Auth
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6872,15 +7696,26 @@ func NewDeleteProvisionerRequest(server string, authorityID AuthorityID, provisi
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -6939,15 +7774,26 @@ func NewGetProvisionerRequest(server string, authorityID AuthorityID, provisione
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7019,15 +7865,26 @@ func NewPostWebhooksRequestWithBody(server string, authorityID AuthorityID, prov
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7093,15 +7950,26 @@ func NewDeleteWebhookRequest(server string, authorityID AuthorityID, provisioner
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7167,15 +8035,26 @@ func NewGetWebhookRequest(server string, authorityID AuthorityID, provisionerNam
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7240,15 +8119,26 @@ func NewPostAuthorityRootRequestWithBody(server string, authorityID AuthorityID,
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7281,6 +8171,332 @@ func NewListCertificatesRequest(server string, params *ListCertificatesParams) (
 		if params.Pagination != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.XSmallstepApiVersion != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewSearchCertificatesRequest generates requests for SearchCertificates
+func NewSearchCertificatesRequest(server string, params *SearchCertificatesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/certificates/search")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.DeviceID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "deviceID", runtime.ParamLocationQuery, *params.DeviceID); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ExpirationStatus != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "expirationStatus", runtime.ParamLocationQuery, *params.ExpirationStatus); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.NotBefore != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "notBefore", runtime.ParamLocationQuery, *params.NotBefore); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.NotAfter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "notAfter", runtime.ParamLocationQuery, *params.NotAfter); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.San != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "san", runtime.ParamLocationQuery, *params.San); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Country != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "country", runtime.ParamLocationQuery, *params.Country); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Organization != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "organization", runtime.ParamLocationQuery, *params.Organization); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.OrganizationalUnit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "organizationalUnit", runtime.ParamLocationQuery, *params.OrganizationalUnit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Locality != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "locality", runtime.ParamLocationQuery, *params.Locality); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.StreetAddress != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "streetAddress", runtime.ParamLocationQuery, *params.StreetAddress); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.PostalCode != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "postalCode", runtime.ParamLocationQuery, *params.PostalCode); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.CommonName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "commonName", runtime.ParamLocationQuery, *params.CommonName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Province != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "province", runtime.ParamLocationQuery, *params.Province); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Provisioner != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "provisioner", runtime.ParamLocationQuery, *params.Provisioner); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.AuthorityID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "authorityID", runtime.ParamLocationQuery, *params.AuthorityID); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -7375,15 +8591,110 @@ func NewGetCertificateRequest(server string, serialNumber SerialNumber, params *
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewRevokeCertificateRequest calls the generic RevokeCertificate builder with application/json body
+func NewRevokeCertificateRequest(server string, serialNumber SerialNumber, params *RevokeCertificateParams, body RevokeCertificateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRevokeCertificateRequestWithBody(server, serialNumber, params, "application/json", bodyReader)
+}
+
+// NewRevokeCertificateRequestWithBody generates requests for RevokeCertificate with any type of body
+func NewRevokeCertificateRequestWithBody(server string, serialNumber SerialNumber, params *RevokeCertificateParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "serialNumber", runtime.ParamLocationPath, serialNumber)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/certificates/%s/revoke", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.XSmallstepApiVersion != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7435,15 +8746,26 @@ func NewDeleteCredentialRequest(server string, credentialID CredentialID, params
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7495,15 +8817,26 @@ func NewGetCredentialRequest(server string, credentialID CredentialID, params *G
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7568,15 +8901,112 @@ func NewPutCredentialRequestWithBody(server string, credentialID CredentialID, p
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewListCredentialsRequest generates requests for ListCredentials
+func NewListCredentialsRequest(server string, params *ListCredentialsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/credentials")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Pagination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "pagination", runtime.ParamLocationQuery, *params.Pagination); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.XSmallstepApiVersion != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7634,15 +9064,26 @@ func NewPostCredentialsRequestWithBody(server string, params *PostCredentialsPar
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7690,7 +9131,7 @@ func NewListDevicesRequest(server string, params *ListDevicesParams) (*http.Requ
 
 		if params.Filters != nil {
 
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filters", runtime.ParamLocationQuery, *params.Filters); err != nil {
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "filters", runtime.ParamLocationQuery, *params.Filters); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -7706,7 +9147,7 @@ func NewListDevicesRequest(server string, params *ListDevicesParams) (*http.Requ
 
 		if params.Sort != nil {
 
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort", runtime.ParamLocationQuery, *params.Sort); err != nil {
+			if queryFrag, err := runtime.StyleParamWithLocation("deepObject", true, "sort", runtime.ParamLocationQuery, *params.Sort); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -7741,15 +9182,26 @@ func NewListDevicesRequest(server string, params *ListDevicesParams) (*http.Requ
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7807,15 +9259,26 @@ func NewPostDevicesRequestWithBody(server string, params *PostDevicesParams, con
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7867,15 +9330,26 @@ func NewDeleteDeviceRequest(server string, deviceID DeviceID, params *DeleteDevi
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -7927,15 +9401,26 @@ func NewGetDeviceRequest(server string, deviceID DeviceID, params *GetDevicePara
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8000,15 +9485,26 @@ func NewPatchDeviceRequestWithBody(server string, deviceID DeviceID, params *Pat
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8073,15 +9569,26 @@ func NewPatchDeviceLifecycleRequestWithBody(server string, deviceID DeviceID, pa
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8148,15 +9655,26 @@ func NewListEndpointConfigurationsRequest(server string, params *ListEndpointCon
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8214,15 +9732,26 @@ func NewPostEndpointConfigurationsRequestWithBody(server string, params *PostEnd
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8274,15 +9803,26 @@ func NewDeleteEndpointConfigurationRequest(server string, endpointConfigurationI
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8334,15 +9874,26 @@ func NewGetEndpointConfigurationRequest(server string, endpointConfigurationID E
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8407,15 +9958,26 @@ func NewPutEndpointConfigurationRequestWithBody(server string, endpointConfigura
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8460,15 +10022,26 @@ func NewListManagedRadiusRequest(server string, params *ListManagedRadiusParams)
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8526,15 +10099,26 @@ func NewPostManagedRadiusRequestWithBody(server string, params *PostManagedRadiu
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8608,15 +10192,26 @@ func NewDeleteManagedRadiusRequest(server string, managedRadiusID ManagedRadiusI
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8690,15 +10285,26 @@ func NewGetManagedRadiusRequest(server string, managedRadiusID ManagedRadiusID, 
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8785,15 +10391,26 @@ func NewPutManagedRadiusRequestWithBody(server string, managedRadiusID ManagedRa
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8860,15 +10477,26 @@ func NewGetPlatformsRequest(server string, params *GetPlatformsParams) (*http.Re
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -8933,15 +10561,26 @@ func NewPutPlatformRequestWithBody(server string, platformSlug PlatformSlug, par
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9008,15 +10647,26 @@ func NewListBrowserRequest(server string, params *ListBrowserParams) (*http.Requ
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9074,15 +10724,26 @@ func NewPostBrowserRequestWithBody(server string, params *PostBrowserParams, con
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9134,15 +10795,26 @@ func NewDeleteBrowserRequest(server string, browserID BrowserID, params *DeleteB
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9194,15 +10866,26 @@ func NewGetBrowserRequest(server string, browserID BrowserID, params *GetBrowser
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9267,15 +10950,26 @@ func NewPutBrowserRequestWithBody(server string, browserID BrowserID, params *Pu
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9342,15 +11036,26 @@ func NewListEthernetRequest(server string, params *ListEthernetParams) (*http.Re
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9408,15 +11113,26 @@ func NewPostEthernetRequestWithBody(server string, params *PostEthernetParams, c
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9468,15 +11184,26 @@ func NewDeleteEthernetRequest(server string, ethernetID EthernetID, params *Dele
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9528,15 +11255,26 @@ func NewGetEthernetRequest(server string, ethernetID EthernetID, params *GetEthe
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9601,15 +11339,26 @@ func NewPutEthernetRequestWithBody(server string, ethernetID EthernetID, params 
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9676,15 +11425,26 @@ func NewListVpnRequest(server string, params *ListVpnParams) (*http.Request, err
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9742,15 +11502,26 @@ func NewPostVpnRequestWithBody(server string, params *PostVpnParams, contentType
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9802,15 +11573,26 @@ func NewDeleteVpnRequest(server string, vpnID VpnID, params *DeleteVpnParams) (*
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9862,15 +11644,26 @@ func NewGetVpnRequest(server string, vpnID VpnID, params *GetVpnParams) (*http.R
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -9935,15 +11728,26 @@ func NewPutVpnRequestWithBody(server string, vpnID VpnID, params *PutVpnParams, 
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10010,15 +11814,26 @@ func NewListWifiRequest(server string, params *ListWifiParams) (*http.Request, e
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10076,15 +11891,26 @@ func NewPostWifiRequestWithBody(server string, params *PostWifiParams, contentTy
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10136,15 +11962,26 @@ func NewDeleteWifiRequest(server string, wifiID WifiID, params *DeleteWifiParams
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10196,15 +12033,26 @@ func NewGetWifiRequest(server string, wifiID WifiID, params *GetWifiParams) (*ht
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10269,15 +12117,26 @@ func NewPutWifiRequestWithBody(server string, wifiID WifiID, params *PutWifiPara
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10322,15 +12181,26 @@ func NewDeleteIdentityProviderRequest(server string, params *DeleteIdentityProvi
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10375,15 +12245,26 @@ func NewGetIdentityProviderRequest(server string, params *GetIdentityProviderPar
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10441,15 +12322,26 @@ func NewPutIdentityProviderRequestWithBody(server string, params *PutIdentityPro
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10494,15 +12386,26 @@ func NewListIdpClientsRequest(server string, params *ListIdpClientsParams) (*htt
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10560,15 +12463,26 @@ func NewPostIdpClientsRequestWithBody(server string, params *PostIdpClientsParam
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10620,15 +12534,26 @@ func NewDeleteIdpClientRequest(server string, idpClientID IdpClientID, params *D
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10680,15 +12605,110 @@ func NewGetIdpClientRequest(server string, idpClientID IdpClientID, params *GetI
 			req.Header.Set("X-Request-Id", headerParam0)
 		}
 
-		if params.Accept != nil {
+		if params.XSmallstepApiVersion != nil {
 			var headerParam1 string
 
-			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
 			if err != nil {
 				return nil, err
 			}
 
-			req.Header.Set("Accept", headerParam1)
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
+		}
+
+	}
+
+	return req, nil
+}
+
+// NewPutIdpClientRequest calls the generic PutIdpClient builder with application/json body
+func NewPutIdpClientRequest(server string, idpClientID IdpClientID, params *PutIdpClientParams, body PutIdpClientJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutIdpClientRequestWithBody(server, idpClientID, params, "application/json", bodyReader)
+}
+
+// NewPutIdpClientRequestWithBody generates requests for PutIdpClient with any type of body
+func NewPutIdpClientRequestWithBody(server string, idpClientID IdpClientID, params *PutIdpClientParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "idpClientID", runtime.ParamLocationPath, idpClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/sso/clients/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		if params.XRequestId != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Request-Id", runtime.ParamLocationHeader, *params.XRequestId)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Request-Id", headerParam0)
+		}
+
+		if params.XSmallstepApiVersion != nil {
+			var headerParam1 string
+
+			headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Smallstep-Api-Version", runtime.ParamLocationHeader, *params.XSmallstepApiVersion)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("X-Smallstep-Api-Version", headerParam1)
+		}
+
+		if params.Accept != nil {
+			var headerParam2 string
+
+			headerParam2, err = runtime.StyleParamWithLocation("simple", false, "Accept", runtime.ParamLocationHeader, *params.Accept)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("Accept", headerParam2)
 		}
 
 	}
@@ -10815,8 +12835,16 @@ type ClientWithResponsesInterface interface {
 	// ListCertificatesWithResponse request
 	ListCertificatesWithResponse(ctx context.Context, params *ListCertificatesParams, reqEditors ...RequestEditorFn) (*ListCertificatesResponse, error)
 
+	// SearchCertificatesWithResponse request
+	SearchCertificatesWithResponse(ctx context.Context, params *SearchCertificatesParams, reqEditors ...RequestEditorFn) (*SearchCertificatesResponse, error)
+
 	// GetCertificateWithResponse request
 	GetCertificateWithResponse(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*GetCertificateResponse, error)
+
+	// RevokeCertificateWithBodyWithResponse request with any body
+	RevokeCertificateWithBodyWithResponse(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevokeCertificateResponse, error)
+
+	RevokeCertificateWithResponse(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, body RevokeCertificateJSONRequestBody, reqEditors ...RequestEditorFn) (*RevokeCertificateResponse, error)
 
 	// DeleteCredentialWithResponse request
 	DeleteCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *DeleteCredentialParams, reqEditors ...RequestEditorFn) (*DeleteCredentialResponse, error)
@@ -10828,6 +12856,9 @@ type ClientWithResponsesInterface interface {
 	PutCredentialWithBodyWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error)
 
 	PutCredentialWithResponse(ctx context.Context, credentialID CredentialID, params *PutCredentialParams, body PutCredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*PutCredentialResponse, error)
+
+	// ListCredentialsWithResponse request
+	ListCredentialsWithResponse(ctx context.Context, params *ListCredentialsParams, reqEditors ...RequestEditorFn) (*ListCredentialsResponse, error)
 
 	// PostCredentialsWithBodyWithResponse request with any body
 	PostCredentialsWithBodyWithResponse(ctx context.Context, params *PostCredentialsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostCredentialsResponse, error)
@@ -11004,6 +13035,11 @@ type ClientWithResponsesInterface interface {
 
 	// GetIdpClientWithResponse request
 	GetIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *GetIdpClientParams, reqEditors ...RequestEditorFn) (*GetIdpClientResponse, error)
+
+	// PutIdpClientWithBodyWithResponse request with any body
+	PutIdpClientWithBodyWithResponse(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutIdpClientResponse, error)
+
+	PutIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, body PutIdpClientJSONRequestBody, reqEditors ...RequestEditorFn) (*PutIdpClientResponse, error)
 }
 
 type ListAccountsResponse struct {
@@ -11548,6 +13584,32 @@ func (r ListCertificatesResponse) StatusCode() int {
 	return 0
 }
 
+type SearchCertificatesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]X509Certificate
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r SearchCertificatesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SearchCertificatesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetCertificateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -11569,6 +13631,33 @@ func (r GetCertificateResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCertificateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RevokeCertificateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON409      *N409
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r RevokeCertificateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RevokeCertificateResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11651,6 +13740,32 @@ func (r PutCredentialResponse) StatusCode() int {
 	return 0
 }
 
+type ListCredentialsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Credential
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCredentialsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCredentialsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostCredentialsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -11709,6 +13824,7 @@ type PostDevicesResponse struct {
 	JSON400      *N400
 	JSON401      *N401
 	JSON403      *N403
+	JSON409      *N409
 	JSON422      *N422
 	JSON500      *N500
 }
@@ -12753,7 +14869,7 @@ func (r PutIdentityProviderResponse) StatusCode() int {
 type ListIdpClientsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *IdentityProvider
+	JSON200      *[]IdpClient
 	JSON400      *N400
 	JSON401      *N401
 	JSON403      *N403
@@ -12779,7 +14895,7 @@ func (r ListIdpClientsResponse) StatusCode() int {
 type PostIdpClientsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *IdentityProvider
+	JSON201      *IdpClient
 	JSON400      *N400
 	JSON401      *N401
 	JSON403      *N403
@@ -12832,7 +14948,7 @@ func (r DeleteIdpClientResponse) StatusCode() int {
 type GetIdpClientResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *IdentityProvider
+	JSON200      *IdpClient
 	JSON400      *N400
 	JSON401      *N401
 	JSON403      *N403
@@ -12850,6 +14966,33 @@ func (r GetIdpClientResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetIdpClientResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutIdpClientResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IdpClient
+	JSON400      *N400
+	JSON401      *N401
+	JSON403      *N403
+	JSON404      *N404
+	JSON500      *N500
+}
+
+// Status returns HTTPResponse.Status
+func (r PutIdpClientResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutIdpClientResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -13100,6 +15243,15 @@ func (c *ClientWithResponses) ListCertificatesWithResponse(ctx context.Context, 
 	return ParseListCertificatesResponse(rsp)
 }
 
+// SearchCertificatesWithResponse request returning *SearchCertificatesResponse
+func (c *ClientWithResponses) SearchCertificatesWithResponse(ctx context.Context, params *SearchCertificatesParams, reqEditors ...RequestEditorFn) (*SearchCertificatesResponse, error) {
+	rsp, err := c.SearchCertificates(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSearchCertificatesResponse(rsp)
+}
+
 // GetCertificateWithResponse request returning *GetCertificateResponse
 func (c *ClientWithResponses) GetCertificateWithResponse(ctx context.Context, serialNumber SerialNumber, params *GetCertificateParams, reqEditors ...RequestEditorFn) (*GetCertificateResponse, error) {
 	rsp, err := c.GetCertificate(ctx, serialNumber, params, reqEditors...)
@@ -13107,6 +15259,23 @@ func (c *ClientWithResponses) GetCertificateWithResponse(ctx context.Context, se
 		return nil, err
 	}
 	return ParseGetCertificateResponse(rsp)
+}
+
+// RevokeCertificateWithBodyWithResponse request with arbitrary body returning *RevokeCertificateResponse
+func (c *ClientWithResponses) RevokeCertificateWithBodyWithResponse(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevokeCertificateResponse, error) {
+	rsp, err := c.RevokeCertificateWithBody(ctx, serialNumber, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRevokeCertificateResponse(rsp)
+}
+
+func (c *ClientWithResponses) RevokeCertificateWithResponse(ctx context.Context, serialNumber SerialNumber, params *RevokeCertificateParams, body RevokeCertificateJSONRequestBody, reqEditors ...RequestEditorFn) (*RevokeCertificateResponse, error) {
+	rsp, err := c.RevokeCertificate(ctx, serialNumber, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRevokeCertificateResponse(rsp)
 }
 
 // DeleteCredentialWithResponse request returning *DeleteCredentialResponse
@@ -13142,6 +15311,15 @@ func (c *ClientWithResponses) PutCredentialWithResponse(ctx context.Context, cre
 		return nil, err
 	}
 	return ParsePutCredentialResponse(rsp)
+}
+
+// ListCredentialsWithResponse request returning *ListCredentialsResponse
+func (c *ClientWithResponses) ListCredentialsWithResponse(ctx context.Context, params *ListCredentialsParams, reqEditors ...RequestEditorFn) (*ListCredentialsResponse, error) {
+	rsp, err := c.ListCredentials(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCredentialsResponse(rsp)
 }
 
 // PostCredentialsWithBodyWithResponse request with arbitrary body returning *PostCredentialsResponse
@@ -13708,6 +15886,23 @@ func (c *ClientWithResponses) GetIdpClientWithResponse(ctx context.Context, idpC
 		return nil, err
 	}
 	return ParseGetIdpClientResponse(rsp)
+}
+
+// PutIdpClientWithBodyWithResponse request with arbitrary body returning *PutIdpClientResponse
+func (c *ClientWithResponses) PutIdpClientWithBodyWithResponse(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutIdpClientResponse, error) {
+	rsp, err := c.PutIdpClientWithBody(ctx, idpClientID, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutIdpClientResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutIdpClientWithResponse(ctx context.Context, idpClientID IdpClientID, params *PutIdpClientParams, body PutIdpClientJSONRequestBody, reqEditors ...RequestEditorFn) (*PutIdpClientResponse, error) {
+	rsp, err := c.PutIdpClient(ctx, idpClientID, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutIdpClientResponse(rsp)
 }
 
 // ParseListAccountsResponse parses an HTTP response from a ListAccountsWithResponse call
@@ -14932,6 +17127,60 @@ func ParseListCertificatesResponse(rsp *http.Response) (*ListCertificatesRespons
 	return response, nil
 }
 
+// ParseSearchCertificatesResponse parses an HTTP response from a SearchCertificatesWithResponse call
+func ParseSearchCertificatesResponse(rsp *http.Response) (*SearchCertificatesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SearchCertificatesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []X509Certificate
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetCertificateResponse parses an HTTP response from a GetCertificateWithResponse call
 func ParseGetCertificateResponse(rsp *http.Response) (*GetCertificateResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -14980,6 +17229,67 @@ func ParseGetCertificateResponse(rsp *http.Response) (*GetCertificateResponse, e
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRevokeCertificateResponse parses an HTTP response from a RevokeCertificateWithResponse call
+func ParseRevokeCertificateResponse(rsp *http.Response) (*RevokeCertificateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RevokeCertificateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest N409
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest N500
@@ -15141,6 +17451,60 @@ func ParsePutCredentialResponse(rsp *http.Response) (*PutCredentialResponse, err
 	return response, nil
 }
 
+// ParseListCredentialsResponse parses an HTTP response from a ListCredentialsWithResponse call
+func ParseListCredentialsResponse(rsp *http.Response) (*ListCredentialsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCredentialsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Credential
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostCredentialsResponse parses an HTTP response from a PostCredentialsWithResponse call
 func ParsePostCredentialsResponse(rsp *http.Response) (*PostCredentialsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -15283,6 +17647,13 @@ func ParsePostDevicesResponse(rsp *http.Response) (*PostDevicesResponse, error) 
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest N409
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest N422
@@ -17473,7 +19844,7 @@ func ParseListIdpClientsResponse(rsp *http.Response) (*ListIdpClientsResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest IdentityProvider
+		var dest []IdpClient
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -17527,7 +19898,7 @@ func ParsePostIdpClientsResponse(rsp *http.Response) (*PostIdpClientsResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest IdentityProvider
+		var dest IdpClient
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -17642,7 +20013,68 @@ func ParseGetIdpClientResponse(rsp *http.Response) (*GetIdpClientResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest IdentityProvider
+		var dest IdpClient
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest N400
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest N401
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest N403
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest N404
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest N500
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutIdpClientResponse parses an HTTP response from a PutIdpClientWithResponse call
+func ParsePutIdpClientResponse(rsp *http.Response) (*PutIdpClientResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutIdpClientResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IdpClient
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -17691,381 +20123,420 @@ func ParseGetIdpClientResponse(rsp *http.Response) (*GetIdpClientResponse, error
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"+3T3/wcAAP//srN1ntEjAgA=",
+	"H4sIAAAAAAAC/+z9i3LbONYoCr8KirO/6uk9oqyrb7um/pElxVF8Uyw7SXecHUMkJDGmQIYgrSgpV/0P",
+	"cZ7wPMkp3EiQBCXKsd1Oj7+qbzoWccdaC+u+fhiWN/c9jHBIjP0fxgxBGwXsnx/MU/QtNLtRQLyA/mAj",
+	"YgWOHzoeNvaNixkCFvsGbqEbIRB6ICIITLwAhDMEMPoWAh9OEfAmIEAkckNiVAz0Dc59Fxn7xsnF4Ptp",
+	"59//NioGsWZoDukc4dKn30gYOHhq3N1VjA/mOfoaIRKaAzu/ig4I+Fcw6AE/8G4dG9lgvGRLsFwH4bAK",
+	"BhOAvTD+XGEfCQpuUQAWjuuCKcIogCECHkZV8J7+NEYgQBMXWSGygYPpDnwPE0SqqU3AsWWjydotjObQ",
+	"dUmIfLPjO+Y7FBC2/NxuhgNwyz+K49xsNY1ao23W6matnlrRxAvmMDT2DRuGyKjkVnhXMXwYwDkKxdVD",
+	"y0J+WHDnHg4RDgEdRDll4BB2lg6e0qXzEaqg4xIPONhyIxsRoOwvc4y+7zoWpNNs3WK7SuR5VW+TPf3r",
+	"C/GwUTEcuhQOqEbFwHBOR+jwJa++CGhZXoTDQS+/tUGPwindj2gkJ/JhOEumSUaoGBTynADZxn4YRGjN",
+	"zFE48wInXPa8OXTwWVC0hgDYrEW8GtmxYD2ace+5sjWnUnIdG88/DrwFQdrzoOB2eZmsQTQF84vjEYXD",
+	"iTONGMxU9YtKht5sSRYKws6qY4k/Ar442iFew9cIBcuik1k37ZDSKIofSENylY/rZvWVcdbM6s3nHj5l",
+	"3bITjqLxF2SFgLcBdOyiCZVh1s0X4TBYrpqMNSieiPdfM0uAbIRDB7plACtprQek1GibwZKNbh0LvXJc",
+	"SVvTK+EfAASuQ0K6HN6e0CeM+MhyJktGUdkinRAFEIQzGIJ5REL6KsxRWAV9Tkf3wfX/b8In+uiRT/9e",
+	"ONj2FuQqqtUa2/IDJCQKILbQp3/PnOnsugIWM8eaATih60DY8mw64cKLXJtOEA/5P+0Dj/xPu6cd9n/a",
+	"B/HAtA0b+gozGu+7no3kUeluVIyRulEcuS4cu3E/P/B8FIQO4u+TnEuDmvITcNEtcgk/Lnmq7NjmMLRm",
+	"DLxCNGfj/a8ATYx94x9bCTO0xddCtnjXeFjjLn4/YRBAuo0IO18jNOCD0eXeVQwPu8sTiOEUaZiWM+wu",
+	"QYDCKMDxytgyYYBAwirMef9q8mKPPc9FEBtigiHC9LI6PsV26G44kc97Ayi6F89ziSEhzhRvtBfbY0zX",
+	"DN4iACkrE4Cxw2YsmMinLJiDp6MlCdFcM5NsAAhr8VBXezYqe6cLjAIyc3zN2uQnzgs/2NLiGcutkHhR",
+	"oEOKczR1SBiwtxLwRg+1xJ5DLO8WBcsRn7vkQkMYRiVnGPG2d8nIHnsoDDbOkvGPNkL+Wfwr76cj/H0n",
+	"nCEun6j0n3eoUO4LgsvzU342fOHuEjiM+E8cdmiydZU2JDEhvjw/Nhn1pPLFOEqkDSC4XMKQjsy8BQYL",
+	"J5x5UZiQWyo0WS6kbILCGLMDQjfDaEz/QaL5HNKHkz1fo9cds9HeBjNIZult/EbAxfAE9LHtBQTNKW9+",
+	"hJYVKjbQrVFhgM7BANXYN6IA76ObfTKDjfb2/vnZztsIf5l9vfx69ObLzuvO664fkeM/vwZLv9tq3N76",
+	"hydvbv23drD4Nz1qHwVzSG+NC2fJGjtssgBNUICwJd+wuHlypkF69dmlxZLAPv++Hw9hJkPs70ya7V3U",
+	"3pmMG/Zkx9ppbTfsvTHabu/UEGzVGVgSXGaFBAUOdAGO5uONl8b77u8cfmi2987OhnTWKHLs/O3lgY9e",
+	"D/0rJv/AwbcIhx7nhOS8zXGr3rYmDbNZG0/MVquOTAh3GuZuA40bk+Zufbc+Yaii4WJitLgPBzPyggKB",
+	"kHgBo8pjNIO3jhcwYGakhP4qCEyKSaE9Pk4c5Nqf/u1CEo4QwpydYF8gsfjT9OnfdHUlWBTa7X/aB2xI",
+	"yn7kB2UMihiWtmADl2VQ6AAbcSdiIo08hW0q5mapL5nJvdCpuIgfjwK8wEaB/tFkO+bTTGDkUhkf4cBz",
+	"XWR36JLzt8V60OfYZvckLy93X/RkcDQ39j+mR5RHa8SvzaeKBmhKUmqEbd9zcNjlwhx/oVYLorKLFAB5",
+	"Hz3fXjT8ZgiA6JuBUVhGkuiLthKrU4ssEFOV8Tdc2Dff4SOP4vdUK15QSdGZCMgbL0HSEfCXuEjYys2g",
+	"LkjCR6d7MXjXNypG/8NwcD44PZT/7Pf0wOHYfpcpjcqc6MAeSkWe/vjU0TY7P9ezoOuEK2RR2aLofOIR",
+	"Vk8kOPlzaDsRKbNp0QGcd3qDy5HQVRbsPzv4ZmeAvbBD6apmTc4ckRDO6UsEzl91m83mHuCqRBB6YJKA",
+	"FmGcPrRCh/L6jEqHM4eAUI5QdHzx5IXaSpOOYVT0Cz9AEy9AD7byMRuu/NLF9PdYuxdMIXa+c8pVCHxq",
+	"q6JlpEZafdNqU+heYicsNzV0KSccllmBGHb1Onw4dXDB1of8GwJUpFC0IvwdSXMRyTgfJ05Awk//btb4",
+	"g698YdD46d/S1lCCl0g6M44iICHlF/JDU46CDkK/xsOX5SiUM9iAr9Dj6SsU0g1lbS3AE6IO5Iwl2wpr",
+	"VL3CJ0JqsTzfoZxA4M3pCAG6dbyIxBI9skHKCgS41r0qtqmx5GR3kLl+yrEERAN4x87cCbl4lbDecidy",
+	"MdUr3ON8DqF4XK/VMitp1iit/ebM6cNUr9Xonw4WfxYuzsEhmqJgE77Fd2FIcX3kRhouj7jRVAo4sfpO",
+	"dtET8dSAm1Fw3yMhdLsM4orwmbcBVDwt1Bgnw6yZjwq2Wt1bPJtosVI5TUcoMRHXYZ/COdLbTBSJno5O",
+	"RXj1IU3rwXUHr5lks/MXBkitneC5WCe1JrOUZXX1HgnUvVOd03VmCNpvzcjICpCGILyfIX6xntQuavki",
+	"2lmKzvIQOFHQLodPpllRLFOxJVEx/pSRIQ1yZxUEUGWv9UCWGnEz6CJhgFDYse0AEVKMcrwZgLxd4XWk",
+	"Bls98W2RkZryqtJILbAsUVp0hoMqOBf7AxF2ESGAJHfEzbTyHSk2XhcArN6OvmYjPi7Dcr8bnm4itPFR",
+	"N7vLBRrPPO/mIYgZEGPpF5edaMNlOhOnzIm9d8xXziZnJgbeZDWMvgraRr83ai39wgLE1RFgBgkYI4SB",
+	"jVwUcvNJyqsl7U6i0z+L5luptqv9OFYPo+/Gdteq1Wh/4VXB2DzFF4J5POz/UA5olb4cBYEX8GHTB3QA",
+	"bfkSPffTqD/+aVxiYZP/juznfhzNxz+OV14wdmybqfSe9Vm0Hv8sTr0QTLwIP3u42Hv8s+h6eOI61nOn",
+	"GPXGE6AIdFxkg2GALA/bjpDbn/OpNBpPQUf9wLMQIUymftbn0X6KV3aAQxRg6ErhjTd8xudyJzkv6fTJ",
+	"/B7pP133bGLsf/yR0UA5Wg9cxhOm1R0OkW6UVBqANvCwu6xqdaEJL/iRjv8pr4NZfR1iHnFWxt2n7LV0",
+	"sFxLzKQKQ74itwEoGdmIIKZdsjyMqWQVekwz5oVc2JZ8ZtpM//GHoQw2wBOPHaPqQ2jYTdSGcNI2t2to",
+	"22y10ba5t2vXzbENG7vb23s77R3ETHYhdFzCwTXtmkfXd4JCaMMQ0kOM7c/88LkZIoShYxn7xtlkQrfz",
+	"3pk4BpfgSdlRGGhLw9q+0WjNavMaSW7vQ7u2ZzBXPtUCxzfsffEo58/5+hnnK/Yn0CWoYmAULrzghsqA",
+	"hIwYkgyGxr7RbFXr9Xq1vteutrbpHggFNIPBLUZM4cZ+2GnbNavZskxYH0/M1va4QU9wx9yZ1Jtwexft",
+	"1Sf04b5BS3kDsT6+13/VuTy+SPbQ7/ZGnc/DRnubDi8EFPXMKobvuY61zPibfTRmznRGwTTnsPTROHZw",
+	"9M2oGO+5i5zxicG360FbLmiOwplH99K5vDg76VwMuorHzILd1afEUVkCdZEjdnL6VMamayFMIxFDfB5K",
+	"n+7KHvFM0+eV1ZNrMHElPZdG4kw3HYB7GAnCuGpEuq6OoKbryJc0/pZtf+vjsk2F+3PcnJ6cghtlzuRI",
+	"NI+vM0/9Z9EcYnMSOAjb7pLrLXgMiPIIGBpLQAIKq1bCW53A0Jp1mQOsA40cVpXZynnSI4YgHVqxuAZv",
+	"UoReuq1JQ/iCw7i8UoPpnozYxV1vDFffP3bGmhfQgNYcdcIQMeru4ZVe4h3wUVEUffrnLAx9sr+1lcRU",
+	"WN58y/YsssWYAgtuKe3J1j/oZL9zBxWEKW9HAKUSc34SCyecsdfzI39KTMjWZdbqwJpB10WYm6GYtq97",
+	"0mdvp2d5btFKxq433aJzSodXMzUwm9VE33wXOhjZW7/TE88YxpKGrxjBJ/qrha7rLZANlPbCLEzisKXi",
+	"TVXBO+g6tvTwhAEC15SLRNcVcE13c10BENvgOvTn11XAJqSfpeXZ4ZN02G/CzYb3gLZNQBhEJExa/EZA",
+	"t0P4MEyzmh4Fe9i8GJ6kXW4tiIFDSIRSO1SdPyqARNYMQAL+iMbOEVqC4eBdFQzC7BroZ8v7jYDA80LQ",
+	"7fCFhP48s46L4Qlhe7A9xI3pfAyIl3T9YLwEwjUp5VcqMYYdEONakE9phD/XIAkz4gn/0Xop91Jl++ee",
+	"pwOHjljnOMK2y82mdKMpRxkHg2H/JHYcoCe8EMYX5j8VeuAWBc5kWXjc/NTEAYgwORv5CNsEeFwhzn+k",
+	"j3YOiJlpSDULOYQtSKyZrcW7RUHg2DwSqyt3RQcauw6ZcWuTIF6aKRh3ywDSCxiYVUEnBC6CJAQeRrlD",
+	"odcuCRZYzBAGEZEGTgocuRlSt56719RV3lUou2ah7qnGxk0/sBVJi0PnlC1+jCxvLnbPg1Qou1wBzgRA",
+	"9Re6cNXKpnenE1vrdw4KHN0ZQeOGO4FzzL+d6Zt9ph3g8oXNyeQtIxj9zoESYUJiIKKklUkaAWISSCKn",
+	"CBrrEFXlr1ty5v3QEEKKTk7IDCxs8T0u5SiPCRimbKTat+d5PDilnpPUPOxZGUPiWGIaMybnRPOQJB91",
+	"BknHmgkAiN85elj8KRBvi5bK0YVys5aNCf9H6BITuj6mfz0ExXvBnFWYA6S/yzXz+2UvF3RdgNFCbUdK",
+	"oJgCIqldZ/FsHVLF4ZR5dMLgQ7Vd20tCLsHMIyEn5bEuJ+X5wmU77sZ2jm49SwgsXKTjp2R3Qm5krZm1",
+	"pllvXNQa+83afrtZ3ant/mkIEXuCWnZ9Z9wyd8atHbPV2hmbezuwZbba9RpsNxvjdnsvMeidLEHHvqVC",
+	"nA06SoAofTaMfcOk/3fQPxycgm7//GLwatDtXPTZr1cYVKtVcIXZX/3TnqYF5QuiMQ+HNfaN+dKEYrLk",
+	"RONf8mJg/jiKfAy658eMhznrjoYMmTkVssE/5fDxXTiIMF3W73o0gPbcwf25VOBk9KUEBSrss8YsUpow",
+	"jOTsbzradrP3U7npYp9I9mynJgELSAQuMfQu48VYMeTF6DhtEcO8mKEgsyHGpDL3FWjNUtRE9RHDUxT4",
+	"gYMLVB8y+MV2pog7CKbmkGxrinHBYIa+CWZOO+tGyk31fnIj6UXli9iqP8nfcW4MjkJaS7dmawmfqh1M",
+	"Srsr9ahyORe0sUYzK/YVX7wYVoU6lQgq5KCY+nWJlp9Qd0ecKabnLj2pGO2OSWQWP5f8BYAYoG9CG0/P",
+	"S0ctU8rZyQ6C2+163YQta8ds1dCOuVerIbPRtFtoD8FmYzKmW6XrLaBr4Lz/9rI/uhDU62Tw+vZkcPih",
+	"M+13Tg7633rfO6cH09N3B52Ti4O5+91qvnOtLwd/nhycHB4svx6OTlp7nWn/sNvl/77CnUX/dac26BwM",
+	"3uCTxgeEt+fzwz8X0WJx3tg62mvVlvMvvZ0/X3vzZtiM+nBnMbo8QLbTWR58CevBqyv8/Rbb89fdw+bp",
+	"5GbrX7d/ovPJv87fLU8D3/t+0nOmb3od52B683V24xzuLWoH3betb68uOhcnB/3DTv3SvsL9t2+PTjpO",
+	"N1lx5+hgOv06u/lyNnz7tteZnr7u9A76Hefgj/FB9MdFc2f5r/Bw0frX3P0THe9d4dPp0v1ja9551/Zc",
+	"5DeO2jtfum8Wg2mve1G/sN4dh2RGho1+1/1Qa45ubL9+dBR99W9enb9f/vGuOfx6hWe7/X/rH4rMkW/0",
+	"iGkejJUh/zpKsA6JrfuBd5aYOThEwRzZDpfASISCEki/CT3rjs5LWWcqmXQGdIM6pKcDrkT8C63+7Sxh",
+	"U+EtdJizroLajNvmmCw4axvdej7lxBTOQGiR9Ou64CQrd1hwQYSetEB3JD3RO+9HMbM56Cnh1FK5JNLg",
+	"QMyaWq4X2VkpbsWDLhf8fgTi9eTfebggPYeZXbsRCb055enzyz6IdS/AYs04708Xy9hrHqfqTDgIeKwb",
+	"5fYJYlYvwStTbicRHJJrEQ59DiYhC7eX1iNge1bEok4lt84mY6oQei6CIfAD55aC82DIWC/6U+90BBzf",
+	"vIpqtaYlvpuOz/5GVf5zgKaOh8VP9BWLQlR1hOGVgbByguKMQDfZvZ5rW5Ch9M7OnWIqdky+PnR06bKt",
+	"0UeKJDEMAeMFxUBTnmXogAK9ugKF6qapvLbVcR1I9CyFizoB1ropey4CHRn4zECZZDw75QkpnKq0hTJl",
+	"1tKLAhYD6k4yVicDBngfLsi+A+f7+7V6o9lqb+/s7u3TWRPpXUXYc7GetTQpOepKoj2XJz6H3z0M3qMx",
+	"GKGA6Um1NGlBVqo3LpjqgV74zyk5FuR3MA0glX9TLsNMB4eBWG2/20hwKlGuDeRPA4lmPYFmheC3Nrxe",
+	"pXmUn9dRlDX981QoGegiiEh4hl85AQkvCVpJnxiR8XDaJC/pBzs0ZAOfPXv8HBTahQpJF0MV15k7oVRi",
+	"0O9MW+1MWNg3bX2DMJFSidTrTlGotEmpdLUURC6rM13LZ6tNC6A5rbV7P1qrTPgeBagT2Q7ShmWoMTMS",
+	"bDkGM/hhvRn08jMN5WFYM4inyKanjBHz8+Gx6PHKaEcQz6t7VWmL5/JSsZtOP0osKQLfRtz51gnCCLpg",
+	"Dq2Zg4XI5ijj5Y+g9DtDWxe/NCeOFXjEm4R8SXntJI9ytQvcAXgaNu6eDeW2BOEDw8DBluND95EofLs+",
+	"3hmjmlmr7Vhmq9FsmuN6c8es1Wp727vtRqPdTJHm/LK6cvlaPpp9HBWEiii7FwEhf8EJ7KI/xieN0X/+",
+	"vAwurPevUX/7zy/R7nwXl9r2SAam/DRjwPYsfJe4m6K6ymHg2RH7AM7lxtQFrmEgRJfDwIt8rVFNcsmx",
+	"N/6UNdVyyTytQKLez19D9oz9wGNs/Xr+WW4OiKXmWegQYViMTPwY+zgMIOAtOWSqqxnXd6xGfccyd1v2",
+	"2Gw1JzVzDMe2iWrbcKde221aNlTP9kIZZzVTE68td+R5JidDNOKzK3wnSvA6bKCf5HboGDG/kzKrhh7I",
+	"Llq+iUTheGSol5ArWPId9lZrGB7l6VvJsKTeyXuxPPoH7VkwPfQRfEKWJ08M1h7cebpLgoW9Ut0vZOMC",
+	"fOnl8eVT9qkuw0mdryFzqjogTegYMS7WCegsuiV0AWzh6yla+oxWkDWpvogJW/J8pIxmF/SXQY8CEhPP",
+	"nQBZoRewpJc57kowgzyTQtI0QdQ827SCIFYMZrTtROGsWCJHRBcRJzVpjNCIzLOMGxAxP1yO597R8eND",
+	"1ByQpArOfJH5gJ7Mdf/DRf/8tHN8Hc/BPbzJ/+HpI8Qts8GEqS7TkLlVzD3hVeFNwPUYwQAFFxQVr7nb",
+	"ULzjazCHS5YMCIWpEMkfhg8JWXiBrcayRgQFwh5H/2ncZclj0kkDZUnvH2tepbhlJRlRwa8Dunx2yjrE",
+	"YpvrepiEAXSEbJrxLSfdji4gl0X0D2E4O0ZY+a4G7aeUlHSYVB+dP530yFuj7ZG6PAU4GESoiWg1XgQJ",
+	"JK0OolRN24xmpNkgOI21aLF5PEVK5DLYWSiRl6XthY69LsqT0wTh+y7ny8V6BgjaZ9hdFmZ9YOmlRNyx",
+	"zrniWJDTy/Nj4ZqfugcWrMEYgM32V9Jn1XaI78IsK53bZQnteGaflRQsqMgiTlJ443RVfr0IWDtJfEY5",
+	"mOWihfKSqyRYrEA3n9LjVZJfrNiEwVOKcQCGN4gACCgX5yLAj4r7uFUAqk6rqmdJFYxYsILqUcm4EUiH",
+	"mEDXHUPrhturRXDGXMQtJE4piGh1YNkwh/wObtBSvl1x3sR4+MXMI9I3jyGg7/mRy5R1DDSyu2euenQo",
+	"NmpqbYWTiEQPyhGk3AurV/gKDzCANg84Y/4uXMEQL/MGLQkfZuLRR4gbktibY7OPnAuRb/U+uM5He1xX",
+	"wDUHw+qgp/zR40hBL0r5dZjke5TJF1d/vTwfKA1eeyTE6RHpT7wRewXFryOWMeG6Cl55ARiNXme8WK9H",
+	"o9fVI7Qc9K6ZbsYlnqKgASMUuydLEPj0z0xaUfnhd4bxIuqG24lzdEUG1egE3hAF0OX3pycSEuOU+ALA",
+	"8aoE7lHCuAH+8bT7BMwjN3T8DAYSgYJUZNkcY44oOJVBGFIOY17Aew14x0oiIhhE+mP/W4gwZXjpj0zC",
+	"eFDI34B1wARZUYAGnMMWkUq6DNFdz18ybzsBHSzZVDb8Tpq/HUwl2Rm3iyM79XpxgURR3IkXLvS4kBuM",
+	"nTCAwTKeSJjSObxphdgixD5W0ZpswnSsQnjAsFmH9Un++TW4Tt8XHzqBhutUktCskaaT6ZQlcscrkXS4",
+	"XO9XrPmGrgZJ90xo6Fom8gYty6/tCC2NOPPiHOHwRCTIKhMrdJLu9bPBSkRkCSvBQBKe/yudUYhuXGEe",
+	"u2q1ghWw1E1DxDqzdhYlWWojqYVTbi0tkabdqJpWA9Xr9bbZ2hvvmK3t9o65N65NzGatbu/U6/Wxtc08",
+	"yHTBpQxNy8S9pmioGvK6WBPr+lEX7PpJSfsmA1sf0C+Iv8vMaSejB43PPHW0eTdLJfxQY/dQLsx1Jih0",
+	"KF89hEHMR3889FyIp0COkyhz/ZtpdepVbXS7Rbv9g/XqiWa/F3hmyjvKQJPq0SRSUvG24kni7no5ikiU",
+	"x+lbu7bHf/wdeAH4SJ/FlR0ImYn2dK3lQjOTSdaGT8bD88hJ+q4PS1EBOsdp0lrxv5RuSwzOKsZo9Prz",
+	"5ah/Lv75+mx0sT5GUDhdpv2wxL1oiYR6iKsJxitJ/teRCvZOpCOiFoEThghzaU1HNyifztDAzlAQKwjp",
+	"xMa+sYVCa8seVy2WbntKX5W9vT1G/zItKEXkv0tX5eFRd7RLJXBG5hvtbe5Cq/azoBiZpWSv12r1u7zq",
+	"RvT4oU2d7SIfhjPFrTkTGsXCKgAJvaDAs3mqeykPk5Ra/GCV8VPHlxs4VoIpZ1Ry5UJQXbti5Yy1I/Pg",
+	"OGlE4BUQUg5eN2jJ2VxOAhjbHipRcUk8Ib3Cf+zymDnLhYQ4VvZrnYHf+agjZINRvwv4byyeX/xKuWU+",
+	"GP/Ua7TbdT51wnGvWAh0F1B8PBv2T2lr4WcJ3nPwnsHAXlD+e+7ZkcvuXh4BO0t5xOkZ4vAV8GZ0dgoC",
+	"JFQEHLG8WINQAegbS5PnYcDC38HFaNRIawcUJ8gkt4FEArFqo2LQjkbF6B53RqNBVx9qpM0cSmUdh7Ak",
+	"f2MnJD8PoAk2loRQXezhWnCNdAh2+fMIdreScB6hZUHEcRgGzjiiz31camrph940gP7MsThyHKEluKaj",
+	"CzlPKFwdD3MZL8ikU6TDXPvRmJ7mtTAAZu0E8RDGvnF6dtovSnyRsRQo3VYk5OT6xSwOpGA/hf2DSeyp",
+	"Q9dyDbCX650CbnD9unPee985739+P7h4/flV5/j4oNM9umZGS2Y3lZbL2H2AEjR6uxKPrwVaXKuoIo5C",
+	"jq78Mz2R+qFzcdEfXWhz2VcMcQ06vrA7OgeC1vjR2OW3LY/PwSRkws9EpndllR4wqoIuxNgL4w06GFge",
+	"/hJhK4mGZAMtfVTh8mB8a5XkFLwgeyIrI0PyoCvnEDciyn0y47CkZ+yzQ8B1AlPX3ETNNaAT5xuLtufu",
+	"V848h3Kx9dSJ44+AyaLyGO2UiW9tRSmv4KvIax2FEQUjuJS1phRL99JHekqpYEH8R3O3lfzRbtSNinE+",
+	"6nxu1Fq74p/N2k5D/LNV22Nd+dtSUAQjz4sdIW1ADJdU0qmX1ldGinMeVbLGNF7Ta10kWD47fhwbJvTt",
+	"CypCiLEySZHoqiBeJg5SGXG+XBCZGBAVGKJkbRwiYc9dgrgLXUUSD6nNM6WoepQqJj91JDyPeqlFlDuC",
+	"mTOddYoL2inHEKc25Xx0WpzknjN0MBCn1pEdlbjwtec080ih/4BStElKryRjrvRwpmLST8WlyFJbq3KI",
+	"KTVpfupi6SgPea9UHLeWlotGGxQ7O850uqsYZAYDHX7ED3IKT3jrKuiIfymfKElG3/x4ezG5DChKr6vQ",
+	"p9NWJdibBeO80T2fl00uLeaDmWM8j+kIkowmYyThnUsQOSUKV0QnlEGUIM4TqIzmSqGRSvLpi3pjv9ba",
+	"r7VT+xM6SWEpHtjGvrG9yyL6EzuCsW+MZsi1PQyGKCDMf+QY+qHnG2nyk5qtFs+WIQQiA1cC3Klu7bhb",
+	"Ds5E5DMVhlPWHB8G4ZylPzQQnjoYIQmqHmE6b55oSylzyB1KUlXeJAH4ucpxMsm6sW8k1dISUBdbD+GU",
+	"eVpG4wiHUaNFoSoSbhtoDh3anfAT/4+42KrlzWVuxnTdTj1/nq4Wmqn3doVfO9OZmSWnRAQxecwPA2pr",
+	"XFaU9AYS0Lhgyn73UUCJCFOQKPLAFQ7Q3AvTBDsV8IYp6XEFsGg5Un1ZxoLKbYz5YgYZXhZFIbrs7bfF",
+	"MMwcrSyjj23zksNGKvd7+m/6IBgV4w2cT4yKMcBhhNHqNUvk0uRE8Hz4NUo9QbwQLlyqXoyug29Su+DB",
+	"NXEwcFJU7wozcxI3nopRpM1SiBUwTtkTOLeyTAqzTJIlizpmPzCn8BDB+W8EnPROSPUKj0TCHbYQPgb6",
+	"5ruO5VAGhok6c0huWJakk96JKSfgVmS9DTp1RqcbeIUr4Pwr7jh+EYcwtDTegJe+zYUnmJilY5LI3CtQ",
+	"1tXV8nAYeG5SsTDli8VeG+5uCwlYINe9wpAAB7PIAJhyI7SRxdwPmXivuGEpibZ4qYpMoZofcQVU42sE",
+	"A4hDByM7L5CTn2EdMi+2GOtTofhxnGdYdI6v6tFGPN9kUsNSljdkKiM89XhtQWlNu8LsPtK0JH6t1JOg",
+	"a2Lp+1fQC9VXQboRQHeYOkBN1zTGzKHPrp+7Htygpcmh14dOwNkLGJeHDZe+Y0HXXcaQFDs55PwbiAx4",
+	"TUYmSe4LXnOUS/ePbRspdrQo6V+RcjHYp8OZWk8L8P/+//8fcKG6h8iy0fxpZE92lfVOPDLiTmrhU0Gs",
+	"mUyQI2Km1ocjHkcwkLbOqy+p9BuRiF0kfwLtxCnhpHdCT3gmPDlS8+m8Q+J515e2Bf9k7jesTOSRqhOa",
+	"QTL7fd1Ml+eDNZMxc9/l+SA1UuySEvcNkM+LjMo95rgeM+e9EnemfdbOKbxb4k6raupScNI7waThMkHw",
+	"lS5AAjqz/jMxkKVnAX7cphr3E25lRV3ohQ16SXPVI6eoD4rbsP2e5zaQPMMy8RmnMyw7ZIB4IAdTTnO1",
+	"l0Mo4Uq9m1lqfjZaqUvwMtXUnzt3IF+LbDrgijGH1tnIqBgO+9/wlv1nQZkF9i8eH3A2WvGQnBUXdtcL",
+	"2VREiut4Mdombflc5vxVDlMsVwQRrDihAt6rR5erCupzz6Z0wQYe5my3Q8KkqjAD/pE3V3Rp9Il66APq",
+	"4CVvJ1wv1OMhKKT31hkO6JVpYg9tSGZjDwa2cpK5U6SzXJI42opwHzQfWc5kKTfFJk8KO0eYoDB2E475",
+	"JeY8R/LbgpjOeoXZDGwlvBhirPXmk4wRPd3MwQn3t9S5yaeNTlQFZxSmFw7bAeJCJ2vJB5WmGDT3w2WO",
+	"cVVUIDhy3YwGhP/0UHqHlUoC4SVWQkfgU+jNaAhy7q+q8FnOlyQrtd5VfjBPETsto91jMNZVDqce5iZj",
+	"xeyxHMgjmw5xNko6qzRyozHijnIoeaubjSPcveJBYq1oXoXNYWKz4S9oHzm4BKD13S4JCjhx1JqI03aa",
+	"9fQT2jYXLGCiHLW8IOsyc3815K+mEby/CnAlgm+G1lmM3hSPU6e+EeIKnC2JqWkk3Qw19TeqdTlMeTDE",
+	"aZ/SbD1YoTll9nudCUtYZByiShgOEdpQznFBnuIa2UJ0q4KO68bDxw86oXKNXkryfQSF4CLClOLXWFfM",
+	"kgongtlk7Dh3yEnyrjO3NtaRinHyGC6GJwBh2wsIU3wwqYH2zmWABzxSO8yKSVpDV0I5N6CXMTksTQQ3",
+	"pH85TZMOlIrVTqN4UxoN9UrJ8VdUZ67SrSUatdQ2FYadFfxcwADTMSsGrzBVzLZfiJvPKr0Iz5FCASP1",
+	"/MS5AFgwu4DQzUIuFbDQ7pFJSzxWSRGoYkVR6FVBbBi0Yk+Y2AeB4s8sTVrSVnAcOq60xcT2cmV44Ihk",
+	"oNrXQa9XfxW5bip1q9gEKtrBSIEuAVgxnRR5tIN1Rm3xuuVKxNKfS67j18KQDBHh+y8mGwnn9dfBmRMy",
+	"GIM4renUAdjf/zoTbrugzr686E8bXDXXH0SslIUeOVmOeukpl/cQSIuvH38YXjCFWNhvWALxuYOJropU",
+	"KghF47gU4TBYar+x/Sglu/OuIZ4FXZH8PfcxvcA1DaB7iZ1Q20wp6K/9rJTxL2A0khLomojYTFnyYu+3",
+	"nnqHQLLERVW3NNnrWHwi0yglYQXpoPYS0QTakKP1IQZlwgnU4KFVwQU/GUfkido+2iCiuNriYJKq1lAB",
+	"kPlTqvmxuXZHyfeeB+5HDoNQahz+18URPat4ro3jUdIX/VcEpPxcuEL59T9NvEKJOnQZUnefELJ7xEWU",
+	"PShddJqank4Q7L4g9ylMZARf8+rHb0OuWOUD1KWVg2fyuzx2mVrtnlYWrdUvVPWW5Kwifx7pQ0DfB+4J",
+	"81LZ9ucq2zKDrY3sC6XQaPrX7t+m9u2Ng23mNMrTC/3FxXDZG7kSWTYvhiuHy0H2s7rmp7uHxyyZmz5S",
+	"3VXJFvELlyLLFeGJKtJ8sGjjKGA2eCub54o+rczo6jDBW/LM14UXeJ3kArl/zdY1APJfXCKYQ7A2mMzB",
+	"LNYtxsQrfCUXabKP8gtRbeZEamKiOcRMPUJEvSxm9s49XSK8F2oHruSBQwRcroMXkgrDZGvnnk4lli7V",
+	"/F4gM4qv2wId/r0X3FBKuWYC+eCnEgl6dNRpAOcEBBHGPK5QVSslS8k6YkrKsxDTG3FkmjZw+IFyq9yr",
+	"snTMHXlYVVQ/pyrTuuLOAkk+reB6jxL8u19AcVohMslmSNDFBsdhrInWhATlYoYnL9kB/ursAFxse8wc",
+	"AY8SGC68qyWxSef62jxmXOkhQ781i+FVk3MR5DJonJ7F9f3jz1eEnic38AsEoT9YqLjYdRwqnlCSZxCX",
+	"fYSWIHmO1qojTnLvXU5TjYI5e+EXM1lAguTUKUkEhVTeSgyoUr4iqdVyzSJqr1n9FZ7IvSrcm/mH/Yzf",
+	"PIu3Wj9tRbgd0rvmUYl0SxUQIIwW0OU5BJK3nRNMIipX8BfRwVPuAD2359f7oMOcFdfPXFX9LNnRjZGk",
+	"gYRluFC7pdn9cRQmNeZnkFVAT1ZPYVysny/MoyTpeh8wb1P2B+WKWKVVL2AHPnG9xfNZssqGibC5uT03",
+	"KgZbOwXj+EmPG0gwjnVrCiwzCNWJLnk+RYvSyRsfP1386gGUsJDhM2JhfjQ4PO0cU6bCsSVTcQuDrSDC",
+	"lLHweZ47Z4qha+znrSRynNwzQx9dqKrFIE7WlHo7rmN9wjWYI4iJeHn4/dMnXNSPthF91RiAi5EwWqQN",
+	"LCl//Cq47l6OLs5O5LhQhtJY3nxOh5mLQtNBhHlNBmc6RWksV84yA3akCq756V3n0n5T3m8aZ7vE7B7Y",
+	"GQKRMDPeHgbX4uTpQ9Y7uByJ0XjecCQc/m3xXzCOSGJcguA6DJYmX5/pBWaASAiD8Bp88caMYEXYCRWx",
+	"e7wE1/QnFoRTBdfD487Fq7Pzk2uuboSA36fsYcnl5uIPFAxI1EEVg5+3UUnAiu6I8jFiIv2LKEEv58rh",
+	"uDJo1+Ne2gj4ji3ZK3mI9JDZ6VbBucy+w7zTxG4cAvh69G5aAri1Pj7xpbFblDpYNqvInZYqDxoLfPxK",
+	"6PtaekWKNUNeUcGiBESwu2VyVgKjP7koelvrNeoC6VcZDjjFKn6kmSvU/o80SSIETmm7QS/GTChqy19e",
+	"DnqGhvqILj802QrivyW4sEnL7I4Pqmyvz5ar24dURJVIw6fkO4DpeOd+Z2heHI/Abq1RrX8AC3YzQjdZ",
+	"1VRCTqk0hd4x1k1WjADaTsS1md3O6sLu+rq6Yvwi0cEL2BvJ8/nGWo50KJRitaBHr2wm7wD+ZBUY5G09",
+	"WQmGvpxw8xoMP1UMQTUO5euCUfAgCXysM2yPI8YLScbiFgXOhMdS8WBpUTWlZM2FzOyFNRf6iYq3EOvK",
+	"11iQ4JhCPOWijjun6xGtlLHgrvLDsGB3xortr0K9arUqrBcBhu65cix8wmeBmXIj62AkcVgR0ML9VHM1",
+	"LQgn7BYdFUS+KBGiVdnnT2XNrhnki+0ApSJIUtEpIRVekCSZECH/2gMouHMtD84F9sEQQO5nRekB892T",
+	"a6Ko4DN+XzkdolzI6ooEKzHiWxhAyTH4mph6DW1jzoAsbQHTihr7P+4Kstfyljot6NTyf7XS1hVRQUqW",
+	"tu6djsA1L1cthzApNZVVq6uywrVHN206tvgg496FVaJ4BP7lu4fLD6mWfjnsDkuXLJ1afnHB0kPPm9Ix",
+	"WI1zpfBgGlw2rGBJV1emfiVtN+T73aCEpTihgU0K5V7mdDboqd4wSRFQeseuZ0nPuWx1SrPeaLbKlagc",
+	"JjNpirkJGVu8R9r8oh2mJza5zpEFxAgdjazvxtRyj1Hr9McVW++VsQ+u5Eo/QzbplVEBV4ZQ8n6+QUv6",
+	"Q7VavdOVQZUl0VNJEVNOqMoZaC7ssNvPbvqhSo3aY/Kf+VJAQ9WB8+pUzCQ9LS1vXu6iM7vN33Y2eiYB",
+	"0Xy5Tz3KCUQVHXtrahZKGE+CoopLFkKOj2y6jSsXKihaAOZ81WvqkdJhfq4a6dTyV9ReB/JQeeYQ0Geh",
+	"kNkq7E6oBHGwEpqsqJ+LoKjql0U/L1CoSSx+ily9ueiTzeqQal/Jl9Lrm5ReT96CXpnjVpBLT5rW9B9l",
+	"etzl8WRVYVLNCCtxvBRZfBAEX0veqIzL0WYoQp/yLKXMqoWkuqdAKD4/Fq+yZHVpRzq4dI9dKwUzNWdQ",
+	"PLwUufPxWmVG/7K4IWW3ECCXeaX6kOvZuT5baIXlrL8RxW5XagkMq+67BvSNF/3PpDmzPFvEGqQpICm3",
+	"IkqNzj2vCGa7nawqIL7dUA2C+I5U/6H1VbSTaeNrr2ggLXtkmVvUCSmO7fPC7ZoypuvK85c6stj+9Ao6",
+	"bhSgy/OBVlrlFRMDkymqkswdrO5gLr9tbHcUFJknXtNrdBDPCnufeeEkRIGKmKyCZxiiuR+SgrDm4sL+",
+	"oqJ/FlATg4aXogF81wKMmWIUa2CZex5g4NjiJV9/J1rNk3JKWjC5Qe8aXHNURp37bngq6LS01AyO+rcN",
+	"plTyLM/V1Pz6q7Qp0F+rPOl3hiz3Dp54LMOaJ0L73w1P8/q9VF3xuRcibQZqmX6vInMtzT2cissV2VPF",
+	"8EA1piufhTZlvXpRHq/2btNsR/745/CbM4/mgApW3A05ZigzqYGUF9kbh/TkM/bMY8pHkUxMBs9RSTth",
+	"tFAq6FNxzgmdKS+9iEDgkJu0qtucO4RCGIsFVTrSVdke/i0EGKGcUfXBYpAE7zCQp9GZxvKMjgdKPa4r",
+	"hYUO+PhzYsKXxc3vMQLKh9ekYrTiZLeUxkHGzTIFEI+yYF5b79EYsKLe4J9v3l/8nkdZhNlYyC6sGfLm",
+	"fR/ErVKOckZxUbxC7SFb1QKN5QDFqrlMlbk374/WMaUiGpPrVPNPIScvRQaBbiexuKTU/py2s9c7zxKU",
+	"ziifs6HI0NGcieHehpP471tUZC0BJ0Lsi7DzNaLseOCJCi4hgnPtbjAkg2EBq5TogoUXyqnQBHN9MuAK",
+	"ZfDP087odxYiLlXBPBWBpzeylLdWBch3l53YB5UxPLLzKgEo3U838ioeQMnNu27Pmhin/Jav8BlLQcOz",
+	"r9kJp3TNV3FN2Qw4RyFPP0NQnHbta4SCpSiqy3nQtdBDVprFJBaQyPddx4KKkUVwN6usYyUnlzlA9UvI",
+	"pgG97yxFZoy0/eJnZhh6QQGE+F4Q3nd0HWcncLCS0LCK9N8miaEx3ndqgblT17EP9EPXwyQMoKMV5nOZ",
+	"DDiJsZI+GnYwcJhNbi1vlh2KKQbmMLhhCen5ICkRS62j8o1jTe901PPm0MFpKrCWhMj+fSVJArrnGIPh",
+	"OZVW79n78nxwrx34KJg7YXj/I4gH+JkziAe53yHE3e93CndpgwtQYZlZORcdKXLoMXbs2UueO1yWfqZU",
+	"m+UkyKYsSKWgFJZ0Jrqeo1vPEoFXIv6OpfNgx8rTxhEUpPLCfYrdW3ro1vMJSJZZMUg0ttlRGPvGfGna",
+	"rEWCBOLvu4pufk5ayk/fsW8hy8iyYgFQtFFUavIXjS0/t6QVjvoIc+vf+THjYs+6o6FI2SpnUI5fSwZS",
+	"O80FlpPYpsCYOV4gg/YQsU+K0SmV5SLFjfgwDFFAx/u/H6+uFmb107/+I//xv7SpARw84J3rGXhlDnBf",
+	"IyQ+M2+ICvOPC+bIdmCIBrFecF3aB9GykDGk0K2+p7qDVDQtnhfeZ24FVLQL0Ob8SEzcMATcZByPk7It",
+	"U+YUEDeaSgMzrKakqA0CBLocp5HDYI+5y1C884ICUJNOoDH2xTC/tjSufKHjo6nE1XIVaFVtxWgB6DOd",
+	"QcP8a62Qsy7RiJ4Ha6kZf8/zWxZ5m5QSJRQiSpE8TnL0QKwEuddrtVptxmPD36GAiMRT3c+jweEpC7X4",
+	"PHrd4REXc/htCMPZMcLTcMbQSJCrkyUYKBOBgdSniiwt2aB+2qErskvf3anD9OU+VxA+eRaPROaKsDJl",
+	"VfrrScOzQ/H16KY5tgy6xbcOuqPzAlwr9jjJu+GpOOYrxvyV6f3ybiGi5z2jueGCKLb4NW2/RwEq3Vr1",
+	"v2HR2XKl+vj6VAiSY81kpkeZk1zGfQHthtXao9wOlIohhCzdPlu/wSySWtd7ClL6hGCpYjS0VTqxbmZv",
+	"RZeSgSfF7SgHSp5jW4+rMfQYAjq2ZfJUsiZxptj08O9x7vm0zyDXarGqDhaL4YQYnFGUUA1+g540jTMz",
+	"RcqQUgWJ6Z6rwfOJdDPRHiKN1j9JNP4dWC505klK+LQ5D0BeuEd04ZF8PBmgIFis2W+El3IRg7GQWOIl",
+	"6hSeEZE3GXVOpe4kk8goQ9Z5Gj59wog5TwA3ESwkzwPgMHb1zEd40KPiB1P3qBZsUX+Ht2ZHwuOwbpmj",
+	"Uxg4zI+MaJYXx39sphzjuoLi2pmJlVMqjfkbYDsI8/TD+Q3F5ql8jjY222i96UzOKmwLLG5ZM4letZpy",
+	"My+2KmcGTMfBXZ7rw2TsROzUlCnhH/VnlgK/dXCw0R2yzLcFS+JZcZmHhXZVvG9S7GXNjZZfFJ0SYSXZ",
+	"okZFCl13DK2bWNUmM2Jqrnviegs9A48wLAZg/tVU4DhAvgstJNTZc0qvne/0E2vpiOyg+VWkAxfW2OAk",
+	"UmUgvgg0lefhbNDrrjNh+IWsRid+I2VqVelbk5qYPBCzkda+PDu2I6c+WsmGxPnrJBTq2Y3nxlukZMNV",
+	"jIUuXUg+JSFrxCP9XIb5MyUPPo79BHNpiTGvvAL4LEpRPaWTZPcTQsfTzcAkGb7mkS0uhtpJF0KV1mCx",
+	"WuYUMKfbTRGu9enhk/Krd6U0Mrn0VZqHJhU2+lAL5fUTyqywuFZUXE5BVuB5oKWpVRpKrJAUVHw9R1OH",
+	"hDJDmnD0fpglZqvNlltoqM1OfxEnpV+zrBIa6hzepoWBonSSjLFYu3VlsC7vwCMPYbiuyLw3SUyOyiis",
+	"4q4YQNQrB0rB8io45Ek6hKs/Ckzi2Kh8QfJNsmSmGGntvPotOGRlYuFyapEM95ZPgO3HL2bJCzoTPUpl",
+	"XM1ML58oyk4YFePN+yOjYnS6J33xH5GbpXMxODs1KsaHNm3VeT8yKsZhd0j//ecly/Iy6vaH65WYQmNZ",
+	"ZDksyxtkZd91L37GuWYtO2HN0abtO0lR6026fmtvtBHKFG3QPBOBUI6N2qADsVB6gk/5ZK8flQZkcy3E",
+	"79x8y0LomZicpELsdqRLfbrQDmVoEyf7OXPvpfK16imZzwOb0DajUWs0zNqu2Whd1Fv79fZ+o/EnwxXV",
+	"u8lAyzez8aHlnDlv3r69eXdx4tQHl98H9VMnPDi5GLRGdcs57r75Yr++oW2+2g0SQHx6O3YGZDB/F/2x",
+	"HGwPbvrL04s/X7+t1Wjbxcn8xDn70l+c9DqLk+7CsXpvvg++eM749fmr95fuNnq358PGmz9g/ZVz2f+j",
+	"9vZm9t1evtmrjt6GF82Ld31z8GFy0GrDo723l8PhqHH85uuHxZuF03nVOz2Lvt++HoxeHfUWk6Dnvr95",
+	"W5014dvd7z3/623n8qIz2KkefT18b158fvdmd/Dt2+Do5nU4Oz7bnbbetRp48I6c7n0d/hE237lvvw3a",
+	"Z7UPzuH3r133jzZqmng5OfzweTx5jz7Mj/tHl9bNAk9enXXg2ej0Fg8ao9PGn/XtPesWHsLT065v//lt",
+	"YXrNd3XrYHiwu2OHcLZjD3d28Ql5N5sc9T4E8Ms3C42Dd71+r9U8nr5+PbLenpifZ9vTSXMIvx98nx8d",
+	"kMnr2ZG98yU6q902TrfRN8c1e2Qc3Hh4G49ej93t8c5wp7l7HIwvpp/P7G7/85/9+gd4vI1s5xK/v3D6",
+	"37o3y95Z62Z5+fXP7xFpHk/MbctqbPuHs0mABzdjtx1uW7b1AVum27q43b6d9pw/b/746nf6J/CoP7k4",
+	"3Zu/3Zl++fK12Ufhn38e1Xpt7/gwGi4+W/NoUfUaR/jmO5n3bk6Pdz+8Pbg9HjWPF4bIfduyd9C4sVcz",
+	"Lbs2MVsQ1s0x3GubOxactKA92Z1Ay4hd4aA7NfaN/ohbNKzglvLiJv/rho3nfe0vmr1XB+2vEPr2RfD1",
+	"5rPnfz9/1ftwCE8uDl7tDSbR+0kr8JwT2idcMnsJr5JJCbdDxYtvxr7xR8c/iXZQ56gznxyfOtNw1Azd",
+	"cPdVc261vv1hWRHu+G8Pd5zbLt0LHeb12+ng4E/zzKqFnQ8XX3b+mKO92fG7t93Ab0YT72Y+r4fW172z",
+	"qKa8l8bJEhS649H3iJmkhQbto4Hw9D8p2kHfkQzyNs1aK4u8sT7mo5HrLvUibHQW90YPsm3Xd9vNesOc",
+	"bFs1s9VqbJu7cNIw7XptvN1u7doWnBg5/QUrj1CrGer2imV19uzSDbIZrebOuNZujM3tertmtnZ3LHPc",
+	"3rPMmr1r1ZFlo202YzLwh3Z23IBHInwsCKUHMpae/bd/2st/VN5l+tqzAP0ZdF3E3TA+GpSCmzVWlw8T",
+	"/o/QJSZ0fUz/+sQ4Ngt1T2O/Bb65ybjZ2p00zEl7UjNbe3tNc6+12zDbdgvtbNdgvVlDqc1R9kNlV4yY",
+	"leh3DjLuToxjYYCSPMOvGN/Ilhz67J6Vj+cPck7xRoW1ku6zsbPTaG2Pa2Zj3EBmq1nbM8fjdstsodZk",
+	"ezJp2OOmndrnxfAEKNxD9kKVLYvjVPacYs+K90+B3agY0PddVLTudnOyu7vbgKbdtJtmy0bIhI3G2GxC",
+	"1IQ7e9u1yThzPw+25jjo66NRbzRb7e2d3b0aXacmdJCvuCgUUNlPrVWbNFvtPdNuWrtma9xi97BjNqz2",
+	"9rjWrNftnaaRcXU32jxhurLJ9yM95lIemC7+Z5a4t2OPEWzWzcl2vW62GnbN3Gu1kdmcjNstVK/V6ztw",
+	"/RLzAXZq7N9Hw79xTHqk9EBzoX3qiZuiuvx/bHSLXCozauOCK8be7s52u9Vs1Mt2SUgKFRp+9ti2J3C8",
+	"Y+9ZZtuaILPVGlvm3m5jz2ztNRHc29tp1Mft9CVSvjYHo1xLcBjTfnpOO7s8q2KsKzbgbqvVRq1t0xrX",
+	"J2Zrd3vbhKgGTdSo1Zvt8U57XJ8oUMGkoRTN5EZ/EvkoMF0PT02IbZNbL8y4kclzRlDemfOYgZJ9fHVi",
+	"lCsMqtUquMI6UiVaqAMfoeWwf5Ie83zUAcPzwTtK3I76fwA5MB1ZGbigWXZ0SMjCC+hNhTMktxq3MG/Q",
+	"0vRlm5irdjzccade4ISzuVqksxG7NKouGjFd0T412+2dMdqpWaa1s22ZLctumLutXWhaO3W416ijndZ4",
+	"zPCKjUufgrj/3MHOPJoPWXzBEVpKZ5FGrbWrghQVd/WEgQnCd59SuRAUgcrIa1aKaxiqXqxSMU+ln5m3",
+	"yGkysqHG+XpKmZyGLDLnnCdp7ExCFPS/+U4QOxILO+xrj4Sj0WsKjj3F7WZ7d2bEbS6OR5nvjZby+ZKg",
+	"QDNEY2bE6C6WEV8D922hnTpyPXP4beVa5vBbfh3JN/0i+DrnDtYP3doVnzUjiy/6cVuzfPa1wvPOXT9t",
+	"KNNncjs5ok2zFWWnseaKFevPKLa0nj+rLlVrqBRx9LYaygcxS7k780i6JNDq9TxenaciKNxkQ3mP9L94",
+	"N1q42vSKWM3FZ7GpDJrnXHtExh4B9LG152fhPUVH9HiWo6O89kaSsYFPys5zfcKGIiq1KojyWSOXjqxu",
+	"spnng1hFj8CmV/NskKro2dJuiPM1zxzWNA/tJpt5RrBWwBhsejXPBNbutNwsEPzralvkWWLPylq7uYsa",
+	"T97i++6SW93iui85pb6O5qd5LEJm6wxnhMwUg9kCjWeed1M+2FOZ/j3vq3Nq+tau7ZXxqY5XUnDC8vvq",
+	"I5YL0bmAig2WMrzIw9j6nXkf0wdYkyBZBgE4BIyRqPNjIUJySeN45a2LVAFZrvKGdq1tW9CE42bTbNX2",
+	"oLm7iyxzF8EWbEO7ae/sGXHNsP7p+aD7enB6mMj0wngeRyOKOV6fjS76vYzJMgpcY9+Qu3fwLcKhFyzT",
+	"/uBbCAeONdvi6jNkMxF+DIljdaJwxuN1YqmW/pPrywOxHvpPZiBP9ts5PpbbbU6ajZbVapiNNhqbLYT2",
+	"TNjes8xxq4Zq2/X67njSXLldJf9udsv9Dxf9c546PL1RJTBri0NpLtogtb+VhbTihncVY4xggAKWBkAT",
+	"nsAhSMKIcE0VgjYlap1UupIZgjaLiRep60TmMQ71gg28llu8BgI+haGe/B+e6EUkmGCDzHi8S6Yhy2U2",
+	"90QqM28CrpVNiISU8R6vZfVxkcws7zUaX/KPJKk7u+2kbKnWwcvyXJcnfhwJV69M+nYvAHkQlpshMjGI",
+	"OgjzrwIBYrZOnjAj3SibDl66nbCfxUbzTtakClg1dmUc5qcC3QBBewnQN4eESlp0dk/5pa+5sfTtrpIb",
+	"KFfA/CMltGpjzWM3aFFCIJ8BhpMzAZzyDUWZVT4C/OmjcHRFa7X+KmK4tb4qclrFTwW8V7MXCfBILw84",
+	"GKBbFCwTyi4SBnww41ySpsBsc9C7Fmirz9hRWCVPTsqKviVufzNvwRCQP/08qgC6rqhEFxPDGAuYOwBv",
+	"AcZo4rE8X9hGgfQKSCVA5H67iLnLL7l7fLjwwCTC3D++CpiGmaHWUsI4lwqR9tHzArrIOB5p7AXslEfI",
+	"8rAthuG5zsIowADatiNgyYYhFLJljK+2xj8/vWjgwyUrDbDi/m5h4CACxpDwTEQLESMWc8SiRpK+fDP3",
+	"zaRXEA8QFvgLpSq5JO/Up3v7QsWA/YohmhzxOkPz+GEim5+h0HOuPsSIggT3t4LhDFxXBfwSESCWJBy+",
+	"zuUxSWqOrHTUWpnYawYDhqWpIIVULq+w1OUW+cVx+syysYizYakuVxMsdssiJaaFKjIDHZUBRBKlIr/1",
+	"NNfxI1/PWc6Zoy08Gxt3feUUN6YpopgWxeWA454M64k3NeiJAk3sHHnqE6VoTJzy5Ap3VjydymIEgVaX",
+	"AdTSNknZM4h1EMnxgsU4YW6hVs2g2Qid7AIY3VBynkh2E/gomEPKdCl5a/krS6gwx9Kl9bKZtiTYJ0FY",
+	"yXvNp2f4InAt3y1+22NyZtsikiuJeeCDZFA/YTo1LLe2QnvgrslKmQf8NHex4hWmPIkZg//aJ3h1wCd7",
+	"wBQmLwX5eqsOkPKXRkrL5AZK+eUmvo6adYgk8lQOKfr6KvDmqpnw0x1rXiZBearaJiPJWqSPc95rKBwr",
+	"WK4MwtoWj5JdrHZQfm4qDvzzbND7nQefszBPCb1JSqF0IrcLfcItlr83G+/H7kbZgQD8VJu4pHIJ4Mk7",
+	"tPKq4Go0d8YXW5Tak4h1eToa9ruDV4N+z6gYR/0/PnfPTobnZyeDUd+oGN1O+u/Oq1eD4wHDus/d153T",
+	"Q9ZtdDnsn4/6PfZHtz8a8QZnrz6fDfvnUixWjMSfX58d07bn/ZOzd/3Pr87PTj53zyl2D88H7wbH/UNe",
+	"u7F33nlPu3ZSy/ikzbAJCd+vRpGURZGsE6k+TzYzuP5cPCudKM6UnY2IlFlZE/dSOSNPT8kfXFnpUVSA",
+	"dKko5KPAmSMcQpe/VSIklY7Jwow1oSpR6ElFXk/axTXPaqoQSWyI4OHg56MOiG3qarFLHmubr3Wp1ilJ",
+	"fBM0pmeO2HEb8fgW2Kp03gr5MYf9E5PXx03H8gpNJ91LOhFw8UyFmQXVOdiASW7BCrC8IEDE9zA7GCkl",
+	"KyvZYPrEv0GbrEt8jetfrlyXQ190/ZRr/CJ+SEMhPeD+6HOjvf25e9A1KroY43goAOVYSRFv+RVPAT8j",
+	"kWUuxgGOGvtXGPxvcN3rj+g81wAAYIKPvf6IkuTuQZc5WidYuVgsqsHEMpHthF5Q9YLpVjCx6P/v1uq7",
+	"1Vk4d/8BfR9h2/lmHlQb1frvwATX9WqzWm9Vm9VGdeeaz0h3V2/s8llN8LHTH5n1xu4DTdtm0zaq9e3q",
+	"bqtWrVfrNbqGVrVebWQWcNg9yS7gsHtSegHt2m6LL4BwvstsVhvFs28rs4vLjWdvtLc33X6zvd1Oz94S",
+	"R66dvdXITK9uXkz/iJtv0d2nauiOBHQr0KD8ddg9EX8leKCsXPtIad2KFLQSrihpdOrzToKjVnLGdDtp",
+	"+Rpz3IkxSk+JY/cljS7QQlJdGVfxYSK75c35/F2eI/gUzhGnJOovUvISqRfsokwwigvUur0PcLL3wPPC",
+	"e+65yMVKmZ57WxWbynA0H6OAHs3YCUlcGD0h4kSkoODKAbEqrpKucn8gOo6xv1vfa8QrYimB5pEbOr7L",
+	"OPPdfLFJtfRJoQuY4G0qxjdTZQ+SIEYye8Vylujiav2ISV2pZ5InOOGsiXifKcfJEk2JBOhzFEImqeW4",
+	"jRu0HNjrVPzKdGxp3MLkYMvxRZ3BTXofOyRMn9XoNVB4BCC2r+MGE/PcxhbDrItG2t9NCrTGvlrj58cP",
+	"EHpviIdBlYp44O6uAq74mWU+H6HloCe+J0eTaTSMP4iWccKEbMt+/EG0lLkpxS4zzbvpr+DuDtzR8xOb",
+	"6sEQcvkiuTMezlAxPJ8Yn+5y/mjJeeiLLxUU6c9qErkaMdY3fzzxAkoKJl4pDl0ugrLnZGbGf/5ekMMh",
+	"vdvssueQxZ9yVStLAq/4RAplv1bVmssdrRPz6c5XGGSVZGHpdTFyLJMF5HwUCHvosnJhkmzsh86QFOGQ",
+	"ew5ukBhUSce5aUpRUS2vvJU8KbCny/jhWdAVuTPLr8ILphALw+H9e0L3EjvhhtlEPRJCtytk9Q36UdgR",
+	"CQnK9yIocKB7yl44bQcSBgiF97hJlR5H8onKgfGtj1eGjz9V9dl3w9MnKzxL53rimrPWZpliWOLmbO3X",
+	"XPT0KpS89bEsAJsP0s2lnuPVk9Tc5EVVYd8NT9XKB/Qoe/xzNyl0yOHqZwvQiqlWlp1NqisKDwlWZsRg",
+	"9UpSVUVWxVSYhigDwsdMqnbQXaQ9R5KqHkkIoKbRc6hOmzmZteDCmt3FJ7ey+JhSDCZ/IKXrv9I9aEuo",
+	"KMpkhG0vKLH6d7xhLuVS+hSya/2UguQC+nixNsuCIChiJjXRwmBIkGVUYrAcjY610mmyA62fyGh0bLLJ",
+	"0jMJgyk/JOVE1RW8ahsVo+sQyzMqxpsIO75IZJldwsKZOCVwdRWpyNSNfu+Yr5zSpdpnjm2jJPt1QeV2",
+	"UrJ0OxUtmDsWkQP8VxVz50d/7wdV3sXaotJUQBj0mHNg4EHbgiSUnLfIjs1SmW3gE7Pi3eab+u+sFp+e",
+	"q1eQS1cYUTWFaDIynOVhkUHRIazIM9s0cyQedU7p/XZjoaQKRpHvM9cX4GHw3sG2tyiofkaKrjTlB+IE",
+	"yKWwIWt/b1TxO8cnsUnL185nUKQj9ZQAPlzR/PfOT9C+UsX0YxIX00gWXh0PLQZ7kHr7yRL5X7mZX+rx",
+	"//X1+J+Iav/lZf+ZM1YU8CqszF5bmDSWtYrNuslTmiNB6SuYeKl0We+HHcq8vR92muI/9b2GPqvj/Qjg",
+	"fWgfmypF1/Rk7Vu7tpcx2GoL1obLI6k6zm2LuUtnavysdSHP1FGxArfnEO594Xh46MmByrMlNiZ5xdRG",
+	"qrDN6+uER2h5SeB0Q72O499zRqdUhn6pfRQdHDxVrvjy/HizOW/utUVN3adVS842v6sYnkX8hF5uUvBn",
+	"rs9Gy7KMJnbzDY8+8d05jz1anoevzv09c269G6TitELH16senSmGYRSg2CVB3yzRhJcEWfHPYnoTBc6G",
+	"d3crq4H80BnxVLpJgSdpnyxfKaycOhkFPTIrr2RJp/bINNTzUxGZZvlRYlOR1vUWBmMnDGCw1MQ/xtan",
+	"+9RTY8nIk3zfJFdETcsMeEXvXd65z8HA9kLKG2NPGJn+iarTKncD2a7WuS9Aa6+1c/37pg6Kvf557HeT",
+	"7IJ1qDBX9+2W/J7KMjpehmjtU+sxAUP4aCYvLr8AfmkgubWCy2UNbJZOMCa2uTTdUeB7hEufvOhFHIyH",
+	"bMXgLWN5IpIua8GFPRY2I3OMyz88G42cKXaYjZA9iUMuq/AlOz5BVh/bIlmx+OEiwhi58q9Lws3ezhyN",
+	"Qjj3+ViMiMcjzx0r8Ig3CTldP4Qhsrus4qzBOEdiQR/pvsUdqeCJAsvhNhjNyEcowCjzEeJl/mbkiYMj",
+	"tAQSg3NARe/m/vb5e1rp0ya/TU31ikVwczt9xbDSZEaXkiZDZBKzNss1IzxD9MUwSlkMddROz36twRnO",
+	"57P0OQJ5iII9yvKK8SdVW1uoSyC2pUCYqf7OXBA8Xm9wo+3m8F9XssG5RfeGCtXQeh+wyJpcf3aMxPh6",
+	"n5HSZth7jaAYZO/Tn0BM7t03w1ttepc5q++9FhEF+J6wRAHTHpU4AArZF6xx5zQd2C5ex1JuQErBMc2r",
+	"yOkVK8fBB+WMmvQnXlVcs0SduCTLF/OLy2uy7JX5HNSXwXUmiL6Oj5hqQt2QlhZKBjTx/c1E82gPIf61",
+	"uduivzZ3W0bFOB91xM9H3VH9c6PW2k26ZD42azuNwo+t2t722o/teiP1cTQqnHE0KpxvNCqcTflE5/qk",
+	"zxqjFg3MCxNlYx05iLKHPy79Wf1XUR75nxOjSwpgtkNCB08jh8yQzb11CoKiEhjL8VRxsUQtDtNRea2Q",
+	"gvxLJntZbYSXpsvC3eKcdzIOg0/DOSnVzvgbucJq3ib6grNDroL3ypNcAdjjFyFLjhCAMHO8tVmxdBD5",
+	"NgxRhXeIg655uJHlIsgCJ0XQO8t3wcapavy2WOxwGQLJlVZ3Fd7jvePaFgzsWJWVk8cwYFp2sBAtxXG4",
+	"zg0C1/+7qiR7uGYB0nEB5KI0cHi5wTLvVlzuqvSFyc0BAfOE15Hi3njsAx14FTe8uULwHrrATTVy/oYd",
+	"NtVeFB34vT1j816H1VXOsYJ+ZFxQhdOYcFelzFC2QeeUJA60jKelLT5eGbYzdULojuRbdGV8Es6xR+mG",
+	"ibx6ZTCn2FhkvTI+6Rxehc/4WTA19pm/64M5uua1KQ/m6krv8nn7uvLNr/B2TbN5ufX1v/muYzmhu2QY",
+	"noTFQZfZrULnlj+PRFBrgsIKCOENIsAPkEWJvIWAdyv0UBHmw1xTsLtOwjIzjJliDrgPf5w3DNxnlIym",
+	"/z5DSIJxr74EBbEb+k8cR45zZ9cNJBXoKBfJZ9FCySPXKP3WtkzTZPik7EJUKFXzLZCCLFZJhWrxuufQ",
+	"Pg9mIsl+fjOyiJ4a86chvaCDlzovEI7GM14a0mf+A3gpyBHhMTckheZOQW6uDUtJqRwf35vK5bXX1BlU",
+	"rK8jClD8jN68v2AJ2dgvlPtgGZeS3vSmGX8dFtTY1yfwEbmKxksAeb1ZZPNYJFEJhsy8IDRd55alh6FT",
+	"ynKzcZIpZkHvHg8UqjuPwgi6F8cjgxFEStI5F4JDyNloRhnoKXLHl0wJirRzGptAeMjk8nKJAfJOpOkD",
+	"+Ac4RJwZHYUwCJF9xXOhg6UX/ea6ACOZnpSV2e0MB6LKbVz99gLBORjxQQjw4RTFpvaPyTJtSGZjDwZ2",
+	"Ee5B3/+dJdi4oFR66UUMAMNgCT66AmNU2P70zy1R5s7DZIu2UPGS/M5EdLaICdsOXbgFXXf/Cl9fX19h",
+	"yjn+ywMzh4ResLzCyJp54MpIpQ3bBwf8Zj+ygeK9f7oyeFFwBKDvfOZZiggf01TGtKLABeZr8B+lFZC7",
+	"n8IQLWA2PRz0na10zAZb7RU+4QmIRMW5/Sv8v8HHCxQEkNXWHIq6x8nhTp1wFo3ZmPEMW6HsYMpCyWb8",
+	"8Xc25HAZzjwMeBKsNaPF/zJ91ut3Jqi4joUwQUlKCKPjQ2uGQKNaywHpYrGoQvaZxXCKvmTreNDtn476",
+	"Ju3DxMz5HAbLFNx3hgPFGzz7e2yUMxq1Rtus1c1anRc9Qxj6jrFvNKv1ap0LyTNGGLaS8hA/jKlMuEN5",
+	"BMqFJdnKVew5pFgRw7wcgEtsMXgObGPfoE9dXA2BzhrAOQqZobigBlnSZMuHUwdzTdDdJ1ZSgMc90iU2",
+	"ajVJQhB3H4M8YwVtvvVFGJNjRqyc1hhKB/4cEc8RkE5++0bFENBO5/lgnqJvodmNAlLsTy3ab6Ub31WM",
+	"D+Y5f2rM4tjCpLPSlvVN0op1fMdU1Ferh9F3Y5tv8ePW9Y+vZYs2Ym3rZdrWedtmmbZN2rZdZg20kfpk",
+	"Mjhjj+VHVkrIjMGd1VJLUIxCKlBAlReY/GgIo53B6udvBL6CWRj0CmNHlMYSc0s05aG3XG/qkVII22Uy",
+	"lUhtISuH5JB16KWQVaz/wLOXG6FaCQwTAEth6y6H2PWHnk2Hv0x9iBbuMi6aKRpfYeOZwHur0SjRttF4",
+	"ENygkFSIGwJ8pK+uDjnuKslLsvVD/GvQu+PQ6SKpHlgNpz3WUqlVrHtTeKNkMRnwaa0/CNro70LU+OHK",
+	"q8venDjQVTdX2ejVX3kzhygsvJbaU2F1an2pB/nlSc2RmDLY0uLY8tOQOkVhEZhS0FoNo8/r6S3VklNA",
+	"/k5HpTDskllKUuqSFdg2jFLY9miPtf6VfjJ85uYj+wWvHwmvn5bNiAppgAD+tUyGTBgfs75ZxZZGrZVx",
+	"KdIodvTMMHfluy9uZb3+bQcJ75jYfZBCEIst1BrHud4yJb4mfpQOpudWWW8dCxGcD3p6VSWCc5ksfW0q",
+	"wTx6drUOWw7mi2RusT/L3mdMTTIt/j0W2+HCTxTORB78X58F5MrdjxlE6ihqeQWNOqlbovD2zWQptrCS",
+	"Oknz05Z09xF3MNUlZWbSM3RdnkqUgtVvBCgdq1peURn4SdQ70m+pjIKHPj2TyHVjo4O6m5c36AkkG8Yv",
+	"KiCiVdikQCh+MY4GoBNYM4e+G1GAnrvyplBVY6Nbz2cOztC+hSwZexJLqcm1rWUTxUOmYtrD84oYLToJ",
+	"ej2yWkedSCsCxmfETH4LmBRseMHcMtzjXpm2e6xtvQz3WG/8RQqtYvIh8OwULUACuCtJSOYt3LJIwCsX",
+	"/Xp0pRw1UYz3Ihg68DwqgJ2z+gEEQNAdnceZeOOxfiPp3J3Ce5jXxBGFAJS6GCQac2c6GXR+nTrmfcfe",
+	"ovNeA4RtFiYtC5OkJlWKhriooEDveurYJcETEEg6y1PRSDGXjkxucHkvdPMvpJsPTgtNSrpK0EMKIZvR",
+	"xB8xHPGMKWeBxgag1/gns46XYNCrFun9FWL9S2v+n/Q1lFaC+PAK7ATlXsKKXgjkbgHEwVM3lfNjyYqr",
+	"BMBmILFSFFw+quFgFd/YyS28+kLxnp/9oAiAmQWhLPT+csaEPFHlxU8KaO+gd5fy41yvtlFbAxiG0JqJ",
+	"mlo4jRAa9x75eajO+BT6HGXR99LoFG46xRC9kIHnRQa4F4+8HTMF56tUREuQAdC/J4mQFsf1QqAa3FUe",
+	"5VWBKY/yDy83pZD8cWWmzFQFLkPZwoUvtOHhTJGbCFB/mTJpNc2RvlI6qnNfWSr7nm/9UP46hXNUWsyS",
+	"TK6K+zJU0AtWiF3pXbwIXhsKXipp0YtepcGkjPC1wfUeonDl3daekrwmpaNfiOyzlsNWwDMFxA2A+Zdm",
+	"tNY31xDqjUQ3PanfkgWcn58B4olOsIjD7dg2gEk1YZEiWCUleXZW1q5+fA5WVrJ9OkZWmbGIn5VVwl/I",
+	"7F/Gyz5rI2pMa/ScbkGl5sfjc2Pit/VD/OunWWBJL0qxwskmX9jgDdlgcc7rWeBykLQpK1zymg9RWHjH",
+	"tb+ASCdc8QupfrYccQFoZ7jhsnD938jTre+WIfdrGelA1F39eypzXzkYus53kTFHZNbJ+Pd0FPeYcJZ2",
+	"5KFkUPjeyFxgwisnW0M8FM4ifoBuHS8i7hIEzAUI2UlChOusc1TisFO9wh2XeGK2pMBtykUfU8ZdKQWD",
+	"pLfRhdbNJ0DQXur9fACchEhUk4kpO6BHTZ+ZtW5AS5aW8MHc/u25g/txFqxcuEIgskqxfc3gLQKsh6wL",
+	"EXpgDjGcZryd1AQkSb67//vx6mphVj/96z/yH/9LFyAwd/CAd65nrGYVI8LO1wiJz8IDvCjj9LVjX2cA",
+	"AcYwwtJO0OXn4UK3JtXnaNg/Kc61yNKyKP5JysVri/h4XnhaUI4oBWxp1HAyWffSAxYuMAfVDgbD/gkQ",
+	"URulquvEK07myh9PJQVXnx47Qmudw20n73ArwrZeOJVnxalkDBnsgcxwLJQUKhfajwvhcKq4RrBL1Ycu",
+	"cjtI5w9Z56J57JCwmy47/czziGQrwGyUTySbRfAlp8izzymSAnqdD0IGfCUOddP9nl2MShahtwiCgTUr",
+	"xOsR+8ye1AxSX2HxzcF+FBKWRNWCBJkEYeKEzi2qAPQNWiGYw9CaAQ+7S9btHBGWKZ528AIbBUn2xWsR",
+	"0/EZhtcgdOaIhHDu80zyyhPMuBQHA7pUhG3K6rKBdKSGL/LBiE0le0C8yqKsYMfedWPf+BohFskpEkfx",
+	"j4OemkgyzzisXQj65jt8a6MQhhEpc/PYCw+Yb33Jxh3KaJdpS2ApyJN1Fko0TSXP37C9SJRfolec4r/M",
+	"HlMp5MtIwUnG/VJnE1ewKCthY6vcyChI2YBLdulkpNSXd/XlXX2wd5W/NCtfVvGiPIO3tfjB/KHWpbhb",
+	"wxCnUpYuAe8KMOtbkG6nm5J+H00AzCGeDtEyOV1fxL7npaBWFSUaJXUakn4RDrXEo6zWhVmLoFu8ft+v",
+	"qDPObLRIaXzONngPYsM7ZunNw3tLJDUh9V4Sv5iR9ZE8Bn6aInBAX0UUBKSUogsMreLKIVs/kn+XNcon",
+	"PYpT/nXjNs/R9v5QNvLkJArM5KljiC9Erb1eZBg/R9Bee9aUq1hx0A/HVCgbLVArZxf6X8lStJ4240ox",
+	"+DEuoQzs/WpPp0qt0un6dMn51qDPMMqiz8O/kWnMuXvB0f8iHPWjVTg6jErhaPq9XhMfGs6QzOil9Cm0",
+	"1CjDPntDjQreG+mSsufwokx6/kaaFAZobDQpwP013rZygZ5rHiwvi7R/xZNVf8InS3cm/4XP1sM4E6xA",
+	"KwGEJd8jbvYq6zQgWnNzoXRfY9WcwcRxKZLosxX0xCw/adZb05qv7hVfSPkOIy8In+jlExbIjV49ceYv",
+	"L94v8uJJjNK9dgkeSIzkv4ABvkU49ILlr/Tc8agvvl8QIMsL7CoYJJZ2pToZq5aKgjmkswCHEaGJgwIw",
+	"g+QKjxHCgCyZ7yx3aMTgpHdSoX158X15/km+OTBHwRTZYl421RVmdSPZCGNPTC1L4kFss79PeidF73Fy",
+	"O4/xFvMzeaIaLJLQFGTqtG1ki0t6yTH30DnmnjxUrIDiUPTsSZeXFfRGYQO2fkg3mHL6Y4HnK1PHxUv4",
+	"rzEpPJROWiCxXh9d5mZXRmql7k6vkS66utoT0KmOpE8v1OnZGbX1gEnBqhxU/mqq6tg3kPFCVPYpVFQT",
+	"5CIrpHyMg1ybMMdDpbBMAtMZ9oMOqqDbY7EfbJ7HVl+vZj5kZZkX9uOZBitQEClAcQHk9+cqtlxngqyl",
+	"5f6S3h4b0AH5vv5GQLxlQJhLsE76SND/OD6gx6QD8SwvBOGFIGxAEMwEf1eRBqBC8RoiIcNVTcvDE2ca",
+	"iTLb9y6MHOerT49XZDnri+bd9OzP3oiGdOveTLNYdFIvesa/QK3PdIdFuKDTJUrABTnI/fsWUdZDrD6/",
+	"VCFiP8arqsXGJ9L1FVCCMtWX9ef5yMWYn1w/VhKrBKTp8aqwMmLB4Fs/tNfyE7WZC2C/0G9TC/9/ZxdO",
+	"/U0UqM82uOVNSzWXv6hDFJa8pdpfQy1WbeXF5ez5FHidorAk+FMY3Qj2fzUZvYDs/mRB6PI4PYxW4PQT",
+	"MR6PLc9vREOkeP9CS34NWuJHZWmJwJMNGSaeWMk2A2g7UYkiKeed3uByBAgKKL0QeZkyBTi1kv0Jb3nO",
+	"53kKmXyemrFkcRTh5JuAoNxheuPVR+bKn9xPJgMHOhH3JH0SI34Sv56Em5JnBZJIkTZ1y3roLnBXycP3",
+	"wz8vGYh+3GclN5kOXdbgycvr8qjOLQ8jkK9GfSGHp5G/5HOy9SMFRGv9WOKUmACug6xiSXvNQ/P3kbBX",
+	"35uQrEvc20q/lHsgeE6qftCn/4VkvXi8rIZ8CrilwH4zHiVDysqwH88hI4IVoLBEQOdP4/kwemGBXujJ",
+	"3zthBBXGV9OeYRSWZZV8F4YTL5iXjfaJ2xe8ssN4vGdvLZdb2cxAnhzAi0n8masUWHmsGB51ygQVWn+l",
+	"6JsU5m79kP8cudH07ld0olM3UMwmpGumii7AC4Q6OaWcl58LmAR58Y/EH2C0iGd4ZO7AV+YpCrGNj8jO",
+	"nMsLC/D4KSLiCyoo2pRA4hqnOJ8/3FvjwFsQFKzWkqc9D1gi4IhQxLBcB+EwXaXBwUAMWugSdyAmffav",
+	"ujydkpp2WYH8587rhQ949qYFCRc6NkAAN5hfHI9+ede54uQT6sYUCIcaGKcgDiWQFxkbEprwGG9ojMiP",
+	"6ymnTKNNqvRzh/bywD7yA+sVo7YA/mLkLhaK0y/t1g/xj9IpFB8S0/ioKq79wiGzD2V1KLhycQMbXvlK",
+	"08OD3uUhCgsvsvZC0l7MEPfQcBSgAoXejfHgV9MbxHS5TLLIB2V/or+S+3kyUiG1Bi8k4+8TuRcVkgyB",
+	"Kj/BMKFwhgLMH9ONdBOWhzGylHB4Vm+x3xmadBG7tUa1/gEsnADZAKNw4QU3xcF7cg3PP1xPrrSkruIh",
+	"z+1FY/HsNRYxeGgj/cRHGVz7X6S1UGA+zlgTegDilXBfpMRQyMWj+OLHOP7IAX/KPOWY/p85xpcH/QnU",
+	"GkX4L2MSV1GA0i/11g/5r/srNx4OIUWUooqSL8qOQkCQYYsbA8KGCo+Hu99DFBZfbu2FGL5INw8R9FiA",
+	"LizM8R648stFO8YE/V5akQdkr6K/lrt6OoJSrCd5ISx/H7VJEWGRMY8/xZDd+viBtCbvhqeFypF3Pn7+",
+	"ehF6FD/vvrHucF40IM9eA0IBQaf8eDc8fdF7xE8JPY4i7QbH98d4ehmSPq5OQ0zxcxx8cjovz+kTKC00",
+	"KCvAughpy7yMWz9uffzwCooizOFDSdx50UDoblUc90a3+kB6h6JrO0Sh9s5qLxTphcEvoznQgDmFzQ1h",
+	"/FfTFzDS+qCqgkKOJPorGJInQf/NNQAvZOC5yvkaMiCQ4N48zMKZOA8k3r93zFdOkXz/ns7z7AV8dhr3",
+	"cXpYhVDKubyI9s9etGcgoJPt2TW+SPcaqM5L9wLbH+M15Sj6uPK9nONR0P4FcR9HwNchrgDtYtQt9T5u",
+	"/aD/++BSfiEG8aFiHHoR87V3Kw58w7t9GEm/8OoOUai/t9oLcXph8kvJ+jpYp+C5MaD/auI+J7IPKe8X",
+	"8yjRX8OiPA0V2Fjkf6EGz1bk11EDgQj34GoI8UrwMGGS6JcXPw6XgOWetFcFgg5E06Fo+XfOLSmPxZTH",
+	"UsCcyDMByqFsxJNsehWHKFx/Dw9HhZzsXKvTRhds4YXmPC8OZC10U8gsC9rPTwmyIoNTkrJpU8QbRnrE",
+	"e3juQodzdy84/pLQaT3eCigvh7qCX9jigbRrah/kbl3E3xb6+w1svysGfgrFviOn29R/T9IB8hsY2MP0",
+	"rl5g+gn08Y7tmxIEdWp5eisJJP0N1PC4EJmKtO0ZXHqMJyfGnsdVvKcmKkoamOBhFVzMHAIcwtDUw+4S",
+	"hM6cP948tTNYOK4LxgiQmbd4SS9cit188pKHK1A8frEkkpd5qrZ+xHBUUmmPVaAqlG/9eAm/tFL+SeWJ",
+	"WGCWV1woKa+84VVq+2KCCcZLMOgVysmF91l7OoKWwB1YOOHMi0KFer3Qq+cpHhfBMpeL1wDyZuyIQsme",
+	"Q0mFdbr51YSUCckq1j05q/KEmC218MqBvKDzM9SwF6OzAOp1zId+bD6WKAJHf44C19g3tqDvMITjf87C",
+	"0Cf7W1tTGKIFXFZJXEfN8ua87ad40gKJoTMcgNC7QcwPCcM5lW07UTijb6IlK+1n+76NULBMJw+G2KZv",
+	"jxMAEsIwIohy1iTiBd5gFM68wAkdpMzSVbpr5uCVHoAVIPY+Q1ftqvxY2HPpRYE0Uzlx0ul4jFw66uIl",
+	"KFnAlJ2wLcdVtXi1PjH28GgAOoE1c+gtRwEqHpuSRsIcIIXPCLJBgMj/p/zSomTksIIlmNrYWkAAAAD/",
+	"/w3SZJQVXwIA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
