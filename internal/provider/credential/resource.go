@@ -63,10 +63,19 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	x509, _, err := utils.Describe("x509Fields")
+	x509, x509Props, err := utils.Describe("x509Fields")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI X509 Certificate Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, customExtProps, err := utils.Describe("x509CustomExtension")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Custom Extension Schema",
 			err.Error(),
 		)
 		return
@@ -102,6 +111,11 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				Optional:            true,
 			},
 		},
+	}
+
+	optionalName := schema.SingleNestedAttribute{
+		Optional:   true,
+		Attributes: name.Attributes,
 	}
 
 	nameList := schema.SingleNestedAttribute{
@@ -152,8 +166,19 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						MarkdownDescription: x509,
 						Required:            true,
 						Attributes: map[string]schema.Attribute{
-							"common_name":         name,
-							"sans":                nameList,
+							"common_name": name,
+							"sans":        nameList,
+							"typed_sans": schema.SingleNestedAttribute{
+								MarkdownDescription: x509Props["typedSans"],
+								Optional:            true,
+								Attributes: map[string]schema.Attribute{
+									"dns_names":            nameList,
+									"ip_addresses":         nameList,
+									"email_addresses":      nameList,
+									"uris":                 nameList,
+									"user_principal_names": nameList,
+								},
+							},
 							"organization":        nameList,
 							"organizational_unit": nameList,
 							"locality":            nameList,
@@ -161,6 +186,34 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							"province":            nameList,
 							"street_address":      nameList,
 							"postal_code":         nameList,
+							"serial_number":       optionalName,
+							"given_name":          optionalName,
+							"surname":             optionalName,
+							"extended_key_usage": schema.ListAttribute{
+								MarkdownDescription: x509Props["extendedKeyUsage"],
+								ElementType:         types.StringType,
+								Optional:            true,
+							},
+							"custom_extensions": schema.ListNestedAttribute{
+								MarkdownDescription: x509Props["customExtensions"],
+								Optional:            true,
+								NestedObject: schema.NestedAttributeObject{
+									Attributes: map[string]schema.Attribute{
+										"oid": schema.StringAttribute{
+											MarkdownDescription: customExtProps["oid"],
+											Required:            true,
+										},
+										"critical": schema.BoolAttribute{
+											MarkdownDescription: customExtProps["critical"],
+											Optional:            true,
+										},
+										"value": schema.StringAttribute{
+											MarkdownDescription: customExtProps["value"],
+											Required:            true,
+										},
+									},
+								},
+							},
 						},
 					},
 					"duration": schema.StringAttribute{

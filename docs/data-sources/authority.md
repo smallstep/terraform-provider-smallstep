@@ -3,12 +3,12 @@
 page_title: "smallstep_authority Data Source - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An X509 authority hosted by Smallstep.
+  An X.509 authority hosted by Smallstep.
 ---
 
 # smallstep_authority (Data Source)
 
-An X509 authority hosted by Smallstep.
+An X.509 authority hosted by Smallstep.
 
 ## Example Usage
 
@@ -37,6 +37,6 @@ output "bootstrap_preexisting" {
 - `created_at` (String) Timestamp when the authority was created.
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
 - `name` (String) The name of the authority.
-- `root` (String) The root certificate in pem format.
+- `root` (String) The root certificate in PEM format.
 - `type` (String) One of the available authority types
  Allowed values: `devops` `advanced` `managed`

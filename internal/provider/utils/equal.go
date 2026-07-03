@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"reflect"
 	"time"
@@ -66,4 +68,20 @@ func IsDurationEqual(a, b string) bool {
 	}
 
 	return aDuration == bDuration
+}
+
+func IsBase64Equal(a, b string) bool {
+	if a == b {
+		return true
+	}
+	aBytes, err := base64.StdEncoding.DecodeString(a)
+	if err != nil {
+		return false
+	}
+	bBytes, err := base64.StdEncoding.DecodeString(b)
+	if err != nil {
+		return false
+	}
+
+	return bytes.Equal(aBytes, bBytes)
 }

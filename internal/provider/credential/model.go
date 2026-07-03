@@ -2,6 +2,8 @@ package credential
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -39,6 +41,7 @@ var certificateAttributes = map[string]attr.Type{
 type X509Model struct {
 	CommonName         types.Object `tfsdk:"common_name"`
 	SANs               types.Object `tfsdk:"sans"`
+	TypedSANs          types.Object `tfsdk:"typed_sans"`
 	Organization       types.Object `tfsdk:"organization"`
 	OrganizationalUnit types.Object `tfsdk:"organizational_unit"`
 	Locality           types.Object `tfsdk:"locality"`
@@ -46,11 +49,17 @@ type X509Model struct {
 	StreetAddress      types.Object `tfsdk:"street_address"`
 	PostalCode         types.Object `tfsdk:"postal_code"`
 	Country            types.Object `tfsdk:"country"`
+	SerialNumber       types.Object `tfsdk:"serial_number"`
+	GivenName          types.Object `tfsdk:"given_name"`
+	Surname            types.Object `tfsdk:"surname"`
+	ExtendedKeyUsage   types.List   `tfsdk:"extended_key_usage"`
+	CustomExtensions   types.List   `tfsdk:"custom_extensions"`
 }
 
 var x509Attributes = map[string]attr.Type{
 	"common_name":         types.ObjectType{AttrTypes: certificateFieldAttributes},
 	"sans":                types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"typed_sans":          types.ObjectType{AttrTypes: typedSANsAttributes},
 	"organization":        types.ObjectType{AttrTypes: certificateFieldListAttributes},
 	"organizational_unit": types.ObjectType{AttrTypes: certificateFieldListAttributes},
 	"locality":            types.ObjectType{AttrTypes: certificateFieldListAttributes},
@@ -58,6 +67,39 @@ var x509Attributes = map[string]attr.Type{
 	"street_address":      types.ObjectType{AttrTypes: certificateFieldListAttributes},
 	"postal_code":         types.ObjectType{AttrTypes: certificateFieldListAttributes},
 	"country":             types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"serial_number":       types.ObjectType{AttrTypes: certificateFieldAttributes},
+	"given_name":          types.ObjectType{AttrTypes: certificateFieldAttributes},
+	"surname":             types.ObjectType{AttrTypes: certificateFieldAttributes},
+	"extended_key_usage":  types.ListType{ElemType: types.StringType},
+	"custom_extensions":   types.ListType{ElemType: types.ObjectType{AttrTypes: customExtensionAttributes}},
+}
+
+type TypedSANsModel struct {
+	DNSNames           types.Object `tfsdk:"dns_names"`
+	IPAddresses        types.Object `tfsdk:"ip_addresses"`
+	EmailAddresses     types.Object `tfsdk:"email_addresses"`
+	URIs               types.Object `tfsdk:"uris"`
+	UserPrincipalNames types.Object `tfsdk:"user_principal_names"`
+}
+
+var typedSANsAttributes = map[string]attr.Type{
+	"dns_names":            types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"ip_addresses":         types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"email_addresses":      types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"uris":                 types.ObjectType{AttrTypes: certificateFieldListAttributes},
+	"user_principal_names": types.ObjectType{AttrTypes: certificateFieldListAttributes},
+}
+
+type CustomExtensionModel struct {
+	OID      types.String `tfsdk:"oid"`
+	Critical types.Bool   `tfsdk:"critical"`
+	Value    types.String `tfsdk:"value"`
+}
+
+var customExtensionAttributes = map[string]attr.Type{
+	"oid":      types.StringType,
+	"critical": types.BoolType,
+	"value":    types.StringType,
 }
 
 type KeyModel struct {
@@ -178,7 +220,9 @@ func (m *CertificateModel) toAPI(ctx context.Context, diags *diag.Diagnostics) v
 		AuthorityID: m.AuthorityID.ValueString(),
 	}
 
-	cert.Duration = m.Duration.ValueString()
+	if !m.Duration.IsNull() && !m.Duration.IsUnknown() && m.Duration.ValueString() != "" {
+		cert.Duration = m.Duration.ValueStringPointer()
+	}
 
 	if !m.X509.IsNull() && !m.X509.IsUnknown() {
 		x509 := &X509Model{}
@@ -212,9 +256,10 @@ func (m *FilesModel) toAPI() *v20250101.CredentialFiles {
 }
 
 func (x509 *X509Model) toAPI(ctx context.Context, diags *diag.Diagnostics) v20250101.X509Fields {
-	return v20250101.X509Fields{
+	fields := v20250101.X509Fields{
 		CommonName:         asCertificateField(ctx, diags, x509.CommonName),
 		Sans:               asCertificateFieldList(ctx, diags, x509.SANs),
+		TypedSans:          asTypedSANs(ctx, diags, x509.TypedSANs),
 		Country:            asCertificateFieldList(ctx, diags, x509.Country),
 		Locality:           asCertificateFieldList(ctx, diags, x509.Locality),
 		Organization:       asCertificateFieldList(ctx, diags, x509.Organization),
@@ -222,7 +267,65 @@ func (x509 *X509Model) toAPI(ctx context.Context, diags *diag.Diagnostics) v2025
 		PostalCode:         asCertificateFieldList(ctx, diags, x509.PostalCode),
 		Province:           asCertificateFieldList(ctx, diags, x509.Province),
 		StreetAddress:      asCertificateFieldList(ctx, diags, x509.StreetAddress),
+		SerialNumber:       asCertificateField(ctx, diags, x509.SerialNumber),
+		GivenName:          asCertificateField(ctx, diags, x509.GivenName),
+		Surname:            asCertificateField(ctx, diags, x509.Surname),
+		CustomExtensions:   customExtensionsToAPI(ctx, diags, x509.CustomExtensions),
 	}
+
+	if len(x509.ExtendedKeyUsage.Elements()) > 0 {
+		diags.Append(x509.ExtendedKeyUsage.ElementsAs(ctx, &fields.ExtendedKeyUsage, false)...)
+	}
+
+	return fields
+}
+
+func asTypedSANs(ctx context.Context, diags *diag.Diagnostics, obj types.Object) *v20250101.X509TypedSANs {
+	if obj.IsNull() || obj.IsUnknown() {
+		return nil
+	}
+
+	model := &TypedSANsModel{}
+	ds := obj.As(ctx, &model, basetypes.ObjectAsOptions{})
+	diags.Append(ds...)
+
+	return &v20250101.X509TypedSANs{
+		DnsNames:           asCertificateFieldList(ctx, diags, model.DNSNames),
+		IpAddresses:        asCertificateFieldList(ctx, diags, model.IPAddresses),
+		EmailAddresses:     asCertificateFieldList(ctx, diags, model.EmailAddresses),
+		Uris:               asCertificateFieldList(ctx, diags, model.URIs),
+		UserPrincipalNames: asCertificateFieldList(ctx, diags, model.UserPrincipalNames),
+	}
+}
+
+func customExtensionsToAPI(ctx context.Context, diags *diag.Diagnostics, list types.List) *[]v20250101.X509CustomExtension {
+	if list.IsNull() || list.IsUnknown() || len(list.Elements()) == 0 {
+		return nil
+	}
+
+	models := []CustomExtensionModel{}
+	diags.Append(list.ElementsAs(ctx, &models, false)...)
+
+	exts := make([]v20250101.X509CustomExtension, 0, len(models))
+	for i, m := range models {
+		value, err := base64.StdEncoding.DecodeString(m.Value.ValueString())
+		if err != nil {
+			diags.AddAttributeError(
+				path.Root("certificate").AtName("x509").AtName("custom_extensions").AtListIndex(i).AtName("value"),
+				"Invalid Custom Extension Value",
+				fmt.Sprintf("The value must be base64-encoded: %v", err),
+			)
+			continue
+		}
+
+		exts = append(exts, v20250101.X509CustomExtension{
+			Oid:      m.OID.ValueString(),
+			Critical: m.Critical.ValueBoolPointer(),
+			Value:    value,
+		})
+	}
+
+	return &exts
 }
 
 func (p *PolicyModel) toAPI(ctx context.Context, diags *diag.Diagnostics) *v20250101.PolicyMatchCriteria {
@@ -334,7 +437,7 @@ func fromAPI(ctx context.Context, diags *diag.Diagnostics, credential *v20250101
 }
 
 func certificateObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, cert v20250101.CredentialCertificate, state utils.AttributeGetter) types.Object {
-	dur, d := utils.ToEqualString(ctx, &cert.Duration, state, path.Root("certificate").AtName("duration"), utils.IsDurationEqual)
+	dur, d := utils.ToEqualString(ctx, cert.Duration, state, path.Root("certificate").AtName("duration"), utils.IsDurationEqual)
 	diags.Append(d...)
 
 	x509Obj := basetypes.NewObjectNull(x509Attributes)
@@ -530,9 +633,13 @@ func certificateFieldListObjectFromAPI(ctx context.Context, diags *diag.Diagnost
 func x509ObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, x509 v20250101.X509Fields, state utils.AttributeGetter) types.Object {
 	p := path.Root("certificate").AtName("x509")
 
+	eku, d := utils.ToOptionalList(ctx, x509.ExtendedKeyUsage, state, p.AtName("extended_key_usage"))
+	diags.Append(d...)
+
 	obj, d := basetypes.NewObjectValue(x509Attributes, map[string]attr.Value{
 		"common_name":         certificateFieldObjectFromAPI(ctx, diags, x509.CommonName, state, p.AtName("common_name")),
 		"sans":                certificateFieldListObjectFromAPI(ctx, diags, x509.Sans, state, p.AtName("sans")),
+		"typed_sans":          typedSANsObjectFromAPI(ctx, diags, x509.TypedSans, state, p.AtName("typed_sans")),
 		"organization":        certificateFieldListObjectFromAPI(ctx, diags, x509.Organization, state, p.AtName("organization")),
 		"organizational_unit": certificateFieldListObjectFromAPI(ctx, diags, x509.OrganizationalUnit, state, p.AtName("organizational_unit")),
 		"locality":            certificateFieldListObjectFromAPI(ctx, diags, x509.Locality, state, p.AtName("locality")),
@@ -540,10 +647,93 @@ func x509ObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, x509 v20250
 		"street_address":      certificateFieldListObjectFromAPI(ctx, diags, x509.StreetAddress, state, p.AtName("street_address")),
 		"postal_code":         certificateFieldListObjectFromAPI(ctx, diags, x509.PostalCode, state, p.AtName("postal_code")),
 		"country":             certificateFieldListObjectFromAPI(ctx, diags, x509.Country, state, p.AtName("country")),
+		"serial_number":       certificateFieldObjectFromAPI(ctx, diags, x509.SerialNumber, state, p.AtName("serial_number")),
+		"given_name":          certificateFieldObjectFromAPI(ctx, diags, x509.GivenName, state, p.AtName("given_name")),
+		"surname":             certificateFieldObjectFromAPI(ctx, diags, x509.Surname, state, p.AtName("surname")),
+		"extended_key_usage":  eku,
+		"custom_extensions":   customExtensionsListFromAPI(ctx, diags, x509.CustomExtensions, state, p.AtName("custom_extensions")),
 	})
 	diags.Append(d...)
 
 	return obj
+}
+
+func typedSANsObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, sans *v20250101.X509TypedSANs, state utils.AttributeGetter, p path.Path) types.Object {
+	if sans == nil {
+		return basetypes.NewObjectNull(typedSANsAttributes)
+	}
+
+	obj, d := basetypes.NewObjectValue(typedSANsAttributes, map[string]attr.Value{
+		"dns_names":            certificateFieldListObjectFromAPI(ctx, diags, sans.DnsNames, state, p.AtName("dns_names")),
+		"ip_addresses":         certificateFieldListObjectFromAPI(ctx, diags, sans.IpAddresses, state, p.AtName("ip_addresses")),
+		"email_addresses":      certificateFieldListObjectFromAPI(ctx, diags, sans.EmailAddresses, state, p.AtName("email_addresses")),
+		"uris":                 certificateFieldListObjectFromAPI(ctx, diags, sans.Uris, state, p.AtName("uris")),
+		"user_principal_names": certificateFieldListObjectFromAPI(ctx, diags, sans.UserPrincipalNames, state, p.AtName("user_principal_names")),
+	})
+	diags.Append(d...)
+
+	return obj
+}
+
+func customExtensionsListFromAPI(ctx context.Context, diags *diag.Diagnostics, exts *[]v20250101.X509CustomExtension, state utils.AttributeGetter, p path.Path) types.List {
+	elemType := types.ObjectType{AttrTypes: customExtensionAttributes}
+
+	priorList := types.List{}
+	d := state.GetAttribute(ctx, p, &priorList)
+	if d.HasError() {
+		diags.Append(d...)
+		return types.ListNull(elemType)
+	}
+
+	priors := []CustomExtensionModel{}
+	if !priorList.IsNull() && !priorList.IsUnknown() {
+		diags.Append(priorList.ElementsAs(ctx, &priors, false)...)
+	}
+
+	if exts == nil || len(*exts) == 0 {
+		// The API returns nil for both null and empty lists. Use the prior
+		// value to avoid "inconsistent result after apply" errors.
+		if !priorList.IsUnknown() && (priorList.IsNull() || len(priorList.Elements()) == 0) {
+			return priorList
+		}
+		if exts == nil {
+			return types.ListNull(elemType)
+		}
+	}
+
+	values := make([]attr.Value, len(*exts))
+	for i, ext := range *exts {
+		value := types.StringValue(base64.StdEncoding.EncodeToString(ext.Value))
+		critical := types.BoolPointerValue(ext.Critical)
+
+		// Prefer equivalent prior element values to avoid "inconsistent
+		// result after apply" errors, e.g. a value encoded with line breaks
+		// or an omitted critical returned by the API as false.
+		if i < len(priors) {
+			prior := priors[i]
+			if utils.IsBase64Equal(value.ValueString(), prior.Value.ValueString()) {
+				value = prior.Value
+			}
+			remoteCriticalFalse := ext.Critical == nil || !*ext.Critical
+			priorCriticalFalse := prior.Critical.IsNull() || !prior.Critical.ValueBool()
+			if remoteCriticalFalse && priorCriticalFalse {
+				critical = prior.Critical
+			}
+		}
+
+		obj, d := basetypes.NewObjectValue(customExtensionAttributes, map[string]attr.Value{
+			"oid":      types.StringValue(ext.Oid),
+			"critical": critical,
+			"value":    value,
+		})
+		diags.Append(d...)
+		values[i] = obj
+	}
+
+	list, d := types.ListValue(elemType, values)
+	diags.Append(d...)
+
+	return list
 }
 
 func keyObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, key v20250101.CredentialKey, state utils.AttributeGetter) types.Object {

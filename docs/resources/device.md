@@ -3,12 +3,12 @@
 page_title: "smallstep_device Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  A device represents a computer that can be issued x509 certificates for securely connecting to company resources.
+  A device represents a computer that can be issued X.509 certificates for securely connecting to company resources.
 ---
 
 # smallstep_device (Resource)
 
-A device represents a computer that can be issued x509 certificates for securely connecting to company resources.
+A device represents a computer that can be issued X.509 certificates for securely connecting to company resources.
 
 ## Example Usage
 
@@ -45,7 +45,26 @@ Setting this value explicitly will mask any MDM-derived value.
 - `display_name` (String) A friendly name for the device.
 This field may be populated with a value derived from data synced from your team's MDMs.
 Setting this value explicitly will mask any MDM-derived value.
-- `metadata` (Map of String) A map of key-value pairs available as template data when a provisioner with a webhook is used to issue a certificate to a device.
+- `metadata` (Map of String) A map of custom key-value pairs for a device, typically used to populate certificate fields. These custom keys can be referenced in [X.509 Certificate Fields](/schemas/x509Fields) or [SSH Certificate Fields](/schemas/sshFields).
+
+In addition to custom keys, the following reserved keys are also available:
+
+- `smallstep:identity` — The device's assigned user email.
+- `Device.ID` — The Smallstep internal UUID for the device.
+- `Device.DisplayName` — The computed display name for the device, usually sourced from the MDM or hostname.
+- `Device.PermanentIdentifier` — The permanent identifier of the device (e.g. the EK public key hash).
+- `Device.PermanentIdentifierURI` — The permanent identifier as a URI.
+- `Device.Hostname` — The reported hostname of the device.
+- `Device.HostURI` — The host identifier as a URI.
+- `Device.Serial` — The serial number of the device.
+
+For SSH certificates, the following additional reserved keys are available:
+
+- `SSH.Principals` — The SSH certificate principals.
+- `SSH.KeyID` — The SSH certificate key ID.
+- `SSH.Extensions` — The SSH certificate extensions.
+
+Reserved keys are populated automatically and are not stored in this map.
 - `os` (String) The device operating system.
 This field may be populated with a value derived from data synced from your team's MDMs.
 Setting this value explicitly will mask any MDM-derived value.

@@ -39,7 +39,7 @@ data "smallstep_provisioner_webhook" "hook" {
 - `disable_tls_client_auth` (Boolean) The CA will not send a client certificate when requested by the webhook server. Optional for `EXTERNAL` webhook servers; not allowed with hosted webhook servers.
 - `kind` (String) The webhook kind indicates how and when it is called.
 
-ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X509 or SSH certificate is to be signed and based on the type of provisioner.
+ENRICHING webhooks are called before rendering the certificate template. They have two functions. First, they must allow the certificate request or it will be aborted. Second, they can return additional data to be referenced in the certificate template. The payload sent to the webhook server varies based on whether an X.509 or SSH certificate is to be signed and based on the type of provisioner.
  Allowed values: `ENRICHING`
 - `server_type` (String) An EXTERNAL webhook server is not operated by Smallstep. The caller must use the returned ID and secret to configure the server.
 
