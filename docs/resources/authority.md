@@ -3,12 +3,12 @@
 page_title: "smallstep_authority Resource - terraform-provider-smallstep"
 subcategory: ""
 description: |-
-  An X509 authority hosted by Smallstep.
+  An X.509 authority hosted by Smallstep.
 ---
 
 # smallstep_authority (Resource)
 
-An X509 authority hosted by Smallstep.
+An X.509 authority hosted by Smallstep.
 
 ## Example Usage
 
@@ -95,7 +95,7 @@ resource "smallstep_authority" "advanced" {
 - `domain` (String) The domain where the authority can be reached.
 - `fingerprint` (String) The SHA-256 digest of the authority's root certificate in hex format.
 - `id` (String) A UUID identifying this authority.
-- `root` (String) The root certificate in pem format.
+- `root` (String) The root certificate in PEM format.
 
 <a id="nestedatt--intermediate_issuer"></a>
 ### Nested Schema for `intermediate_issuer`
@@ -110,8 +110,8 @@ Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
-- `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--intermediate_issuer--subject))
+- `name_constraints` (Attributes) X.509 certificate name constraints. (see [below for nested schema](#nestedatt--intermediate_issuer--name_constraints))
+- `subject` (Attributes) Name used in X.509 certificates (see [below for nested schema](#nestedatt--intermediate_issuer--subject))
 
 <a id="nestedatt--intermediate_issuer--name_constraints"></a>
 ### Nested Schema for `intermediate_issuer.name_constraints`
@@ -160,8 +160,8 @@ Optional:
 
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
 - `max_path_length` (Number)
-- `name_constraints` (Attributes) X509 certificate name constratins. (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
-- `subject` (Attributes) Name used in x509 certificates (see [below for nested schema](#nestedatt--root_issuer--subject))
+- `name_constraints` (Attributes) X.509 certificate name constraints. (see [below for nested schema](#nestedatt--root_issuer--name_constraints))
+- `subject` (Attributes) Name used in X.509 certificates (see [below for nested schema](#nestedatt--root_issuer--subject))
 
 <a id="nestedatt--root_issuer--name_constraints"></a>
 ### Nested Schema for `root_issuer.name_constraints`
