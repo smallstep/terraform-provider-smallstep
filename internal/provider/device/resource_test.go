@@ -44,6 +44,11 @@ resource "smallstep_device" "laptop1" {
 	}
 	os = "Windows"
 	ownership = "company"
+}`
+
+const userConfig = `
+resource "smallstep_device" "laptop1" {
+	permanent_identifier = %q
 	user = {
 		email = "user@example.com"
 	}
@@ -100,7 +105,6 @@ func TestAccDeviceResource(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
-					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
@@ -158,7 +162,6 @@ func TestAccDeviceResource(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
-					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
@@ -208,7 +211,6 @@ func TestAccDeviceResource(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
-					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
@@ -316,7 +318,6 @@ func TestAccDeviceResource(t *testing.T) {
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_id", "9 9"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "display_name", "Employee Laptop"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "serial", "678"),
-					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "os", "Windows"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "ownership", "company"),
 					helper.TestCheckResourceAttr("smallstep_device.laptop1", "tags.0", "ubuntu"),
@@ -326,6 +327,35 @@ func TestAccDeviceResource(t *testing.T) {
 					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "enrolled_at"),
 					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "last_seen"),
 				),
+			},
+		},
+	})
+
+	// user.email can be set on create and updated via PATCH, but it can no
+	// longer be unset. Create without a user, then add one via update.
+	permanentID6 := uuid.NewString()
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: fmt.Sprintf(minConfig, permanentID6),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID6),
+					helper.TestCheckNoResourceAttr("smallstep_device.laptop1", "user"),
+				),
+			},
+			{
+				Config: fmt.Sprintf(userConfig, permanentID6),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_device.laptop1", "id", utils.UUIDRegexp),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "permanent_identifier", permanentID6),
+					helper.TestCheckResourceAttr("smallstep_device.laptop1", "user.email", "user@example.com"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_device.laptop1",
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
