@@ -11,7 +11,6 @@ import (
 )
 
 func TestAccManagedRadius(t *testing.T) {
-	t.Skip("Skip for now")
 	ip := utils.IP(t)
 	ip2 := utils.IP(t)
 	ca, _ := utils.CACerts(t)
