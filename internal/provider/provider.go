@@ -12,7 +12,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
 	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
+	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/authority"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/browser"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/credential"
@@ -123,7 +125,7 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 			)
 			return
 		}
-		client, err := apiClientWithClientCert(
+		clients, err := apiClientWithClientCert(
 			ctx,
 			server,
 			data.ClientCertificate.TeamID.ValueString(),
@@ -137,8 +139,8 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 			)
 			return
 		}
-		resp.DataSourceData = client
-		resp.ResourceData = client
+		resp.DataSourceData = clients
+		resp.ResourceData = clients
 		return
 	}
 
@@ -156,18 +158,33 @@ func (p *SmallstepProvider) Configure(ctx context.Context, req provider.Configur
 		token = data.BearerToken.ValueString()
 	}
 
-	client, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+	client20250101, err := v20250101.NewClient(server, v20250101.WithRequestEditorFn(v20250101.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
 		r.Header.Set("X-Smallstep-Api-Version", "2025-01-01")
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		return nil
 	})))
 	if err != nil {
-		resp.Diagnostics.AddError("Failed to create Smallstep API client", err.Error())
+		resp.Diagnostics.AddError("Failed to create Smallstep API client (2025-01-01)", err.Error())
 		return
 	}
 
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	client20260501, err := v20260501.NewClient(server, v20260501.WithRequestEditorFn(v20260501.RequestEditorFn(func(ctx context.Context, r *http.Request) error {
+		r.Header.Set("X-Smallstep-Api-Version", "2026-05-01")
+		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		return nil
+	})))
+	if err != nil {
+		resp.Diagnostics.AddError("Failed to create Smallstep API client (2026-05-01)", err.Error())
+		return
+	}
+
+	clients := &clientset.Clients{
+		V20250101: client20250101,
+		V20260501: client20260501,
+	}
+
+	resp.DataSourceData = clients
+	resp.ResourceData = clients
 }
 
 func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Resource {
@@ -177,8 +194,8 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		webhook.NewResource,
 		device.NewResource,
 		managed_radius.NewResource,
-		identity_provider.NewClientResource,
 		identity_provider.NewIdentityProviderResource,
+		identity_provider.NewClientResource,
 		credential.NewResource,
 		wifi.NewResource,
 		ethernet.NewResource,
