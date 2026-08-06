@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccManagedRadiusDataSource(t *testing.T) {
-	t.Skip("Skip for now")
 	radius := utils.NewManagedRADIUS(t)
 
 	config := fmt.Sprintf(`
