@@ -31,11 +31,11 @@ var CARegexp = regexp.MustCompile(`-----BEGIN CERTIFICATE-----`)
 var IPv4Regexp = regexp.MustCompile(`^\d+\.\d+\.\d+\.\d+$`)
 
 func RelayHostname() string {
-	return cmp.Or(os.Getenv("RELAY_HOSTNAME"), "relay.example.com")
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME"), "my-relay.t.smallstep.com")
 }
 
 func RelayHostname2() string {
-	return cmp.Or(os.Getenv("RELAY_HOSTNAME_2"), "relay2.example.com")
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME_2"), "my-relay-2.t.smallstep.com")
 }
 
 func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
