@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
 const typeName = "smallstep_workload"
@@ -285,13 +284,13 @@ func (m *Model) toAPI(ctx context.Context) (*v20260501.Workload, diag.Diagnostic
 
 	var id, name, workloadType *string
 	if !m.ID.IsNull() && !m.ID.IsUnknown() {
-		id = utils.Ref(m.ID.ValueString())
+		id = new(m.ID.ValueString())
 	}
 	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		name = utils.Ref(m.Name.ValueString())
+		name = new(m.Name.ValueString())
 	}
 	if !m.WorkloadType.IsNull() && !m.WorkloadType.IsUnknown() {
-		workloadType = utils.Ref(m.WorkloadType.ValueString())
+		workloadType = new(m.WorkloadType.ValueString())
 	}
 
 	return &v20260501.Workload{
@@ -329,7 +328,7 @@ func hookModelToAPI(ctx context.Context, model *HookModel, diags *diag.Diagnosti
 	}
 
 	if !model.Shell.IsNull() && !model.Shell.IsUnknown() {
-		hook.Shell = utils.Ref(model.Shell.ValueString())
+		hook.Shell = new(model.Shell.ValueString())
 	}
 
 	return hook
