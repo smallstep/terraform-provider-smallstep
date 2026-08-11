@@ -6,17 +6,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
 const typeName = "smallstep_proxy"
 
 type Model struct {
-	ID              types.String `tfsdk:"id"`
-	Name            types.String `tfsdk:"name"`
-	RemoteAddress   types.String `tfsdk:"remote_address"`
-	Credentials     types.List   `tfsdk:"credentials"`
-	MatchAddresses  types.List   `tfsdk:"match_addresses"`
+	ID             types.String `tfsdk:"id"`
+	Name           types.String `tfsdk:"name"`
+	RemoteAddress  types.String `tfsdk:"remote_address"`
+	Credentials    types.List   `tfsdk:"credentials"`
+	MatchAddresses types.List   `tfsdk:"match_addresses"`
 }
 
 func fromAPI(ctx context.Context, proxy *v20260501.Proxy) (*Model, diag.Diagnostics) {
@@ -58,8 +57,8 @@ func (m *Model) toAPI(ctx context.Context) (*v20260501.Proxy, diag.Diagnostics) 
 	}
 
 	return &v20260501.Proxy{
-		Id:             utils.Ref(m.ID.ValueString()),
-		Name:           utils.Ref(m.Name.ValueString()),
+		Id:             new(m.ID.ValueString()),
+		Name:           new(m.Name.ValueString()),
 		RemoteAddress:  m.RemoteAddress.ValueString(),
 		Credentials:    credentials,
 		MatchAddresses: matchAddresses,

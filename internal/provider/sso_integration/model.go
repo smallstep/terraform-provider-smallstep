@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
-	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
 const typeName = "smallstep_sso_integration"
@@ -34,7 +33,7 @@ func fromAPI(ctx context.Context, integration *v20260501.SsoIntegration) (*Model
 func (m *Model) toAPI(ctx context.Context) (*v20260501.SsoIntegration, diag.Diagnostics) {
 	var lifecycleFailureURI *string
 	if !m.LifecycleFailureURI.IsNull() && !m.LifecycleFailureURI.IsUnknown() {
-		lifecycleFailureURI = utils.Ref(m.LifecycleFailureURI.ValueString())
+		lifecycleFailureURI = new(m.LifecycleFailureURI.ValueString())
 	}
 
 	return &v20260501.SsoIntegration{

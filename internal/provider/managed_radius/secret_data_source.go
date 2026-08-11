@@ -10,8 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
-	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -77,7 +77,7 @@ func (ds *SecretDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	httpResp, err := ds.client.GetManagedRadius(ctx, id, &v20250101.GetManagedRadiusParams{Secret: utils.Ref(true)})
+	httpResp, err := ds.client.GetManagedRadius(ctx, id, &v20250101.GetManagedRadiusParams{Secret: new(true)})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
