@@ -24,6 +24,8 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/managed_radius"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/provisioner"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/proxy"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/relay"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/sso_integration"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/vpn"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/wifi"
@@ -203,6 +205,8 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		browser.NewResource,
 		vpn.NewResource,
 		proxy.NewResource,
+		relay.NewResource,
+		sso_integration.NewResource,
 	}
 }
 
@@ -222,6 +226,8 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		browser.NewDataSource,
 		vpn.NewDataSource,
 		proxy.NewDataSource,
+		relay.NewDataSource,
+		sso_integration.NewDataSource,
 	}
 }
 

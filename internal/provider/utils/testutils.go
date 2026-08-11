@@ -31,11 +31,11 @@ var CARegexp = regexp.MustCompile(`-----BEGIN CERTIFICATE-----`)
 var IPv4Regexp = regexp.MustCompile(`^\d+\.\d+\.\d+\.\d+$`)
 
 func RelayHostname() string {
-	return cmp.Or(os.Getenv("RELAY_HOSTNAME"), "relay.example.com")
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME"), "my-relay.t.smallstep.com")
 }
 
 func RelayHostname2() string {
-	return cmp.Or(os.Getenv("RELAY_HOSTNAME_2"), "relay2.example.com")
+	return cmp.Or(os.Getenv("RELAY_HOSTNAME_2"), "my-relay-2.t.smallstep.com")
 }
 
 func SmallstepAPIClientFromEnv() (*v20250101.Client, error) {
@@ -249,15 +249,15 @@ func NewDevice(t *testing.T) *v20250101.Device {
 
 	req := v20250101.DeviceRequest{
 		PermanentIdentifier: permanentID,
-		DisplayId:           Ref(displayID),
-		DisplayName:         Ref(deviceName),
+		DisplayId:           new(displayID),
+		DisplayName:         new(deviceName),
 		Metadata: &v20250101.DeviceMetadata{
 			"k1": "v1",
 		},
-		Tags:      Ref([]string{"ubuntu"}),
-		Os:        Ref(v20250101.Linux),
-		Ownership: Ref(v20250101.User),
-		Serial:    Ref(serial),
+		Tags:      new([]string{"ubuntu"}),
+		Os:        new(v20250101.Linux),
+		Ownership: new(v20250101.User),
+		Serial:    new(serial),
 		User: &v20250101.DeviceUser{
 			Email: "employee@example.com",
 		},
@@ -331,11 +331,11 @@ func NewManagedRADIUS(t *testing.T) *v20250101.ManagedRadius {
 		ReplyAttributes: &[]v20250101.ReplyAttribute{
 			{
 				Name:  "Tunnel-Type",
-				Value: Ref("13"),
+				Value: new("13"),
 			},
 			{
 				Name:                 "Tunnel-Private-Group-ID",
-				ValueFromCertificate: Ref("2.5.4.11"),
+				ValueFromCertificate: new("2.5.4.11"),
 			},
 		},
 	}
@@ -363,7 +363,7 @@ func NewManagedRADIUS(t *testing.T) *v20250101.ManagedRadius {
 	})
 
 	resp, err = client.GetManagedRadius(t.Context(), *radius.Id, &v20250101.GetManagedRadiusParams{
-		Secret: Ref(true),
+		Secret: new(true),
 	})
 	require.NoError(t, err)
 	defer resp.Body.Close()
@@ -455,8 +455,8 @@ func NewCredential(t *testing.T) *v20250101.Credential {
 			Type:     "X509",
 		},
 		Key: v20250101.CredentialKey{
-			Type:       Ref(v20250101.CredentialKeyType("ECDSA_P256")),
-			Protection: Ref(v20250101.CredentialKeyProtection("NONE")),
+			Type:       new(v20250101.CredentialKeyType("ECDSA_P256")),
+			Protection: new(v20250101.CredentialKeyProtection("NONE")),
 		},
 	}
 

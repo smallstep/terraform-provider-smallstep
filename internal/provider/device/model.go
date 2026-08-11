@@ -171,10 +171,10 @@ func toAPI(ctx context.Context, m *Model) (*v20250101.DeviceRequest, diag.Diagno
 		d.Serial = m.Serial.ValueStringPointer()
 	}
 	if !m.OS.IsNull() && !m.OS.IsUnknown() {
-		d.Os = utils.Ref(v20250101.DeviceOS(m.OS.ValueString()))
+		d.Os = new(v20250101.DeviceOS(m.OS.ValueString()))
 	}
 	if !m.Ownership.IsNull() && !m.Ownership.IsUnknown() {
-		d.Ownership = utils.Ref(v20250101.DeviceOwnership(m.Ownership.ValueString()))
+		d.Ownership = new(v20250101.DeviceOwnership(m.Ownership.ValueString()))
 	}
 	if !m.Metadata.IsNull() && !m.Metadata.IsUnknown() {
 		meta := map[string]types.String{}

@@ -42,10 +42,6 @@ func Deref[T any](v *T) (r T) {
 	return
 }
 
-func Ref[T any](v T) *T {
-	return &v
-}
-
 func ToIntPointer[T int64 | int32](in *T) *int {
 	if in == nil {
 		return nil
