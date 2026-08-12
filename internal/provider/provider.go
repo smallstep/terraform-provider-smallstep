@@ -29,6 +29,7 @@ import (
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/vpn"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/webhook"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/wifi"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/workload"
 )
 
 // Ensure SmallstepProvider satisfies various provider interfaces.
@@ -207,6 +208,7 @@ func (p *SmallstepProvider) Resources(ctx context.Context) []func() resource.Res
 		proxy.NewResource,
 		relay.NewResource,
 		sso_integration.NewResource,
+		workload.NewResource,
 	}
 }
 
@@ -228,6 +230,7 @@ func (p *SmallstepProvider) DataSources(ctx context.Context) []func() datasource
 		proxy.NewDataSource,
 		relay.NewDataSource,
 		sso_integration.NewDataSource,
+		workload.NewDataSource,
 	}
 }
 
