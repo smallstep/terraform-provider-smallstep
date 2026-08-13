@@ -1,3 +1,13 @@
+## 0.8.0
+FEATURES:
+* Add smallstep_proxy resource and data source.
+* Add smallstep_relay resource and data source.
+* Add smallstep_sso_integration resource and data source.
+* Add smallstep_workload resource and data source.
+
+CHANGES:
+* New resources use Smallstep API version v2026-05-01. Existing resources continue to use v2025-01-01.
+
 ## 0.7.0
 FEATURES:
 * Add smallstep_credential resource and data source.
