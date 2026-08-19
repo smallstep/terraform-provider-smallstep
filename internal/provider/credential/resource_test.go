@@ -257,4 +257,47 @@ resource "smallstep_credential" "test" {
 			},
 		},
 	})
+
+	insecureConfig := fmt.Sprintf(`
+resource "smallstep_credential" "test" {
+	slug = %q
+	certificate = {
+		authority_id = %q
+		x509 = {
+			common_name = {
+				static = "Test Device"
+			}
+			organizational_unit = {
+				insecure_include_requested = true
+			}
+			sans = {
+				insecure_include_requested = true
+			}
+		}
+	}
+	key = {
+		type = "ECDSA_P256"
+		protection = "HARDWARE"
+	}
+}
+`, slug, authority.Id)
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: insecureConfig,
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_credential.test", "id", utils.UUIDRegexp),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organizational_unit.insecure_include_requested", "true"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested", "true"),
+				),
+			},
+			{
+				ResourceName:      "smallstep_credential.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
 }

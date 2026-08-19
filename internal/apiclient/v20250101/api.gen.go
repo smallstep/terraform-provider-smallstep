@@ -605,6 +605,9 @@ type CertificateFieldList struct {
 	// DeviceMetadata Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
 	DeviceMetadata *[]string `json:"deviceMetadata,omitempty"`
 
+	// InsecureIncludeRequested Pass through the value supplied in the device's CSR for this field.
+	InsecureIncludeRequested *bool `json:"insecureIncludeRequested,omitempty"`
+
 	// Static Literal values.
 	Static *[]string `json:"static,omitempty"`
 }

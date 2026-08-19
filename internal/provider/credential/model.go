@@ -155,13 +155,15 @@ var certificateFieldAttributes = map[string]attr.Type{
 }
 
 type CertificateFieldListModel struct {
-	Static         types.List `tfsdk:"static"`
-	DeviceMetadata types.List `tfsdk:"device_metadata"`
+	Static                   types.List `tfsdk:"static"`
+	DeviceMetadata           types.List `tfsdk:"device_metadata"`
+	InsecureIncludeRequested types.Bool `tfsdk:"insecure_include_requested"`
 }
 
 var certificateFieldListAttributes = map[string]attr.Type{
-	"static":          types.ListType{ElemType: types.StringType},
-	"device_metadata": types.ListType{ElemType: types.StringType},
+	"static":                    types.ListType{ElemType: types.StringType},
+	"device_metadata":           types.ListType{ElemType: types.StringType},
+	"insecure_include_requested": types.BoolType,
 }
 
 func (k *KeyModel) toAPI() v20250101.CredentialKey {
@@ -266,8 +268,9 @@ func (cfl *CertificateFieldListModel) toAPI(ctx context.Context, diags *diag.Dia
 	diags.Append(cfl.DeviceMetadata.ElementsAs(ctx, &deviceMetadata, false)...)
 
 	return &v20250101.CertificateFieldList{
-		Static:         static,
-		DeviceMetadata: deviceMetadata,
+		Static:                   static,
+		DeviceMetadata:           deviceMetadata,
+		InsecureIncludeRequested: cfl.InsecureIncludeRequested.ValueBoolPointer(),
 	}
 }
 
@@ -518,9 +521,13 @@ func certificateFieldListObjectFromAPI(ctx context.Context, diags *diag.Diagnost
 	deviceMetadata, d := utils.ToOptionalList(ctx, cfl.DeviceMetadata, state, p.AtName("device_metadata"))
 	diags.Append(d...)
 
+	insecureIncludeRequested, d := utils.ToOptionalBool(ctx, cfl.InsecureIncludeRequested, state, p.AtName("insecure_include_requested"))
+	diags.Append(d...)
+
 	obj, d := basetypes.NewObjectValue(certificateFieldListAttributes, map[string]attr.Value{
-		"static":          static,
-		"device_metadata": deviceMetadata,
+		"static":                    static,
+		"device_metadata":           deviceMetadata,
+		"insecure_include_requested": insecureIncludeRequested,
 	})
 	diags.Append(d...)
 
