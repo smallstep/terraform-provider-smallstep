@@ -171,6 +171,10 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
+			"insecure_include_requested": schema.BoolAttribute{
+				MarkdownDescription: certFieldListProps["insecureIncludeRequested"],
+				Optional:            true,
+			},
 		},
 	}
 

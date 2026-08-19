@@ -177,6 +177,10 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
+			"insecure_include_requested": schema.BoolAttribute{
+				MarkdownDescription: certFieldListProps["insecureIncludeRequested"],
+				Computed:            true,
+			},
 		},
 	}
 

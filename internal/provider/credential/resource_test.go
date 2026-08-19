@@ -49,10 +49,11 @@ resource "smallstep_credential" "test" {
 			common_name = {
 				static = "My Device"
 				device_metadata = "serial"
-			}
-			sans = {
-				static = ["staging.example.com", "*.staging.example.com"]
-				device_metadata = ["dns", "email"]
+				}
+				sans = {
+					static = ["staging.example.com", "*.staging.example.com"]
+					device_metadata = ["dns", "email"]
+					insecure_include_requested = true
 			}
 			organization = {
 				static = ["Example Inc"]
@@ -208,6 +209,7 @@ resource "smallstep_credential" "test" {
 					// X509 fields
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.common_name.static", "My Device"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata", "serial"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested", "true"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.static.#", "2"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.static.0", "staging.example.com"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.static.1", "*.staging.example.com"),

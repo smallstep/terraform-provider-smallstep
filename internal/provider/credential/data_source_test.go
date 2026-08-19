@@ -53,13 +53,16 @@ resource "smallstep_credential" "test" {
 			common_name = {
 				static = "DataSource Test Device"
 				device_metadata = "hostname"
-			}
-			sans = {
-				static = ["device.example.com"]
-				device_metadata = ["dns"]
+				}
+				sans = {
+					static = ["device.example.com"]
+					device_metadata = ["dns"]
 			}
 			organization = {
 				static = ["Test Org"]
+			}
+			organizational_unit = {
+				insecure_include_requested = true
 			}
 			given_name = {
 				static = "Jane"
@@ -126,6 +129,7 @@ data "smallstep_credential" "test" {
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.sans.device_metadata.0", "dns"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.organization.static.#", "1"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.organization.static.0", "Test Org"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.organizational_unit.insecure_include_requested", "true"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.given_name.static", "Jane"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.#", "1"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.0", "svc@example.com"),

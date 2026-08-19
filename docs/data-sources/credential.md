@@ -126,6 +126,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -158,6 +159,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -169,6 +171,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -180,6 +183,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -191,6 +195,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -202,6 +207,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -213,6 +219,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -235,6 +242,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -268,6 +276,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -279,6 +288,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -290,6 +300,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -301,6 +312,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
@@ -312,6 +324,7 @@ Read-Only:
 - `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
 
 In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `insecure_include_requested` (Boolean) Copy all values from the certificate request into the signed certificate. This allows the client to set arbitrary values for the field.
 - `static` (List of String) Literal values.
 
 
