@@ -31,6 +31,14 @@ resource "smallstep_credential" "test" {
 }
 `, slug, authority.Id)
 
+	// management_mode, key.compatibility, and key.store are part of the
+	// documented v2026-05-01 credential schema but are not yet returned by the
+	// live API (confirmed via a raw POST outside Terraform: the API responds
+	// 201 and silently omits all three from the response body regardless of
+	// value). Setting them to a non-null value therefore trips Terraform's
+	// "Provider produced inconsistent result after apply" check today. They
+	// are exercised in the schema/model but intentionally left out of this
+	// config until the API returns them.
 	fullConfig := fmt.Sprintf(`
 resource "smallstep_credential" "test" {
 	slug = %q
@@ -49,10 +57,36 @@ resource "smallstep_credential" "test" {
 			organization = {
 				static = ["Example Inc"]
 			}
+			given_name = {
+				static = "Jane"
+			}
+			serial_number = {
+				static = "12345"
+			}
+			surname = {
+				static = "Doe"
+			}
+			typed_sans = {
+				dns_names = {
+					static = ["svc.example.com"]
+				}
+			}
+			extended_key_usage = ["serverAuth", "clientAuth"]
+			custom_extensions = [{
+				oid      = "1.3.6.1.4.1.44947"
+				critical = false
+				value    = "dGVzdCBleHRlbnNpb24gdmFsdWU="
+			}]
+		}
+		name_policy = {
+			allow = {
+				dns = ["*.example.com"]
+			}
+			allow_wildcard_names = true
 		}
 	}
 	key = {
-		type = "ECDSA_P384"
+		type       = "ECDSA_P384"
 		protection = "HARDWARE_ATTESTED"
 	}
 	policy = {
@@ -182,6 +216,23 @@ resource "smallstep_credential" "test" {
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.device_metadata.1", "email"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organization.static.#", "1"),
 					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organization.static.0", "Example Inc"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.given_name.static", "Jane"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.serial_number.static", "12345"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.surname.static", "Doe"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.0", "svc.example.com"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#", "2"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.0", "serverAuth"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.1", "clientAuth"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.oid", "1.3.6.1.4.1.44947"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical", "false"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.value", "dGVzdCBleHRlbnNpb24gdmFsdWU="),
+
+					// Name policy
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.dns.#", "1"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.dns.0", "*.example.com"),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names", "true"),
 
 					// Key fields
 					helper.TestCheckResourceAttr("smallstep_credential.test", "key.type", "ECDSA_P384"),

@@ -35,6 +35,14 @@ func TestAccCredentialDataSource(t *testing.T) {
 	authority := utils.NewAuthority(t)
 	slug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
+	// management_mode and key.compatibility are part of the documented
+	// v2026-05-01 credential schema but are not yet returned by the live API
+	// (confirmed via a raw POST outside Terraform: the API responds 201 and
+	// silently omits both from the response body regardless of value).
+	// Setting them to a non-null value therefore trips Terraform's "Provider
+	// produced inconsistent result after apply" check today. They are
+	// exercised in the schema/model but intentionally left out of this config
+	// until the API returns them.
 	config := fmt.Sprintf(`
 resource "smallstep_credential" "test" {
 	slug = %q
@@ -53,10 +61,28 @@ resource "smallstep_credential" "test" {
 			organization = {
 				static = ["Test Org"]
 			}
+			given_name = {
+				static = "Jane"
+			}
+			typed_sans = {
+				email_addresses = {
+					static = ["svc@example.com"]
+				}
+			}
+			extended_key_usage = ["serverAuth"]
+			custom_extensions = [{
+				oid   = "1.3.6.1.4.1.44947"
+				value = "dGVzdCBleHRlbnNpb24gdmFsdWU="
+			}]
+		}
+		name_policy = {
+			deny = {
+				emails = ["@internal.example.com"]
+			}
 		}
 	}
 	key = {
-		type = "ECDSA_P384"
+		type       = "ECDSA_P384"
 		protection = "NONE"
 	}
 	policy = {
@@ -100,6 +126,17 @@ data "smallstep_credential" "test" {
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.sans.device_metadata.0", "dns"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.organization.static.#", "1"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.organization.static.0", "Test Org"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.given_name.static", "Jane"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.#", "1"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.0", "svc@example.com"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.extended_key_usage.#", "1"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.extended_key_usage.0", "serverAuth"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.custom_extensions.#", "1"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.custom_extensions.0.oid", "1.3.6.1.4.1.44947"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.x509.custom_extensions.0.value", "dGVzdCBleHRlbnNpb24gdmFsdWU="),
+
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.name_policy.deny.emails.#", "1"),
+					helper.TestCheckResourceAttr("data.smallstep_credential.test", "certificate.name_policy.deny.emails.0", "@internal.example.com"),
 
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "key.type", "ECDSA_P384"),
 					helper.TestCheckResourceAttr("data.smallstep_credential.test", "key.protection", "NONE"),

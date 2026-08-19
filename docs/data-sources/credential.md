@@ -30,7 +30,14 @@ data "smallstep_credential" "device_cred" {
 - `certificate` (Attributes) Configuration for the certificate of a managed credential. (see [below for nested schema](#nestedatt--certificate))
 - `files` (Attributes) Configuration for files that will be written when a managed credential is issued. (see [below for nested schema](#nestedatt--files))
 - `key` (Attributes) The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set. (see [below for nested schema](#nestedatt--key))
-- `policy` (Attributes) Policy to select the devices an account is assigned to. An empty policy indicates an account will be provisioned for all devices. (see [below for nested schema](#nestedatt--policy))
+- `management_mode` (String) Determines who manages the certificate lifecycle for the workload.
+Defaults to `agent` if not set.
+
+- `agent`: The Smallstep Agent manages the certificate lifecycle, including enrollment, renewal, key management, and service reloading.
+- `mdm`: An MDM manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+- `other`: Some other process or workflow manages the certificate lifecycle. Smallstep describes the desired certificate configuration but does not handle enrollment or renewal.
+ Allowed values: `agent` `mdm` `other`
+- `policy` (Attributes) Policy to select the devices a credential is assigned to. An empty policy indicates the credential will be provisioned for all devices. (see [below for nested schema](#nestedatt--policy))
 - `slug` (String)
 
 <a id="nestedatt--certificate"></a>
@@ -40,7 +47,44 @@ Read-Only:
 
 - `authority_id` (String) A UUID identifying the authority that issues certificates for the credential.
 - `duration` (String) The certificate lifetime. Parsed as a [Golang duration](https://pkg.go.dev/time#ParseDuration).
+- `name_policy` (Attributes) Allow- and deny-lists constraining the X.509 names a credential's
+provisioner may issue. When omitted, no name policy is enforced.
+On update, omitting this field clears any existing policy. (see [below for nested schema](#nestedatt--certificate--name_policy))
 - `x509` (Attributes) Populate certificate fields using using static names or device metadata. (see [below for nested schema](#nestedatt--certificate--x509))
+
+<a id="nestedatt--certificate--name_policy"></a>
+### Nested Schema for `certificate.name_policy`
+
+Read-Only:
+
+- `allow` (Attributes) (see [below for nested schema](#nestedatt--certificate--name_policy--allow))
+- `allow_wildcard_names` (Boolean) When true, wildcard names like `*.example.com` are permitted.
+- `deny` (Attributes) (see [below for nested schema](#nestedatt--certificate--name_policy--deny))
+
+<a id="nestedatt--certificate--name_policy--allow"></a>
+### Nested Schema for `certificate.name_policy.allow`
+
+Read-Only:
+
+- `common_names` (List of String)
+- `dns` (List of String)
+- `emails` (List of String)
+- `ips` (List of String)
+- `uris` (List of String)
+
+
+<a id="nestedatt--certificate--name_policy--deny"></a>
+### Nested Schema for `certificate.name_policy.deny`
+
+Read-Only:
+
+- `common_names` (List of String)
+- `dns` (List of String)
+- `emails` (List of String)
+- `ips` (List of String)
+- `uris` (List of String)
+
+
 
 <a id="nestedatt--certificate--x509"></a>
 ### Nested Schema for `certificate.x509`
@@ -49,20 +93,28 @@ Read-Only:
 
 - `common_name` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--common_name))
 - `country` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--country))
+- `custom_extensions` (Attributes List) An arbitrary X.509 certificate extension. (see [below for nested schema](#nestedatt--certificate--x509--custom_extensions))
+- `extended_key_usage` (List of String) The set of purposes for which the certified public key may be used. Defaults to server and client authentication when omitted. Allowed values: `serverAuth` `clientAuth` `codeSigning` `emailProtection` `ipsecEndSystem` `ipsecTunnel` `ipsecUser` `timeStamping` `ocspSigning` `microsoftServerGatedCrypto` `netscapeServerGatedCrypto` `microsoftCommercialCodeSigning` `microsoftKernelCodeSigning` `any`
+- `given_name` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--given_name))
 - `locality` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--locality))
 - `organization` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--organization))
 - `organizational_unit` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--organizational_unit))
 - `postal_code` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--postal_code))
 - `province` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--province))
 - `sans` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--sans))
+- `serial_number` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--serial_number))
 - `street_address` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--street_address))
+- `surname` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--surname))
+- `typed_sans` (Attributes) Explicitly typed subject alternative names. When set, takes precedence over the untyped `sans` field. (see [below for nested schema](#nestedatt--certificate--x509--typed_sans))
 
 <a id="nestedatt--certificate--x509--common_name"></a>
 ### Nested Schema for `certificate.x509.common_name`
 
 Read-Only:
 
-- `device_metadata` (String) A value populated from a key in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user. If no value is found in the device's metadata at the specified key then the static value will be used.
+- `device_metadata` (String) A key in the device's metadata whose value will populate this certificate field. If the key is not present in the device's metadata, the static value will be used.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.KeyID` is also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (String) A literal value.
 
 
@@ -71,8 +123,31 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--custom_extensions"></a>
+### Nested Schema for `certificate.x509.custom_extensions`
+
+Read-Only:
+
+- `critical` (Boolean) Whether the extension is marked critical.
+- `oid` (String) The object identifier in dotted notation (e.g. `1.3.6.1.4.1.44947`).
+- `value` (String) The DER-encoded extension value, base64-encoded.
+
+
+<a id="nestedatt--certificate--x509--given_name"></a>
+### Nested Schema for `certificate.x509.given_name`
+
+Read-Only:
+
+- `device_metadata` (String) A key in the device's metadata whose value will populate this certificate field. If the key is not present in the device's metadata, the static value will be used.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.KeyID` is also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (String) A literal value.
 
 
 <a id="nestedatt--certificate--x509--locality"></a>
@@ -80,7 +155,9 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
 
 
@@ -89,7 +166,9 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
 
 
@@ -98,7 +177,9 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
 
 
@@ -107,7 +188,9 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
 
 
@@ -116,7 +199,9 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
 
 
@@ -125,8 +210,21 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--serial_number"></a>
+### Nested Schema for `certificate.x509.serial_number`
+
+Read-Only:
+
+- `device_metadata` (String) A key in the device's metadata whose value will populate this certificate field. If the key is not present in the device's metadata, the static value will be used.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.KeyID` is also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (String) A literal value.
 
 
 <a id="nestedatt--certificate--x509--street_address"></a>
@@ -134,8 +232,88 @@ Read-Only:
 
 Read-Only:
 
-- `device_metadata` (List of String) Values populated from keys in the device's metadata. The special value `smallstep:identity` refers to the device's assigned user.
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
 - `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--surname"></a>
+### Nested Schema for `certificate.x509.surname`
+
+Read-Only:
+
+- `device_metadata` (String) A key in the device's metadata whose value will populate this certificate field. If the key is not present in the device's metadata, the static value will be used.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.KeyID` is also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (String) A literal value.
+
+
+<a id="nestedatt--certificate--x509--typed_sans"></a>
+### Nested Schema for `certificate.x509.typed_sans`
+
+Read-Only:
+
+- `dns_names` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--typed_sans--dns_names))
+- `email_addresses` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--typed_sans--email_addresses))
+- `ip_addresses` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--typed_sans--ip_addresses))
+- `uris` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--typed_sans--uris))
+- `user_principal_names` (Attributes) (see [below for nested schema](#nestedatt--certificate--x509--typed_sans--user_principal_names))
+
+<a id="nestedatt--certificate--x509--typed_sans--dns_names"></a>
+### Nested Schema for `certificate.x509.typed_sans.dns_names`
+
+Read-Only:
+
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--typed_sans--email_addresses"></a>
+### Nested Schema for `certificate.x509.typed_sans.email_addresses`
+
+Read-Only:
+
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--typed_sans--ip_addresses"></a>
+### Nested Schema for `certificate.x509.typed_sans.ip_addresses`
+
+Read-Only:
+
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--typed_sans--uris"></a>
+### Nested Schema for `certificate.x509.typed_sans.uris`
+
+Read-Only:
+
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (List of String) Literal values.
+
+
+<a id="nestedatt--certificate--x509--typed_sans--user_principal_names"></a>
+### Nested Schema for `certificate.x509.typed_sans.user_principal_names`
+
+Read-Only:
+
+- `device_metadata` (List of String) Keys in the device's metadata whose values will populate this certificate field.
+
+In addition to custom metadata keys, the following reserved keys are available: `smallstep:identity`, `Device.ID`, `Device.DisplayName`, `Device.PermanentIdentifier`, `Device.PermanentIdentifierURI`, `Device.Hostname`, `Device.HostURI`, and `Device.Serial`. For SSH certificates, `SSH.Principals` and `SSH.Extensions` are also available. See [deviceMetadata](/schemas/deviceMetadata) for details.
+- `static` (List of String) Literal values.
+
 
 
 
@@ -148,7 +326,7 @@ Read-Only:
 - `crt_file` (String) The filepath where the certificate is to be stored.
 - `gid` (Number) GID of the files where the credential is stored.
 - `key_file` (String) The filepath where the key is to be stored.
-- `key_format` (String) The format used to encode the private key. For X509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux tss2 will be used. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `TSS2` `CLASSIC`
+- `key_format` (String) The format used to encode the private key. For X.509 keys the default format is PKCS#8. The classic format is PKCS#1 for RSA keys, SEC 1 for ECDSA keys, and PKCS#8 for ED25519 keys. For SSH keys the default format is always the OPENSSH format. When a hardware module is used to store the keys the default will be a JSON representation of the key, except on Linux TSS2 will be used. Allowed values: `DEFAULT` `PKCS8` `OPENSSH` `TSS2` `CLASSIC`
 - `mode` (Number) Permission bits of the files where the credential is stored.
 - `root_file` (String) The filepath where the root certificate is to be stored.
 - `uid` (Number) UID of the files where the credential is stored.
@@ -159,8 +337,10 @@ Read-Only:
 
 Read-Only:
 
+- `compatibility` (String) Which cryptographic interface the key must be reachable through, for consumers that cannot use the platform's current one. `DEFAULT` uses the current interface. `LEGACY` selects an older interface where the platform offers one, and is ignored where it does not. `LEGACY` requires an RSA key type, because the interfaces it selects predate elliptic curve support, and is generally only useful together with `store: MACHINE`. This is independent of `protection`: `protection` selects whether hardware backs the key, `compatibility` selects how the key is reached. Allowed values: `DEFAULT` `LEGACY`
 - `protection` (String) Whether to use a hardware module to store the private key. If set to `NONE` no hardware module will be used. `HARDWARE_WITH_FALLBACK` can only be used with the key file format `DEFAULT`. Allowed values: `NONE` `HARDWARE` `HARDWARE_WITH_FALLBACK` `HARDWARE_ATTESTED`
 - `pub_file` (String) A CSR or SSH public key to use instead of generating one. Cannot be used in conjunction with key type, key protection, key file or key file format.
+- `store` (String) Whether the key and its certificate are owned by the host or by the user account they were issued for. `MACHINE` makes the credential a property of the host, so that processes running without a signed-in user, such as system services, can use it. `USER` confines it to a single user account, reachable only while that user is signed in. `DEFAULT` defers to the platform, which currently resolves to user scope. Platforms that draw no distinction between the two ignore this field. Allowed values: `DEFAULT` `USER` `MACHINE`
 - `type` (String) The key type used. The current default type is `ECDSA_P256` but is not fixed at the time the credential resource is created - new keys generated for this credential in the future may have a different type. Allowed values: `DEFAULT` `ECDSA_P256` `ECDSA_P384` `ECDSA_P521` `RSA_2048` `RSA_3072` `RSA_4096` `ED25519`
 
 
@@ -172,5 +352,5 @@ Read-Only:
 - `assurance` (List of String) Assurance levels that devices must match. Allowed values: `normal` `high`
 - `os` (List of String) Operating systems that devices must match. Allowed values: `Linux` `Windows` `macOS` `iOS` `tvOS` `watchOS` `visionOS`
 - `ownership` (List of String) Ownership values that devices must match. Allowed values: `company` `user`
-- `source` (List of String) Registration sources that devices must match. Allowed values: `End-User` `Smallstep API` `Smallstep Agent` `Jamf` `Intune`
+- `source` (List of String) Registration sources that devices must match. Allowed values: `End-User` `Smallstep API` `Smallstep Agent` `SCEP Webhook` `Jamf` `Intune` `Workspace ONE` `Google Workspace` `Fleet` `Mosyle` `SureMDM` `IRU`
 - `tags` (List of String) Tags that devices must match.
