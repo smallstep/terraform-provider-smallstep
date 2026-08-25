@@ -1,3 +1,10 @@
+## 0.9.0
+FEATURES:
+* Add management_mode, certificate.name_policy, key.compatibility, key.store, and x509 given_name, serial_number, surname, typed_sans, extended_key_usage, and custom_extensions to smallstep_credential.
+
+CHANGES:
+* smallstep_credential now uses Smallstep API version v2026-05-01.
+
 ## 0.8.0
 FEATURES:
 * Add smallstep_proxy resource and data source.
