@@ -141,7 +141,7 @@ resource "smallstep_credential" "test" {
 	files = {
 		crt_file = ""
 		key_file = ""
-		roo_file = ""
+		root_file = ""
 	}
 }
 `, slug, authority.Id)
@@ -329,6 +329,10 @@ resource "smallstep_credential" "test" {
 					static = ["svc@example.com"]
 				}
 			}
+			custom_extensions = [{
+				oid      = "1.3.6.1.4.1.44947"
+				value    = "dGVzdA=="
+			}]
 		}
 		name_policy = {
 			allow = {
@@ -354,6 +358,7 @@ resource "smallstep_credential" "test" {
 		x509 = {
 			common_name = {
 				static = "Test Device"
+				device_metadata = []
 			}
 			sans = {
 				static                      = ["device.example.com"]
@@ -362,7 +367,7 @@ resource "smallstep_credential" "test" {
 			custom_extensions = [{
 				oid      = "1.3.6.1.4.1.44947"
 				value    = "dGVzdA=="
-				critical = true
+				critical = false
 			}]
 			country = {
 				static          = ["US"]
@@ -410,6 +415,8 @@ resource "smallstep_credential" "test" {
 						helper.TestCheckNoResourceAttr("smallstep_credential.test", "policy.assurance.#"),
 						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.#"),
 						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata.#"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
 					),
 				},
 				{
@@ -419,8 +426,7 @@ resource "smallstep_credential" "test" {
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested", "true"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names", "true"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.common_names.0", "My Common Name"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.oid", "1.3.6.1.4.1.44947"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical", "true"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#", "2"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.0", "serverAuth"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.1", "clientAuth"),
@@ -432,6 +438,7 @@ resource "smallstep_credential" "test" {
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.0", "smallstep:identity"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.0", "svc@example.com"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.0", "svc.example.com"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata"),
 					),
 				},
 				{
@@ -445,6 +452,8 @@ resource "smallstep_credential" "test" {
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.static.0", "US"),
 						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.#"),
 						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
+						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata.#"),
 					),
 				},
 			},
