@@ -376,6 +376,7 @@ resource "smallstep_credential" "test" {
 					static = ["svc.example.com"]
 				}
 			}
+			extended_key_usage = ["serverAuth", "clientAuth"]
 		}
 		name_policy = {
 			allow = {
