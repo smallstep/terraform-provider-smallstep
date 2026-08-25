@@ -85,6 +85,27 @@ type TypedSANsModel struct {
 	UserPrincipalNames types.Object `tfsdk:"user_principal_names"`
 }
 
+// isEmpty reports whether every child CertificateFieldList is either null or
+// itself empty (e.g. `dns_names = { static = [] }`), matching the cases where
+// the API drops the entire typed_sans struct.
+func (m *TypedSANsModel) isEmpty(ctx context.Context) (bool, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	for _, obj := range []types.Object{m.DnsNames, m.IpAddresses, m.EmailAddresses, m.Uris, m.UserPrincipalNames} {
+		if obj.IsNull() || obj.IsUnknown() {
+			continue
+		}
+
+		child := &CertificateFieldListModel{}
+		diags.Append(obj.As(ctx, child, basetypes.ObjectAsOptions{})...)
+		if !child.isEmpty() {
+			return false, diags
+		}
+	}
+
+	return true, diags
+}
+
 var typedSansAttributes = map[string]attr.Type{
 	"dns_names":            types.ObjectType{AttrTypes: certificateFieldListAttributes},
 	"ip_addresses":         types.ObjectType{AttrTypes: certificateFieldListAttributes},
@@ -111,6 +132,22 @@ type X509NamesModel struct {
 	Emails      types.List `tfsdk:"emails"`
 	Ips         types.List `tfsdk:"ips"`
 	Uris        types.List `tfsdk:"uris"`
+}
+
+func (m *X509NamesModel) isEmpty() bool {
+	switch {
+	case len(m.CommonNames.Elements()) > 0:
+		return false
+	case len(m.Dns.Elements()) > 0:
+		return false
+	case len(m.Emails.Elements()) > 0:
+		return false
+	case len(m.Ips.Elements()) > 0:
+		return false
+	case len(m.Uris.Elements()) > 0:
+		return false
+	}
+	return true
 }
 
 var x509NamesAttributes = map[string]attr.Type{
@@ -236,6 +273,16 @@ var policyAttributes = map[string]attr.Type{
 type CertificateFieldModel struct {
 	Static         types.String `tfsdk:"static"`
 	DeviceMetadata types.String `tfsdk:"device_metadata"`
+}
+
+func (c *CertificateFieldModel) isEmpty() bool {
+	switch {
+	case c.Static.ValueString() != "":
+		return false
+	case c.DeviceMetadata.ValueString() != "":
+		return false
+	}
+	return true
 }
 
 var certificateFieldAttributes = map[string]attr.Type{
@@ -609,6 +656,26 @@ func namePolicyObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, polic
 
 func x509NamesObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, names *v20260501.X509Names, state utils.AttributeGetter, p path.Path) types.Object {
 	if names == nil {
+		obj := &X509NamesModel{}
+		d := state.GetAttribute(ctx, p, &obj)
+		diags.Append(d...)
+
+		if obj == nil {
+			return basetypes.NewObjectNull(x509NamesAttributes)
+		}
+
+		if obj.isEmpty() {
+			out, d := basetypes.NewObjectValue(x509NamesAttributes, map[string]attr.Value{
+				"common_names": obj.CommonNames,
+				"dns":          obj.Dns,
+				"emails":       obj.Emails,
+				"ips":          obj.Ips,
+				"uris":         obj.Uris,
+			})
+			diags.Append(d...)
+			return out
+		}
+
 		return basetypes.NewObjectNull(x509NamesAttributes)
 	}
 
@@ -641,6 +708,29 @@ func x509NamesObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, names 
 
 func typedSansObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, sans *v20260501.X509TypedSANs, state utils.AttributeGetter, p path.Path) types.Object {
 	if sans == nil {
+		obj := &TypedSANsModel{}
+		d := state.GetAttribute(ctx, p, &obj)
+		diags.Append(d...)
+
+		if obj == nil {
+			return basetypes.NewObjectNull(typedSansAttributes)
+		}
+
+		empty, d := obj.isEmpty(ctx)
+		diags.Append(d...)
+
+		if empty {
+			out, d := basetypes.NewObjectValue(typedSansAttributes, map[string]attr.Value{
+				"dns_names":            obj.DnsNames,
+				"ip_addresses":         obj.IpAddresses,
+				"email_addresses":      obj.EmailAddresses,
+				"uris":                 obj.Uris,
+				"user_principal_names": obj.UserPrincipalNames,
+			})
+			diags.Append(d...)
+			return out
+		}
+
 		return basetypes.NewObjectNull(typedSansAttributes)
 	}
 
@@ -748,14 +838,6 @@ func filesObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, files *v20
 
 func policyObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, policy *v20260501.PolicyMatchCriteria, state utils.AttributeGetter) types.Object {
 	if policy == nil || reflect.DeepEqual(policy, new(v20260501.PolicyMatchCriteria)) {
-		// Users can set non-null empty policies in terraform config, such as
-		// `policy = {}` or `policy = { assurance = [] }`.
-		// The API will return a nil policy object for all of these, but
-		// terraform does not interpret these as null. If we set a null object
-		// in state after an empty policy was applied then terraform will raise
-		// an "inconsistent result after apply" error. To avoid that we have to
-		// examine the object that was applied and if it was empty use that.
-
 		obj := &PolicyModel{}
 		d := state.GetAttribute(ctx, path.Root("policy"), &obj)
 		diags.Append(d...)
@@ -815,6 +897,23 @@ func policyObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, policy *v
 
 func certificateFieldObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, cf *v20260501.CertificateField, state utils.AttributeGetter, p path.Path) types.Object {
 	if cf == nil {
+		obj := &CertificateFieldModel{}
+		d := state.GetAttribute(ctx, p, &obj)
+		diags.Append(d...)
+
+		if obj == nil {
+			return basetypes.NewObjectNull(certificateFieldAttributes)
+		}
+
+		if obj.isEmpty() {
+			out, d := basetypes.NewObjectValue(certificateFieldAttributes, map[string]attr.Value{
+				"static":          obj.Static,
+				"device_metadata": obj.DeviceMetadata,
+			})
+			diags.Append(d...)
+			return out
+		}
+
 		return basetypes.NewObjectNull(certificateFieldAttributes)
 	}
 
@@ -918,10 +1017,10 @@ func keyObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, key v2026050
 	protection, ds := utils.ToOptionalString(ctx, key.Protection, state, path.Root("key").AtName("protection"))
 	diags.Append(ds...)
 
-	compatibility, ds := utils.ToOptionalString(ctx, key.Compatibility, state, path.Root("key").AtName("compatibility"))
+	compatibility, ds := utils.ToOptionalStringWithDefault(ctx, key.Compatibility, v20260501.CredentialKeyCompatibilityDEFAULT, state, path.Root("key").AtName("compatibility"))
 	diags.Append(ds...)
 
-	store, ds := utils.ToOptionalString(ctx, key.Store, state, path.Root("key").AtName("store"))
+	store, ds := utils.ToOptionalStringWithDefault(ctx, key.Store, v20260501.CredentialKeyStoreDEFAULT, state, path.Root("key").AtName("store"))
 	diags.Append(ds...)
 
 	out, ds := basetypes.NewObjectValue(keyAttributes, map[string]attr.Value{
