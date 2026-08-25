@@ -244,15 +244,27 @@ var certificateFieldAttributes = map[string]attr.Type{
 }
 
 type CertificateFieldListModel struct {
-	Static                   types.List  `tfsdk:"static"`
-	DeviceMetadata           types.List  `tfsdk:"device_metadata"`
+	Static                   types.List `tfsdk:"static"`
+	DeviceMetadata           types.List `tfsdk:"device_metadata"`
 	InsecureIncludeRequested types.Bool `tfsdk:"insecure_include_requested"`
 }
 
+func (c *CertificateFieldListModel) isEmpty() bool {
+	switch {
+	case len(c.Static.Elements()) > 0:
+		return false
+	case len(c.DeviceMetadata.Elements()) > 0:
+		return false
+	case c.InsecureIncludeRequested.ValueBool():
+		return false
+	}
+	return true
+}
+
 var certificateFieldListAttributes = map[string]attr.Type{
-	"static":                      types.ListType{ElemType: types.StringType},
-	"device_metadata":             types.ListType{ElemType: types.StringType},
-	"insecure_include_requested":  types.BoolType,
+	"static":                     types.ListType{ElemType: types.StringType},
+	"device_metadata":            types.ListType{ElemType: types.StringType},
+	"insecure_include_requested": types.BoolType,
 }
 
 func (k *KeyModel) toAPI() v20260501.CredentialKey {
@@ -823,6 +835,29 @@ func certificateFieldObjectFromAPI(ctx context.Context, diags *diag.Diagnostics,
 
 func certificateFieldListObjectFromAPI(ctx context.Context, diags *diag.Diagnostics, cfl *v20260501.CertificateFieldList, state utils.AttributeGetter, p path.Path) types.Object {
 	if cfl == nil {
+		// The API drops empty CertificateFieldList objects instead of returning them.
+		// If Terraform config contains a non-null empty object (e.g. `dns_names = { static = [] }`),
+		// returning null causes an "inconsistent result after apply" error. Preserve the
+		// applied empty object in that case.
+
+		obj := &CertificateFieldListModel{}
+		d := state.GetAttribute(ctx, p, &obj)
+		diags.Append(d...)
+
+		if obj == nil {
+			return basetypes.NewObjectNull(certificateFieldListAttributes)
+		}
+
+		if obj.isEmpty() {
+			out, d := basetypes.NewObjectValue(certificateFieldListAttributes, map[string]attr.Value{
+				"static":                     obj.Static,
+				"device_metadata":            obj.DeviceMetadata,
+				"insecure_include_requested": obj.InsecureIncludeRequested,
+			})
+			diags.Append(d...)
+			return out
+		}
+
 		return basetypes.NewObjectNull(certificateFieldListAttributes)
 	}
 
@@ -836,9 +871,9 @@ func certificateFieldListObjectFromAPI(ctx context.Context, diags *diag.Diagnost
 	diags.Append(d...)
 
 	obj, d := basetypes.NewObjectValue(certificateFieldListAttributes, map[string]attr.Value{
-		"static":                      static,
-		"device_metadata":             deviceMetadata,
-		"insecure_include_requested":  insecureIncludeRequested,
+		"static":                     static,
+		"device_metadata":            deviceMetadata,
+		"insecure_include_requested": insecureIncludeRequested,
 	})
 	diags.Append(d...)
 

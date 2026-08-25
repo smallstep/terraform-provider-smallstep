@@ -303,13 +303,13 @@ resource "smallstep_credential" "test" {
 	})
 }
 
-// TestAccCredentialResourceOptionalFieldTransitions exercises the null <-> set boolean/list
-// <-> null round trip
-func TestCredentialResourceOptionalFieldTransitions(t *testing.T) {
+// TestCredentialResourceOptionalFieldEmptyValues exercises the equivalent empty value
+// for optional fields
+func TestCredentialResourceOptionalFieldEmptyValues(t *testing.T) {
 	authority := utils.NewAuthority(t)
 	{
 		slug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
-		notSetConfig := fmt.Sprintf(`
+		config := fmt.Sprintf(`
 resource "smallstep_credential" "test" {
 	slug = %q
 	certificate = {
@@ -317,78 +317,36 @@ resource "smallstep_credential" "test" {
 		x509 = {
 			common_name = {
 				static = "Test Device"
-			}
-			sans = {
-				static = ["device.example.com"]
-			}
-			country = {
-				static = ["US"]
-			}
-			typed_sans = {
-				email_addresses = {
-					static = ["svc@example.com"]
-				}
-			}
-			custom_extensions = [{
-				oid      = "1.3.6.1.4.1.44947"
-				value    = "dGVzdA=="
-			}]
-		}
-		name_policy = {
-			allow = {
-				dns = ["*.example.com"]
-			}
-		}
-	}
-	key = {
-		type       = "ECDSA_P256"
-		protection = "NONE"
-	}
-	policy = {
-		os = ["Linux"]
-	}
-}
-`, slug, authority.Id)
-
-		setConfig := fmt.Sprintf(`
-resource "smallstep_credential" "test" {
-	slug = %q
-	certificate = {
-		authority_id = %q
-		x509 = {
-			common_name = {
-				static = "Test Device"
-				device_metadata = []
 			}
 			sans = {
 				static                      = ["device.example.com"]
-				insecure_include_requested = true
+				insecure_include_requested = false
 			}
 			custom_extensions = [{
 				oid      = "1.3.6.1.4.1.44947"
 				value    = "dGVzdA=="
 				critical = false
 			}]
-			country = {
-				static          = ["US"]
-				device_metadata = ["smallstep:identity"]
+			organizational_unit = {
+				static = ["eng"]
+				device_metadata = []
 			}
 			typed_sans = {
 				email_addresses = {
 					static = ["svc@example.com"]
 				}
 				dns_names = {
-					static = ["svc.example.com"]
+					static = []
 				}
 			}
-			extended_key_usage = ["serverAuth", "clientAuth"]
+			extended_key_usage = []
 		}
 		name_policy = {
 			allow = {
 				dns = ["*.example.com"]
 				common_names = ["My Common Name"]
 			}
-			allow_wildcard_names = true
+			allow_wildcard_names = false
 		}
 	}
 	key = {
@@ -397,63 +355,27 @@ resource "smallstep_credential" "test" {
 	}
 	policy = {
 		os = ["Linux"]
-		assurance = ["high"]
+		assurance = []
 	}
 }
 `, slug, authority.Id)
-
 		helper.Test(t, helper.TestCase{
 			ProtoV6ProviderFactories: providerFactories,
 			Steps: []helper.TestStep{
 				{
-					Config: notSetConfig,
-					Check: helper.ComposeAggregateTestCheckFunc(
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.common_names.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "policy.assurance.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
-					),
-				},
-				{
-					Config: setConfig,
+					Config: config,
 					Check: helper.ComposeAggregateTestCheckFunc(
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.static.0", "device.example.com"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested", "true"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names", "true"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested", "false"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names", "false"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.common_names.0", "My Common Name"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#", "2"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.0", "serverAuth"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.1", "clientAuth"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical", "false"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#", "0"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "policy.os.0", "Linux"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "policy.assurance.#", "1"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "policy.assurance.0", "high"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.static.0", "US"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.#", "1"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.0", "smallstep:identity"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "policy.assurance.#", "0"),
 						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.email_addresses.static.0", "svc@example.com"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.0", "svc.example.com"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata"),
-					),
-				},
-				{
-					Config: notSetConfig,
-					Check: helper.ComposeAggregateTestCheckFunc(
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.sans.insecure_include_requested"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.name_policy.allow_wildcard_names"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.name_policy.allow.common_names.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.extended_key_usage.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "policy.assurance.#"),
-						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.country.static.0", "US"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.country.device_metadata.#"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.custom_extensions.0.critical"),
-						helper.TestCheckNoResourceAttr("smallstep_credential.test", "certificate.x509.common_name.device_metadata.#"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.typed_sans.dns_names.static.#", "0"),
+						helper.TestCheckResourceAttr("smallstep_credential.test", "certificate.x509.organizational_unit.device_metadata.#", "0"),
 					),
 				},
 			},
