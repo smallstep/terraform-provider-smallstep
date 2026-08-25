@@ -34,15 +34,6 @@ func TestMain(m *testing.M) {
 func TestAccCredentialDataSource(t *testing.T) {
 	authority := utils.NewAuthority(t)
 	slug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
-
-	// management_mode and key.compatibility are part of the documented
-	// v2026-05-01 credential schema but are not yet returned by the live API
-	// (confirmed via a raw POST outside Terraform: the API responds 201 and
-	// silently omits both from the response body regardless of value).
-	// Setting them to a non-null value therefore trips Terraform's "Provider
-	// produced inconsistent result after apply" check today. They are
-	// exercised in the schema/model but intentionally left out of this config
-	// until the API returns them.
 	config := fmt.Sprintf(`
 resource "smallstep_credential" "test" {
 	slug = %q
