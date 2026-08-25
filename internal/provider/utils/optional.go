@@ -87,6 +87,30 @@ func ToOptionalString[S ~string](ctx context.Context, remote *S, priorState Attr
 	return types.StringValue(string(*remote)), diag.Diagnostics{}
 }
 
+// ToOptionalStringWithDefault is like ToOptionalString but for enum fields
+// where the API's "unset" sentinel is a named default value (e.g. "DEFAULT")
+// rather than the empty string, so the API drops that value from its
+// response just like it drops "" for plain optional strings.
+func ToOptionalStringWithDefault[S ~string](ctx context.Context, remote *S, defaultValue S, priorState AttributeGetter, p path.Path) (types.String, diag.Diagnostics) {
+	if remote != nil && *remote != "" {
+		return types.StringValue(string(*remote)), diag.Diagnostics{}
+	}
+
+	stringFromState := types.String{}
+	diags := priorState.GetAttribute(ctx, p, &stringFromState)
+	if diags.HasError() {
+		return types.String{}, diags
+	}
+	if stringFromState.IsUnknown() {
+		return types.StringNull(), diags
+	}
+	if stringFromState.IsNull() || stringFromState.ValueString() == string(defaultValue) {
+		return stringFromState, diags
+	}
+
+	return types.StringNull(), diags
+}
+
 func ToOptionalBool(ctx context.Context, remote *bool, priorState AttributeGetter, p path.Path) (types.Bool, diag.Diagnostics) {
 	if remote == nil || *remote == false {
 		boolFromState := types.Bool{}

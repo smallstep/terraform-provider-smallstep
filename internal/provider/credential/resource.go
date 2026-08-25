@@ -6,14 +6,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
+	v20260501 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20260501"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -24,11 +27,11 @@ func NewResource() resource.Resource {
 }
 
 type Resource struct {
-	client *v20250101.Client
+	client *v20260501.Client
 }
 
 func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	credential, props, err := utils.Describe("credential")
+	credential, props, err := utils.DescribeV20260501("credential")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Schema",
@@ -37,7 +40,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	cert, certProps, err := utils.Describe("credentialCertificate")
+	cert, certProps, err := utils.DescribeV20260501("credentialCertificate")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Certificate Schema",
@@ -46,7 +49,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	policy, policyProps, err := utils.Describe("policyMatchCriteria")
+	policy, policyProps, err := utils.DescribeV20260501("policyMatchCriteria")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Device Policy Schema",
@@ -55,7 +58,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	files, filesProps, err := utils.Describe("credentialFiles")
+	files, filesProps, err := utils.DescribeV20260501("credentialFiles")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Files Schema",
@@ -64,7 +67,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	x509, _, err := utils.Describe("x509Fields")
+	x509, x509Props, err := utils.DescribeV20260501("x509Fields")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI X509 Certificate Schema",
@@ -73,7 +76,43 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	_, certFieldProps, err := utils.Describe("certificateField")
+	typedSans, _, err := utils.DescribeV20260501("x509TypedSANs")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Typed SANs Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	customExtension, customExtensionProps, err := utils.DescribeV20260501("x509CustomExtension")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Custom Extension Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	namePolicy, namePolicyProps, err := utils.DescribeV20260501("x509NamePolicy")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Name Policy Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, x509NamesProps, err := utils.DescribeV20260501("x509Names")
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Parse Smallstep OpenAPI X509 Names Schema",
+			err.Error(),
+		)
+		return
+	}
+
+	_, certFieldProps, err := utils.DescribeV20260501("certificateField")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI X509 Certificate Schema",
@@ -82,7 +121,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 		return
 	}
 
-	_, certFieldListProps, err := utils.Describe("certificateFieldList")
+	_, certFieldListProps, err := utils.DescribeV20260501("certificateFieldList")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI X509 Certificate Schema",
@@ -93,6 +132,20 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 
 	name := schema.SingleNestedAttribute{
 		Required: true,
+		Attributes: map[string]schema.Attribute{
+			"static": schema.StringAttribute{
+				MarkdownDescription: certFieldProps["static"],
+				Optional:            true,
+			},
+			"device_metadata": schema.StringAttribute{
+				MarkdownDescription: certFieldProps["deviceMetadata"],
+				Optional:            true,
+			},
+		},
+	}
+
+	optionalName := schema.SingleNestedAttribute{
+		Optional: true,
 		Attributes: map[string]schema.Attribute{
 			"static": schema.StringAttribute{
 				MarkdownDescription: certFieldProps["static"],
@@ -118,10 +171,45 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
+			"insecure_include_requested": schema.BoolAttribute{
+				MarkdownDescription: certFieldListProps["insecureIncludeRequested"],
+				Optional:            true,
+			},
 		},
 	}
 
-	key, keyProps, err := utils.Describe("credentialKey")
+	x509Names := schema.SingleNestedAttribute{
+		Optional: true,
+		Attributes: map[string]schema.Attribute{
+			"common_names": schema.ListAttribute{
+				MarkdownDescription: x509NamesProps["commonNames"],
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"dns": schema.ListAttribute{
+				MarkdownDescription: x509NamesProps["dns"],
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"emails": schema.ListAttribute{
+				MarkdownDescription: x509NamesProps["emails"],
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"ips": schema.ListAttribute{
+				MarkdownDescription: x509NamesProps["ips"],
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"uris": schema.ListAttribute{
+				MarkdownDescription: x509NamesProps["uris"],
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+		},
+	}
+
+	key, keyProps, err := utils.DescribeV20260501("credentialKey")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parse Smallstep OpenAPI Credential Key Info Schema",
@@ -145,6 +233,17 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: props["slug"],
 				Required:            true,
 			},
+			"management_mode": schema.StringAttribute{
+				MarkdownDescription: props["managementMode"],
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("agent", "mdm", "other"),
+				},
+			},
 			"certificate": schema.SingleNestedAttribute{
 				MarkdownDescription: cert,
 				Required:            true,
@@ -162,6 +261,54 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 							"province":            nameList,
 							"street_address":      nameList,
 							"postal_code":         nameList,
+							"given_name":          optionalName,
+							"serial_number":       optionalName,
+							"surname":             optionalName,
+							"typed_sans": schema.SingleNestedAttribute{
+								MarkdownDescription: typedSans,
+								Optional:            true,
+								Attributes: map[string]schema.Attribute{
+									"dns_names":            nameList,
+									"ip_addresses":         nameList,
+									"email_addresses":      nameList,
+									"uris":                 nameList,
+									"user_principal_names": nameList,
+								},
+							},
+							"extended_key_usage": schema.ListAttribute{
+								MarkdownDescription: x509Props["extendedKeyUsage"],
+								ElementType:         types.StringType,
+								Optional:            true,
+								Validators: []validator.List{
+									listvalidator.ValueStringsAre(stringvalidator.OneOf(
+										"serverAuth", "clientAuth", "codeSigning", "emailProtection",
+										"ipsecEndSystem", "ipsecTunnel", "ipsecUser", "timeStamping",
+										"ocspSigning", "microsoftServerGatedCrypto", "netscapeServerGatedCrypto",
+										"microsoftCommercialCodeSigning", "microsoftKernelCodeSigning", "any",
+									)),
+								},
+							},
+							"custom_extensions": schema.ListNestedAttribute{
+								MarkdownDescription: customExtension,
+								Optional:            true,
+								NestedObject: schema.NestedAttributeObject{
+									Attributes: map[string]schema.Attribute{
+										"oid": schema.StringAttribute{
+											MarkdownDescription: customExtensionProps["oid"],
+											Required:            true,
+										},
+										"critical": schema.BoolAttribute{
+											MarkdownDescription: customExtensionProps["critical"],
+											Optional:            true,
+											Computed:            true,
+										},
+										"value": schema.StringAttribute{
+											MarkdownDescription: customExtensionProps["value"],
+											Required:            true,
+										},
+									},
+								},
+							},
 						},
 					},
 					"duration": schema.StringAttribute{
@@ -171,6 +318,18 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 						PlanModifiers: []planmodifier.String{
 							// If unset the duration will default to 24h.
 							stringplanmodifier.UseStateForUnknown(),
+						},
+					},
+					"name_policy": schema.SingleNestedAttribute{
+						MarkdownDescription: namePolicy,
+						Optional:            true,
+						Attributes: map[string]schema.Attribute{
+							"allow": x509Names,
+							"deny":  x509Names,
+							"allow_wildcard_names": schema.BoolAttribute{
+								MarkdownDescription: namePolicyProps["allowWildcardNames"],
+								Optional:            true,
+							},
 						},
 					},
 					"authority_id": schema.StringAttribute{
@@ -209,6 +368,20 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 								"If the key protection changes to/from attested, the credential must be replaced.",
 								"If the key protection changes to/from attested, the credential must be replaced.",
 							),
+						},
+					},
+					"compatibility": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: keyProps["compatibility"],
+						Validators: []validator.String{
+							stringvalidator.OneOf("DEFAULT", "LEGACY"),
+						},
+					},
+					"store": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: keyProps["store"],
+						Validators: []validator.String{
+							stringvalidator.OneOf("DEFAULT", "MACHINE", "USER"),
 						},
 					},
 				},
@@ -303,7 +476,7 @@ func (r *Resource) Configure(ctx context.Context, req resource.ConfigureRequest,
 		return
 	}
 
-	r.client = clients.V20250101
+	r.client = clients.V20260501
 }
 
 func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -323,7 +496,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	httpResp, err := r.client.GetCredential(ctx, credentialID, &v20250101.GetCredentialParams{})
+	httpResp, err := r.client.GetCredential(ctx, credentialID, &v20260501.GetCredentialParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -346,7 +519,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	credential := &v20250101.Credential{}
+	credential := &v20260501.Credential{}
 	if err := json.NewDecoder(httpResp.Body).Decode(credential); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -375,7 +548,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	httpResp, err := a.client.PostCredentials(ctx, &v20250101.PostCredentialsParams{}, reqBody)
+	httpResp, err := a.client.PostCredentials(ctx, &v20260501.PostCredentialsParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -394,7 +567,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	credential := &v20250101.Credential{}
+	credential := &v20260501.Credential{}
 	if err := json.NewDecoder(httpResp.Body).Decode(credential); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -426,7 +599,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.PutCredential(ctx, credentialID, &v20250101.PutCredentialParams{}, reqBody)
+	httpResp, err := r.client.PutCredential(ctx, credentialID, &v20260501.PutCredentialParams{}, reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -445,7 +618,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	credential := &v20250101.Credential{}
+	credential := &v20260501.Credential{}
 	if err := json.NewDecoder(httpResp.Body).Decode(credential); err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
@@ -477,7 +650,7 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 		return
 	}
 
-	httpResp, err := r.client.DeleteCredential(ctx, credentialID, &v20250101.DeleteCredentialParams{})
+	httpResp, err := r.client.DeleteCredential(ctx, credentialID, &v20260501.DeleteCredentialParams{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Smallstep API Client Error",
