@@ -68,7 +68,6 @@ Setting this value explicitly will mask any MDM-derived value.
 - `high_assurance` (Boolean) The device has been issued certificates using high assurance device attestation. Read only.
 - `host_id` (String) The identifier for the smallstep agent on the device.
 - `id` (String) A UUID identifying this device. Read only.
-- `last_seen` (String) Timestamp in RFC3339 format when the device last connected to Smallstep. Read only.
 
 <a id="nestedatt--user"></a>
 ### Nested Schema for `user`
