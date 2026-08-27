@@ -14,8 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/apiclient/clientset"
+	v20250101 "github.com/smallstep/terraform-provider-smallstep/internal/apiclient/v20250101"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -179,10 +179,6 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				MarkdownDescription: props["approvedAt"],
 				Computed:            true,
 			},
-			"last_seen": schema.StringAttribute{
-				MarkdownDescription: props["lastSeen"],
-				Computed:            true,
-			},
 			"host_id": schema.StringAttribute{
 				MarkdownDescription: props["hostID"],
 				Computed:            true,
@@ -270,7 +266,7 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &remote)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, remote.toResourceModel())...)
 }
 
 func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -320,7 +316,7 @@ func (a *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	diags = resp.State.Set(ctx, model)
+	diags = resp.State.Set(ctx, model.toResourceModel())
 	resp.Diagnostics.Append(diags...)
 }
 
@@ -476,7 +472,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 	model, diags := fromAPI(ctx, device, req.Plan)
 	resp.Diagnostics.Append(diags...)
 
-	diags = resp.State.Set(ctx, model)
+	diags = resp.State.Set(ctx, model.toResourceModel())
 	resp.Diagnostics.Append(diags...)
 }
 
