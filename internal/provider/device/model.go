@@ -34,9 +34,7 @@ type Model struct {
 	HostID              types.String `tfsdk:"host_id"`
 }
 
-// DataModel is the same as Model but also includes last_seen, which is only
-// exposed by the data source. It's not the kind of data that should be
-// managed by the resource, but it's still useful to be able to read it.
+// DataModel is the same as Model but also includes last_seen.
 type DataModel struct {
 	ID                  types.String `tfsdk:"id"`
 	PermanentIdentifier types.String `tfsdk:"permanent_identifier"`
