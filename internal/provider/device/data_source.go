@@ -152,7 +152,7 @@ func (ds *DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, 
 }
 
 func (ds *DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config Model
+	var config DataModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)

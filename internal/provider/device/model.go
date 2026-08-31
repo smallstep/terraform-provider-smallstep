@@ -29,10 +29,49 @@ type Model struct {
 	Metadata            types.Map    `tfsdk:"metadata"`
 	ApprovedAt          types.String `tfsdk:"approved_at"`
 	EnrolledAt          types.String `tfsdk:"enrolled_at"`
+	Connected           types.Bool   `tfsdk:"connected"`
+	HighAssurance       types.Bool   `tfsdk:"high_assurance"`
+	HostID              types.String `tfsdk:"host_id"`
+}
+
+// DataModel is the same as Model but also includes last_seen.
+type DataModel struct {
+	ID                  types.String `tfsdk:"id"`
+	PermanentIdentifier types.String `tfsdk:"permanent_identifier"`
+	DisplayName         types.String `tfsdk:"display_name"`
+	DisplayID           types.String `tfsdk:"display_id"`
+	Serial              types.String `tfsdk:"serial"`
+	OS                  types.String `tfsdk:"os"`
+	Ownership           types.String `tfsdk:"ownership"`
+	User                types.Object `tfsdk:"user"`
+	Tags                types.Set    `tfsdk:"tags"`
+	Metadata            types.Map    `tfsdk:"metadata"`
+	ApprovedAt          types.String `tfsdk:"approved_at"`
+	EnrolledAt          types.String `tfsdk:"enrolled_at"`
 	LastSeen            types.String `tfsdk:"last_seen"`
 	Connected           types.Bool   `tfsdk:"connected"`
 	HighAssurance       types.Bool   `tfsdk:"high_assurance"`
 	HostID              types.String `tfsdk:"host_id"`
+}
+
+func (m *DataModel) toResourceModel() *Model {
+	return &Model{
+		ID:                  m.ID,
+		PermanentIdentifier: m.PermanentIdentifier,
+		DisplayName:         m.DisplayName,
+		DisplayID:           m.DisplayID,
+		Serial:              m.Serial,
+		OS:                  m.OS,
+		Ownership:           m.Ownership,
+		User:                m.User,
+		Tags:                m.Tags,
+		Metadata:            m.Metadata,
+		ApprovedAt:          m.ApprovedAt,
+		EnrolledAt:          m.EnrolledAt,
+		Connected:           m.Connected,
+		HighAssurance:       m.HighAssurance,
+		HostID:              m.HostID,
+	}
 }
 
 type UserModel struct {
@@ -58,10 +97,10 @@ var userAttrTypes = map[string]attr.Type{
 	"email":        types.StringType,
 }
 
-func fromAPI(ctx context.Context, device *v20250101.Device, state utils.AttributeGetter) (*Model, diag.Diagnostics) {
+func fromAPI(ctx context.Context, device *v20250101.Device, state utils.AttributeGetter) (*DataModel, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	model := &Model{
+	model := &DataModel{
 		ID:                  types.StringValue(device.Id),
 		PermanentIdentifier: types.StringValue(device.PermanentIdentifier),
 		Connected:           types.BoolValue(device.Connected),
