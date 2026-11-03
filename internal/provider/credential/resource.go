@@ -232,6 +232,9 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 			"slug": schema.StringAttribute{
 				MarkdownDescription: props["slug"],
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"management_mode": schema.StringAttribute{
 				MarkdownDescription: props["managementMode"],
