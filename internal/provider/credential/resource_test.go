@@ -2,10 +2,12 @@ package credential
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
 )
 
@@ -234,6 +236,18 @@ resource "smallstep_credential" "test" {
 			{
 				Config: emptyConfig,
 			},
+			{
+				Config: strings.Replace(emptyConfig, slug, slug+"-renamed", 1),
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_credential.test", plancheck.ResourceActionDestroyBeforeCreate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestMatchResourceAttr("smallstep_credential.test", "id", utils.UUIDRegexp),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "slug", slug+"-renamed"),
+				),
+			},
 		},
 	})
 
@@ -333,9 +347,9 @@ resource "smallstep_credential" "test" {
 				),
 			},
 			{
-				ResourceName:            "smallstep_credential.test",
-				ImportState:             true,
-				ImportStateVerify:       true,
+				ResourceName:      "smallstep_credential.test",
+				ImportState:       true,
+				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{
 					"certificate.duration", // 168h0m0s on import
 					"key.store",            // DEFAULT is dropped by the API and unrecoverable from a fresh import
