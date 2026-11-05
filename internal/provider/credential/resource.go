@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -21,6 +22,13 @@ import (
 )
 
 var _ resource.ResourceWithImportState = (*Resource)(nil)
+
+const slugReplacementNote = "Changing the slug destroys this credential and creates a new one with a new `id`. " +
+	"If other resources in the same configuration reference this credential's `id` (for example `smallstep_wifi`, " +
+	"`smallstep_vpn`, or `smallstep_browser`), set `lifecycle { create_before_destroy = true }` so Terraform creates " +
+	"the new credential and updates those resources before deleting the old one; otherwise they are left without " +
+	"this credential until they are updated. References outside this configuration, such as hardcoded IDs, are not " +
+	"updated."
 
 func NewResource() resource.Resource {
 	return &Resource{}
@@ -230,7 +238,7 @@ func (r *Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp 
 				},
 			},
 			"slug": schema.StringAttribute{
-				MarkdownDescription: props["slug"],
+				MarkdownDescription: strings.TrimSpace(props["slug"] + " " + slugReplacementNote),
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),

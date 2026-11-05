@@ -1,6 +1,10 @@
-## Unreleased
+## 0.9.2
 BUG FIXES:
-* Require replacement when smallstep_credential.slug changes instead of attempting an update that the API rejects.
+* Require replacement when smallstep_credential.slug changes instead of attempting an update that the API rejects. Changing the slug now destroys and recreates the credential with a new id. Add `lifecycle { create_before_destroy = true }` to credentials referenced by other resources, such as smallstep_wifi or smallstep_vpn, so they are switched to the new credential before the old one is deleted.
+
+## 0.9.1
+CHANGES:
+* Remove the read-only last_seen attribute from the smallstep_device resource. It is still available on the smallstep_device data source.
 
 ## 0.9.0
 FEATURES:

@@ -27,6 +27,13 @@ resource "smallstep_credential" "basic" {
   files = {
     root_file = "/var/ssl/ca.pem"
   }
+
+  # Changing the slug replaces the credential. Create the new credential
+  # first so resources referencing its id (Wi-Fi, VPN, ...) are switched
+  # over before the old one is deleted.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "smallstep_credential" "advanced" {
