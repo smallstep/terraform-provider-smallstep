@@ -1,6 +1,10 @@
-## Unreleased
+## 0.9.2
 BUG FIXES:
 * Require replacement when smallstep_credential.slug changes instead of attempting an update that the API rejects.
+
+## 0.9.1
+BUG FIXES:
+* Remove last_seen from the smallstep_device resource. The value changes outside Terraform and caused drift. The smallstep_device data source keeps last_seen.
 
 ## 0.9.0
 FEATURES:
