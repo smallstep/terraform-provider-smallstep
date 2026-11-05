@@ -42,6 +42,13 @@ resource "smallstep_credential" "basic" {
   files = {
     root_file = "/var/ssl/ca.pem"
   }
+
+  # Changing the slug replaces the credential. Create the new credential
+  # first so resources referencing its id (Wi-Fi, VPN, ...) are switched
+  # over before the old one is deleted.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "smallstep_credential" "advanced" {
@@ -117,7 +124,7 @@ resource "smallstep_credential" "advanced" {
 
 - `certificate` (Attributes) Configuration for the certificate of a managed credential. (see [below for nested schema](#nestedatt--certificate))
 - `key` (Attributes) The attributes of the cryptographic key. Key `type` and `protection` are required unless the `pubFile` is set. (see [below for nested schema](#nestedatt--key))
-- `slug` (String)
+- `slug` (String) Changing the slug destroys this credential and creates a new one with a new `id`. If other resources in the same configuration reference this credential's `id` (for example `smallstep_wifi`, `smallstep_vpn`, or `smallstep_browser`), set `lifecycle { create_before_destroy = true }` so Terraform creates the new credential and updates those resources before deleting the old one; otherwise they are left without this credential until they are updated. References outside this configuration, such as hardcoded IDs, are not updated.
 
 ### Optional
 
