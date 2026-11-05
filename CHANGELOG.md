@@ -1,3 +1,7 @@
+## Unreleased
+BUG FIXES:
+* Require replacement when smallstep_credential.slug changes instead of attempting an update that the API rejects.
+
 ## 0.9.0
 FEATURES:
 * Add management_mode, certificate.name_policy, key.compatibility, key.store, and x509 given_name, serial_number, surname, typed_sans, extended_key_usage, and custom_extensions to smallstep_credential.
