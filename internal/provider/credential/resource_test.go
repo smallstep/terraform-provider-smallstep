@@ -2,7 +2,6 @@ package credential
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -152,7 +151,10 @@ resource "smallstep_credential" "test" {
 }
 `, slug, authority.Id)
 
-	emptyConfig := fmt.Sprintf(`
+	renamedSlug := slug + "-renamed"
+
+	emptyConfigWithSlug := func(slug string) string {
+		return fmt.Sprintf(`
 resource "smallstep_credential" "test" {
 	slug = %q
 	certificate = {
@@ -171,6 +173,12 @@ resource "smallstep_credential" "test" {
 	files = {}
 }
 `, slug, authority.Id)
+	}
+
+	emptyConfig := emptyConfigWithSlug(slug)
+
+	// Set before the slug rename so the rename step can assert a new credential was created.
+	var originalID string
 
 	emptyConfig2 := fmt.Sprintf(`
 resource "smallstep_credential" "test" {
@@ -235,9 +243,13 @@ resource "smallstep_credential" "test" {
 			},
 			{
 				Config: emptyConfig,
+				Check: helper.TestCheckResourceAttrWith("smallstep_credential.test", "id", func(id string) error {
+					originalID = id
+					return nil
+				}),
 			},
 			{
-				Config: strings.Replace(emptyConfig, slug, slug+"-renamed", 1),
+				Config: emptyConfigWithSlug(renamedSlug),
 				ConfigPlanChecks: helper.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{
 						plancheck.ExpectResourceAction("smallstep_credential.test", plancheck.ResourceActionDestroyBeforeCreate),
@@ -245,7 +257,8 @@ resource "smallstep_credential" "test" {
 				},
 				Check: helper.ComposeAggregateTestCheckFunc(
 					helper.TestMatchResourceAttr("smallstep_credential.test", "id", utils.UUIDRegexp),
-					helper.TestCheckResourceAttr("smallstep_credential.test", "slug", slug+"-renamed"),
+					helper.TestCheckResourceAttrWith("smallstep_credential.test", "id", expectNewID(&originalID)),
+					helper.TestCheckResourceAttr("smallstep_credential.test", "slug", renamedSlug),
 				),
 			},
 		},
@@ -478,4 +491,95 @@ resource "smallstep_credential" "test" {
 			},
 		})
 	}
+}
+
+// expectNewID returns a check that fails if the id equals the one recorded
+// before a replacement.
+func expectNewID(originalID *string) func(string) error {
+	return func(id string) error {
+		if *originalID == "" {
+			return fmt.Errorf("original credential id was not recorded")
+		}
+		if id == *originalID {
+			return fmt.Errorf("expected a new credential id after replacement, got the original id %s", id)
+		}
+		return nil
+	}
+}
+
+// TestAccCredentialSlugReplacementWithDependents renames the slug of a
+// credential that a Wi-Fi resource references. With create_before_destroy,
+// Terraform creates the new credential, switches the Wi-Fi resource to it, and
+// only then deletes the old credential.
+func TestAccCredentialSlugReplacementWithDependents(t *testing.T) {
+	authority := utils.NewAuthority(t)
+	root, _ := utils.CACerts(t)
+	slug := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	renamedSlug := slug + "-renamed"
+	wifiName := "tfprovider-" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+	ssid := "ssid-" + acctest.RandStringFromCharSet(8, acctest.CharSetAlphaNum)
+
+	config := func(slug string) string {
+		return fmt.Sprintf(`
+resource "smallstep_credential" "test" {
+	slug = %q
+	certificate = {
+		authority_id = %q
+		x509 = {
+			common_name = {
+				static = "Test Device"
+			}
+		}
+	}
+	key = {
+		type = "ECDSA_P256"
+		protection = "HARDWARE"
+	}
+	lifecycle {
+		create_before_destroy = true
+	}
+}
+
+resource "smallstep_wifi" "test" {
+	name = %q
+	ssid = %q
+	radius_server_ca = %q
+	credentials = [smallstep_credential.test.id]
+}
+`, slug, authority.Id, wifiName, ssid, root)
+	}
+
+	var originalID string
+
+	helper.Test(t, helper.TestCase{
+		ProtoV6ProviderFactories: providerFactories,
+		Steps: []helper.TestStep{
+			{
+				Config: config(slug),
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttrWith("smallstep_credential.test", "id", func(id string) error {
+						originalID = id
+						return nil
+					}),
+					helper.TestCheckResourceAttr("smallstep_wifi.test", "credentials.#", "1"),
+					helper.TestCheckResourceAttrPair("smallstep_wifi.test", "credentials.0", "smallstep_credential.test", "id"),
+				),
+			},
+			{
+				Config: config(renamedSlug),
+				ConfigPlanChecks: helper.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction("smallstep_credential.test", plancheck.ResourceActionCreateBeforeDestroy),
+						plancheck.ExpectResourceAction("smallstep_wifi.test", plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: helper.ComposeAggregateTestCheckFunc(
+					helper.TestCheckResourceAttr("smallstep_credential.test", "slug", renamedSlug),
+					helper.TestCheckResourceAttrWith("smallstep_credential.test", "id", expectNewID(&originalID)),
+					helper.TestCheckResourceAttr("smallstep_wifi.test", "credentials.#", "1"),
+					helper.TestCheckResourceAttrPair("smallstep_wifi.test", "credentials.0", "smallstep_credential.test", "id"),
+				),
+			},
+		},
+	})
 }

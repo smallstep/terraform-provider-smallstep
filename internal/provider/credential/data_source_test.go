@@ -11,12 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	helper "github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/smallstep/terraform-provider-smallstep/internal/provider/utils"
+	"github.com/smallstep/terraform-provider-smallstep/internal/provider/wifi"
 	"github.com/smallstep/terraform-provider-smallstep/internal/testprovider"
 )
 
 var provider = &testprovider.SmallstepTestProvider{
 	ResourceFactories: []func() resource.Resource{
 		NewResource,
+		// Used to test slug replacement while another resource references the credential.
+		wifi.NewResource,
 	},
 	DataSourceFactories: []func() datasource.DataSource{
 		NewDataSource,
